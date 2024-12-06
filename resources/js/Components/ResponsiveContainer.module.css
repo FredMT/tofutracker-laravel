@@ -1,0 +1,16 @@
+.responsiveContainer {
+    padding-inline: 24px;
+    width: 100%;
+
+    @media (min-width: 640px) {
+        padding-inline: 20px;
+    }
+
+    @media (min-width: 1280px) {
+        padding-inline: 40px;
+    }
+
+    @media (min-width: 1536px) {
+        padding-inline: 168px;
+    }
+}

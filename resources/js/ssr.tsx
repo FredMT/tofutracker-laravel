@@ -1,11 +1,12 @@
-import { createInertiaApp } from '@inertiajs/react';
-import createServer from '@inertiajs/react/server';
-import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
-import ReactDOMServer from 'react-dom/server';
-import { RouteName } from 'ziggy-js';
-import { route } from '../../vendor/tightenco/ziggy';
+import { createInertiaApp } from "@inertiajs/react";
+import createServer from "@inertiajs/react/server";
+import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
+import ReactDOMServer from "react-dom/server";
+import { RouteName } from "ziggy-js";
+import { route } from "../../vendor/tightenco/ziggy";
+import { ColorSchemeScript } from "@mantine/core";
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const appName = import.meta.env.VITE_APP_NAME || "Laravel";
 
 createServer((page) =>
     createInertiaApp({
@@ -15,11 +16,10 @@ createServer((page) =>
         resolve: (name) =>
             resolvePageComponent(
                 `./Pages/${name}.tsx`,
-                import.meta.glob('./Pages/**/*.tsx'),
+                import.meta.glob("./Pages/**/*.tsx")
             ),
         setup: ({ App, props }) => {
             /* eslint-disable */
-            // @ts-expect-error
             global.route<RouteName> = (name, params, absolute) =>
                 route(name, params as any, absolute, {
                     ...page.props.ziggy,
@@ -27,7 +27,26 @@ createServer((page) =>
                 });
             /* eslint-enable */
 
+            // Add ColorSchemeScript to the head during SSR
+            if (typeof document === "undefined") {
+                // @ts-ignore
+                global.document = {
+                    head: {
+                        appendChild: <T extends Node>(node: T): T => node,
+                    } as unknown as HTMLHeadElement,
+                };
+                const colorSchemeElement = ReactDOMServer.renderToString(
+                    <ColorSchemeScript />
+                );
+                // @ts-ignore
+                global.document = undefined;
+
+                // Inject the ColorSchemeScript into the head
+                (page.props as any).head = (page.props as any).head || [];
+                (page.props as any).head.push(colorSchemeElement);
+            }
+
             return <App {...props} />;
         },
-    }),
+    })
 );
