@@ -17,6 +17,7 @@ import {
     Select,
     Switch,
     Table,
+    Tabs,
     Tooltip,
 } from "@mantine/core";
 import { Spotlight } from "@mantine/spotlight";
@@ -237,7 +238,7 @@ const theme = createTheme({
     primaryShade: { light: 8, dark: 0 },
     autoContrast: true,
     luminanceThreshold: 0.3,
-    fontFamily: "Verdana, sans-serif",
+    fontFamily: "Inter, sans-serif",
     fontFamilyMonospace: "Monaco, Courier, monospace",
     radius: {
         xs: rem("6px"),
@@ -548,6 +549,11 @@ const theme = createTheme({
         Select: Select.extend({
             defaultProps: {
                 checkIconPosition: "right",
+            },
+        }),
+        Tabs: Tabs.extend({
+            defaultProps: {
+                variant: "outline",
             },
         }),
         // Title: used static class (.mantine-Title-root) to style the title

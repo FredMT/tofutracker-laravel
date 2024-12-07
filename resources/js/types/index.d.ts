@@ -16,6 +16,17 @@ export type PageProps<
     ziggy: Config & { location: string };
 };
 
+interface Details {
+    budget: number | null;
+    revenue: number | null;
+    directors: string | null;
+    producers: string | null;
+    screenplays: string | null;
+    novels: string | null;
+    writers: string | null;
+    original_stories: string | null;
+}
+
 interface Genre {
     id: number;
     name: string;
@@ -55,107 +66,39 @@ interface CrewMember {
     profile_path: string | null;
 }
 
-interface ExternalIds {
-    imdb_id: string | null;
-    wikidata_id: string | null;
-    facebook_id: string | null;
-    instagram_id: string | null;
-    twitter_id: string | null;
-}
-
-interface Image {
-    aspect_ratio: number;
-    height: number;
-    file_path: string;
+interface SimilarMovie {
+    id: number;
+    title: string;
+    poster_path: string;
     vote_average: number;
-    vote_count: number;
-    width: number;
-}
-
-interface Video {
-    id: string;
-    key: string;
-    name: string;
-    site: string;
-    size: number;
-    type: string;
-    official: boolean;
-}
-
-interface WatchProvider {
-    logo_path: string;
-    provider_id: number;
-    provider_name: string;
-    display_priority: number;
-}
-
-interface WatchProviderData {
-    link: string;
-    flatrate?: WatchProvider[];
-    rent?: WatchProvider[];
-    buy?: WatchProvider[];
+    release_date: string;
 }
 
 interface Movie {
     id: number;
     title: string;
     original_title: string;
+    certification: string | null;
     original_language: string;
     overview: string;
     poster_path: string | null;
     backdrop_path: string | null;
+    logo_path: string | null;
     release_date: string;
+    year: number | null;
     runtime: number;
     status: string;
     tagline: string;
     vote_average: number;
     vote_count: number;
-    popularity: number;
-    adult: boolean;
-    budget: number;
-    revenue: number;
     genres: Genre[];
-    production_companies: ProductionCompany[];
-    production_countries: ProductionCountry[];
-    spoken_languages: SpokenLanguage[];
+    details: Details;
     credits: {
         cast: CastMember[];
         crew: CrewMember[];
     };
-    external_ids: ExternalIds;
-    images: {
-        backdrops: Image[];
-        logos: Image[];
-        posters: Image[];
-    };
-    videos: {
-        results: Video[];
-    };
-    watch_providers: {
-        results: Record<string, WatchProviderData>;
-    };
-    recommendations: {
-        results: {
-            id: number;
-            title: string;
-            poster_path: string | null;
-            backdrop_path: string | null;
-            vote_average: number;
-        }[];
-    };
-    release_dates: {
-        results: {
-            iso_3166_1: string;
-            release_dates: {
-                certification: string;
-                descriptors: string[];
-                iso_639_1: string;
-                note: string;
-                release_date: string;
-                type: number;
-            }[];
-        }[];
-    };
+    certification: string | null;
+    similar: SimilarMovie[];
 }
 
 export interface MovieProps {

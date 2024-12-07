@@ -6,6 +6,7 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Log;
 
 class TmdbService
 {
@@ -43,15 +44,24 @@ class TmdbService
         }
     }
 
-    public function getMovie(string $movieId)
+    public function getMovie(string $id): array
     {
-        $this->handleRateLimit();
-        return $this->client->get("/movie/{$movieId}", [
-            'language' => 'en-US',
-            'append_to_response' => 'credits,external_ids,images,keywords,release_dates,similar,videos,translations,watch/providers,recommendations',
-            'include_image_language' => 'en,null',
-            'include_video_language' => 'en'
-        ])->json();
+        try {
+            $response = Http::withToken(config('services.tmdb.token'))
+                ->get("{$this->baseUrl}/movie/{$id}", [
+                    'append_to_response' => 'credits,external_ids,images,keywords,release_dates,similar,videos,translations,watch/providers,recommendations',
+                    'include_image_language' => 'en,null',
+                    'include_video_language' => 'en'
+                ]);
+
+            return [
+                'data' => $response->json(),
+                'etag' => $response->header('etag')
+            ];
+        } catch (\Exception $e) {
+            Log::error("TMDB API error: " . $e->getMessage());
+            throw $e;
+        }
     }
 
     public function getTv(string $movieId)

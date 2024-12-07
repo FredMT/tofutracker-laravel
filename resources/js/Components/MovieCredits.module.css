@@ -1,0 +1,21 @@
+.carouselControl {
+    color: light-dark(black, white);
+    background: transparent;
+    box-shadow: none;
+    border-radius: 5px;
+
+    &[data-inactive] {
+        opacity: 0;
+        cursor: default;
+        color: inherit;
+    }
+}
+
+.carouselControls {
+    top: -35px;
+    justify-content: flex-end;
+    gap: 10px;
+    background-color: transparent;
+    position: absolute;
+    right: 0;
+}

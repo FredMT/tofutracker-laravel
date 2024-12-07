@@ -1,0 +1,17 @@
+.logo {
+    display: none;
+    height: 100px;
+
+    @media (min-width: 450px) {
+        display: block;
+    }
+
+    @media (min-width: 600px) {
+        height: 200px;
+    }
+}
+
+.logoWrapper {
+    padding: var(--mantine-spacing-xs);
+    background: rgba(0, 0, 0, 0);
+}
