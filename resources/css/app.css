@@ -9,3 +9,13 @@
 :root[data-mantine-color-scheme="light"] {
     --mantine-color-body: #ededed !important;
 }
+
+body,
+html {
+    margin: 0;
+    padding: 0;
+}
+
+#app {
+    height: 100%;
+}

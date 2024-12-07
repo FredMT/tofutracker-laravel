@@ -141,6 +141,8 @@ function Movie({ movie }: MovieProps) {
                     }
                 />
             </ResponsiveContainer>
+
+            <pre>{JSON.stringify(movie, null, 2)}</pre>
         </>
     );
 }

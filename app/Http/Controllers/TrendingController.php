@@ -14,30 +14,6 @@ class TrendingController extends Controller
         private readonly TmdbService $tmdbService
     ) {}
 
-    public function index(): JsonResponse
-    {
-        $trending = $this->tmdbService->getTrendingAll();
-
-        // Dispatch jobs for each movie and TV show
-        foreach ($trending['movies'] as $movie) {
-            if (!cache()->has("movie.{$movie['id']}")) {
-                FetchMovieDetails::dispatch($movie['id']);
-            }
-        }
-
-        foreach ($trending['tv'] as $show) {
-            if (!cache()->has("tv.{$show['id']}")) {
-                FetchTvDetails::dispatch($show['id']);
-            }
-        }
-
-        // Return basic data immediately
-        return response()->json([
-            'message' => 'Details are being fetched in the background',
-            'data' => $trending
-        ]);
-    }
-
     public function getDetails(): JsonResponse
     {
         $trending = $this->tmdbService->getTrendingAll();

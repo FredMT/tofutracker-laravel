@@ -5,6 +5,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TrendingController;
 use App\Http\Controllers\TvController;
 use App\Http\Controllers\UserController;
+use App\Services\TmdbService;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -12,15 +13,19 @@ Route::get('/', function () {
     return Inertia::render('Welcome', []);
 });
 
+Route::get('/dashboard', function () {
+    return Inertia::render('UserProfile');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
 Route::get('/movie/{id}', [MovieController::class, 'show'])
     ->where('id', '[0-9]+')
     ->name('api.movies.show');
 Route::get('/tv/{id}', [TvController::class, 'show'])->name('api.tv.show');
-Route::get('/trending/details', [TrendingController::class, 'getDetails'])->name('api.trending.details');
+// For checking json responses
+Route::get('/trending/details', [TmdbService::class, 'getRandomTrendingBackdropImage'])->name('api.trending.details');
 
 
 Route::get('/trending', [TrendingController::class, 'index']);
-Route::get('/user-profile/{user}', [UserController::class, 'show'])->name('user-profile');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

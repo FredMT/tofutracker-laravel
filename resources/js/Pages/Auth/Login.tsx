@@ -1,12 +1,28 @@
-import { Head, useForm } from "@inertiajs/react";
+import { Head, Link, useForm } from "@inertiajs/react";
+import {
+    Anchor,
+    Button,
+    Checkbox,
+    Container,
+    Group,
+    Image,
+    PasswordInput,
+    Stack,
+    TextInput,
+    Title,
+    Box,
+} from "@mantine/core";
 import { FormEventHandler } from "react";
+import styles from "./Login.module.css";
 
 export default function Login({
     status,
     canResetPassword,
+    backdropImage,
 }: {
     status?: string;
     canResetPassword: boolean;
+    backdropImage: string;
 }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         email: "",
@@ -14,7 +30,7 @@ export default function Login({
         remember: false,
     });
 
-    const submit: FormEventHandler = (e) => {
+    const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
 
         post(route("login"), {
@@ -25,77 +41,92 @@ export default function Login({
     return (
         <>
             <Head title="Log in" />
-
-            {status && (
-                <div className="mb-4 text-sm font-medium text-green-600">
-                    {status}
-                </div>
-            )}
-
-            <form onSubmit={submit}>
-                {/* <div>
-                    <InputLabel htmlFor="email" value="Email" />
-
-                    <TextInput
-                        id="email"
-                        type="email"
-                        name="email"
-                        value={data.email}
-                        className="mt-1 block w-full"
-                        autoComplete="username"
-                        isFocused={true}
-                        onChange={(e) => setData("email", e.target.value)}
-                    />
-
-                    <InputError message={errors.email} className="mt-2" />
-                </div>
-
-                <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
-
-                    <TextInput
-                        id="password"
-                        type="password"
-                        name="password"
-                        value={data.password}
-                        className="mt-1 block w-full"
-                        autoComplete="current-password"
-                        onChange={(e) => setData("password", e.target.value)}
-                    />
-
-                    <InputError message={errors.password} className="mt-2" />
-                </div>
-
-                <div className="mt-4 block">
-                    <label className="flex items-center">
-                        <Checkbox
-                            name="remember"
-                            checked={data.remember}
-                            onChange={(e) =>
-                                setData("remember", e.target.checked)
-                            }
-                        />
-                        <span className="ms-2 text-sm text-gray-600 dark:text-gray-400">
-                            Remember me
-                        </span>
-                    </label>
-                </div>
-
-                <div className="mt-4 flex items-center justify-end">
-                    {canResetPassword && (
-                        <Link
-                            href={route("password.request")}
-                            className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:text-gray-100 dark:focus:ring-offset-gray-800"
-                        >
-                            Forgot your password?
-                        </Link>
-                    )}
-
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Log in
-                    </PrimaryButton>
-                </div> */}
-            </form>
+            <div className={styles.pageWrapper}>
+                <Container size="100%" p={0} className={styles.container}>
+                    <Group
+                        h="100%"
+                        wrap="nowrap"
+                        className={styles.contentWrapper}
+                    >
+                        <Box className={styles.formSection}>
+                            <Stack
+                                w="100%"
+                                maw={350}
+                                mx="auto"
+                                className={styles.formWrapper}
+                            >
+                                <Title>Login</Title>
+                                <Anchor
+                                    component={Link}
+                                    size="sm"
+                                    href="/register"
+                                >
+                                    Don't have an account? Create one
+                                </Anchor>
+                                <form onSubmit={handleSubmit}>
+                                    <Stack>
+                                        <TextInput
+                                            id="email"
+                                            label="Email"
+                                            type="email"
+                                            value={data.email}
+                                            onChange={(e) =>
+                                                setData("email", e.target.value)
+                                            }
+                                            required
+                                            error={errors.email}
+                                        />
+                                        <div className={styles.inputGroup}>
+                                            <PasswordInput
+                                                label="Password"
+                                                id="password"
+                                                value={data.password}
+                                                onChange={(e) =>
+                                                    setData(
+                                                        "password",
+                                                        e.target.value
+                                                    )
+                                                }
+                                                required
+                                                error={errors.password}
+                                            />
+                                        </div>
+                                        <div className={styles.checkboxGroup}>
+                                            <Checkbox
+                                                defaultChecked
+                                                label="Remember me"
+                                            />
+                                            {canResetPassword && (
+                                                <Anchor
+                                                    component={Link}
+                                                    size="sm"
+                                                    href="/forgot-password"
+                                                >
+                                                    Forgot password?
+                                                </Anchor>
+                                            )}
+                                        </div>
+                                        <Button
+                                            type="submit"
+                                            disabled={processing}
+                                            fullWidth
+                                        >
+                                            Login
+                                        </Button>
+                                    </Stack>
+                                </form>
+                            </Stack>
+                        </Box>
+                        <Box className={styles.imageSection}>
+                            <Image
+                                src={`https://image.tmdb.org/t/p/original${backdropImage}`}
+                                alt="Login background"
+                                className={styles.backgroundImage}
+                            />
+                        </Box>
+                    </Group>
+                </Container>
+            </div>
         </>
     );
 }

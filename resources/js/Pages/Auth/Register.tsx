@@ -1,7 +1,20 @@
-import { Head, useForm } from "@inertiajs/react";
+import { Head, Link, useForm } from "@inertiajs/react";
+import {
+    Anchor,
+    Button,
+    Container,
+    Group,
+    Image,
+    PasswordInput,
+    Stack,
+    TextInput,
+    Title,
+    Box,
+} from "@mantine/core";
 import { FormEventHandler } from "react";
+import styles from "./Register.module.css";
 
-export default function Register() {
+export default function Register({ backdropImage }: { backdropImage: string }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         username: "",
         email: "",
@@ -20,97 +33,109 @@ export default function Register() {
     return (
         <>
             <Head title="Register" />
-
-            <form onSubmit={submit}>
-                {/* <div>
-                    <InputLabel htmlFor="username" value="Username" />
-
-                    <TextInput
-                        id="username"
-                        name="username"
-                        value={data.username}
-                        className="mt-1 block w-full"
-                        autoComplete="username"
-                        isFocused={true}
-                        onChange={(e) => setData("username", e.target.value)}
-                        required
-                    />
-
-                    <InputError message={errors.username} className="mt-2" />
-                </div>
-
-                <div className="mt-4">
-                    <InputLabel htmlFor="email" value="Email" />
-
-                    <TextInput
-                        id="email"
-                        type="email"
-                        name="email"
-                        value={data.email}
-                        className="mt-1 block w-full"
-                        autoComplete="username"
-                        onChange={(e) => setData("email", e.target.value)}
-                        required
-                    />
-
-                    <InputError message={errors.email} className="mt-2" />
-                </div>
-
-                <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
-
-                    <TextInput
-                        id="password"
-                        type="password"
-                        name="password"
-                        value={data.password}
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                        onChange={(e) => setData("password", e.target.value)}
-                        required
-                    />
-
-                    <InputError message={errors.password} className="mt-2" />
-                </div>
-
-                <div className="mt-4">
-                    <InputLabel
-                        htmlFor="password_confirmation"
-                        value="Confirm Password"
-                    />
-
-                    <TextInput
-                        id="password_confirmation"
-                        type="password"
-                        name="password_confirmation"
-                        value={data.password_confirmation}
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                        onChange={(e) =>
-                            setData("password_confirmation", e.target.value)
-                        }
-                        required
-                    />
-
-                    <InputError
-                        message={errors.password_confirmation}
-                        className="mt-2"
-                    />
-                </div>
-
-                <div className="mt-4 flex items-center justify-end">
-                    <Link
-                        href={route("login")}
-                        className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:text-gray-100 dark:focus:ring-offset-gray-800"
+            <div className={styles.pageWrapper}>
+                <Container size="100%" p={0} className={styles.container}>
+                    <Group
+                        h="100%"
+                        wrap="nowrap"
+                        className={styles.contentWrapper}
                     >
-                        Already registered?
-                    </Link>
-
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Register
-                    </PrimaryButton>
-                </div> */}
-            </form>
+                        <Box className={styles.formSection}>
+                            <Stack
+                                w="100%"
+                                maw={350}
+                                mx="auto"
+                                className={styles.formWrapper}
+                            >
+                                <Title>Create Account</Title>
+                                <Anchor
+                                    component={Link}
+                                    size="sm"
+                                    href="/login"
+                                >
+                                    Already have an account? Login
+                                </Anchor>
+                                <form onSubmit={submit}>
+                                    <Stack>
+                                        <TextInput
+                                            id="username"
+                                            label="Username"
+                                            value={data.username}
+                                            onChange={(e) =>
+                                                setData(
+                                                    "username",
+                                                    e.target.value
+                                                )
+                                            }
+                                            required
+                                            error={errors.username}
+                                        />
+                                        <TextInput
+                                            id="email"
+                                            label="Email"
+                                            type="email"
+                                            value={data.email}
+                                            onChange={(e) =>
+                                                setData("email", e.target.value)
+                                            }
+                                            required
+                                            error={errors.email}
+                                        />
+                                        <div className={styles.inputGroup}>
+                                            <PasswordInput
+                                                label="Password"
+                                                id="password"
+                                                value={data.password}
+                                                onChange={(e) =>
+                                                    setData(
+                                                        "password",
+                                                        e.target.value
+                                                    )
+                                                }
+                                                required
+                                                error={errors.password}
+                                            />
+                                        </div>
+                                        <div className={styles.inputGroup}>
+                                            <PasswordInput
+                                                label="Confirm Password"
+                                                id="password_confirmation"
+                                                value={
+                                                    data.password_confirmation
+                                                }
+                                                onChange={(e) =>
+                                                    setData(
+                                                        "password_confirmation",
+                                                        e.target.value
+                                                    )
+                                                }
+                                                required
+                                                error={
+                                                    errors.password_confirmation
+                                                }
+                                            />
+                                        </div>
+                                        <Button
+                                            type="submit"
+                                            disabled={processing}
+                                            fullWidth
+                                        >
+                                            Register
+                                        </Button>
+                                    </Stack>
+                                </form>
+                            </Stack>
+                        </Box>
+                        <Box className={styles.imageSection}>
+                            <Image
+                                src={`https://image.tmdb.org/t/p/original${backdropImage}`}
+                                alt="Register background"
+                                className={styles.backgroundImage}
+                            />
+                        </Box>
+                    </Group>
+                </Container>
+            </div>
         </>
     );
 }

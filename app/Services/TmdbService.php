@@ -100,14 +100,30 @@ class TmdbService
         ])->json();
     }
 
-    public function getTrendingAll()
+    public function getTrendingAll(): array
     {
-        $movies = $this->getTrendingMovies();
-        $tv = $this->getTrendingTv();
+        return cache()->remember('trending_all', now()->addDay(), function () {
+            $movies = $this->getTrendingMovies();
+            $tv = $this->getTrendingTv();
 
-        return [
-            'movies' => $movies['results'] ?? [],
-            'tv' => $tv['results'] ?? [],
-        ];
+            return [
+                'movies' => $movies['results'] ?? [],
+                'tv' => $tv['results'] ?? [],
+            ];
+        });
+    }
+
+    public function getRandomTrendingBackdropImage(): ?string
+    {
+        return cache()->remember('trending_backdrops', now()->addDay(), function () {
+            $trending = $this->getTrendingAll();
+            $allBackdrops = array_merge($trending['movies'], $trending['tv']);
+
+            return collect($allBackdrops)
+                ->pluck('backdrop_path')
+                ->filter()
+                ->values()
+                ->all();
+        })[array_rand(cache()->get('trending_backdrops', []))] ?? null;
     }
 }

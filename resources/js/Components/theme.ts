@@ -232,7 +232,6 @@ const theme = createTheme({
         warning: amberColors,
         success: greenColors,
     },
-    focusRing: "never",
     scale: 1,
     primaryColor: "primary",
     primaryShade: { light: 8, dark: 0 },
