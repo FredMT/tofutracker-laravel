@@ -1,40 +1,32 @@
-import ResponsiveContainer from "@/Components/ResponsiveContainer";
-import ThemeButton from "@/Components/ThemeButton";
 import UserImage from "@/Components/UserImage";
-import { PageProps } from "@/types";
-import { formatJoinDate } from "@/utils/formatter";
-import { Head, usePage } from "@inertiajs/react";
-import {
-    Avatar,
-    Button,
-    Container,
-    Divider,
-    Grid,
-    Group,
-    Stack,
-    Tabs,
-    Text,
-    Title,
-} from "@mantine/core";
 import ProfileLayout from "@/Layouts/ProfileLayout";
+import { Head, usePage } from "@inertiajs/react";
+import { PageProps } from "@/types";
+import { LibraryEntry } from "@/types";
+import { Container, Divider, Group, Stack, Tabs, Text } from "@mantine/core";
+import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
+import { useLibraryData } from "@/hooks/useLibraryData";
+import { UserProfileHeader } from "@/Components/UserProfileHeader";
+import { LibraryGrid } from "@/Components/LibraryGrid";
 
-export default function UserProfile() {
+interface Props extends PageProps {
+    library: {
+        data: LibraryEntry[];
+        next_page: number | null;
+        total: number;
+        per_page: number;
+    };
+}
+
+export default function UserProfile({ library: initialLibrary }: Props) {
     const { props } = usePage();
+    const { library, isLoading, loadMore } = useLibraryData(initialLibrary);
 
-    const leftContent = (
-        <Group gap={24} w="100%" mt={24}>
-            <Avatar
-                src="https://avatar.iran.liara.run/public"
-                alt={`${props.auth.user.username}'s avatar`}
-                size="xl"
-                name={props.auth.user.username}
-                color="initials"
-            />
-            <Stack gap={4} justify="center">
-                <Title order={4}>{props.auth.user.username}</Title>
-                <Text c="dimmed">hi :3</Text>
-            </Stack>
-        </Group>
+    console.log(library);
+
+    const infiniteScrollRef = useInfiniteScroll(
+        loadMore,
+        !isLoading && !!library.next_page
     );
 
     const rightContent = (
@@ -52,6 +44,15 @@ export default function UserProfile() {
                     <Tabs.Tab value="movies">Activity</Tabs.Tab>
                     <Tabs.Tab value="tv">Library</Tabs.Tab>
                 </Tabs.List>
+
+                <Tabs.Panel value="movies">
+                    <LibraryGrid
+                        entries={library.data}
+                        isLoading={isLoading}
+                        hasMore={!!library.next_page}
+                        infiniteScrollRef={infiniteScrollRef}
+                    />
+                </Tabs.Panel>
             </Tabs>
         </Stack>
     );
@@ -61,7 +62,14 @@ export default function UserProfile() {
             <Head title="User Profile" />
             <UserImage />
             <Container size={1200}>
-                <ProfileLayout left={leftContent} right={rightContent} />
+                <ProfileLayout
+                    left={
+                        <UserProfileHeader
+                            username={props.auth.user.username}
+                        />
+                    }
+                    right={rightContent}
+                />
             </Container>
         </>
     );

@@ -1,4 +1,5 @@
 import { Config } from "ziggy-js";
+import { WatchStatus } from "./enums";
 
 export interface User {
     id: number;
@@ -104,4 +105,18 @@ interface Movie {
 
 export interface MovieProps {
     movie: Movie;
+}
+
+export interface LibraryEntry {
+    id: number;
+    media_id: number;
+    media_type: string;
+    status: WatchStatus;
+    rating: number | null;
+    is_private: boolean;
+    created_at: string;
+    movie_data?: {
+        poster_path: string;
+        title: string;
+    };
 }
