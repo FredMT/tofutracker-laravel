@@ -4,10 +4,10 @@ namespace App\Enums;
 
 enum WatchStatus: string
 {
-    case COMPLETED = 'completed';
-    case PLANNING = 'planning';
-    case REWATCHING = 'rewatching';
-    case WATCHING = 'watching';
-    case ONHOLD = 'onhold';
-    case DROPPED = 'dropped';
+    case COMPLETED = 'COMPLETED';
+    case PLANNING = 'PLANNING';
+    case REWATCHING = 'REWATCHING';
+    case WATCHING = 'WATCHING';
+    case ONHOLD = 'ONHOLD';
+    case DROPPED = 'DROPPED';
 }

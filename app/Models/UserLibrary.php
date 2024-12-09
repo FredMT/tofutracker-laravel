@@ -61,4 +61,12 @@ class UserLibrary extends Model
     {
         $query->ofType('movie');
     }
+
+    /**
+     * Get the movie associated with this library entry.
+     */
+    public function movie(): BelongsTo
+    {
+        return $this->belongsTo(Movie::class, 'media_id');
+    }
 }

@@ -54,7 +54,7 @@ class UpdateOrCreateMovieData implements ShouldQueue
                     ]
                 );
 
-                $filteredData = $movie->filterMovieData();
+                $filteredData = $movie->filteredData();
                 Cache::put("movie.{$this->movieId}", $filteredData, now()->addHours(6));
                 Log::info("Updated movie {$this->movieId} in database and cache");
             }

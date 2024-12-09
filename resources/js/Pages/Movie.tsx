@@ -1,4 +1,4 @@
-import { MovieActions } from "@/Components/MovieActions";
+import { MovieActions } from "@/Components/ContentActions/MovieActions";
 import { MovieBanner } from "@/Components/MovieBanner";
 import { MovieCredits } from "@/Components/MovieCredits";
 import { MovieDetails } from "@/Components/MovieDetails";
@@ -141,8 +141,6 @@ function Movie({ movie }: MovieProps) {
                     }
                 />
             </ResponsiveContainer>
-
-            <pre>{JSON.stringify(movie, null, 2)}</pre>
         </>
     );
 }

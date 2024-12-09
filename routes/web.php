@@ -17,24 +17,18 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function (Request $request) {
     $page = $request->input('page', 1);
-    $perPage = 10;
+    $perPage = 12;
 
     $query = $request->user()
         ->library()
-        ->with('user')
+        ->with(['user', 'movie' => function ($query) {
+            $query->select('id', 'data');
+        }])
         ->latest();
 
     $paginator = $query->paginate($perPage, ['*'], 'page', $page);
 
     $items = collect($paginator->items())->map(function ($item) {
-        $movieData = DB::table('movies')
-            ->where('id', $item->media_id)
-            ->select([
-                DB::raw("data->>'title' as title"),
-                DB::raw("data->>'poster_path' as poster_path")
-            ])
-            ->first();
-
         return [
             'id' => $item->id,
             'media_id' => $item->media_id,
@@ -43,9 +37,9 @@ Route::get('/dashboard', function (Request $request) {
             'rating' => $item->rating,
             'is_private' => $item->is_private,
             'created_at' => $item->created_at,
-            'movie_data' => $movieData ? [
-                'poster_path' => $movieData->poster_path,
-                'title' => $movieData->title,
+            'movie_data' => $item->movie ? [
+                'poster_path' => $item->movie->data['poster_path'] ?? null,
+                'title' => $item->movie->data['title'] ?? null,
             ] : null,
         ];
     });
@@ -66,14 +60,6 @@ Route::get('/dashboard', function (Request $request) {
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/movie/{id}', [MovieController::class, 'show'])
-    ->where('id', '[0-9]+')
-    ->name('api.movies.show');
-Route::get('/tv/{id}', [TvController::class, 'show'])->name('api.tv.show');
-// For checking json responses
-Route::get('/trending/details', [TmdbService::class, 'getRandomTrendingBackdropImage'])->name('api.trending.details');
-
-Route::get('/trending', [TrendingController::class, 'index']);
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -81,15 +67,19 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/movies/genres/all', [MovieController::class, 'allGenres'])
-    ->name('api.movies.genres.all');
-
-Route::prefix('movies/{id}')->group(function () {
-    Route::get('/logos', [MovieController::class, 'logos'])->name('api.movies.logos');
-    Route::get('/backdrops', [MovieController::class, 'backdrops'])->name('api.movies.backdrops');
-    Route::get('/posters', [MovieController::class, 'posters'])->name('api.movies.posters');
-    Route::get('/genres', [MovieController::class, 'genres'])->name('api.movies.genres');
-    Route::get('/credits', [MovieController::class, 'credits'])->name('api.movies.credits');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::post('/movie/library/add/{movie_id}', [MovieController::class, 'addToLibrary'])
+        ->name('movie.library.add');
+    Route::delete('/movie/library/remove/{movie_id}', [MovieController::class, 'removeFromLibrary'])
+        ->name('movie.library.remove');
+    Route::patch('/movie/library/status/{movie_id}', [MovieController::class, 'updateStatus'])
+        ->name('movie.library.update-status');
+    Route::post('/movie/library/rating/{movie_id}', [MovieController::class, 'updateRating'])
+        ->name('movie.library.update-rating');
 });
+
+Route::get('/movie/{id}', [MovieController::class, 'show'])
+    ->where('id', '[0-9]+')
+    ->name('movie.show');
 
 require __DIR__ . '/auth.php';

@@ -3,32 +3,44 @@
 namespace App\Http\Controllers;
 
 use App\Models\Movie;
+use App\Models\UserLibrary;
 use App\Services\TmdbService;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use App\Jobs\UpdateOrCreateMovieData;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Gate;
+use App\Enums\WatchStatus;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\RedirectResponse;
 
 class MovieController extends Controller
 {
+
     public function __construct(
         private readonly TmdbService $tmdbService
     ) {}
 
-    public function show(string $id): Response
+    public function show(Request $request, string $id): Response
     {
+
+        $user = $request->user();
+        $userLibraryData = $user?->library()
+            ->where('media_id', $id)
+            ->where('media_type', 'movie')
+            ->first();
+
         $cacheKey = "movie.{$id}";
 
         if (Cache::has($cacheKey)) {
             Log::info("Returning cached movie data for {$id}");
             return Inertia::render('Movie', [
-                'movie' => Cache::get($cacheKey)
+                'movie' => Cache::get($cacheKey),
+                'user_library' => $userLibraryData
             ]);
         }
-
 
         $existingMovie = Movie::find($id);
         if ($existingMovie) {
@@ -42,7 +54,8 @@ class MovieController extends Controller
             Log::info("Adding movie {$id} to cache");
 
             return Inertia::render('Movie', [
-                'movie' => $existingMovie->filteredData
+                'movie' => $existingMovie->filteredData,
+                'user_library' => $userLibraryData
             ]);
         }
 
@@ -52,12 +65,12 @@ class MovieController extends Controller
         $movie = Movie::find($id);
         Cache::put($cacheKey, $movie->filteredData, now()->addHours(6));
 
+
         return Inertia::render('Movie', [
-            'movie' => Cache::get($cacheKey)
+            'movie' => Cache::get($cacheKey),
+            'user_library' => fn() => $userLibraryData
         ]);
     }
-
-
 
     private function fetchAndStoreMovie(string $id): void
     {
@@ -84,72 +97,192 @@ class MovieController extends Controller
         ]);
     }
 
-    public function genres(string $id): JsonResponse
+    /**
+     * Add a movie to user's library
+     */
+    public function addToLibrary(Request $request, string $movie_id)
     {
-        $movie = Movie::findOrFail($id);
+        try {
+            if (!$request->user()->hasVerifiedEmail()) {
+                return back()->with([
+                    "success" => false,
+                    "message" => "Please verify your email address before adding entries to your library."
+                ]);
+            }
 
-        return response()->json([
-            'genres' => $movie->genres,
-            'movie_title' => $movie->data['title'] ?? null
-        ]);
+            $validated = $request->validate([
+                'status' => ['nullable', 'string', 'in:' . implode(',', array_column(WatchStatus::cases(), 'value'))],
+                'rating' => ['nullable', 'integer', 'min:1', 'max:10'],
+            ]);
+
+            $request->user()->library()->create([
+                ...$validated,
+                'media_id' => $movie_id,
+                'media_type' => 'movie',
+                'status' => $validated['status'] ?? 'COMPLETED',
+            ]);
+
+            return back()->with([
+                'success' => true,
+                'message' => "Movie added to library",
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to add movie to library: ' . $e->getMessage());
+            return back()->with([
+                'success' => false,
+                'message' => "An error occurred"
+            ]);
+        }
     }
 
-    public function logos(string $id): JsonResponse
+    /**
+     * Remove from user's library
+     */
+    public function removeFromLibrary(Request $request, string $movie_id): RedirectResponse
     {
-        $movie = Movie::findOrFail($id);
+        try {
+            $entry = UserLibrary::where('media_id', $movie_id)
+                ->where('user_id', $request->user()->id)
+                ->where('media_type', 'movie')
+                ->firstOrFail();
 
-        return response()->json([
-            'logos' => $movie->logos,
-            'movie_title' => $movie->data['title'] ?? null
-        ]);
+            if (!Gate::allows('manage-library-entry', $entry)) {
+                return back()->with([
+                    'success' => false,
+                    'message' => 'You do not have permission to delete this library entry.'
+                ]);
+            }
+
+            $entry->delete();
+
+            return back()->with([
+                'success' => true,
+                'message' => "Movie removed from library"
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to remove movie from library: ' . $e->getMessage());
+            return back()->with([
+                'success' => false,
+                'message' => "An error occurred"
+            ]);
+        }
     }
 
-    public function backdrops(string $id): JsonResponse
+    /**
+     * Update or create library entry status
+     */
+    public function updateStatus(Request $request, string $movie_id): RedirectResponse
     {
-        $movie = Movie::findOrFail($id);
+        try {
 
-        return response()->json([
-            'backdrops' => $movie->backdrops,
-            'movie_title' => $movie->data['title'] ?? null
-        ]);
+            $entry = UserLibrary::where('media_id', $movie_id)
+                ->where('user_id', $request->user()->id)
+                ->where('media_type', 'movie')
+                ->first();
+
+            if ($entry && !Gate::allows('manage-library-entry', $entry)) {
+                return back()->with([
+                    'success' => false,
+                    'message' => 'You do not have permission to update this library entry.'
+                ]);
+            }
+
+            $validated = $request->validate([
+                'status' => ['required', 'string', 'in:' . implode(',', array_column(WatchStatus::cases(), 'value'))],
+            ]);
+
+            $movie = Movie::findOrFail($movie_id);
+            $movieTitle = $movie->data['title'] ?? 'Movie';
+
+            $isNewEntry = !$entry;
+            $request->user()->library()->updateOrCreate(
+                [
+                    'media_id' => $movie_id,
+                    'media_type' => 'movie',
+                ],
+                [
+                    'status' => $validated['status'],
+                ]
+            );
+
+            $message = $isNewEntry
+                ? "{$movieTitle} added to your library with status: {$validated['status']}"
+                : "Updated status for {$movieTitle} to: {$validated['status']}";
+
+            return back()->with([
+                'success' => true,
+                'message' => $message,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to update library status: ' . $e->getMessage());
+            return back()->with([
+                'success' => false,
+                'message' => "An error occurred"
+            ]);
+        }
     }
 
-    public function posters(string $id): JsonResponse
+    /**
+     * Update or create library entry rating
+     */
+    public function updateRating(Request $request, string $movie_id): RedirectResponse
     {
-        $movie = Movie::findOrFail($id);
+        try {
+            if (!$request->user()->hasVerifiedEmail()) {
+                return back()->with([
+                    "success" => false,
+                    "message" => "Please verify your email address before updating your library."
+                ]);
+            }
 
-        return response()->json([
-            'posters' => $movie->posters,
-            'movie_title' => $movie->data['title'] ?? null
-        ]);
-    }
+            $entry = UserLibrary::where('media_id', $movie_id)
+                ->where('user_id', $request->user()->id)
+                ->where('media_type', 'movie')
+                ->first();
 
-    public function credits(string $id): JsonResponse
-    {
-        $movie = Movie::findOrFail($id);
+            if ($entry && !Gate::allows('manage-library-entry', $entry)) {
+                return back()->with([
+                    'success' => false,
+                    'message' => 'You do not have permission to update this library entry.'
+                ]);
+            }
 
-        return response()->json([
-            'cast' => $movie->cast,
-            'crew' => $movie->crew,
-            'movie_title' => $movie->data['title'] ?? null
-        ]);
-    }
+            $validated = $request->validate([
+                'rating' => ['required', 'integer', 'min:1', 'max:10'],
+            ]);
 
-    public function allGenres(): JsonResponse
-    {
-        $genres = DB::table('movies')
-            ->whereNotNull('data->genres')
-            ->get()
-            ->flatMap(function ($movie) {
-                return json_decode($movie->data, true)['genres'] ?? [];
-            })
-            ->unique('id')
-            ->sortBy('name')
-            ->values();
+            // Get movie title from the database
+            $movie = Movie::findOrFail($movie_id);
+            $movieTitle = $movie->data['title'] ?? 'Movie';
 
-        return response()->json([
-            'genres' => $genres,
-            'total' => $genres->count()
-        ]);
+            // Determine if this is a new entry or update
+            $isNewEntry = !$entry;
+
+            $request->user()->library()->updateOrCreate(
+                [
+                    'media_id' => $movie_id,
+                    'media_type' => 'movie',
+                ],
+                [
+                    'rating' => $validated['rating'],
+                    'status' => $entry ? $entry->status : WatchStatus::COMPLETED->value,
+                ]
+            );
+
+            $message = $isNewEntry
+                ? "{$movieTitle} added to your library with a rating of {$validated['rating']}"
+                : "Updated rating for {$movieTitle} to {$validated['rating']} ";
+
+            return back()->with([
+                'success' => true,
+                'message' => $message,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to update rating: ' . $e->getMessage());
+            return back()->with([
+                'success' => false,
+                'message' => "An error occurred"
+            ]);
+        }
     }
 }

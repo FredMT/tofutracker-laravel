@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -53,5 +54,21 @@ class User extends Authenticatable implements MustVerifyEmail
     public function library(): HasMany
     {
         return $this->hasMany(UserLibrary::class);
+    }
+
+
+    /**
+     * Get all movies in the user's library.
+     */
+    public function movies(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            Movie::class,
+            UserLibrary::class,
+            'user_id', // Foreign key on UserLibrary table
+            'id',      // Foreign key on Movie table
+            'id',      // Local key on User table
+            'media_id' // Local key on UserLibrary table
+        )->where('media_type', 'movie');
     }
 }

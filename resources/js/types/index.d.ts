@@ -9,12 +9,29 @@ export interface User {
     created_at: string;
 }
 
+interface FlashMessage {
+    success: boolean;
+    message: string;
+}
+
+export interface MoviePageProps extends Record<string, unknown> {
+    movie: Movie;
+    user_library: {
+        id: number;
+        status: keyof typeof WatchStatus | null;
+        rating: number | null;
+        is_private: boolean;
+    } | null;
+    flash: FlashMessage;
+}
+
 export type PageProps<
     T extends Record<string, unknown> = Record<string, unknown>
 > = T & {
     auth: {
         user: User;
     };
+    flash: FlashMessage;
     ziggy: Config & { location: string };
 };
 

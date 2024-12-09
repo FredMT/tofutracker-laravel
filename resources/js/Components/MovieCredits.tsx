@@ -26,6 +26,7 @@ export function MovieCredits({
             <Tabs
                 value={activeTab}
                 onChange={(value) => setActiveTab(value as "cast" | "crew")}
+                variant="outline"
             >
                 <Tabs.List>
                     <Tabs.Tab value="cast">
