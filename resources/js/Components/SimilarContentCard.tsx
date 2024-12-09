@@ -1,8 +1,14 @@
 import { Badge, Box, Card, Image, Text, Tooltip } from "@mantine/core";
-import { Link } from "@inertiajs/react";
-import { SimilarMovie } from "@/types";
+import { Link, usePage } from "@inertiajs/react";
+import { PageProps, Similar } from "@/types";
 
-function SimilarMovieCard({ movie }: { movie: SimilarMovie }) {
+interface SimilarContentCardProps {
+    content: Similar;
+}
+
+function SimilarContentCard({ content }: SimilarContentCardProps) {
+    const { type } = usePage<PageProps>().props;
+
     return (
         <Card
             radius="md"
@@ -11,9 +17,9 @@ function SimilarMovieCard({ movie }: { movie: SimilarMovie }) {
             style={{ background: "rgba(0, 0, 0, 0)" }}
             shadow="none"
         >
-            <Link href={`/movie/${movie.id}`} prefetch>
+            <Link href={route(`${type}.show`, content.id)}>
                 <Card.Section pos="relative">
-                    {!!movie.vote_average && (
+                    {!!content.vote_average && (
                         <Badge
                             size="lg"
                             radius="md"
@@ -25,33 +31,33 @@ function SimilarMovieCard({ movie }: { movie: SimilarMovie }) {
                                 zIndex: 1,
                             }}
                         >
-                            {movie.vote_average.toFixed(1)}
+                            {content.vote_average.toFixed(1)}
                         </Badge>
                     )}
                     <Image
-                        src={`https://image.tmdb.org/t/p/w600_and_h900_bestv2${movie.poster_path}`}
+                        src={`https://image.tmdb.org/t/p/w600_and_h900_bestv2${content.poster_path}`}
                         radius="md"
                         height={186}
                         fallbackSrc={`data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="140" height="211">
             <rect width="100%" height="100%" fill="#f0f0f0"/>
-            <text x="50%" y="50%" text-anchor="middle">${movie.title}</text>
+            <text x="50%" y="50%" text-anchor="middle">${content.title}</text>
         </svg>`)}`}
                         loading="lazy"
                     />
                 </Card.Section>
                 <Card.Section mt="xs">
                     <Tooltip
-                        label={`${movie.title} (${
-                            movie.release_date.split("-")[0]
-                        })`}
+                        label={`${content.title} (${new Date(
+                            content.release_date
+                        ).getFullYear()})`}
                         openDelay={150}
                     >
                         <Box>
                             <Text fw={600} size="sm" lineClamp={2}>
-                                {movie.title}
+                                {content.title}
                             </Text>
                             <Text fw={600} size="sm" mt={6} c="dimmed">
-                                {movie.release_date.split("-")[0]}
+                                {new Date(content.release_date).getFullYear()}
                             </Text>
                         </Box>
                     </Tooltip>
@@ -61,4 +67,4 @@ function SimilarMovieCard({ movie }: { movie: SimilarMovie }) {
     );
 }
 
-export default SimilarMovieCard;
+export default SimilarContentCard;

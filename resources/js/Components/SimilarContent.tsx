@@ -1,20 +1,23 @@
 import { Carousel } from "@mantine/carousel";
 import { Container, Stack, Title } from "@mantine/core";
-import SimilarMovieCard from "./SimilarMovieCard";
-import classes from "./SimilarMovies.module.css";
-import { SimilarMovie } from "@/types";
+import SimilarContentCard from "./SimilarContentCard";
+import classes from "./SimilarContent.module.css";
+import { PageProps, Similar } from "@/types";
+import { usePage } from "@inertiajs/react";
 
-interface SimilarMoviesProps {
-    similarMovies: SimilarMovie[];
+interface SimilarContentProps {
     containerWidth: number;
     slideSize?: string;
 }
 
-export default function SimilarMovies({
-    similarMovies,
+export default function SimilarContent({
     containerWidth,
     slideSize = "0%",
-}: SimilarMoviesProps) {
+}: SimilarContentProps) {
+    const { type, movie, tv, anime } = usePage<PageProps>().props;
+    const content = type === "movie" ? movie : type === "tv" ? tv : anime;
+    if (!content) return null;
+
     return (
         <Stack>
             <Title order={4}>Similar</Title>
@@ -30,12 +33,9 @@ export default function SimilarMovies({
                         controls: classes.carouselControls,
                     }}
                 >
-                    {similarMovies.map((similarMovie) => (
-                        <Carousel.Slide key={similarMovie.id}>
-                            <SimilarMovieCard
-                                key={similarMovie.id}
-                                movie={similarMovie}
-                            />
+                    {content.similar.map((similar: Similar) => (
+                        <Carousel.Slide key={similar.id}>
+                            <SimilarContentCard content={similar} />
                         </Carousel.Slide>
                     ))}
                 </Carousel>

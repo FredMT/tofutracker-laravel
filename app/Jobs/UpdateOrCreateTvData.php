@@ -2,55 +2,56 @@
 
 namespace App\Jobs;
 
-use App\Models\Movie;
+use App\Models\TvShow;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
 use App\Services\TmdbService;
 
-class UpdateOrCreateMovieData implements ShouldQueue
+class UpdateOrCreateTvData implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public function __construct(
-        public string $movieId,
+        public string $tvId,
     ) {}
 
     public function handle(): void
     {
         try {
-            $response = app(TmdbService::class)->getMovie($this->movieId);
+            $response = app(TmdbService::class)->getTv($this->tvId);
 
             if (isset($response['data']['success']) && $response['data']['success'] === false) {
-                Log::error("Failed to update movie {$this->movieId}: {$response['data']['status_message']}");
+                Log::error("Failed to update TV show {$this->tvId}: {$response['data']['status_message']}");
                 return;
             }
 
-            $movieData = $response['data'];
+            $tvData = $response['data'];
             $etag = $response['etag'];
 
-            $movie = Movie::find($this->movieId);
+            $tv = TvShow::find($this->tvId);
 
             // Only update if etag is different or doesn't exist
-            if (!$movie || $movie->etag !== $etag) {
-
-                Movie::updateOrCreate(
-                    ['id' => $this->movieId],
+            if (!$tv || $tv->etag !== $etag) {
+                TvShow::updateOrCreate(
+                    ['id' => $this->tvId],
                     [
-                        'data' => $movieData,
+                        'data' => $tvData,
                         'etag' => $etag
                     ]
                 );
 
-                $filteredData = $movie->filteredData();
-                Cache::put("movie.{$this->movieId}", $filteredData, now()->addHours(6));
+                cache()->put(
+                    "tv.{$this->tvId}",
+                    $tv->filteredData,
+                    now()->addHours(6)
+                );
             }
         } catch (\Exception $e) {
-            Log::error("Error updating movie {$this->movieId}: " . $e->getMessage());
+            Log::error("Error updating TV show {$this->tvId}: " . $e->getMessage());
             throw $e;
         }
     }

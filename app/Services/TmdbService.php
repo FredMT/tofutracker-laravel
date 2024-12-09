@@ -46,6 +46,7 @@ class TmdbService
 
     public function getMovie(string $id): array
     {
+        $this->handleRateLimit();
         try {
             $response = Http::withToken(config('services.tmdb.token'))
                 ->get("{$this->baseUrl}/movie/{$id}", [
@@ -64,15 +65,33 @@ class TmdbService
         }
     }
 
-    public function getTv(string $movieId)
+    public function getTv(string $id)
     {
+        // return $this->client->get("/tv/{$id}", [
+        //     'language' => 'en-US',
+        //     'append_to_response' => 'aggregate_credits,external_ids,images,keywords,content_ratings,recommendations,similar,videos,translations,watch/providers',
+        //     'include_image_language' => 'en,null',
+        //     'include_video_language' => 'en'
+        // ]);
+
         $this->handleRateLimit();
-        return $this->client->get("/tv/{$movieId}", [
-            'language' => 'en-US',
-            'append_to_response' => 'aggregate_credits,external_ids,images,keywords,content_ratings,recommendations,similar,videos,translations,watch/providers',
-            'include_image_language' => 'en,null',
-            'include_video_language' => 'en'
-        ]);
+
+        try {
+            $response = Http::withToken(config('services.tmdb.token'))
+                ->get("{$this->baseUrl}/tv/{$id}", [
+                    'append_to_response' => 'aggregate_credits,external_ids,images,keywords,content_ratings,similar,videos,translations,watch/providers,recommendations',
+                    'include_image_language' => 'en,null',
+                    'include_video_language' => 'en'
+                ]);
+
+            return [
+                'data' => $response->json(),
+                'etag' => $response->header('etag')
+            ];
+        } catch (\Exception $e) {
+            Log::error("TMDB API error: " . $e->getMessage());
+            throw $e;
+        }
     }
 
     public function getSeason(int $tvShowId, int $seasonNumber)

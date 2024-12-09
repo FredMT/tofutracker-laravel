@@ -1,7 +1,7 @@
 import UserImage from "@/Components/UserImage";
 import ProfileLayout from "@/Layouts/ProfileLayout";
 import { Head, usePage } from "@inertiajs/react";
-import { PageProps } from "@/types";
+import { MoviePageProps, PageProps } from "@/types";
 import { LibraryEntry } from "@/types";
 import { Container, Divider, Group, Stack, Tabs, Text } from "@mantine/core";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
@@ -9,7 +9,7 @@ import { useLibraryData } from "@/hooks/useLibraryData";
 import { UserProfileHeader } from "@/Components/UserProfileHeader";
 import { LibraryGrid } from "@/Components/LibraryGrid";
 
-interface Props extends PageProps {
+interface Props extends MoviePageProps {
     library: {
         data: LibraryEntry[];
         next_page: number | null;
@@ -19,10 +19,8 @@ interface Props extends PageProps {
 }
 
 export default function UserProfile({ library: initialLibrary }: Props) {
-    const { props } = usePage();
+    const { props } = usePage<PageProps>();
     const { library, isLoading, loadMore } = useLibraryData(initialLibrary);
-
-    console.log(library);
 
     const infiniteScrollRef = useInfiniteScroll(
         loadMore,

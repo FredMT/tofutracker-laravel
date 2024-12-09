@@ -1,10 +1,12 @@
+import { Movie, TvShow } from "@/types";
+
+export type Content = Movie | TvShow;
+
 export interface RatingProps {
     opened: boolean;
     close: () => void;
-    processing: boolean;
     rating: number;
-    setRating: (rating: number) => void;
-    movie: {
-        title: string;
-    };
+    setRating: (value: number) => void;
+    content: Content;
+    processing: boolean;
 }

@@ -1,17 +1,12 @@
-import { CastMember, CrewMember } from "@/types";
+import { Person } from "@/types";
 import { Card, Image, Stack, Text, Tooltip } from "@mantine/core";
 
 interface PersonCardProps {
-    person: CastMember | CrewMember;
+    person: Person;
     type: "cast" | "crew";
 }
 
 function PersonCard({ person, type }: PersonCardProps) {
-    const subtitle =
-        type === "cast"
-            ? (person as CastMember).character
-            : (person as CrewMember).job;
-
     return (
         <Card
             radius="md"
@@ -43,9 +38,12 @@ function PersonCard({ person, type }: PersonCardProps) {
                             {person.name}
                         </Text>
                     </Tooltip>
-                    <Tooltip label={subtitle} openDelay={150}>
+                    <Tooltip
+                        label={type === "cast" ? person.character : person.job}
+                        openDelay={150}
+                    >
                         <Text size="sm" lineClamp={1}>
-                            {subtitle}
+                            {type === "cast" ? person.character : person.job}
                         </Text>
                     </Tooltip>
                 </Stack>

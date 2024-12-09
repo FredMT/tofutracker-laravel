@@ -1,14 +1,14 @@
 import { Modal, Title, Group, Rating as MantineRating } from "@mantine/core";
-import { RatingProps } from "@/Components/ContentActions/components/Rating/types";
-import { RatingSubmitButton } from "@/Components/ContentActions/components/Rating/RatingSubmitButton";
-import { RatingStar } from "@/Components/ContentActions/components/Rating/RatingStar";
+import { RatingProps } from "./types";
+import { RatingSubmitButton } from "./RatingSubmitButton";
+import { RatingStar } from "./RatingStar";
 
 export function DesktopRating({
     opened,
     close,
     rating,
     setRating,
-    movie,
+    content,
     onSubmit,
     processing,
 }: RatingProps & { onSubmit: () => void }) {
@@ -32,7 +32,7 @@ export function DesktopRating({
                 <RatingStar rating={rating} />
                 <div style={{ textAlign: "center" }}>
                     <Title style={{ marginBottom: "1rem" }}>
-                        Rate: {movie.title}
+                        Rate: {content.title}
                     </Title>
                     <Group justify="center" mt="xl">
                         <MantineRating

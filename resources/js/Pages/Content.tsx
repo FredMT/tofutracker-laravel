@@ -1,14 +1,14 @@
-import { MovieActions } from "@/Components/ContentActions/MovieActions";
-import { MovieBanner } from "@/Components/MovieBanner";
-import { MovieCredits } from "@/Components/MovieCredits";
-import { MovieDetails } from "@/Components/MovieDetails";
-import { MovieSummary } from "@/Components/MovieSummary";
+import { ContentActions } from "@/Components/ContentActions/ContentActions";
+import { ContentBanner } from "@/Components/ContentBanner";
+import { ContentCredits } from "@/Components/ContentCredits";
+import ContentDetails from "@/Components/ContentDetails";
+import { ContentSummary } from "@/Components/ContentSummary";
 import PosterImage from "@/Components/PosterImage";
 import ResponsiveContainer from "@/Components/ResponsiveContainer";
-import SimilarMovies from "@/Components/SimilarMovies";
+import SimilarContent from "@/Components/SimilarContent";
 import ThemeButton from "@/Components/ThemeButton";
 import ContentLayout from "@/Layouts/ContentLayout";
-import { MovieProps } from "@/types";
+import { PageProps } from "@/types";
 import { Head } from "@inertiajs/react";
 import {
     Box,
@@ -21,50 +21,55 @@ import {
 } from "@mantine/core";
 import { useViewportSize } from "@mantine/hooks";
 
-function Movie({ movie }: MovieProps) {
-    const { width } = useViewportSize();
+type Props = PageProps;
 
+function getContent(props: Props) {
+    const { type, movie, tv, anime } = props;
+    switch (type) {
+        case "movie":
+            return movie;
+        case "tv":
+            return tv;
+        case "anime":
+            return anime;
+        default:
+            return null;
+    }
+}
+
+export default function Content(props: Props) {
+    const { width } = useViewportSize();
+    const content = getContent(props);
+    if (!content) return null;
     return (
         <>
-            <Head title={`${movie.title}`} />
+            <Head title={content.title} />
             <ThemeButton />
-
-            <MovieBanner
-                title={movie.title}
-                backdropPath={movie.backdrop_path}
-                logoPath={movie.logo_path}
-                genres={movie.genres}
-            />
-
+            <ContentBanner />
             <ResponsiveContainer>
                 <Space h={24} />
                 <ContentLayout
                     left={
                         <Stack gap={24} align="center">
                             <PosterImage
-                                src={`https://image.tmdb.org/t/p/original${movie.poster_path}`}
-                                alt={movie.title}
+                                src={`https://image.tmdb.org/t/p/original${content.poster_path}`}
+                                alt={content.title}
                                 fallbackSrc="https://placehold.co/600x900?text=No+Poster"
                             />
                             <Box hiddenFrom="sm">
                                 <Title order={2} ta="center">
-                                    {movie.title} ({movie.year})
+                                    {content.title} ({content.year})
                                 </Title>
 
-                                <Text ta={"center"}>{movie.tagline}</Text>
+                                <Text ta={"center"}>{content.tagline}</Text>
                                 <Divider my={16} />
-                                <MovieSummary
-                                    voteAverage={movie.vote_average}
-                                    releaseDate={movie.release_date}
-                                    runtime={movie.runtime}
-                                    isoCode={movie.original_language}
-                                    right={movie.certification}
-                                />
+                                <ContentSummary />
                                 <Divider my={16} />
                             </Box>
-                            <MovieActions />
+                            <ContentActions />
                             <Box hiddenFrom="sm">
-                                <MovieDetails details={movie.details} />
+                                <ContentDetails />
+
                                 <Divider my={16} />
                                 <Stack mt={16}>
                                     <Title order={4}>Overview</Title>
@@ -74,23 +79,18 @@ function Movie({ movie }: MovieProps) {
                                         hideLabel="Hide"
                                     >
                                         <Text>
-                                            {movie.overview ??
+                                            {content.overview ??
                                                 "No overview available"}
                                         </Text>
                                     </Spoiler>
                                 </Stack>
                                 <Divider my={16} />
-                                <MovieCredits
-                                    cast={movie.credits.cast}
-                                    crew={movie.credits.crew}
+                                <ContentCredits
                                     containerWidth={width * 0.95}
                                     slideSize="20%"
                                 />
                                 <Divider my={16} />
-                                <SimilarMovies
-                                    similarMovies={movie.similar}
-                                    containerWidth={width * 0.95}
-                                />
+                                <SimilarContent containerWidth={width * 0.95} />
                             </Box>
                         </Stack>
                     }
@@ -98,20 +98,15 @@ function Movie({ movie }: MovieProps) {
                         <Box visibleFrom="sm">
                             <Stack gap={8}>
                                 <Title order={2}>
-                                    {movie.title} ({movie.year})
+                                    {content.title} ({content.year})
                                 </Title>
-                                <Text>{movie.tagline}</Text>
+                                <Text>{content.tagline}</Text>
                                 <Divider my={8} />
-                                <MovieSummary
-                                    voteAverage={movie.vote_average}
-                                    releaseDate={movie.release_date}
-                                    runtime={movie.runtime}
-                                    isoCode={movie.original_language}
-                                    right={movie.certification}
-                                />
+                                <ContentSummary />
+
                                 <Divider my={8} />
                             </Stack>
-                            <MovieDetails details={movie.details} />
+                            <ContentDetails />
                             <Divider my={16} />
                             <Stack mt={16}>
                                 <Title order={4}>Overview</Title>
@@ -121,22 +116,18 @@ function Movie({ movie }: MovieProps) {
                                     hideLabel="Hide"
                                 >
                                     <Text>
-                                        {movie.overview ??
+                                        {content.overview ??
                                             "No overview available"}
                                     </Text>
                                 </Spoiler>
                             </Stack>
-                            <Divider my={16} />
-                            <MovieCredits
-                                cast={movie.credits.cast}
-                                crew={movie.credits.crew}
+                            <Space h={16} />
+                            <ContentCredits
                                 containerWidth={width * 0.67}
+                                slideSize="20%"
                             />
                             <Divider my={16} />
-                            <SimilarMovies
-                                similarMovies={movie.similar}
-                                containerWidth={width * 0.67}
-                            />
+                            <SimilarContent containerWidth={width * 0.67} />
                         </Box>
                     }
                 />
@@ -144,5 +135,3 @@ function Movie({ movie }: MovieProps) {
         </>
     );
 }
-
-export default Movie;

@@ -1,4 +1,4 @@
-import { MoviePageProps, PageProps } from "@/types";
+import { PageProps } from "@/types";
 import { WatchStatus } from "@/types/enums";
 import { useForm, usePage } from "@inertiajs/react";
 import { Divider, Select } from "@mantine/core";
@@ -7,8 +7,10 @@ import { Check, CircleAlertIcon } from "lucide-react";
 import { useEffect } from "react";
 
 export function WatchStatusSelect() {
-    const { movie, user_library, flash } =
-        usePage<PageProps<MoviePageProps>>().props;
+    const { type, movie, tv, anime, user_library } = usePage<PageProps>().props;
+    const content = type === "movie" ? movie : type === "tv" ? tv : anime;
+    if (!content) return null;
+
     const statusOptions = Object.values(WatchStatus).map((status) => ({
         value: status,
         label: status,
@@ -25,7 +27,7 @@ export function WatchStatusSelect() {
 
     useEffect(() => {
         if (data.status && data.status !== user_library?.status) {
-            patch(route("movie.library.update-status", movie.id), {
+            patch(route("movie.library.update-status", content.id), {
                 preserveScroll: true,
                 onSuccess: (res: any) => {
                     if (res.props.flash.success) {

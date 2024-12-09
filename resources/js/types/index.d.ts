@@ -14,36 +14,69 @@ interface FlashMessage {
     message: string;
 }
 
-export interface MoviePageProps extends Record<string, unknown> {
-    movie: Movie;
-    user_library: {
-        id: number;
-        status: keyof typeof WatchStatus | null;
-        rating: number | null;
-        is_private: boolean;
-    } | null;
-    flash: FlashMessage;
-}
-
 export type PageProps<
     T extends Record<string, unknown> = Record<string, unknown>
 > = T & {
     auth: {
         user: User;
     };
-    flash: FlashMessage;
+    movie?: Movie;
+    tv?: TvShow;
+    flash?: FlashMessage;
     ziggy: Config & { location: string };
-};
+    user_library?: {
+        id: number;
+        status: keyof typeof WatchStatus | null;
+        rating: number | null;
+        is_private: boolean;
+    } | null;
+} & (
+        | { type: "movie"; movie: Movie }
+        | { type: "tv"; tv: TvShow }
+        | { type: "anime"; anime: AnimeShow }
+    );
 
-interface Details {
-    budget: number | null;
-    revenue: number | null;
-    directors: string | null;
-    producers: string | null;
-    screenplays: string | null;
-    novels: string | null;
-    writers: string | null;
-    original_stories: string | null;
+interface BaseContent {
+    id: number;
+    title: string;
+    original_title: string;
+    original_language: string;
+    overview: string;
+    poster_path: string;
+    backdrop_path: string;
+    logo_path: string;
+    year: number;
+    status: string;
+    tagline: string;
+    vote_average: number;
+    vote_count: number;
+    genres: Genre[];
+    credits: Credits;
+    certification: string;
+    similar: Similar[];
+    runtime?: string;
+    release_date?: string;
+    first_air_date?: string;
+}
+
+export interface Movie extends BaseContent {
+    release_date: string;
+    runtime: string;
+    details: MovieDetails;
+}
+
+// TV-specific content
+export interface TvShow extends BaseContent {
+    first_air_date: string;
+    last_air_date: string;
+    details: TvDetails;
+    seasons: Season[];
+    network: Network;
+    episode_runtime: any[];
+    in_production: boolean;
+    type: string;
+    number_of_episodes: number;
+    number_of_seasons: number;
 }
 
 interface Genre {
@@ -51,77 +84,80 @@ interface Genre {
     name: string;
 }
 
-interface ProductionCompany {
+// Updated Credits interfaces
+interface Credits {
+    cast: Person[];
+    crew: Person[];
+}
+
+interface BaseCastCrew {
     id: number;
-    logo_path: string | null;
     name: string;
+    profile_path: string | null;
+}
+
+interface Cast extends BaseCastCrew {
+    character: string;
+    order: number;
+    total_episodes?: number; // Optional for TV shows
+}
+
+interface Crew extends BaseCastCrew {
+    job: string;
+    popularity: number;
+    total_episodes?: number; // Optional for TV shows
+}
+
+interface BaseDetails {
+    status?: string;
+    production_companies?: string;
+}
+
+interface MovieDetails extends BaseDetails {
+    budget: number;
+    revenue: number;
+    producers: string;
+    screenplays: string;
+    novels: string;
+    directors: string;
+    original_stories?: string;
+    writers?: string;
+}
+
+interface TvDetails extends BaseDetails {
+    episodes: number;
+    seasons: number;
+    creators: string;
+    networks: string;
+}
+
+interface AnimeDetails extends BaseDetails {
+    // Add anime-specific details here
+}
+
+interface Season {
+    id: number;
+    name: string;
+    overview: string;
+    season_number: number;
+    episode_count: number;
+    air_date: string;
+    poster_path: string;
+}
+
+interface Network {
+    id: number;
+    name: string;
+    logo_path: string;
     origin_country: string;
 }
 
-interface ProductionCountry {
-    iso_3166_1: string;
-    name: string;
-}
-
-interface SpokenLanguage {
-    english_name: string;
-    iso_639_1: string;
-    name: string;
-}
-
-interface CastMember {
-    id: number;
-    name: string;
-    character: string;
-    profile_path: string | null;
-    order: number;
-}
-
-interface CrewMember {
-    id: number;
-    name: string;
-    department: string;
-    job: string;
-    profile_path: string | null;
-}
-
-interface SimilarMovie {
+interface Similar {
     id: number;
     title: string;
     poster_path: string;
     vote_average: number;
-    release_date: string;
-}
-
-interface Movie {
-    id: number;
-    title: string;
-    original_title: string;
-    certification: string | null;
-    original_language: string;
-    overview: string;
-    poster_path: string | null;
-    backdrop_path: string | null;
-    logo_path: string | null;
-    release_date: string;
-    year: number | null;
-    runtime: number;
-    status: string;
-    tagline: string;
-    vote_average: number;
-    vote_count: number;
-    genres: Genre[];
-    details: Details;
-    credits: {
-        cast: CastMember[];
-        crew: CrewMember[];
-    };
-    certification: string | null;
-    similar: SimilarMovie[];
-}
-
-export interface MovieProps {
-    movie: Movie;
+    release_date: Date;
 }
 
 export interface LibraryEntry {
@@ -136,4 +172,24 @@ export interface LibraryEntry {
         poster_path: string;
         title: string;
     };
+}
+
+interface ContentCreditsProps {
+    cast: Cast[];
+    crew: Crew[];
+    containerWidth: number;
+    slideSize?: string;
+}
+
+interface Person extends BaseCastCrew {
+    character?: string;
+    job?: string;
+    order?: number;
+    popularity?: number;
+    total_episodes?: number;
+}
+
+interface ContentSummaryProps {
+    containerWidth?: number;
+    slideSize?: string;
 }

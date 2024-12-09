@@ -1,25 +1,27 @@
-import { CastMember, CrewMember } from "@/types";
 import { Carousel } from "@mantine/carousel";
 import { Container, Tabs, Text } from "@mantine/core";
 import { useState } from "react";
 import PersonCard from "./PersonCard";
-import classes from "./MovieCredits.module.css";
+import classes from "./ContentCredits.module.css";
+import { PageProps, Person } from "@/types";
+import { usePage } from "@inertiajs/react";
 
-interface MovieCreditsProps {
-    cast: CastMember[];
-    crew: CrewMember[];
+interface ContentCreditsProps {
     containerWidth: number;
     slideSize?: string;
 }
 
-export function MovieCredits({
-    cast,
-    crew,
+export function ContentCredits({
     containerWidth,
     slideSize = "15%",
-}: MovieCreditsProps) {
+}: ContentCreditsProps) {
+    const { type, movie, tv, anime } = usePage<PageProps>().props;
+    const content = type === "movie" ? movie : type === "tv" ? tv : anime;
+    if (!content) return null;
+
     const [activeTab, setActiveTab] = useState<"cast" | "crew">("cast");
-    const people = activeTab === "cast" ? cast : crew;
+    const people =
+        activeTab === "cast" ? content.credits.cast : content.credits.crew;
 
     return (
         <>
@@ -50,7 +52,7 @@ export function MovieCredits({
                         controls: classes.carouselControls,
                     }}
                 >
-                    {people.map((person) => (
+                    {people.map((person: Person) => (
                         <Carousel.Slide key={person.id}>
                             <PersonCard person={person} type={activeTab} />
                         </Carousel.Slide>

@@ -1,44 +1,43 @@
-import { MoviePageProps, PageProps } from "@/types";
+import { FlashMessage, PageProps } from "@/types";
+import { Page } from "@inertiajs/core";
 import { useForm, usePage } from "@inertiajs/react";
-import { Button, Group, Modal } from "@mantine/core";
+import { Button, Group, Modal, useModalsStack } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { Check, CircleAlertIcon, MinusCircle } from "lucide-react";
-import { useModalsStack } from "@mantine/core";
 
 function RemoveFromLibrary() {
-    const { movie, flash } = usePage<PageProps<MoviePageProps>>().props;
+    const { type, movie, tv, anime } = usePage<PageProps>().props;
+    const content = type === "movie" ? movie : type === "tv" ? tv : anime;
+    if (!content) return null;
     const stack = useModalsStack(["confirm-delete"]);
 
     const { delete: remove, processing } = useForm({
-        movie_id: movie.id,
+        media_id: content.id,
     });
 
     function handleRemove() {
-        remove(route("movie.library.remove", movie.id), {
+        remove(route(`${type}.library.remove`, content.id), {
             preserveScroll: true,
-            onSuccess: () => {
+            onSuccess: (res: any) => {
                 stack.closeAll();
-                if (flash.success) {
+                if (res.props.flash?.success) {
                     notifications.show({
                         color: "teal",
                         title: "Success",
-                        message: `${movie.title} deleted from library`,
+                        message: `${content.title} deleted from library`,
                         icon: <Check size={18} />,
                         autoClose: 3000,
                     });
                 }
             },
-            onError: () => {
-                stack.closeAll();
-                if (!flash.success) {
-                    notifications.show({
-                        color: "red",
-                        icon: <CircleAlertIcon size={18} />,
-                        title: "Error",
-                        message: "An error occurred",
-                        autoClose: 3000,
-                    });
-                }
+            onError: (res: any) => {
+                notifications.show({
+                    color: "red",
+                    title: "Error",
+                    message: res.props.flash?.message || "An error occurred",
+                    icon: <CircleAlertIcon size={18} />,
+                    autoClose: 3000,
+                });
             },
         });
     }
@@ -48,10 +47,9 @@ function RemoveFromLibrary() {
             <Modal.Stack>
                 <Modal
                     {...stack.register("confirm-delete")}
-                    title={`Remove ${movie.title}?`}
+                    title={`Remove ${content.title}?`}
                 >
-                    Are you sure you want to remove this movie from your
-                    library?
+                    Are you sure you want to remove this item from your library?
                     <Group mt="lg" justify="flex-end">
                         <Button
                             onClick={stack.closeAll}

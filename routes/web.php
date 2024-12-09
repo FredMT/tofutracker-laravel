@@ -78,8 +78,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('movie.library.update-rating');
 });
 
+Route::get('/movie/{id}/details', [MovieController::class, 'details'])
+    ->where('id', '[0-9]+')
+    ->name('movie.show');
 Route::get('/movie/{id}', [MovieController::class, 'show'])
     ->where('id', '[0-9]+')
     ->name('movie.show');
+
+Route::get('/tv/{id}/details', [TvController::class, 'details'])
+    ->where('id', '[0-9]+')
+    ->name('tv.details');
+Route::get('/tv/{id}', [TvController::class, 'show'])
+    ->where('id', '[0-9]+')
+    ->name('tv.show');
 
 require __DIR__ . '/auth.php';

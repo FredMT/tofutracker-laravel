@@ -1,6 +1,6 @@
-import { RatingStar } from "@/Components/ContentActions/components/Rating/RatingStar";
-import { RatingSubmitButton } from "@/Components/ContentActions/components/Rating/RatingSubmitButton";
-import { RatingProps } from "@/Components/ContentActions/components/Rating/types";
+import { RatingStar } from "./RatingStar";
+import { RatingSubmitButton } from "./RatingSubmitButton";
+import { RatingProps } from "./types";
 import {
     Drawer,
     Group,
@@ -14,7 +14,7 @@ export function MobileRating({
     close,
     rating,
     setRating,
-    movie,
+    content,
     onSubmit,
     processing,
 }: RatingProps & { onSubmit: () => void }) {
@@ -36,7 +36,7 @@ export function MobileRating({
             >
                 <RatingStar rating={rating} />
                 <Stack>
-                    <Title>Rate: {movie.title}</Title>
+                    <Title>Rate: {content.title}</Title>
                     <Group justify="center" mt="xl">
                         <MantineRating
                             value={rating}

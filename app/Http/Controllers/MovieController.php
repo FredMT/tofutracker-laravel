@@ -13,7 +13,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Gate;
 use App\Enums\WatchStatus;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 
 class MovieController extends Controller
@@ -35,40 +34,83 @@ class MovieController extends Controller
         $cacheKey = "movie.{$id}";
 
         if (Cache::has($cacheKey)) {
-            Log::info("Returning cached movie data for {$id}");
-            return Inertia::render('Movie', [
+            return Inertia::render('Content', [
                 'movie' => Cache::get($cacheKey),
-                'user_library' => $userLibraryData
+                'user_library' => $userLibraryData,
+                'type' => 'movie'
             ]);
         }
 
         $existingMovie = Movie::find($id);
         if ($existingMovie) {
-            Log::info("Movie {$id} found in database");
             if ($existingMovie->updated_at->lt(now()->subHours(6))) {
-                Log::info("Attempting update for movie {$id} ");
                 UpdateOrCreateMovieData::dispatch($id);
             }
 
             Cache::put($cacheKey, $existingMovie->filteredData, now()->addHours(6));
-            Log::info("Adding movie {$id} to cache");
 
-            return Inertia::render('Movie', [
+            return Inertia::render('Content', [
                 'movie' => $existingMovie->filteredData,
-                'user_library' => $userLibraryData
+                'user_library' => $userLibraryData,
+                'type' => 'movie'
+
             ]);
         }
-
-        Log::info("Movie {$id} not found in database, fetching from TMDB");
 
         $this->fetchAndStoreMovie($id);
         $movie = Movie::find($id);
         Cache::put($cacheKey, $movie->filteredData, now()->addHours(6));
 
 
-        return Inertia::render('Movie', [
+        return Inertia::render('Content', [
             'movie' => Cache::get($cacheKey),
-            'user_library' => fn() => $userLibraryData
+            'user_library' => fn() => $userLibraryData,
+            'type' => 'movie'
+
+        ]);
+    }
+
+    public function details(Request $request, string $id)
+    {
+        $user = $request->user();
+        $userLibraryData = $user?->library()
+            ->where('media_id', $id)
+            ->where('media_type', 'movie')
+            ->first();
+
+        $cacheKey = "movie.{$id}";
+
+        if (Cache::has($cacheKey)) {
+            return response()->json([
+                'movie' => Cache::get($cacheKey),
+                'user_library' => $userLibraryData,
+                'type' => 'movie'
+            ]);
+        }
+
+        $existingMovie = Movie::find($id);
+        if ($existingMovie) {
+            if ($existingMovie->updated_at->lt(now()->subHours(6))) {
+                UpdateOrCreateMovieData::dispatch($id);
+            }
+
+            Cache::put($cacheKey, $existingMovie->filteredData, now()->addHours(6));
+
+            return response()->json([
+                'movie' => $existingMovie->filteredData,
+                'user_library' => $userLibraryData,
+                'type' => 'movie'
+            ]);
+        }
+
+        $this->fetchAndStoreMovie($id);
+        $movie = Movie::find($id);
+        Cache::put($cacheKey, $movie->filteredData, now()->addHours(6));
+
+        return response()->json([
+            'movie' => Cache::get($cacheKey),
+            'user_library' => $userLibraryData,
+            'type' => 'movie'
         ]);
     }
 
