@@ -137,11 +137,13 @@ interface AnimeDetails extends BaseDetails {
 
 interface Season {
     id: number;
+    show_id: number;
     name: string;
     overview: string;
     season_number: number;
     episode_count: number;
     air_date: string;
+    vote_average: number;
     poster_path: string;
 }
 

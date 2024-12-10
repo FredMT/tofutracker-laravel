@@ -18,8 +18,7 @@ function PersonCard({ person, type }: PersonCardProps) {
             <Card.Section>
                 <Image
                     src={`https://image.tmdb.org/t/p/w600_and_h900_bestv2${person.profile_path}`}
-                    height={900}
-                    width={600}
+                    height={186}
                     alt={person.name}
                     fit="cover"
                     radius="md"

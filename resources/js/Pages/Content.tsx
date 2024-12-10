@@ -7,6 +7,7 @@ import PosterImage from "@/Components/PosterImage";
 import ResponsiveContainer from "@/Components/ResponsiveContainer";
 import SimilarContent from "@/Components/SimilarContent";
 import ThemeButton from "@/Components/ThemeButton";
+import Seasons from "@/Components/TV/Seasons/Seasons";
 import ContentLayout from "@/Layouts/ContentLayout";
 import { PageProps } from "@/types";
 import { Head } from "@inertiajs/react";
@@ -85,10 +86,11 @@ export default function Content(props: Props) {
                                     </Spoiler>
                                 </Stack>
                                 <Divider my={16} />
-                                <ContentCredits
-                                    containerWidth={width * 0.95}
-                                    slideSize="20%"
-                                />
+                                <ContentCredits containerWidth={width * 0.95} />
+                                <Divider my={16} />
+                                {content.type === "tv" && (
+                                    <Seasons containerWidth={width * 0.67} />
+                                )}
                                 <Divider my={16} />
                                 <SimilarContent containerWidth={width * 0.95} />
                             </Box>
@@ -122,10 +124,9 @@ export default function Content(props: Props) {
                                 </Spoiler>
                             </Stack>
                             <Space h={16} />
-                            <ContentCredits
-                                containerWidth={width * 0.67}
-                                slideSize="20%"
-                            />
+                            <ContentCredits containerWidth={width * 0.67} />
+                            <Divider my={16} />
+                            <Seasons containerWidth={width * 0.67} />
                             <Divider my={16} />
                             <SimilarContent containerWidth={width * 0.67} />
                         </Box>

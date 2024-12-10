@@ -67,13 +67,6 @@ class TmdbService
 
     public function getTv(string $id)
     {
-        // return $this->client->get("/tv/{$id}", [
-        //     'language' => 'en-US',
-        //     'append_to_response' => 'aggregate_credits,external_ids,images,keywords,content_ratings,recommendations,similar,videos,translations,watch/providers',
-        //     'include_image_language' => 'en,null',
-        //     'include_video_language' => 'en'
-        // ]);
-
         $this->handleRateLimit();
 
         try {
@@ -97,10 +90,21 @@ class TmdbService
     public function getSeason(int $tvShowId, int $seasonNumber)
     {
         $this->handleRateLimit();
-        return $this->client->get("/tv/{$tvShowId}/season/{$seasonNumber}", [
-            'language' => 'en-US',
-            'append_to_response' => 'credits,external_ids,images,videos'
-        ])->json();
+
+        try {
+            $response = $this->client->get("/tv/{$tvShowId}/season/{$seasonNumber}", [
+                'language' => 'en-US',
+                'append_to_response' => 'credits,external_ids,images,videos'
+            ]);
+
+            return [
+                'data' => $response->json(),
+                'etag' => $response->header('etag')
+            ];
+        } catch (\Exception $e) {
+            Log::error("TMDB API error: " . $e->getMessage());
+            throw $e;
+        }
     }
 
     public function getTrendingMovies()

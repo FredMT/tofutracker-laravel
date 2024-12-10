@@ -20,7 +20,7 @@ export default function SimilarContent({
 
     return (
         <Stack>
-            <Title order={4}>Similar</Title>
+            <Title order={3}>Similar</Title>
             <Container size={containerWidth} px={0} mx={0}>
                 <Carousel
                     height={300}

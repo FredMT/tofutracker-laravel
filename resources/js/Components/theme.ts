@@ -293,16 +293,16 @@ const theme = createTheme({
         //             },
         //         }),
         //     }),
-        Modal: Modal.extend({
-            defaultProps: {
-                p: "md",
-            },
-            styles: () => ({
-                content: {
-                    border: "1px solid var(--mantine-color-default-border)",
-                },
-            }),
-        }),
+        // Modal: Modal.extend({
+        //     defaultProps: {
+        //         p: "md",
+        //     },
+        //     styles: () => ({
+        //         content: {
+        //             border: "1px solid var(--mantine-color-default-border)",
+        //         },
+        //     }),
+        // }),
         //     Code: Code.extend({
         //         vars: () => ({
         //             root: {

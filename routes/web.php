@@ -92,4 +92,6 @@ Route::get('/tv/{id}', [TvController::class, 'show'])
     ->where('id', '[0-9]+')
     ->name('tv.show');
 
+Route::get('tv/{tvShowId}/season/{seasonNumber}', [TmdbService::class, 'getSeason']);
+
 require __DIR__ . '/auth.php';

@@ -13,7 +13,7 @@ interface ContentCreditsProps {
 
 export function ContentCredits({
     containerWidth,
-    slideSize = "15%",
+    slideSize = "0%",
 }: ContentCreditsProps) {
     const { type, movie, tv, anime } = usePage<PageProps>().props;
     const content = type === "movie" ? movie : type === "tv" ? tv : anime;

@@ -309,6 +309,7 @@ class TvShow extends Model
             ->map(function ($season) {
                 return [
                     'id' => $season['id'],
+                    'show_id' => $this->id,
                     'name' => $season['name'],
                     'overview' => $season['overview'],
                     'season_number' => $season['season_number'],
@@ -317,6 +318,7 @@ class TvShow extends Model
                         ? Carbon::parse($season['air_date'])->format('F j, Y')
                         : null,
                     'poster_path' => $season['poster_path'],
+                    'vote_average' => $season['vote_average'] ?? null,
                 ];
             })
             ->values()
