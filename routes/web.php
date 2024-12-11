@@ -4,6 +4,7 @@ use App\Http\Controllers\AnimeController;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TvController;
+use App\Http\Controllers\TvSeasonController;
 use App\Http\Middleware\CheckAnimeMapping;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -87,6 +88,9 @@ Route::get('/tv/{id}', [TvController::class, 'show'])
     ->where('id', '[0-9]+')
     ->middleware(CheckAnimeMapping::class)
     ->name('tv.show');
+
+Route::get('/tv/{tvId}/season/{seasonNumber}', [TvSeasonController::class, 'show'])
+    ->name('tv.season.show');
 
 Route::get('/anime/{id}/related', [AnimeController::class, 'getRelatedAnime']);
 

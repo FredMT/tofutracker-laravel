@@ -2,10 +2,8 @@
 
 namespace App\Services;
 
-use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Log;
 
 class TmdbService
@@ -22,31 +20,10 @@ class TmdbService
         ])->baseUrl($this->baseUrl);
     }
 
-    /**
-     * Handle rate limiting for API requests
-     */
-    private function handleRateLimit(): void
-    {
-        $executed = RateLimiter::attempt(
-            'tmdb-api',
-            self::MAX_REQUESTS_PER_SECOND,
-            function () {
-                // The request will be executed
-            },
-            1 // Time window in seconds
-        );
 
-
-        if (!$executed) {
-            // If we couldn't execute, wait a bit and try again
-            usleep(100000); // 100ms
-            $this->handleRateLimit();
-        }
-    }
 
     public function getMovie(string $id): array
     {
-        $this->handleRateLimit();
         try {
             $response = Http::withToken(config('services.tmdb.token'))
                 ->get("{$this->baseUrl}/movie/{$id}", [
@@ -67,7 +44,6 @@ class TmdbService
 
     public function getTv(string $id)
     {
-        $this->handleRateLimit();
 
         try {
             $response = Http::withToken(config('services.tmdb.token'))
@@ -89,7 +65,6 @@ class TmdbService
 
     public function getSeason(int $tvShowId, int $seasonNumber)
     {
-        $this->handleRateLimit();
 
         try {
             $response = $this->client->get("/tv/{$tvShowId}/season/{$seasonNumber}", [
@@ -109,7 +84,6 @@ class TmdbService
 
     public function getTrendingMovies()
     {
-        $this->handleRateLimit();
         return $this->client->get('/trending/movie/day', [
             'language' => 'en-US',
         ])->json();
@@ -117,7 +91,6 @@ class TmdbService
 
     public function getTrendingTv()
     {
-        $this->handleRateLimit();
         return $this->client->get('/trending/tv/day', [
             'language' => 'en-US',
         ])->json();
@@ -148,24 +121,5 @@ class TmdbService
                 ->values()
                 ->all();
         })[array_rand(cache()->get('trending_backdrops', []))] ?? null;
-    }
-
-    public function headTv(string $id)
-    {
-        $this->handleRateLimit();
-
-        try {
-            $response = Http::withToken(config('services.tmdb.token'))
-                ->head("{$this->baseUrl}/tv/{$id}", [
-                    'append_to_response' => 'aggregate_credits,external_ids,images,keywords,content_ratings,similar,videos,translations,watch/providers,recommendations',
-                    'include_image_language' => 'en,null',
-                    'include_video_language' => 'en'
-                ]);
-
-            return $response->header('etag');
-        } catch (\Exception $e) {
-            Log::error("TMDB API error: " . $e->getMessage());
-            throw $e;
-        }
     }
 }
