@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tv_shows', function (Blueprint $table) {
-            $table->bigInteger('id')->primary();
-            $table->jsonb('data');
-            $table->text('etag');
+        Schema::create('anidb_external_links', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('anime_id')->constrained('anidb_anime')->onDelete('cascade');
+            $table->text('type');
+            $table->text('identifier');
             $table->timestamps();
 
-            $table->index('id');
+            $table->unique(['anime_id', 'type', 'identifier']);
         });
     }
 
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tv_shows');
+        Schema::dropIfExists('anidb_external_links');
     }
 };

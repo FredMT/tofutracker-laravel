@@ -1,11 +1,15 @@
 <?php
 
+use App\Http\Controllers\AnidbController;
+use App\Http\Controllers\AnimeController;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TrendingController;
 use App\Http\Controllers\TvController;
 use App\Http\Controllers\UserController;
+use App\Services\AnimeService;
 use App\Services\TmdbService;
+use App\Services\TvdbService;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
@@ -92,6 +96,8 @@ Route::get('/tv/{id}', [TvController::class, 'show'])
     ->where('id', '[0-9]+')
     ->name('tv.show');
 
-Route::get('tv/{tvShowId}/season/{seasonNumber}', [TmdbService::class, 'getSeason']);
+Route::get('/anime/{id}/related', [AnimeController::class, 'getRelatedAnime']);
+// Route::get('tv/episodes/{tvdbId}', [AnimeService::class, 'getOrganizedSeasons']);
+// Route::get('/anidb/anime/import', [AnidbController::class, 'importAnimeData']);
 
 require __DIR__ . '/auth.php';

@@ -19,6 +19,16 @@ class TvShow extends Model
         'updated_at' => 'datetime'
     ];
 
+    public function seasons()
+    {
+        return $this->hasMany(TvSeason::class, 'show_id', 'id');
+    }
+
+    public function episodes()
+    {
+        return $this->hasMany(TvEpisode::class, 'show_id', 'id');
+    }
+
     public function genres(): Attribute
     {
         return Attribute::get(function () {

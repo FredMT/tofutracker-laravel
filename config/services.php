@@ -37,5 +37,7 @@ return [
     'tmdb' => [
         'token' => env('TMDB_TOKEN'),
     ],
-
+    'tvdb' => [
+        'token' => env('TVDB_TOKEN'),
+    ],
 ];

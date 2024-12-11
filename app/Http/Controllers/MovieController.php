@@ -70,49 +70,7 @@ class MovieController extends Controller
         ]);
     }
 
-    public function details(Request $request, string $id)
-    {
-        $user = $request->user();
-        $userLibraryData = $user?->library()
-            ->where('media_id', $id)
-            ->where('media_type', 'movie')
-            ->first();
 
-        $cacheKey = "movie.{$id}";
-
-        if (Cache::has($cacheKey)) {
-            return response()->json([
-                'movie' => Cache::get($cacheKey),
-                'user_library' => $userLibraryData,
-                'type' => 'movie'
-            ]);
-        }
-
-        $existingMovie = Movie::find($id);
-        if ($existingMovie) {
-            if ($existingMovie->updated_at->lt(now()->subHours(6))) {
-                UpdateOrCreateMovieData::dispatch($id);
-            }
-
-            Cache::put($cacheKey, $existingMovie->filteredData, now()->addHours(6));
-
-            return response()->json([
-                'movie' => $existingMovie->filteredData,
-                'user_library' => $userLibraryData,
-                'type' => 'movie'
-            ]);
-        }
-
-        $this->fetchAndStoreMovie($id);
-        $movie = Movie::find($id);
-        Cache::put($cacheKey, $movie->filteredData, now()->addHours(6));
-
-        return response()->json([
-            'movie' => Cache::get($cacheKey),
-            'user_library' => $userLibraryData,
-            'type' => 'movie'
-        ]);
-    }
 
     private function fetchAndStoreMovie(string $id): void
     {

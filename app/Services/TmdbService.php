@@ -149,4 +149,23 @@ class TmdbService
                 ->all();
         })[array_rand(cache()->get('trending_backdrops', []))] ?? null;
     }
+
+    public function headTv(string $id)
+    {
+        $this->handleRateLimit();
+
+        try {
+            $response = Http::withToken(config('services.tmdb.token'))
+                ->head("{$this->baseUrl}/tv/{$id}", [
+                    'append_to_response' => 'aggregate_credits,external_ids,images,keywords,content_ratings,similar,videos,translations,watch/providers,recommendations',
+                    'include_image_language' => 'en,null',
+                    'include_video_language' => 'en'
+                ]);
+
+            return $response->header('etag');
+        } catch (\Exception $e) {
+            Log::error("TMDB API error: " . $e->getMessage());
+            throw $e;
+        }
+    }
 }

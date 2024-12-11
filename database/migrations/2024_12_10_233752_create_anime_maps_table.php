@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tv_shows', function (Blueprint $table) {
-            $table->bigInteger('id')->primary();
-            $table->jsonb('data');
-            $table->text('etag');
+        Schema::create('anime_maps', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->unsignedInteger('access_id')->unique();
+            $table->json('data');
             $table->timestamps();
-
-            $table->index('id');
         });
     }
 
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tv_shows');
+        Schema::dropIfExists('anime_maps');
     }
 };
