@@ -1,19 +1,13 @@
 <?php
 
-use App\Http\Controllers\AnidbController;
 use App\Http\Controllers\AnimeController;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\TrendingController;
 use App\Http\Controllers\TvController;
-use App\Http\Controllers\UserController;
-use App\Services\AnimeService;
-use App\Services\TmdbService;
-use App\Services\TvdbService;
+use App\Http\Middleware\CheckAnimeMapping;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', []);
@@ -82,22 +76,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('movie.library.update-rating');
 });
 
-Route::get('/movie/{id}/details', [MovieController::class, 'details'])
-    ->where('id', '[0-9]+')
-    ->name('movie.show');
+
 Route::get('/movie/{id}', [MovieController::class, 'show'])
     ->where('id', '[0-9]+')
+    ->middleware(CheckAnimeMapping::class)
     ->name('movie.show');
 
-Route::get('/tv/{id}/details', [TvController::class, 'details'])
-    ->where('id', '[0-9]+')
-    ->name('tv.details');
+
 Route::get('/tv/{id}', [TvController::class, 'show'])
     ->where('id', '[0-9]+')
+    ->middleware(CheckAnimeMapping::class)
     ->name('tv.show');
 
 Route::get('/anime/{id}/related', [AnimeController::class, 'getRelatedAnime']);
-// Route::get('tv/episodes/{tvdbId}', [AnimeService::class, 'getOrganizedSeasons']);
-// Route::get('/anidb/anime/import', [AnidbController::class, 'importAnimeData']);
 
 require __DIR__ . '/auth.php';
