@@ -61,20 +61,24 @@ class AnimeRelationshipService
                 return array_merge(['source_id' => $animeId], $result);
             }
 
-            // Check if all relations are movies and not prequels/sequels
-            $allMoviesNoSequence = true;
+            // Check if any related anime is not a movie
+            foreach ($relations as $relation) {
+                if ($relation->relatedAnime->type !== 'Movie') {
+                    return [];  // Return empty array if any related anime is not a movie
+                }
+            }
+
+            // At this point, all relations are movies, check if they're all non-prequel/sequel
+            $allNonSequential = true;
             foreach ($relations as $relation) {
                 $relationType = strtolower($relation->relation_type);
-                if (
-                    $relation->relatedAnime->type !== 'Movie' ||
-                    in_array($relationType, ['prequel', 'sequel'])
-                ) {
-                    $allMoviesNoSequence = false;
+                if (in_array($relationType, ['prequel', 'sequel'])) {
+                    $allNonSequential = false;
                     break;
                 }
             }
 
-            if ($allMoviesNoSequence) {
+            if ($allNonSequential) {
                 $result = [
                     'prequel_sequel_chains' => [[$animeId]],
                     'other_related_ids' => []
