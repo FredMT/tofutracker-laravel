@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Tv\FetchTvShowAction;
+use App\Actions\Tv\TvShowActions;
 use App\Services\TmdbService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -12,13 +12,13 @@ class TvController extends Controller
 {
     public function __construct(
         private readonly TmdbService $tmdbService,
-        private readonly FetchTvShowAction $fetchTvShowAction
+        private TvShowActions $tvShowActions
     ) {}
 
 
     public function show(Request $request, string $id): Response
     {
-        $tvShowData = $this->fetchTvShowAction->execute($id);
+        $tvShowData = $this->tvShowActions->fetchTvShow($id);
 
         $userLibraryData = $request->user()?->library()
             ->where('media_id', $id)

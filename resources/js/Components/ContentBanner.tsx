@@ -4,8 +4,15 @@ import { usePage } from "@inertiajs/react";
 import { Genre, PageProps } from "@/types";
 
 export function ContentBanner() {
-    const { type, movie, tv, anime } = usePage<PageProps>().props;
-    const content = type === "movie" ? movie : type === "tv" ? tv : anime;
+    const { type, movie, tv, anime, tvseason } = usePage<PageProps>().props;
+    const content =
+        type === "movie"
+            ? movie
+            : type === "tv"
+            ? tv
+            : type === "tvseason"
+            ? tvseason
+            : anime;
     if (!content) return null;
 
     return (

@@ -9,8 +9,16 @@ import useForm from "@/hooks/useForm";
 import { notifications } from "@mantine/notifications";
 
 export function RateContent() {
-    const { type, movie, tv, anime, user_library } = usePage<PageProps>().props;
-    const content = type === "movie" ? movie : type === "tv" ? tv : anime;
+    const { type, movie, tv, anime, tvseason, user_library } =
+        usePage<PageProps>().props;
+    const content =
+        type === "movie"
+            ? movie
+            : type === "tv"
+            ? tv
+            : type === "tvseason"
+            ? tvseason
+            : anime;
     if (!content) return null;
 
     const [opened, { open, close }] = useDisclosure(false);

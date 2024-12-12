@@ -59,7 +59,6 @@ Route::get('/dashboard', function (Request $request) {
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -89,9 +88,11 @@ Route::get('/tv/{id}', [TvController::class, 'show'])
     ->middleware(CheckAnimeMapping::class)
     ->name('tv.show');
 
-Route::get('/tv/{tvId}/season/{seasonNumber}', [TvSeasonController::class, 'show'])
+Route::get('/tv/{id}/season/{seasonNumber}', [TvSeasonController::class, 'store'])
+    ->middleware(CheckAnimeMapping::class)
     ->name('tv.season.show');
 
 Route::get('/anime/{id}/related', [AnimeController::class, 'getRelatedAnime']);
+
 
 require __DIR__ . '/auth.php';

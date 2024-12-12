@@ -2,24 +2,43 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Tv\FetchTvSeasonAction;
-use Illuminate\Http\Request;
+use App\Actions\Tv\TvShowActions;
+use App\Services\TmdbService;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class TvSeasonController extends Controller
 {
     public function __construct(
-        private readonly FetchTvSeasonAction $fetchTvSeasonAction
+        private readonly TvShowActions $tvShowActions,
+        private readonly TmdbService $tmdbService
     ) {}
 
-    public function show(Request $request, string $tvId, string $seasonNumber)
+    /**
+     * Store or retrieve a TV season with async updates
+     */
+    public function store(string $tvId, string $seasonNumber): Response
     {
-        $seasonData = $this->fetchTvSeasonAction->execute($tvId, $seasonNumber);
+        try {
+            $cacheKey = "tv_season_{$tvId}_{$seasonNumber}";
 
-        // return Inertia::render('Content', [
-        //     'season' => $seasonData,
-        //     'type' => 'season'
-        // ]);
+            $seasonData = Cache::remember($cacheKey, now()->addMinutes(15), function () use ($tvId, $seasonNumber) {
+                $tvShow = $this->tvShowActions->getShowAndQueueUpdateIfNeeded($tvId);
+                $season = $this->tvShowActions->getSeasonAndQueueUpdateIfNeeded($tvShow, $seasonNumber);
 
-        return $seasonData;
+                return $season->filteredData;
+            });
+
+            return Inertia::render('Content', [
+                'tvseason' => $seasonData,
+                'user_library' => true,
+                'type' => 'tvseason'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to retrieve TV season: ' . $e->getMessage());
+            return $this->tvShowActions->errorResponse($e);
+        }
     }
 }

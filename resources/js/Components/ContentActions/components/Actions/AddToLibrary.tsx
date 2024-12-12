@@ -5,8 +5,15 @@ import { notifications } from "@mantine/notifications";
 import { Check, CircleAlertIcon, PlusCircle } from "lucide-react";
 
 function AddToLibrary() {
-    const { type, movie, tv, anime } = usePage<PageProps>().props;
-    const content = type === "movie" ? movie : type === "tv" ? tv : anime;
+    const { type, movie, tv, anime, tvseason } = usePage<PageProps>().props;
+    const content =
+        type === "movie"
+            ? movie
+            : type === "tv"
+            ? tv
+            : type === "tvseason"
+            ? tvseason
+            : anime;
     if (!content) return null;
 
     const { post, processing } = useForm({

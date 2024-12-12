@@ -6,8 +6,15 @@ import { notifications } from "@mantine/notifications";
 import { Check, CircleAlertIcon, MinusCircle } from "lucide-react";
 
 function RemoveFromLibrary() {
-    const { type, movie, tv, anime } = usePage<PageProps>().props;
-    const content = type === "movie" ? movie : type === "tv" ? tv : anime;
+    const { type, movie, tv, anime, tvseason } = usePage<PageProps>().props;
+    const content =
+        type === "movie"
+            ? movie
+            : type === "tv"
+            ? tv
+            : type === "tvseason"
+            ? tvseason
+            : anime;
     if (!content) return null;
     const stack = useModalsStack(["confirm-delete"]);
 

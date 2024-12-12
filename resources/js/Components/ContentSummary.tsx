@@ -4,11 +4,19 @@ import { usePage } from "@inertiajs/react";
 import { PageProps } from "@/types";
 
 export function ContentSummary() {
-    const { type, movie, tv, anime } = usePage<PageProps>().props;
-    const content = type === "movie" ? movie : type === "tv" ? tv : anime;
+    const { type, movie, tv, anime, tvseason } = usePage<PageProps>().props;
+    const content =
+        type === "movie"
+            ? movie
+            : type === "tv"
+            ? tv
+            : type === "tvseason"
+            ? tvseason
+            : anime;
     if (!content) return null;
 
-    const date = content.release_date || content.first_air_date;
+    const date =
+        content.release_date || content.first_air_date || content.air_date;
 
     return (
         <Group wrap="wrap" gap={36} preventGrowOverflow>

@@ -2,7 +2,7 @@ import {
     Card,
     Container,
     createTheme,
-    Modal,
+    DEFAULT_THEME,
     rem,
     virtualColor,
 } from "@mantine/core";
@@ -24,6 +24,11 @@ const theme = createTheme({
         md: "48em",
         lg: "64em",
         xl: "80em",
+    },
+    fontFamily: "Inter, sans-serif",
+    headings: {
+        // Use default theme if you want to provide default Mantine fonts as a fallback
+        fontFamily: `Inter, sans-serif`,
     },
     colors: {
         // zinc: zincColors,

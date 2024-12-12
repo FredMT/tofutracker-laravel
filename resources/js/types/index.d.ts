@@ -34,7 +34,8 @@ export type PageProps<
         | { type: "movie"; movie: Movie }
         | { type: "tv"; tv: TvShow }
         | { type: "anime"; anime: AnimeShow }
-    );
+        | { type: "tvseason"; anime: TvSeason }
+    ); // TODO: Add season type
 
 interface BaseContent {
     id: number;
@@ -194,4 +195,27 @@ interface Person extends BaseCastCrew {
 interface ContentSummaryProps {
     containerWidth?: number;
     slideSize?: string;
+}
+
+interface Episode {
+    id: number;
+    name: string;
+    overview: string;
+    episode_number: number;
+    air_date: string;
+    still_path: string;
+    vote_average: number;
+    runtime: number;
+}
+
+interface TvSeason {
+    id: number;
+    name: string;
+    overview: string;
+    season_number: number;
+    air_date: string;
+    poster_path: string;
+    vote_average: number;
+    episodes: Episode[];
+    credits: Credits;
 }

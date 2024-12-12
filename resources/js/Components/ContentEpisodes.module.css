@@ -1,0 +1,43 @@
+.imageWrapper {
+    position: relative;
+    width: 100%;
+}
+
+.imageOverlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.8));
+    pointer-events: none;
+}
+
+.overlayContent {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+}
+
+.airDate {
+    background: rgb(119, 34, 187);
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-flex;
+    width: fit-content;
+}
+
+.actionsPaper {
+    background-color: light-dark(
+        var(--mantine-color-dark-light),
+        var(--mantine-color-gray-light)
+    );
+}
+
+@media (min-width: 900) {
+    .actionsPaper {
+        min-width: 34px;
+        max-width: 34px;
+    }
+}

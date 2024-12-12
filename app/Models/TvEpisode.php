@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 class TvEpisode extends Model
 {
     protected $table = 'tv_episodes';
-    protected $fillable = ['id', 'show_id', 'season_id', 'data', 'etag'];
+    protected $fillable = ['id', 'show_id', 'season_id', 'data'];
 
     public $incrementing = false;
 

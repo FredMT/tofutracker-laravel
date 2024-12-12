@@ -8,7 +8,6 @@ import { createInertiaApp } from "@inertiajs/react";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { createRoot, hydrateRoot } from "react-dom/client";
 import { MantineProvider } from "@mantine/core";
-import { shadcnCssVariableResolver } from "@/Components/cssVariableResolver";
 import theme from "@/Components/theme";
 import { Notifications } from "@mantine/notifications";
 
@@ -28,11 +27,7 @@ createInertiaApp({
         }
 
         createRoot(el).render(
-            <MantineProvider
-                theme={theme}
-                defaultColorScheme="dark"
-                cssVariablesResolver={shadcnCssVariableResolver}
-            >
+            <MantineProvider theme={theme} defaultColorScheme="dark">
                 <Notifications />
                 <App {...props} />
             </MantineProvider>

@@ -2,6 +2,7 @@ import { ContentActions } from "@/Components/ContentActions/ContentActions";
 import { ContentBanner } from "@/Components/ContentBanner";
 import { ContentCredits } from "@/Components/ContentCredits";
 import ContentDetails from "@/Components/ContentDetails";
+import ContentEpisodes from "@/Components/ContentEpisodes";
 import { ContentSummary } from "@/Components/ContentSummary";
 import PosterImage from "@/Components/PosterImage";
 import ResponsiveContainer from "@/Components/ResponsiveContainer";
@@ -25,7 +26,7 @@ import { useViewportSize } from "@mantine/hooks";
 type Props = PageProps;
 
 function getContent(props: Props) {
-    const { type, movie, tv, anime } = props;
+    const { type, movie, tv, anime, tvseason } = props;
     switch (type) {
         case "movie":
             return movie;
@@ -33,6 +34,8 @@ function getContent(props: Props) {
             return tv;
         case "anime":
             return anime;
+        case "tvseason":
+            return tvseason;
         default:
             return null;
     }
@@ -69,11 +72,15 @@ export default function Content(props: Props) {
                             </Box>
                             <ContentActions />
                             <Box hiddenFrom="sm">
-                                <ContentDetails />
+                                {props.type !== "tvseason" && (
+                                    <>
+                                        <ContentDetails />
+                                        <Divider my={16} />
+                                    </>
+                                )}
 
-                                <Divider my={16} />
                                 <Stack mt={16}>
-                                    <Title order={4}>Overview</Title>
+                                    <Title order={3}>Overview</Title>
                                     <Spoiler
                                         maxHeight={120}
                                         showLabel="Show more"
@@ -85,13 +92,19 @@ export default function Content(props: Props) {
                                         </Text>
                                     </Spoiler>
                                 </Stack>
-                                <Divider my={16} />
+                                <Space h={24} />
                                 <ContentCredits containerWidth={width * 0.95} />
+                                <ContentEpisodes />
+
                                 <Divider my={16} />
-                                {content.type === "tv" && (
-                                    <Seasons containerWidth={width * 0.67} />
+                                {props.type === "tv" && (
+                                    <>
+                                        <Seasons
+                                            containerWidth={width * 0.95}
+                                        />
+                                        <Divider my={16} />
+                                    </>
                                 )}
-                                <Divider my={16} />
                                 <SimilarContent containerWidth={width * 0.95} />
                             </Box>
                         </Stack>
@@ -108,10 +121,14 @@ export default function Content(props: Props) {
 
                                 <Divider my={8} />
                             </Stack>
-                            <ContentDetails />
-                            <Divider my={16} />
+                            {props.type !== "tvseason" && (
+                                <>
+                                    <ContentDetails />
+                                    <Divider my={16} />
+                                </>
+                            )}
                             <Stack mt={16}>
-                                <Title order={4}>Overview</Title>
+                                <Title order={3}>Overview</Title>
                                 <Spoiler
                                     maxHeight={120}
                                     showLabel="Show more"
@@ -123,12 +140,19 @@ export default function Content(props: Props) {
                                     </Text>
                                 </Spoiler>
                             </Stack>
-                            <Space h={16} />
+                            <Space h={24} />
                             <ContentCredits containerWidth={width * 0.67} />
+                            <ContentEpisodes />
                             <Divider my={16} />
-                            <Seasons containerWidth={width * 0.67} />
-                            <Divider my={16} />
-                            <SimilarContent containerWidth={width * 0.67} />
+                            {props.type === "tv" && (
+                                <>
+                                    <Seasons containerWidth={width * 0.67} />
+                                    <Divider my={16} />
+                                </>
+                            )}
+                            {props.type !== "tvseason" && (
+                                <SimilarContent containerWidth={width * 0.67} />
+                            )}
                         </Box>
                     }
                 />

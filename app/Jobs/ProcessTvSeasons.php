@@ -3,7 +3,6 @@
 namespace App\Jobs;
 
 use App\Models\TvSeason;
-use App\Models\TvEpisode;
 use App\Services\TmdbService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -52,7 +51,6 @@ class ProcessTvSeasons implements ShouldQueue
                             'show_id' => $this->showId,
                             'season_id' => $existingSeason->id,
                             'data' => json_encode($episodeData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
-                            'etag' => $response['etag'],
                         ];
                     }, $seasonData['episodes'] ?? []);
 
@@ -68,6 +66,7 @@ class ProcessTvSeasons implements ShouldQueue
                 $season = TvSeason::create([
                     'id' => $seasonData['id'],
                     'show_id' => $this->showId,
+                    'season_number' => $this->seasonNumber,
                     'data' => collect($seasonData)->except('episodes')->all(),
                     'etag' => $response['etag']
                 ]);
@@ -79,7 +78,6 @@ class ProcessTvSeasons implements ShouldQueue
                         'show_id' => $this->showId,
                         'season_id' => $season->id,
                         'data' => json_encode($episodeData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
-                        'etag' => $response['etag'],
                     ];
                 }, $seasonData['episodes'] ?? []);
 

@@ -174,7 +174,7 @@ class TvShow extends Model
         });
     }
 
-    private function getUSCertification(): ?string
+    public function getUSCertification(): ?string
     {
         $contentRatings = $this->data['content_ratings']['results'] ?? [];
 
@@ -259,7 +259,20 @@ class TvShow extends Model
                 ],
                 'certification' => $this->getUSCertification(),
                 'similar' => $this->getSimilarShows(),
-                'seasons' => $this->getSeasons(),
+                'seasons' => $this->seasons->map(function ($season) {
+                    return [
+                        'id' => $season->data['id'],
+                        'name' => $season->data['name'],
+                        'show_id' => $this->id,
+                        'season_number' => $season->data['season_number'],
+                        'air_date' => isset($season->data['air_date'])
+                            ? Carbon::parse($season->data['air_date'])->format('F j, Y')
+                            : null,
+                        'poster_path' => $season->data['poster_path'] ?: null,
+                        'vote_average' => $season->data['vote_average'] ?: null,
+                        'episode_count' => $season->episodes->count(),
+                    ];
+                })->sortBy('season_number')->values()->all(),
                 'network' => $this->getNetwork(),
                 'episode_runtime' => collect(
                     $this->data['episode_run_time']
@@ -313,27 +326,6 @@ class TvShow extends Model
         return $details;
     }
 
-    private function getSeasons(): array
-    {
-        return collect($this->data['seasons'] ?? [])
-            ->map(function ($season) {
-                return [
-                    'id' => $season['id'],
-                    'show_id' => $this->id,
-                    'name' => $season['name'],
-                    'overview' => $season['overview'],
-                    'season_number' => $season['season_number'],
-                    'episode_count' => $season['episode_count'],
-                    'air_date' => isset($season['air_date'])
-                        ? Carbon::parse($season['air_date'])->format('F j, Y')
-                        : null,
-                    'poster_path' => $season['poster_path'],
-                    'vote_average' => $season['vote_average'] ?? null,
-                ];
-            })
-            ->values()
-            ->all();
-    }
 
     private function getNetwork(): ?array
     {

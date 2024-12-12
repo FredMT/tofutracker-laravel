@@ -15,9 +15,17 @@ export function ContentCredits({
     containerWidth,
     slideSize = "0%",
 }: ContentCreditsProps) {
-    const { type, movie, tv, anime } = usePage<PageProps>().props;
-    const content = type === "movie" ? movie : type === "tv" ? tv : anime;
+    const { type, movie, tv, anime, tvseason } = usePage<PageProps>().props;
+    const content =
+        type === "movie"
+            ? movie
+            : type === "tv"
+            ? tv
+            : type === "tvseason"
+            ? tvseason
+            : anime;
     if (!content) return null;
+    if (type === "tvseason") return null;
 
     const [activeTab, setActiveTab] = useState<"cast" | "crew">("cast");
     const people =
