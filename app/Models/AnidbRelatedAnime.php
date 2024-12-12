@@ -24,4 +24,9 @@ class AnidbRelatedAnime extends Model
     {
         return $this->belongsTo(AnidbAnime::class, 'anime_id');
     }
+
+    public function relatedAnime(): BelongsTo
+    {
+        return $this->belongsTo(AnidbAnime::class, 'related_anime_id');
+    }
 }
