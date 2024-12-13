@@ -1,11 +1,12 @@
 <?php
 
-use App\Http\Controllers\AnimeController;
+use App\Http\Controllers\AnimeMappingController;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TvController;
 use App\Http\Controllers\TvSeasonController;
 use App\Http\Middleware\CheckAnimeMapping;
+use App\Services\TvdbService;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
@@ -92,7 +93,6 @@ Route::get('/tv/{id}/season/{seasonNumber}', [TvSeasonController::class, 'store'
     ->middleware(CheckAnimeMapping::class)
     ->name('tv.season.show');
 
-Route::get('/anime/{id}/related', [AnimeController::class, 'getRelatedAnime']);
-
+Route::get('/map-anime-episodes', [AnimeMappingController::class, 'mapAnimeEpisodes']);
 
 require __DIR__ . '/auth.php';
