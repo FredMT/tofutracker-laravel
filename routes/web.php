@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnimeController;
 use App\Http\Controllers\AnimeMappingController;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\ProfileController;
@@ -94,5 +95,6 @@ Route::get('/tv/{id}/season/{seasonNumber}', [TvSeasonController::class, 'store'
     ->name('tv.season.show');
 
 Route::get('/map-anime-episodes', [AnimeMappingController::class, 'mapAnimeEpisodes']);
+Route::get('/anime/{id}/tmdb', [AnimeController::class, 'getMostCommonTmdbId']);
 
 require __DIR__ . '/auth.php';

@@ -9,7 +9,7 @@ class AnimeMap extends Model
 {
     use HasUuids;
 
-    protected $fillable = ['access_id', 'data'];
+    protected $fillable = ['access_id', 'data', 'most_common_tmdb_id'];
 
     protected $casts = [
         'data' => 'array'

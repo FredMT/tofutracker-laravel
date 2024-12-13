@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AnimeMappingExternalId extends Model
 {
@@ -19,4 +20,10 @@ class AnimeMappingExternalId extends Model
         'thetvdb_id' => 'integer',
         'themoviedb_id' => 'integer',
     ];
+
+
+    public function anidbAnime(): BelongsTo
+    {
+        return $this->belongsTo(AnidbAnime::class, 'anidb_id');
+    }
 }
