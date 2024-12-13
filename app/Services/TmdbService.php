@@ -42,6 +42,26 @@ class TmdbService
         }
     }
 
+    public function getMovieAnime(string $id): array
+    {
+        try {
+            $response = Http::withToken(config('services.tmdb.token'))
+                ->get("{$this->baseUrl}/movie/{$id}", [
+                    'append_to_response' => 'images,recommendations,videos',
+                    'include_image_language' => 'en,null',
+                    'include_video_language' => 'en'
+                ]);
+
+            return [
+                'data' => $response->json(),
+                'etag' => $response->header('etag')
+            ];
+        } catch (\Exception $e) {
+            Log::error("TMDB API error: " . $e->getMessage());
+            throw $e;
+        }
+    }
+
     public function getTv(string $id)
     {
 
@@ -49,6 +69,26 @@ class TmdbService
             $response = Http::withToken(config('services.tmdb.token'))
                 ->get("{$this->baseUrl}/tv/{$id}", [
                     'append_to_response' => 'aggregate_credits,external_ids,images,keywords,content_ratings,similar,videos,translations,watch/providers,recommendations',
+                    'include_image_language' => 'en,null',
+                    'include_video_language' => 'en'
+                ]);
+
+            return [
+                'data' => $response->json(),
+                'etag' => $response->header('etag')
+            ];
+        } catch (\Exception $e) {
+            Log::error("TMDB API error: " . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function getTvAnime(string $id): array
+    {
+        try {
+            $response = Http::withToken(config('services.tmdb.token'))
+                ->get("{$this->baseUrl}/tv/{$id}", [
+                    'append_to_response' => 'images,recommendations,videos',
                     'include_image_language' => 'en,null',
                     'include_video_language' => 'en'
                 ]);

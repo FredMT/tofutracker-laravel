@@ -7,6 +7,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TvController;
 use App\Http\Controllers\TvSeasonController;
 use App\Http\Middleware\CheckAnimeMapping;
+use App\Services\TmdbService;
 use App\Services\TvdbService;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -95,6 +96,6 @@ Route::get('/tv/{id}/season/{seasonNumber}', [TvSeasonController::class, 'store'
     ->name('tv.season.show');
 
 Route::get('/map-anime-episodes', [AnimeMappingController::class, 'mapAnimeEpisodes']);
-Route::get('/anime/{id}/tmdb', [AnimeController::class, 'getMostCommonTmdbId']);
+Route::get('/anime/{id}/tmdb', [TmdbService::class, 'getTvAnime']);
 
 require __DIR__ . '/auth.php';
