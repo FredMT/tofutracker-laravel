@@ -1,22 +1,15 @@
+import { useContent } from "@/hooks/useContent";
 import { PageProps } from "@/types";
 import { WatchStatus } from "@/types/enums";
 import { useForm, usePage } from "@inertiajs/react";
-import { Divider, Select } from "@mantine/core";
+import { Select } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { Check, CircleAlertIcon } from "lucide-react";
 import { useEffect } from "react";
 
 export function WatchStatusSelect() {
-    const { type, movie, tv, anime, tvseason, user_library } =
-        usePage<PageProps>().props;
-    const content =
-        type === "movie"
-            ? movie
-            : type === "tv"
-            ? tv
-            : type === "tvseason"
-            ? tvseason
-            : anime;
+    const { user_library } = usePage<PageProps>().props;
+    const { content } = useContent();
     if (!content) return null;
 
     const statusOptions = Object.values(WatchStatus).map((status) => ({

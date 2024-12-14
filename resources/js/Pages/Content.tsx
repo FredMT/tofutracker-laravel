@@ -9,6 +9,7 @@ import ResponsiveContainer from "@/Components/ResponsiveContainer";
 import SimilarContent from "@/Components/SimilarContent";
 import ThemeButton from "@/Components/ThemeButton";
 import Seasons from "@/Components/TV/Seasons/Seasons";
+import { useContent } from "@/hooks/useContent";
 import ContentLayout from "@/Layouts/ContentLayout";
 import { PageProps } from "@/types";
 import { Head } from "@inertiajs/react";
@@ -23,25 +24,9 @@ import {
 } from "@mantine/core";
 import { useViewportSize } from "@mantine/hooks";
 
-function getContent(props: PageProps) {
-    const { type, movie, tv, anime, tvseason } = props;
-    switch (type) {
-        case "movie":
-            return movie;
-        case "tv":
-            return tv;
-        case "anime":
-            return anime;
-        case "tvseason":
-            return tvseason;
-        default:
-            return null;
-    }
-}
-
 export default function Content(props: PageProps) {
     const { width } = useViewportSize();
-    const content = getContent(props);
+    const { content } = useContent();
     if (!content) return null;
     return (
         <>

@@ -1,20 +1,11 @@
-import { FlashMessage, PageProps } from "@/types";
-import { Page } from "@inertiajs/core";
-import { useForm, usePage } from "@inertiajs/react";
+import { useContent } from "@/hooks/useContent";
+import { useForm } from "@inertiajs/react";
 import { Button, Group, Modal, useModalsStack } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { Check, CircleAlertIcon, MinusCircle } from "lucide-react";
 
 function RemoveFromLibrary() {
-    const { type, movie, tv, anime, tvseason } = usePage<PageProps>().props;
-    const content =
-        type === "movie"
-            ? movie
-            : type === "tv"
-            ? tv
-            : type === "tvseason"
-            ? tvseason
-            : anime;
+    const { content, type } = useContent();
     if (!content) return null;
     const stack = useModalsStack(["confirm-delete"]);
 
@@ -23,7 +14,7 @@ function RemoveFromLibrary() {
     });
 
     function handleRemove() {
-        remove(route(`${type}.library.remove`, content.id), {
+        remove(route(`${type}.library.remove`, content?.id), {
             preserveScroll: true,
             onSuccess: (res: any) => {
                 stack.closeAll();
@@ -31,7 +22,7 @@ function RemoveFromLibrary() {
                     notifications.show({
                         color: "teal",
                         title: "Success",
-                        message: `${content.title} deleted from library`,
+                        message: `${content?.title} deleted from library`,
                         icon: <Check size={18} />,
                         autoClose: 3000,
                     });

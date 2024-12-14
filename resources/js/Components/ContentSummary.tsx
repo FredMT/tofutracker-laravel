@@ -1,22 +1,18 @@
-import { Badge, Group, Text } from "@mantine/core";
+import { useContent } from "@/hooks/useContent";
+import { TvSeason } from "@/types";
 import { getLanguageName } from "@/utils/formatter";
-import { usePage } from "@inertiajs/react";
-import { PageProps } from "@/types";
+import { Badge, Group, Text } from "@mantine/core";
 
 export function ContentSummary() {
-    const { type, movie, tv, anime, tvseason } = usePage<PageProps>().props;
-    const content =
-        type === "movie"
-            ? movie
-            : type === "tv"
-            ? tv
-            : type === "tvseason"
-            ? tvseason
-            : anime;
+    const { content, type } = useContent();
     if (!content) return null;
 
     const date =
-        content.release_date || content.first_air_date || content.air_date;
+        type === "movie"
+            ? content.release_date
+            : type === "tv"
+            ? content.first_air_date
+            : (content as TvSeason).air_date;
 
     return (
         <Group wrap="wrap" gap={36} preventGrowOverflow>

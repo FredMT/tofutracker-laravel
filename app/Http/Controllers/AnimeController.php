@@ -30,10 +30,13 @@ class AnimeController extends Controller
             $tmdbData = $this->getTmdbData->execute($accessId);
             $anidbData = $this->getAnidbData->execute($animeMap);
 
+            $collectionName = $animeMap->collection_name ?? json_decode($tmdbData->getContent(), true)['data']['title'];
+
             return response()->json([
                 'tmdbData' => json_decode($tmdbData->getContent(), true),
                 'anidbData' => $anidbData,
                 'user_library' => null,
+                'collection_name' => $collectionName,
                 'type' => $this->getAnimeType->execute($accessId)
             ]);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {

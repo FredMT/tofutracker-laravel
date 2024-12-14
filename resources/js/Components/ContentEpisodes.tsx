@@ -1,5 +1,5 @@
-import { Episode, PageProps, TvSeason } from "@/types";
-import { usePage } from "@inertiajs/react";
+import { useContent } from "@/hooks/useContent";
+import { Episode, TvSeason } from "@/types";
 import {
     Divider,
     Flex,
@@ -11,14 +11,14 @@ import {
     Text,
     Title,
 } from "@mantine/core";
-import styles from "./ContentEpisodes.module.css";
 import { useMediaQuery } from "@mantine/hooks";
 import { BookmarkPlus, Heart } from "lucide-react";
+import styles from "./ContentEpisodes.module.css";
 
 function ContentEpisodes() {
-    const { type, tvseason } = usePage<PageProps>().props;
-    if (type !== "tvseason" || !tvseason) return null;
-    const season = tvseason as TvSeason;
+    const { content, type } = useContent();
+    if (!content || type !== "tvseason") return null;
+    const season = content as TvSeason;
     return (
         <Stack mb={24}>
             <Divider my={16} />

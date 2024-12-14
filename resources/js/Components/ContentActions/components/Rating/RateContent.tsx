@@ -1,26 +1,18 @@
-import { Button } from "@mantine/core";
-import { Check, CircleAlertIcon, Star } from "lucide-react";
-import { useDisclosure, useMediaQuery } from "@mantine/hooks";
-import { usePage } from "@inertiajs/react";
-import { PageProps } from "@/types";
-import { MobileRating } from "./MobileRating";
-import { DesktopRating } from "./DesktopRating";
+import { useContent } from "@/hooks/useContent";
 import useForm from "@/hooks/useForm";
+import { PageProps } from "@/types";
+import { usePage } from "@inertiajs/react";
+import { Button } from "@mantine/core";
+import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
+import { Check, CircleAlertIcon, Star } from "lucide-react";
+import { DesktopRating } from "./DesktopRating";
+import { MobileRating } from "./MobileRating";
 
 export function RateContent() {
-    const { type, movie, tv, anime, tvseason, user_library } =
-        usePage<PageProps>().props;
-    const content =
-        type === "movie"
-            ? movie
-            : type === "tv"
-            ? tv
-            : type === "tvseason"
-            ? tvseason
-            : anime;
+    const { user_library } = usePage<PageProps>().props;
+    const { content, type } = useContent();
     if (!content) return null;
-
     const [opened, { open, close }] = useDisclosure(false);
     const isMobile = useMediaQuery("(max-width: 50em)");
 

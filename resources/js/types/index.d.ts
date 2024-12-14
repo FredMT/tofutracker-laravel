@@ -33,8 +33,7 @@ export type PageProps<
 } & (
         | { type: "movie"; movie: Movie }
         | { type: "tv"; tv: TvShow }
-        | { type: "tvseason"; anime: TvSeason }
-        | { type: "anime"; anime: AnimeShow }
+        | { type: "tvseason"; tvseason: TvSeason }
     ); // TODO: Add season type
 
 interface BaseContent {
@@ -58,6 +57,12 @@ interface BaseContent {
     runtime?: string;
     release_date?: string;
     first_air_date?: string;
+}
+
+interface TvSeason extends BaseContent {
+    season_number: number;
+    air_date: string;
+    episodes: Episode[];
 }
 
 export interface Movie extends BaseContent {
@@ -202,16 +207,4 @@ interface Episode {
     still_path: string;
     vote_average: number;
     runtime: number;
-}
-
-interface TvSeason {
-    id: number;
-    name: string;
-    overview: string;
-    season_number: number;
-    air_date: string;
-    poster_path: string;
-    vote_average: number;
-    episodes: Episode[];
-    credits: Credits;
 }

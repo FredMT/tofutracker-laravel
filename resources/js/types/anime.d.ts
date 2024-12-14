@@ -1,6 +1,8 @@
 export interface Main {
     tmdbData: TmdbData;
     anidbData: AnidbData;
+    collection_name: string;
+    type: "animemovie" | "animetv";
 }
 
 export interface AnidbData {

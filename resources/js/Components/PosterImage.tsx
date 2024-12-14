@@ -1,18 +1,9 @@
+import { useContent } from "@/hooks/useContent";
 import { Image } from "@mantine/core";
 import classes from "./PosterImage.module.css";
-import { PageProps } from "@/types";
-import { usePage } from "@inertiajs/react";
 
 function PosterImage() {
-    const { type, movie, tv, anime, tvseason } = usePage<PageProps>().props;
-    const content =
-        type === "movie"
-            ? movie
-            : type === "tv"
-            ? tv
-            : type === "tvseason"
-            ? tvseason
-            : anime;
+    const { content } = useContent();
     if (!content) return null;
     return (
         <div className={classes.posterWrapper}>

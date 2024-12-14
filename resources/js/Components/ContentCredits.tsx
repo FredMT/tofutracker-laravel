@@ -5,6 +5,7 @@ import PersonCard from "./PersonCard";
 import classes from "./ContentCredits.module.css";
 import { PageProps, Person } from "@/types";
 import { usePage } from "@inertiajs/react";
+import { useContent } from "@/hooks/useContent";
 
 interface ContentCreditsProps {
     containerWidth: number;
@@ -15,15 +16,7 @@ export function ContentCredits({
     containerWidth,
     slideSize = "0%",
 }: ContentCreditsProps) {
-    const { type, movie, tv, anime, tvseason } = usePage<PageProps>().props;
-    const content =
-        type === "movie"
-            ? movie
-            : type === "tv"
-            ? tv
-            : type === "tvseason"
-            ? tvseason
-            : anime;
+    const { content, type } = useContent();
     if (!content) return null;
     if (type === "tvseason") return null;
 

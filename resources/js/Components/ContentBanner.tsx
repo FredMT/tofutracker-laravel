@@ -1,18 +1,10 @@
+import { useContent } from "@/hooks/useContent";
+import { Genre } from "@/types";
 import { Badge, Flex, Group, Image, Paper } from "@mantine/core";
 import classes from "./ContentBanner.module.css";
-import { usePage } from "@inertiajs/react";
-import { Genre, PageProps } from "@/types";
 
 export function ContentBanner() {
-    const { type, movie, tv, anime, tvseason } = usePage<PageProps>().props;
-    const content =
-        type === "movie"
-            ? movie
-            : type === "tv"
-            ? tv
-            : type === "tvseason"
-            ? tvseason
-            : anime;
+    const { content } = useContent();
     if (!content) return null;
 
     return (

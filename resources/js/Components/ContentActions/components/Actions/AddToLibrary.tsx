@@ -1,19 +1,11 @@
-import { PageProps } from "@/types";
-import { useForm, usePage } from "@inertiajs/react";
+import { useContent } from "@/hooks/useContent";
+import { useForm } from "@inertiajs/react";
 import { Button } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { Check, CircleAlertIcon, PlusCircle } from "lucide-react";
 
 function AddToLibrary() {
-    const { type, movie, tv, anime, tvseason } = usePage<PageProps>().props;
-    const content =
-        type === "movie"
-            ? movie
-            : type === "tv"
-            ? tv
-            : type === "tvseason"
-            ? tvseason
-            : anime;
+    const { content, type } = useContent();
     if (!content) return null;
 
     const { post, processing } = useForm({

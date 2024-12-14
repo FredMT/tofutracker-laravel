@@ -1,9 +1,9 @@
+import { useContent } from "@/hooks/useContent";
+import { Similar } from "@/types";
 import { Carousel } from "@mantine/carousel";
 import { Container, Stack, Title } from "@mantine/core";
-import SimilarContentCard from "./SimilarContentCard";
 import classes from "./SimilarContent.module.css";
-import { PageProps, Similar } from "@/types";
-import { usePage } from "@inertiajs/react";
+import SimilarContentCard from "./SimilarContentCard";
 
 interface SimilarContentProps {
     containerWidth: number;
@@ -14,8 +14,7 @@ export default function SimilarContent({
     containerWidth,
     slideSize = "0%",
 }: SimilarContentProps) {
-    const { type, movie, tv, anime } = usePage<PageProps>().props;
-    const content = type === "movie" ? movie : type === "tv" ? tv : anime;
+    const { content } = useContent();
     if (!content) return null;
 
     return (
