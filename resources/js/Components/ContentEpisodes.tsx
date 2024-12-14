@@ -44,7 +44,7 @@ function EpisodeCard({ episode }: { episode: Episode }) {
                     w={380}
                     h={220}
                 />
-                <Paper
+                {/* <Paper
                     shadow="xl"
                     className={styles.actionsPaper}
                     radius={0}
@@ -59,7 +59,7 @@ function EpisodeCard({ episode }: { episode: Episode }) {
                         <Heart />
                         <BookmarkPlus />
                     </Group>
-                </Paper>
+                </Paper> */}
                 <Stack ml={16} py={4}>
                     <Stack gap={0}>
                         <Title
@@ -111,7 +111,7 @@ function EpisodeCard({ episode }: { episode: Episode }) {
                     </Stack>
                 </div>
             </div>
-            <Paper
+            {/* <Paper
                 shadow="xl"
                 p="sm"
                 className={styles.actionsPaper}
@@ -121,7 +121,7 @@ function EpisodeCard({ episode }: { episode: Episode }) {
                     <Heart />
                     <BookmarkPlus />
                 </Group>
-            </Paper>
+            </Paper> */}
         </Stack>
     );
 }

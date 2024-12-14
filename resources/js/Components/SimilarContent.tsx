@@ -14,8 +14,8 @@ export default function SimilarContent({
     containerWidth,
     slideSize = "0%",
 }: SimilarContentProps) {
-    const { content } = useContent();
-    if (!content) return null;
+    const { content, type } = useContent();
+    if (!content || type === "tvseason") return null;
 
     return (
         <Stack>

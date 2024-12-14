@@ -26,7 +26,7 @@ import { useViewportSize } from "@mantine/hooks";
 
 export default function Content(props: PageProps) {
     const { width } = useViewportSize();
-    const { content } = useContent();
+    const { content, type } = useContent();
     if (!content) return null;
     return (
         <>
@@ -53,7 +53,7 @@ export default function Content(props: PageProps) {
                             </Box>
                             <ContentActions />
                             <Box hiddenFrom="sm">
-                                {props.type !== "tvseason" && (
+                                {type !== "tvseason" && (
                                     <>
                                         <ContentDetails />
                                         <Divider my={16} />
@@ -78,7 +78,7 @@ export default function Content(props: PageProps) {
                                 <ContentEpisodes />
 
                                 <Divider my={16} />
-                                {props.type === "tv" && (
+                                {type === "tv" && (
                                     <>
                                         <Seasons
                                             containerWidth={width * 0.95}
@@ -102,7 +102,7 @@ export default function Content(props: PageProps) {
 
                                 <Divider my={8} />
                             </Stack>
-                            {props.type !== "tvseason" && (
+                            {type !== "tvseason" && (
                                 <>
                                     <ContentDetails />
                                     <Divider my={16} />
@@ -125,13 +125,13 @@ export default function Content(props: PageProps) {
                             <ContentCredits containerWidth={width * 0.67} />
                             <ContentEpisodes />
                             <Divider my={16} />
-                            {props.type === "tv" && (
+                            {type === "tv" && (
                                 <>
                                     <Seasons containerWidth={width * 0.67} />
                                     <Divider my={16} />
                                 </>
                             )}
-                            {props.type !== "tvseason" && (
+                            {type !== "tvseason" && (
                                 <SimilarContent containerWidth={width * 0.67} />
                             )}
                         </Box>
