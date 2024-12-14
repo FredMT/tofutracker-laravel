@@ -17,7 +17,7 @@ class GetMostCommonTmdbId
             now()->addMonth(),
             function () use ($accessId) {
                 // Try to fetch the AnimeMap record with the most_common_tmdb_id
-                $animeMap = AnimeMap::where('access_id', $accessId)->first();
+                $animeMap = AnimeMap::where('id', $accessId)->first();
 
                 if ($animeMap && $animeMap->most_common_tmdb_id) {
                     return [

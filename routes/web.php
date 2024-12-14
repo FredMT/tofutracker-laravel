@@ -96,6 +96,6 @@ Route::get('/tv/{id}/season/{seasonNumber}', [TvSeasonController::class, 'store'
     ->middleware(CheckAnimeMapping::class)
     ->name('tv.season.show');
 
-Route::get('/anime/{access_id}', [AnimeController::class, 'show']);
+Route::get('/anime/{id}', [AnimeController::class, 'show']);
 
 require __DIR__ . '/auth.php';

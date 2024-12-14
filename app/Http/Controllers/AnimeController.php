@@ -26,7 +26,7 @@ class AnimeController extends Controller
     public function show($accessId): JsonResponse
     {
         try {
-            $animeMap = AnimeMap::where('access_id', $accessId)->firstOrFail();
+            $animeMap = AnimeMap::where('id', $accessId)->firstOrFail();
             $tmdbData = $this->getTmdbData->execute($accessId);
             $anidbData = $this->getAnidbData->execute($animeMap);
 

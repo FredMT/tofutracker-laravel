@@ -153,12 +153,12 @@ class AnimeRelationshipService
 
         if (empty($allResults)) {
             if ($depth === 0) {  // Only store if we're at the root level
-                $lastMap = AnimeMap::orderBy('access_id', 'desc')->first();
-                $nextAccessId = $lastMap ? $lastMap->access_id + 1 : 100;
+                $lastMap = AnimeMap::orderBy('id', 'desc')->first();
+                $nextAccessId = $lastMap ? $lastMap->id + 1 : 100;
 
-                Log::info("Creating new map with access_id: " . $nextAccessId);
+                Log::info("Creating new map with id: " . $nextAccessId);
                 AnimeMap::create([
-                    'access_id' => $nextAccessId,
+                    'id' => $nextAccessId,
                     'data' => $currentResult
                 ]);
             }
@@ -170,12 +170,12 @@ class AnimeRelationshipService
 
         // Only store at depth 0 and only store once
         if ($depth === 0 && !empty($bestResult)) {
-            $lastMap = AnimeMap::orderBy('access_id', 'desc')->first();
-            $nextAccessId = $lastMap ? $lastMap->access_id + 1 : 100;
+            $lastMap = AnimeMap::orderBy('id', 'desc')->first();
+            $nextAccessId = $lastMap ? $lastMap->id + 1 : 100;
 
-            Log::info("Creating new map with access_id: " . $nextAccessId);
+            Log::info("Creating new map with id: " . $nextAccessId);
             AnimeMap::create([
-                'access_id' => $nextAccessId,
+                'id' => $nextAccessId,
                 'data' => [
                     'prequel_sequel_chains' => $bestResult['prequel_sequel_chains'],
                     'other_related_ids' => $bestResult['other_related_ids']
@@ -447,12 +447,12 @@ class AnimeRelationshipService
      */
     private function createNewMap(array $data): void
     {
-        $lastMap = AnimeMap::orderBy('access_id', 'desc')->first();
-        $nextAccessId = $lastMap ? $lastMap->access_id + 1 : 100;
+        $lastMap = AnimeMap::orderBy('id', 'desc')->first();
+        $nextAccessId = $lastMap ? $lastMap->id + 1 : 100;
 
-        Log::info("Creating new map with access_id: " . $nextAccessId);
+        Log::info("Creating new map with id: " . $nextAccessId);
         AnimeMap::create([
-            'access_id' => $nextAccessId,
+            'id' => $nextAccessId,
             'data' => $data
         ]);
     }

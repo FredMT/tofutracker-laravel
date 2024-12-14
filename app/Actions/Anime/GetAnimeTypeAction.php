@@ -10,7 +10,7 @@ class GetAnimeTypeAction
 {
     public function execute(int $accessId): string
     {
-        $animeMap = AnimeMap::where('access_id', $accessId)->firstOrFail();
+        $animeMap = AnimeMap::where('id', $accessId)->firstOrFail();
 
         $allIds = array_merge(
             $animeMap->data['other_related_ids'],
