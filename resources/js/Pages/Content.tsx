@@ -55,11 +55,7 @@ export default function Content(props: Props) {
                 <ContentLayout
                     left={
                         <Stack gap={24} align="center">
-                            <PosterImage
-                                src={`https://image.tmdb.org/t/p/original${content.poster_path}`}
-                                alt={content.title}
-                                fallbackSrc="https://placehold.co/600x900?text=No+Poster"
-                            />
+                            <PosterImage />
                             <Box hiddenFrom="sm">
                                 <Title order={2} ta="center">
                                     {content.title} ({content.year})
