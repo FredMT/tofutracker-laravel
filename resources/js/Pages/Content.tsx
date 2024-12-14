@@ -23,9 +23,7 @@ import {
 } from "@mantine/core";
 import { useViewportSize } from "@mantine/hooks";
 
-type Props = PageProps;
-
-function getContent(props: Props) {
+function getContent(props: PageProps) {
     const { type, movie, tv, anime, tvseason } = props;
     switch (type) {
         case "movie":
@@ -41,7 +39,7 @@ function getContent(props: Props) {
     }
 }
 
-export default function Content(props: Props) {
+export default function Content(props: PageProps) {
     const { width } = useViewportSize();
     const content = getContent(props);
     if (!content) return null;
@@ -61,7 +59,9 @@ export default function Content(props: Props) {
                                     {content.title} ({content.year})
                                 </Title>
 
-                                <Text ta={"center"}>{content.tagline}</Text>
+                                {content.tagline && (
+                                    <Text ta={"center"}>{content.tagline}</Text>
+                                )}
                                 <Divider my={16} />
                                 <ContentSummary />
                                 <Divider my={16} />

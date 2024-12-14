@@ -111,18 +111,42 @@ class TmdbService
             $data = $response->json();
 
             // Extract logo path
-            $highestVotedLogo = collect($data['images']['logos'])->sortByDesc('vote_count')->first();
-            $data['logo_path'] = $highestVotedLogo['file_path'];
+            try {
+                $logos = $data['images']['logos'] ?? [];
+                $highestVotedLogo = collect($logos)->sortByDesc('vote_count')->first();
+                $data['logo_path'] = $highestVotedLogo['file_path'] ?? null;
+            } catch (\Exception $e) {
+                Log::warning("Failed to extract logo path for TV show ID: {$id}", [
+                    'error' => $e->getMessage()
+                ]);
+                $data['logo_path'] = null;
+            }
             unset($data['images']);
 
             // Extract US rating
-            $usRating = collect($data['content_ratings']['results'])->firstWhere('iso_3166_1', 'US');
-            $data['content_rating'] = $usRating['rating'];
+            try {
+                $contentRatings = $data['content_ratings']['results'] ?? [];
+                $usRating = collect($contentRatings)->firstWhere('iso_3166_1', 'US');
+                $data['content_rating'] = $usRating['rating'] ?? null;
+            } catch (\Exception $e) {
+                Log::warning("Failed to extract content rating for TV show ID: {$id}", [
+                    'error' => $e->getMessage()
+                ]);
+                $data['content_rating'] = null;
+            }
             unset($data['content_ratings']);
             unset($data['seasons']);
 
-            $data['title'] = $data['name'];
-            unset($data['name']);
+            // Set title
+            try {
+                $data['title'] = $data['name'] ?? null;
+                unset($data['name']);
+            } catch (\Exception $e) {
+                Log::warning("Failed to set title for TV show ID: {$id}", [
+                    'error' => $e->getMessage()
+                ]);
+                $data['title'] = null;
+            }
 
             return [
                 'data' => $data,

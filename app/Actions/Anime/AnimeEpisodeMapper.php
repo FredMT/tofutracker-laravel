@@ -22,7 +22,7 @@ class AnimeEpisodeMapper
                 $tvdbSpecialSeason = (int)$mapping->attributes()['tvdbseason'];
                 $individualMappings = (string)$mapping;
 
-                if ($anidbSeason === 0) { // Special Episodes
+                if ($anidbSeason === 0) { // Special Seasons
                     if (!empty($individualMappings)) {
                         $mappings = explode(';', trim($individualMappings, ';'));
                         foreach ($mappings as $map) {
@@ -37,7 +37,7 @@ class AnimeEpisodeMapper
             }
         }
 
-        // Handle Main Episodes
+        // Handle Main Episodes for "a" defaulttvdbseason
         if ($tvdbSeason !== 'a') {
             $tvdbSeason = (int)$tvdbSeason;
             for ($i = 1; $i <= $episodeCount; $i++) {
