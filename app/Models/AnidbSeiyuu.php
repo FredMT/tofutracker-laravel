@@ -21,7 +21,13 @@ class AnidbSeiyuu extends Model
 
     public function characters(): BelongsToMany
     {
-        return $this->belongsToMany(AnidbCharacter::class, 'anidb_character_seiyuu', 'seiyuu_id', 'character_id')
-            ->withTimestamps();
+        return $this->belongsToMany(
+            AnidbCharacter::class,
+            'anidb_character_seiyuu',
+            'seiyuu_id',    // Foreign key on pivot table
+            'character_id', // Related key on pivot table
+            'id',          // Local key on AnidbSeiyuu
+            'id'          // Local key on AnidbCharacter
+        )->withTimestamps();
     }
 }

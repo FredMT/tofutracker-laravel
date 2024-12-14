@@ -33,8 +33,8 @@ export type PageProps<
 } & (
         | { type: "movie"; movie: Movie }
         | { type: "tv"; tv: TvShow }
-        | { type: "anime"; anime: AnimeShow }
         | { type: "tvseason"; anime: TvSeason }
+        | { type: "anime"; anime: AnimeShow }
     ); // TODO: Add season type
 
 interface BaseContent {
@@ -130,10 +130,6 @@ interface TvDetails extends BaseDetails {
     seasons: number;
     creators: string;
     networks: string;
-}
-
-interface AnimeDetails extends BaseDetails {
-    // Add anime-specific details here
 }
 
 interface Season {

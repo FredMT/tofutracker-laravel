@@ -7,6 +7,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TvController;
 use App\Http\Controllers\TvSeasonController;
 use App\Http\Middleware\CheckAnimeMapping;
+use App\Services\AnimeRelationshipService;
 use App\Services\TmdbService;
 use App\Services\TvdbService;
 use Illuminate\Support\Facades\Route;
@@ -95,7 +96,6 @@ Route::get('/tv/{id}/season/{seasonNumber}', [TvSeasonController::class, 'store'
     ->middleware(CheckAnimeMapping::class)
     ->name('tv.season.show');
 
-Route::get('/map-anime-episodes', [AnimeMappingController::class, 'mapAnimeEpisodes']);
-Route::get('/anime/{id}/tmdb', [TmdbService::class, 'getTvAnime']);
+Route::get('/anime/{access_id}', [AnimeController::class, 'show']);
 
 require __DIR__ . '/auth.php';

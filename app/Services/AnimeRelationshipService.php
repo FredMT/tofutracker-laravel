@@ -46,9 +46,9 @@ class AnimeRelationshipService
 
         // Check if anime is a movie
         $anime = AnidbAnime::find($animeId);
+        $relations = $anime->relatedAnime()->with('relatedAnime')->get();
         if ($anime->type === 'Movie') {
             // Get all relations
-            $relations = $anime->relatedAnime()->with('relatedAnime')->get();
 
             // If no relations, create map with just this movie
             if ($relations->isEmpty()) {
@@ -91,6 +91,17 @@ class AnimeRelationshipService
 
         if (in_array($animeId, $processedIds) || $depth > 2 || $this->requestCount >= self::MAX_REQUESTS) {
             return [];
+        }
+
+        // If no relations exist, create a map with just this anime ID
+        if ($relations->isEmpty()) {
+            $result = [
+                'prequel_sequel_chains' => [[$animeId]], // Include the anime ID in a single chain
+                'other_related_ids' => []
+            ];
+
+            $this->createNewMap($result);
+            return array_merge(['source_id' => $animeId], $result);
         }
 
         $processedIds[] = $animeId;

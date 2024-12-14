@@ -58,7 +58,7 @@ class AnidbService
     public function parseAnimeData(array $rawData): array
     {
         try {
-            $anime = $rawData['anime'] ?? null;
+            $anime = $rawData ?? null;
             if (!$anime) {
                 throw new \Exception('Invalid anime data structure');
             }
@@ -138,11 +138,12 @@ class AnidbService
         }
         return null;
     }
+
     private function parseCharacters(array $characters): array
     {
         return array_map(function ($character) {
             return [
-                'character_id' => $character['attrs']['id'] ?? null, // Changed from 'id' to 'character_id'
+                'character_id' => $character['attrs']['id'] ?? null,
                 'character_type' => $character['attrs']['type'] ?? null,
                 'name' => $character['name'][0] ?? null,
                 'gender' => $character['gender'][0] ?? null,
@@ -152,7 +153,7 @@ class AnidbService
                 'rating_votes' => (int)($character['rating'][0]['attrs']['votes'] ?? 0),
                 'seiyuus' => array_map(function ($seiyuu) {
                     return [
-                        'seiyuu_id' => $seiyuu['attrs']['id'] ?? null, // Changed from 'id' to 'seiyuu_id'
+                        'seiyuu_id' => $seiyuu['attrs']['id'] ?? null,
                         'name' => $seiyuu['name'] ?? null,
                         'picture' => $seiyuu['attrs']['picture'] ?? null,
                     ];
@@ -160,6 +161,7 @@ class AnidbService
             ];
         }, $characters);
     }
+
     private function parseEpisodes(array $episodes): array
     {
         return array_map(function ($episode) {
@@ -254,7 +256,6 @@ class AnidbService
     public function storeAnimeData(array $rawData): void
     {
         DB::transaction(function () use ($rawData) {
-            Log::info('Parsing anime data', ['id' => $rawData['anime']['attrs']['id'] ?? null]);
             $parsedData = $this->parseAnimeData($rawData);
 
             // Create or update the anime record
@@ -280,7 +281,6 @@ class AnidbService
         foreach ($characters as $characterData) {
             try {
                 $seiyuus = $characterData['seiyuus'] ?? [];
-                unset($characterData['seiyuus']);
 
                 // Create or update character
                 $character = $anime->characters()->updateOrCreate(
@@ -288,57 +288,38 @@ class AnidbService
                     $characterData
                 );
 
-                // Process seiyuus for this character
-                $this->processSeiyuus($character, $seiyuus);
+                // Sync seiyuus for the character
+                $seiyuuIds = [];
+                foreach ($seiyuus as $seiyuuData) {
+                    Log::info('Processing seiyuu', ['seiyuu_id' => $seiyuuData['seiyuu_id']]);
+                    $seiyuu = AnidbSeiyuu::updateOrCreate(
+                        ['seiyuu_id' => $seiyuuData['seiyuu_id']],
+                        $seiyuuData
+                    );
+                    $seiyuuIds[] = $seiyuu->id;
+                }
+                // Before sync - log the IDs being synced
+                Log::info('Syncing seiyuus for character', [
+                    'character_id' => $character->character_id,
+                    'seiyuu_ids_to_sync' => $seiyuuIds
+                ]);
+
+
+                $syncResult = $character->seiyuus()->sync($seiyuuIds);
+
+                // After sync - log the sync results
+                Log::info('Seiyuu sync completed', [
+                    'character_id' => $character->character_id,
+                    'attached' => $syncResult['attached'],
+                    'detached' => $syncResult['detached'],
+                    'updated' => $syncResult['updated']
+                ]);
             } catch (\Exception $e) {
                 Log::error('Error processing character', [
                     'character_id' => $characterData['character_id'] ?? 'unknown',
                     'error' => $e->getMessage()
                 ]);
                 continue;
-            }
-        }
-    }
-
-    private function processSeiyuus(AnidbCharacter $character, array $seiyuus): void
-    {
-        $seiyuuIds = [];
-
-        foreach ($seiyuus as $seiyuuData) {
-            try {
-                if (empty($seiyuuData['seiyuu_id']) || empty($seiyuuData['name'])) {
-                    Log::warning('Skipping invalid seiyuu data', [
-                        'seiyuu_data' => $seiyuuData,
-                        'character_id' => $character->id
-                    ]);
-                    continue;
-                }
-
-                $seiyuu = AnidbSeiyuu::updateOrCreate(
-                    ['seiyuu_id' => $seiyuuData['seiyuu_id']],
-                    $seiyuuData
-                );
-
-                $seiyuuIds[] = $seiyuu->id;
-            } catch (\Exception $e) {
-                Log::error('Error processing seiyuu', [
-                    'seiyuu_data' => $seiyuuData,
-                    'character_id' => $character->id,
-                    'error' => $e->getMessage()
-                ]);
-                continue;
-            }
-        }
-
-        if (!empty($seiyuuIds)) {
-            try {
-                $character->seiyuus()->sync($seiyuuIds);
-            } catch (\Exception $e) {
-                Log::error('Error syncing seiyuus for character', [
-                    'character_id' => $character->id,
-                    'seiyuu_ids' => $seiyuuIds,
-                    'error' => $e->getMessage()
-                ]);
             }
         }
     }

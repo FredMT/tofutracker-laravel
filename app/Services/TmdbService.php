@@ -47,13 +47,28 @@ class TmdbService
         try {
             $response = Http::withToken(config('services.tmdb.token'))
                 ->get("{$this->baseUrl}/movie/{$id}", [
-                    'append_to_response' => 'images,recommendations,videos',
+                    'append_to_response' => 'images,recommendations,videos,release_dates',
                     'include_image_language' => 'en,null',
                     'include_video_language' => 'en'
                 ]);
 
+            $data = $response->json();
+
+            // Extract logo path
+            $highestVotedLogo = collect($data['images']['logos'])->sortByDesc('vote_count')->first();
+            $data['logo_path'] = $highestVotedLogo['file_path'];
+            unset($data['images']);
+
+            // Extract US certification
+            $usCertification = collect($data['release_dates']['results'])->firstWhere('iso_3166_1', 'US');
+            $data['content_rating'] = $usCertification['release_dates'][0]['certification'];
+            unset($data['release_dates']);
+
+            // Extract year from release_date
+            $data['year'] = substr($data['release_date'], 0, 4);
+
             return [
-                'data' => $response->json(),
+                'data' => $data,
                 'etag' => $response->header('etag')
             ];
         } catch (\Exception $e) {
@@ -88,13 +103,29 @@ class TmdbService
         try {
             $response = Http::withToken(config('services.tmdb.token'))
                 ->get("{$this->baseUrl}/tv/{$id}", [
-                    'append_to_response' => 'images,recommendations,videos',
+                    'append_to_response' => 'images,recommendations,videos,content_ratings',
                     'include_image_language' => 'en,null',
                     'include_video_language' => 'en'
                 ]);
 
+            $data = $response->json();
+
+            // Extract logo path
+            $highestVotedLogo = collect($data['images']['logos'])->sortByDesc('vote_count')->first();
+            $data['logo_path'] = $highestVotedLogo['file_path'];
+            unset($data['images']);
+
+            // Extract US rating
+            $usRating = collect($data['content_ratings']['results'])->firstWhere('iso_3166_1', 'US');
+            $data['content_rating'] = $usRating['rating'];
+            unset($data['content_ratings']);
+            unset($data['seasons']);
+
+            $data['title'] = $data['name'];
+            unset($data['name']);
+
             return [
-                'data' => $response->json(),
+                'data' => $data,
                 'etag' => $response->header('etag')
             ];
         } catch (\Exception $e) {

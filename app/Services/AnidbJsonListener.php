@@ -32,11 +32,16 @@ class AnidbJsonListener implements ListenerInterface
     public function endObject(): void
     {
         $obj = array_pop($this->stack);
+
         if (isset($obj['anime'])) {
-            $this->processAnimeData($obj);
-        }
-        if (!empty($this->stack)) {
-            $this->addToStack($obj);
+            $animeData = $obj['anime'];
+
+            // Handle single anime object
+            $this->processAnimeData($animeData);
+        } else {
+            if (!empty($this->stack)) {
+                $this->addToStack($obj);
+            }
         }
     }
     public function startArray(): void
@@ -71,16 +76,18 @@ class AnidbJsonListener implements ListenerInterface
             $this->stack[$count - 2][$key] = $value;
         }
     }
+
     private function processAnimeData(array $data): void
     {
         try {
             $this->anidbService->storeAnimeData($data);
         } catch (\Exception $e) {
             Log::error('Error processing anime data: ' . $e->getMessage(), [
-                'anime_id' => $data['anime']['attrs']['id'] ?? 'unknown'
+                'anime_id' => $data['attrs']['id'] ?? 'unknown'
             ]);
         }
     }
+
     public function whitespace(string $whitespace): void
     {
         // Not needed for our implementation
