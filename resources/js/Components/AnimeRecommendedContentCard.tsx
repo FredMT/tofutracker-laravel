@@ -17,19 +17,19 @@ function AnimeRecommendedContentCard({
             style={{ background: "rgba(0, 0, 0, 0)" }}
             shadow="none"
         >
-            <Link href={route("anime.show", content.map_id)} prefetch>
+            <Link
+                href={route("anime.show", content.map_id)}
+                prefetch
+                className="no-underline"
+            >
                 <Card.Section pos="relative">
                     {!!content.vote_average && (
                         <Badge
                             size="lg"
                             radius="md"
-                            variant="filled"
-                            style={{
-                                position: "absolute",
-                                top: 8,
-                                right: 8,
-                                zIndex: 1,
-                            }}
+                            variant="gradient"
+                            gradient={{ from: "blue", to: "cyan", deg: 90 }}
+                            className="absolute top-2 right-2 z-1"
                         >
                             {content.vote_average.toFixed(1)}
                         </Badge>
@@ -43,6 +43,7 @@ function AnimeRecommendedContentCard({
             <text x="50%" y="50%" text-anchor="middle">${content.collection_name}</text>
         </svg>`)}`}
                         loading="lazy"
+                        alt=""
                     />
                 </Card.Section>
                 <Card.Section mt="xs">

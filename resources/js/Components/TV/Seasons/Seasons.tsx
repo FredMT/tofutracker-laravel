@@ -1,9 +1,7 @@
-import { Carousel } from "@mantine/carousel";
-import { Container, Stack, Title } from "@mantine/core";
-import { PageProps } from "@/types";
+import { useAnimeContent } from "@/hooks/useAnimeContent";
 import { usePage } from "@inertiajs/react";
-import SeasonCard from "./SeasonCard";
-import classes from "../../SimilarContent.module.css";
+import AnimeSeasons from "./AnimeSeasons";
+import RegularSeasons from "./RegularSeasons";
 
 interface SeasonsProps {
     containerWidth: number;
@@ -14,31 +12,36 @@ export default function Seasons({
     containerWidth,
     slideSize = "0%",
 }: SeasonsProps) {
-    const { tv } = usePage<PageProps>().props;
-    if (!tv) return null;
+    const animeContent = useAnimeContent();
 
-    return (
-        <Stack>
-            <Title order={3}>Seasons</Title>
-            <Container size={containerWidth} px={0} mx={0}>
-                <Carousel
-                    height={250}
+    const type = usePage().props.type;
+
+    if (type === "tv") {
+        return (
+            <RegularSeasons
+                containerWidth={containerWidth}
+                slideSize={slideSize}
+            />
+        );
+    }
+
+    if (type === "animetv") {
+        if (!animeContent) return null;
+        const hasRelatedContent =
+            animeContent.anidbData.other_related_ids.length > 0;
+        const hasPrequelSequels =
+            Object.keys(animeContent.anidbData.prequel_sequel_chains).length >
+            0;
+
+        if (hasRelatedContent || hasPrequelSequels) {
+            return (
+                <AnimeSeasons
+                    containerWidth={containerWidth}
                     slideSize={slideSize}
-                    align="start"
-                    slidesToScroll={3}
-                    dragFree={true}
-                    classNames={{
-                        control: classes.carouselControl,
-                        controls: classes.carouselControls,
-                    }}
-                >
-                    {tv.seasons.map((season) => (
-                        <Carousel.Slide key={season.id}>
-                            <SeasonCard season={season} />
-                        </Carousel.Slide>
-                    ))}
-                </Carousel>
-            </Container>
-        </Stack>
-    );
+                />
+            );
+        }
+    }
+
+    return null;
 }

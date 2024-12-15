@@ -1,28 +1,28 @@
-import { useContent } from "@/hooks/useContent";
-import { Recommended } from "@/types";
 import { Carousel } from "@mantine/carousel";
 import { Container, Stack, Title } from "@mantine/core";
-import classes from "./RecommendedContent.module.css";
-import RecommendedContentCard from "./RecommendedContentCard";
+import { PageProps } from "@/types";
+import { usePage } from "@inertiajs/react";
+import SeasonCard from "./SeasonCard";
+import classes from "../../SimilarContent.module.css";
 
-interface RecommendedContentProps {
+interface SeasonsProps {
     containerWidth: number;
     slideSize?: string;
 }
 
-export default function RecommendedContent({
+export default function RegularSeasons({
     containerWidth,
     slideSize = "0%",
-}: RecommendedContentProps) {
-    const { content, type } = useContent();
-    if (!content || type === "tvseason") return null;
+}: SeasonsProps) {
+    const { tv } = usePage<PageProps>().props;
+    if (!tv) return null;
 
     return (
         <Stack>
-            <Title order={3}>Recommended</Title>
+            <Title order={3}>Seasons</Title>
             <Container size={containerWidth} px={0} mx={0}>
                 <Carousel
-                    height={300}
+                    height={250}
                     slideSize={slideSize}
                     align="start"
                     slidesToScroll={3}
@@ -31,9 +31,9 @@ export default function RecommendedContent({
                         controls: classes.carouselControls,
                     }}
                 >
-                    {content.recommended.map((recommended: Recommended) => (
-                        <Carousel.Slide key={recommended.id}>
-                            <RecommendedContentCard content={recommended} />
+                    {tv.seasons.map((season) => (
+                        <Carousel.Slide key={season.id}>
+                            <SeasonCard season={season} />
                         </Carousel.Slide>
                     ))}
                 </Carousel>

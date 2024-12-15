@@ -23,13 +23,17 @@ export default function AnimeRecommendedContent({
     return (
         <Stack>
             <Title order={3}>Recommended</Title>
-            <Container size={containerWidth} px={0} mx={0}>
+            <Container
+                size={containerWidth}
+                px={0}
+                mx={0}
+                className="select-none"
+            >
                 <Carousel
                     height={300}
                     slideSize={slideSize}
                     align="start"
                     slidesToScroll={3}
-                    dragFree={true}
                     classNames={{
                         control: classes.carouselControl,
                         controls: classes.carouselControls,

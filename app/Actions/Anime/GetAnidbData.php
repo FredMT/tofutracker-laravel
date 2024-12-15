@@ -39,7 +39,16 @@ class GetAnidbData
 
             // Process related entries
             $otherRelatedIds = $relatedEntries->map(function ($relatedEntry) use ($anidbAnimeData) {
-                return $anidbAnimeData[$relatedEntry->anime_id] ?? null;
+                $data = $anidbAnimeData[$relatedEntry->anime_id] ?? null;
+                return $data ? [
+                    'id' => $data['id'],
+                    'type' => $data['type'],
+                    'episode_count' => $data['episode_count'],
+                    'season' => $data['season'],
+                    'title' => $data['title_main'],
+                    'rating' => $data['rating'] === '0.00' ? null : $data['rating'],
+                    'picture' => $data['picture']
+                ] : null;
             })->filter()->values()->toArray();
 
             // Process chain entries
@@ -53,14 +62,23 @@ class GetAnidbData
                     ->orderBy('sequence_order')
                     ->get()
                     ->map(function ($entry) use ($anidbAnimeData) {
-                        return $anidbAnimeData[$entry->anime_id] ?? null;
+                        $data = $anidbAnimeData[$entry->anime_id] ?? null;
+                        return $data ? [
+                            'id' => $data['id'],
+                            'type' => $data['type'],
+                            'episode_count' => $data['episode_count'],
+                            'season' => $data['season'],
+                            'title' => $data['title_main'],
+                            'rating' => $data['rating'] === '0.00' ? null : $data['rating'],
+                            'picture' => $data['picture']
+                        ] : null;
                     })
                     ->filter()
                     ->values()
                     ->toArray();
 
                 if (!empty($chainAnime)) {
-                    $prequelSequelChains[] = $chainAnime;
+                    $prequelSequelChains[$chain->name] = $chainAnime;
                 }
             }
 

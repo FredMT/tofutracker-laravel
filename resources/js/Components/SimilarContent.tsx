@@ -26,7 +26,6 @@ export default function SimilarContent({
                     slideSize={slideSize}
                     align="start"
                     slidesToScroll={3}
-                    dragFree={true}
                     classNames={{
                         control: classes.carouselControl,
                         controls: classes.carouselControls,

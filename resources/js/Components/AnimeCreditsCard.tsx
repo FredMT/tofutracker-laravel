@@ -53,6 +53,7 @@ function AnimeCreditsCard({ character, seiyuus }: AnimeCreditsCardProps) {
                             withControls={true}
                             withIndicators={false}
                             align="start"
+                            draggable={false}
                             classNames={{
                                 control: classes.carouselControl,
                                 controls: classes.carouselControls,

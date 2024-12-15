@@ -5,9 +5,19 @@ export interface Anime {
 }
 
 export interface AnidbData {
-    other_related_ids: OtherRelatedID[];
-    prequel_sequel_chains: Array<OtherRelatedID[]>;
+    other_related_ids: RelatedAnimeData[];
+    prequel_sequel_chains: Record<string, RelatedAnimeData[]>;
     credits: Credits;
+}
+
+export interface RelatedAnimeData {
+    id: number;
+    type: string;
+    episode_count: number;
+    season: string | null;
+    title: string;
+    rating: string | null;
+    picture: string;
 }
 
 export interface Credits {
@@ -27,20 +37,6 @@ export interface SeiyuuMember {
     name: string;
     picture: string;
     characters: string;
-}
-
-export interface OtherRelatedID {
-    id: number;
-    type: string;
-    episode_count: number;
-    startdate: Date;
-    enddate: Date | null;
-    title_main: string;
-    homepage: null | string;
-    description: string;
-    rating: string;
-    rating_count: number;
-    picture: string;
 }
 
 export interface TmdbData {

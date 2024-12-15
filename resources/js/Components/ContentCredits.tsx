@@ -7,6 +7,7 @@ import classes from "./ContentCredits.module.css";
 import { useContent } from "@/hooks/useContent";
 import { useAnimeContent } from "@/hooks/useAnimeContent";
 import { TmdbPerson, AnimePerson, ContentCreditsProps } from "@/types";
+import { useMediaQuery } from "@mantine/hooks";
 
 export function ContentCredits({
     containerWidth,
@@ -14,6 +15,7 @@ export function ContentCredits({
 }: ContentCreditsProps) {
     const regularContent = useContent();
     const animeContent = useAnimeContent();
+    const isMobile = useMediaQuery("(max-width: 640px)");
 
     if (!regularContent && !animeContent) return null;
     if (regularContent?.type === "tvseason") return null;
@@ -28,13 +30,12 @@ export function ContentCredits({
                 <Divider my={16} />
                 <Stack>
                     <Title order={3}>Cast and Credits</Title>
-                    <Container size={containerWidth} px={0} mx={0}>
+                    <Container size={containerWidth} className="select-none">
                         <Carousel
                             height={280}
-                            slideSize="270px"
+                            slideSize="300px"
                             align="start"
-                            slidesToScroll={3}
-                            dragFree={true}
+                            slidesToScroll={isMobile ? 1 : 2}
                             classNames={{
                                 control: classes.carouselControl,
                                 controls: classes.carouselControls,
@@ -89,7 +90,6 @@ export function ContentCredits({
                     slideSize={slideSize}
                     align="start"
                     slidesToScroll={3}
-                    dragFree={true}
                     classNames={{
                         control: classes.carouselControl,
                         controls: classes.carouselControls,

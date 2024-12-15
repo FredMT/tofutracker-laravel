@@ -1,4 +1,5 @@
 import "../css/app.css";
+import "../css/preflight.css";
 import "./bootstrap";
 import "@mantine/core/styles.css";
 import "@mantine/carousel/styles.css";

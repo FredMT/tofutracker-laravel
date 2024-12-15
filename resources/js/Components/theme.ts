@@ -1,9 +1,11 @@
+import { Carousel } from "@mantine/carousel";
 import {
     Card,
     Container,
     createTheme,
     DEFAULT_THEME,
     rem,
+    UnstyledButton,
     virtualColor,
 } from "@mantine/core";
 
@@ -209,6 +211,11 @@ const theme = createTheme({
             },
             classNames: (theme) => ({
                 root: "globalMantineCardRoot",
+            }),
+        }),
+        Carousel: Carousel.extend({
+            classNames: (theme) => ({
+                control: "rounded",
             }),
         }),
         //     Paper: Paper.extend({

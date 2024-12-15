@@ -31,7 +31,7 @@ export default function AnimeContent() {
     const animeContent = useAnimeContent();
     if (!animeContent) return null;
 
-    const { content, tmdbData, isTV } = animeContent;
+    const { content, tmdbData } = animeContent;
 
     return (
         <>
@@ -47,11 +47,6 @@ export default function AnimeContent() {
                             <Box hiddenFrom="sm">
                                 <Title order={2} ta="center">
                                     {content.collection_name}
-                                    {/* (
-                                    {isTV(tmdbData)
-                                        ? tmdbData.first_air_date.getFullYear()
-                                        : tmdbData.year}
-                                    ) */}
                                 </Title>
 
                                 {tmdbData.tagline && (
@@ -65,9 +60,6 @@ export default function AnimeContent() {
                             </Box>
                             <ContentActions />
                             <Box hiddenFrom="sm">
-                                {/* <ContentDetails /> */}
-                                {/* <Divider my={16} /> */}
-
                                 <Stack mt={16}>
                                     <Title order={3}>Overview</Title>
                                     <Spoiler
@@ -83,8 +75,10 @@ export default function AnimeContent() {
                                 </Stack>
                                 <Space h={24} />
                                 <ContentCredits containerWidth={width * 0.95} />
+                                <Divider my={24} />
 
-                                {/* <Divider my={16} /> */}
+                                <Seasons containerWidth={width * 0.95} />
+
                                 <AnimeRecommendedContent
                                     containerWidth={width * 0.95}
                                 />
@@ -102,8 +96,6 @@ export default function AnimeContent() {
                                 <ContentSummary />
                                 <Divider my={8} />
                             </Stack>
-                            {/* <ContentDetails /> */}
-                            {/* <Divider my={16} /> */}
                             <Stack mt={16}>
                                 <Title order={3}>Overview</Title>
                                 <Spoiler
@@ -119,14 +111,10 @@ export default function AnimeContent() {
                             </Stack>
                             <Space h={24} />
                             <ContentCredits containerWidth={width * 0.67} />
-                            {/* {isTV(tmdbData) && <ContentEpisodes />} */}
+                            <Divider my={24} />
+
+                            <Seasons containerWidth={width * 0.67} />
                             <Divider my={16} />
-                            {/* {isTV(tmdbData) && (
-                                <>
-                                <Seasons containerWidth={width * 0.67} />
-                                <Divider my={16} />
-                                </>
-                                )} */}
                             <AnimeRecommendedContent
                                 containerWidth={width * 0.67}
                             />
