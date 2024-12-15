@@ -1,36 +1,32 @@
-export interface Main {
+export interface Anime {
     tmdbData: TmdbData;
     anidbData: AnidbData;
     collection_name: string;
-    type: "animemovie" | "animetv";
 }
 
 export interface AnidbData {
     other_related_ids: OtherRelatedID[];
     prequel_sequel_chains: Array<OtherRelatedID[]>;
-    characters: Character[];
+    credits: Credits;
 }
 
-export interface Character {
-    id: number;
-    name: string;
-    character_type: CharacterType;
-    picture: string;
-    rating: string;
-    rating_votes: number;
-    seiyuus: Seiyuu[];
+export interface Credits {
+    cast: CastMember[];
+    seiyuu: SeiyuuMember[];
 }
 
-export enum CharacterType {
-    AppearsIn = "appears in",
-    MainCharacterIn = "main character in",
-    SecondaryCastIn = "secondary cast in",
-}
-
-export interface Seiyuu {
+export interface CastMember {
     id: number;
     name: string;
     picture: string;
+    seiyuu: string;
+}
+
+export interface SeiyuuMember {
+    id: number;
+    name: string;
+    picture: string;
+    characters: string;
 }
 
 export interface OtherRelatedID {
@@ -55,6 +51,7 @@ export interface TmdbData {
 interface BaseData {
     adult: boolean;
     poster_path: string;
+    title: string;
     logo_path: string;
     backdrop_path: string;
     genres: Genre[];
@@ -72,7 +69,7 @@ interface BaseData {
     vote_count: number;
     recommendations: Recommendations;
     videos: Videos;
-    content_rating: string;
+    certification: string;
 }
 
 export interface ShowData extends BaseData {

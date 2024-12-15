@@ -8,6 +8,8 @@ use App\Actions\Anime\GetTmdbData;
 use App\Models\AnimeMap;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class AnimeController extends Controller
 {
@@ -23,7 +25,7 @@ class AnimeController extends Controller
     }
 
 
-    public function show($accessId): JsonResponse
+    public function show($accessId): Response
     {
         try {
             $animeMap = AnimeMap::where('id', $accessId)->firstOrFail();
@@ -31,13 +33,24 @@ class AnimeController extends Controller
             $anidbData = $this->getAnidbData->execute($animeMap);
 
             $collectionName = $animeMap->collection_name ?? json_decode($tmdbData->getContent(), true)['data']['title'];
+            $type = $this->getAnimeType->execute($accessId);
 
-            return response()->json([
-                'tmdbData' => json_decode($tmdbData->getContent(), true),
-                'anidbData' => $anidbData,
-                'user_library' => null,
-                'collection_name' => $collectionName,
-                'type' => $this->getAnimeType->execute($accessId)
+            // return response()->json([
+            //     $type => [
+            //         'tmdbData' => json_decode($tmdbData->getContent(), true),
+            //         'anidbData' => $anidbData,
+            //         'collection_name' => $collectionName,
+            //     ],
+            //     'user_library' => null
+            // ]);
+            return Inertia::render('AnimeContent', [
+                'type' => $type,
+                $type => [
+                    'tmdbData' => json_decode($tmdbData->getContent(), true),
+                    'anidbData' => $anidbData,
+                    'collection_name' => $collectionName,
+                ],
+                'user_library' => null
             ]);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json(['error' => 'Anime not found'], 404);

@@ -1,12 +1,33 @@
-import { Person } from "@/types";
+import { AnimePerson, TmdbPerson } from "@/types";
 import { Card, Image, Stack, Text, Tooltip } from "@mantine/core";
 
 interface PersonCardProps {
-    person: Person;
+    person: TmdbPerson | AnimePerson;
     type: "cast" | "crew";
+    isAnime: boolean;
 }
 
-function PersonCard({ person, type }: PersonCardProps) {
+function PersonCard({ person, type, isAnime }: PersonCardProps) {
+    const getImageUrl = () => {
+        if (isAnime) {
+            return person.picture;
+        }
+        return `https://image.tmdb.org/t/p/w600_and_h900_bestv2${
+            (person as TmdbPerson).profile_path
+        }`;
+    };
+
+    const getSubtext = () => {
+        if (isAnime) {
+            return type === "cast"
+                ? (person as AnimePerson).seiyuu
+                : (person as AnimePerson).characters;
+        }
+        return type === "cast"
+            ? (person as TmdbPerson).character
+            : (person as TmdbPerson).job;
+    };
+
     return (
         <Card
             radius="md"
@@ -17,8 +38,11 @@ function PersonCard({ person, type }: PersonCardProps) {
         >
             <Card.Section>
                 <Image
-                    src={`https://image.tmdb.org/t/p/w600_and_h900_bestv2${person.profile_path}`}
+                    src={getImageUrl()}
                     height={186}
+                    h={186}
+                    w={124}
+                    style={{ objectPosition: "top" }}
                     alt={person.name}
                     fit="cover"
                     radius="md"
@@ -37,12 +61,9 @@ function PersonCard({ person, type }: PersonCardProps) {
                             {person.name}
                         </Text>
                     </Tooltip>
-                    <Tooltip
-                        label={type === "cast" ? person.character : person.job}
-                        openDelay={150}
-                    >
+                    <Tooltip label={getSubtext()} openDelay={150}>
                         <Text size="sm" lineClamp={1}>
-                            {type === "cast" ? person.character : person.job}
+                            {getSubtext()}
                         </Text>
                     </Tooltip>
                 </Stack>

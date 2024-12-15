@@ -1,3 +1,4 @@
+import { Anime } from "@/types/anime";
 import { Config } from "ziggy-js";
 import { WatchStatus } from "./enums";
 
@@ -22,6 +23,8 @@ export type PageProps<
     };
     movie?: Movie;
     tv?: TvShow;
+    animetv?: Anime;
+    animemovie?: Anime;
     flash?: FlashMessage;
     ziggy: Config & { location: string };
     user_library?: {
@@ -34,7 +37,9 @@ export type PageProps<
         | { type: "movie"; movie: Movie }
         | { type: "tv"; tv: TvShow }
         | { type: "tvseason"; tvseason: TvSeason }
-    ); // TODO: Add season type
+        | { type: "animetv"; animetv: Main }
+        | { type: "animemovie"; animemovie: Main }
+    );
 
 interface BaseContent {
     id: number;
@@ -54,6 +59,7 @@ interface BaseContent {
     credits: Credits;
     certification: string;
     similar: Similar[];
+    recommended: Recommended[];
     runtime?: string;
     release_date?: string;
     first_air_date?: string;
@@ -164,6 +170,14 @@ interface Similar {
     release_date: Date;
 }
 
+interface Recommended {
+    id: number;
+    title: string;
+    poster_path: string;
+    vote_average: number;
+    release_date: Date;
+}
+
 export interface LibraryEntry {
     id: number;
     media_id: number;
@@ -179,8 +193,6 @@ export interface LibraryEntry {
 }
 
 interface ContentCreditsProps {
-    cast: Cast[];
-    crew: Crew[];
     containerWidth: number;
     slideSize?: string;
 }
@@ -207,4 +219,29 @@ interface Episode {
     still_path: string;
     vote_average: number;
     runtime: number;
+}
+
+interface BasePerson {
+    id: number;
+    name: string;
+    picture: string;
+}
+
+interface TmdbPerson extends BasePerson {
+    profile_path: string;
+    character?: string;
+    job?: string;
+    order?: number;
+    popularity?: number;
+    total_episodes?: number;
+}
+
+interface AnimePerson extends BasePerson {
+    seiyuu?: string; // For cast members
+    characters?: string; // For crew members
+}
+
+interface ContentCreditsProps {
+    containerWidth: number;
+    slideSize?: string;
 }

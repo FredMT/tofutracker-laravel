@@ -1,0 +1,41 @@
+.containerSize {
+    width: 67%;
+}
+
+@media (max-width: 640px) {
+    .containerSize {
+        width: 95%;
+    }
+}
+
+.container {
+    margin: 0;
+    padding: 0;
+}
+@media (max-width: 640px) {
+    .container {
+        width: 95%;
+    }
+}
+
+.carouselControl {
+    color: light-dark(black, white);
+    background: transparent;
+    box-shadow: none;
+    border-radius: 5px;
+
+    &[data-inactive] {
+        opacity: 0;
+        cursor: default;
+        color: inherit;
+    }
+}
+
+.carouselControls {
+    top: -35px;
+    justify-content: flex-end;
+    gap: 10px;
+    background-color: transparent;
+    position: absolute;
+    right: 0;
+}

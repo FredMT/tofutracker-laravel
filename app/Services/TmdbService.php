@@ -61,7 +61,7 @@ class TmdbService
 
             // Extract US certification
             $usCertification = collect($data['release_dates']['results'])->firstWhere('iso_3166_1', 'US');
-            $data['content_rating'] = $usCertification['release_dates'][0]['certification'];
+            $data['certification'] = $usCertification['release_dates'][0]['certification'];
             unset($data['release_dates']);
 
             // Extract year from release_date
@@ -127,7 +127,7 @@ class TmdbService
             try {
                 $contentRatings = $data['content_ratings']['results'] ?? [];
                 $usRating = collect($contentRatings)->firstWhere('iso_3166_1', 'US');
-                $data['content_rating'] = $usRating['rating'] ?? null;
+                $data['certification'] = $usRating['rating'] ?? null;
             } catch (\Exception $e) {
                 Log::warning("Failed to extract content rating for TV show ID: {$id}", [
                     'error' => $e->getMessage()

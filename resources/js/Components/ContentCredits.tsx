@@ -1,28 +1,70 @@
 import { Carousel } from "@mantine/carousel";
-import { Container, Tabs, Text } from "@mantine/core";
+import { Container, Divider, Stack, Tabs, Text, Title } from "@mantine/core";
 import { useState } from "react";
 import PersonCard from "./PersonCard";
+import AnimeCreditsCard from "./AnimeCreditsCard";
 import classes from "./ContentCredits.module.css";
-import { PageProps, Person } from "@/types";
-import { usePage } from "@inertiajs/react";
 import { useContent } from "@/hooks/useContent";
-
-interface ContentCreditsProps {
-    containerWidth: number;
-    slideSize?: string;
-}
+import { useAnimeContent } from "@/hooks/useAnimeContent";
+import { TmdbPerson, AnimePerson, ContentCreditsProps } from "@/types";
 
 export function ContentCredits({
     containerWidth,
     slideSize = "0%",
 }: ContentCreditsProps) {
-    const { content, type } = useContent();
-    if (!content) return null;
-    if (type === "tvseason") return null;
+    const regularContent = useContent();
+    const animeContent = useAnimeContent();
+
+    if (!regularContent && !animeContent) return null;
+    if (regularContent?.type === "tvseason") return null;
 
     const [activeTab, setActiveTab] = useState<"cast" | "crew">("cast");
-    const people =
-        activeTab === "cast" ? content.credits.cast : content.credits.crew;
+
+    if (animeContent) {
+        const { cast, seiyuu } = animeContent.anidbData.credits;
+
+        return (
+            <>
+                <Divider my={16} />
+                <Stack>
+                    <Title order={3}>Cast and Credits</Title>
+                    <Container size={containerWidth} px={0} mx={0}>
+                        <Carousel
+                            height={280}
+                            slideSize="270px"
+                            align="start"
+                            slidesToScroll={3}
+                            dragFree={true}
+                            classNames={{
+                                control: classes.carouselControl,
+                                controls: classes.carouselControls,
+                            }}
+                        >
+                            {cast.map((character) => (
+                                <Carousel.Slide key={character.id}>
+                                    <AnimeCreditsCard
+                                        character={character}
+                                        seiyuus={seiyuu.filter((s) =>
+                                            s.characters
+                                                .split(", ")
+                                                .includes(character.name)
+                                        )}
+                                    />
+                                </Carousel.Slide>
+                            ))}
+                        </Carousel>
+                    </Container>
+                </Stack>
+            </>
+        );
+    }
+
+    // Regular content rendering (existing code)
+    const people = (
+        activeTab === "cast"
+            ? regularContent!.content.credits.cast
+            : regularContent!.content.credits.crew
+    ) as (TmdbPerson | AnimePerson)[];
 
     return (
         <>
@@ -53,9 +95,13 @@ export function ContentCredits({
                         controls: classes.carouselControls,
                     }}
                 >
-                    {people.map((person: Person) => (
+                    {people.map((person) => (
                         <Carousel.Slide key={person.id}>
-                            <PersonCard person={person} type={activeTab} />
+                            <PersonCard
+                                person={person}
+                                type={activeTab}
+                                isAnime={false}
+                            />
                         </Carousel.Slide>
                     ))}
                 </Carousel>

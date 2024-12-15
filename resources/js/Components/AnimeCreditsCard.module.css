@@ -1,0 +1,12 @@
+.carouselControl {
+    color: white;
+    background: rgb(1, 1, 1, 1);
+    box-shadow: none;
+    border-radius: 5px;
+
+    &[data-inactive] {
+        opacity: 0;
+        cursor: default;
+        color: inherit;
+    }
+}
