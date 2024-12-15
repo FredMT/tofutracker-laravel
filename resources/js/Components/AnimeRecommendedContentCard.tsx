@@ -1,14 +1,14 @@
+import { AnimeRecommendation } from "@/types/anime";
+import { Link } from "@inertiajs/react";
 import { Badge, Box, Card, Image, Text, Tooltip } from "@mantine/core";
-import { Link, usePage } from "@inertiajs/react";
-import { PageProps, Similar } from "@/types";
 
-interface SimilarContentCardProps {
-    content: Similar;
+interface AnimeRecommendedContentCardProps {
+    content: AnimeRecommendation;
 }
 
-function SimilarContentCard({ content }: SimilarContentCardProps) {
-    const { type } = usePage<PageProps>().props;
-
+function AnimeRecommendedContentCard({
+    content,
+}: AnimeRecommendedContentCardProps) {
     return (
         <Card
             radius="md"
@@ -17,7 +17,7 @@ function SimilarContentCard({ content }: SimilarContentCardProps) {
             style={{ background: "rgba(0, 0, 0, 0)" }}
             shadow="none"
         >
-            <Link href={route(`${type}.show`, content.id)} prefetch>
+            <Link href={route("anime.show", content.map_id)} prefetch>
                 <Card.Section pos="relative">
                     {!!content.vote_average && (
                         <Badge
@@ -40,24 +40,16 @@ function SimilarContentCard({ content }: SimilarContentCardProps) {
                         height={186}
                         fallbackSrc={`data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="140" height="211">
             <rect width="100%" height="100%" fill="#f0f0f0"/>
-            <text x="50%" y="50%" text-anchor="middle">${content.title}</text>
+            <text x="50%" y="50%" text-anchor="middle">${content.collection_name}</text>
         </svg>`)}`}
                         loading="lazy"
                     />
                 </Card.Section>
                 <Card.Section mt="xs">
-                    <Tooltip
-                        label={`${content.title} (${new Date(
-                            content.release_date
-                        ).getFullYear()})`}
-                        openDelay={150}
-                    >
+                    <Tooltip label={content.collection_name} openDelay={150}>
                         <Box>
                             <Text fw={600} size="sm" lineClamp={2}>
-                                {content.title}
-                            </Text>
-                            <Text fw={600} size="sm" mt={6} c="dimmed">
-                                {new Date(content.release_date).getFullYear()}
+                                {content.collection_name}
                             </Text>
                         </Box>
                     </Tooltip>
@@ -67,4 +59,4 @@ function SimilarContentCard({ content }: SimilarContentCardProps) {
     );
 }
 
-export default SimilarContentCard;
+export default AnimeRecommendedContentCard;

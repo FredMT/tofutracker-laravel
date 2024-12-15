@@ -2,25 +2,24 @@
 
 namespace App\Http\Resources;
 
+use App\Models\AnimeMappingExternalId;
+use App\Models\AnimeChainEntry;
+use App\Models\AnimeRelatedEntry;
+use App\Models\AnimePrequelSequelChain;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 
 class TmdbAnimeResource extends JsonResource
 {
     private string $type;
-    private ?string $etag;
 
-    public function __construct($resource, string $type, ?string $etag = null)
+    public function __construct($resource, string $type = 'movie')
     {
         parent::__construct($resource);
         $this->type = $type;
-        $this->etag = $etag;
     }
 
-    /**
-     * Transform the resource into an array.
-     */
     public function toArray(Request $request): array
     {
         return [
@@ -37,16 +36,60 @@ class TmdbAnimeResource extends JsonResource
                     : $this->resource['first_air_date'],
                 'vote_average' => $this->resource['vote_average'],
                 'vote_count' => $this->resource['vote_count'],
-                'recommendations' => $this->when(
-                    isset($this->resource['recommendations']),
-                    fn() => $this->resource['recommendations']['results'] ?? []
-                ),
+                'recommendations' => $this->transformRecommendations(),
                 'videos' => $this->when(
                     isset($this->resource['videos']),
                     fn() => $this->resource['videos']['results'] ?? []
                 ),
             ],
-            'etag' => $this->etag,
+        ];
+    }
+
+    private function transformRecommendations(): array
+    {
+        if (!isset($this->resource['recommendations']['results'])) {
+            return [];
+        }
+
+        return collect($this->resource['recommendations']['results'])
+            ->map(function ($recommendation) {
+                // Find the AniDB ID from TMDB ID
+                $mappingExternalId = AnimeMappingExternalId::where('themoviedb_id', $recommendation['id'])->first();
+
+
+                if (!$mappingExternalId) {
+                    return null;
+                }
+
+                // Try to find map_id through chain entries
+                $chainEntry = AnimeChainEntry::where('anime_id', $mappingExternalId->anidb_id)->first();
+                if ($chainEntry) {
+                    $chain = AnimePrequelSequelChain::find($chainEntry->chain_id);
+                    if ($chain) {
+                        return $this->formatRecommendation($recommendation, $chain->map_id);
+                    }
+                }
+
+                // If not found in chain entries, try related entries
+                $relatedEntry = AnimeRelatedEntry::where('anime_id', $mappingExternalId->anidb_id)->first();
+                if ($relatedEntry) {
+                    return $this->formatRecommendation($recommendation, $relatedEntry->map_id);
+                }
+
+                return null;
+            })
+            ->filter()
+            ->values()
+            ->toArray();
+    }
+
+    private function formatRecommendation(array $recommendation, int $mapId): array
+    {
+        return [
+            'map_id' => $mapId,
+            'poster_path' => $recommendation['poster_path'],
+            'vote_average' => $recommendation['vote_average'],
+            'collection_name' => $this->type === 'movie' ? $recommendation['title'] : $recommendation['name']
         ];
     }
 

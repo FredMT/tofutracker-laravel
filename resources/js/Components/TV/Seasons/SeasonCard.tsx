@@ -8,7 +8,10 @@ interface SeasonCardProps {
 
 function SeasonCard({ season }: SeasonCardProps) {
     return (
-        <Link href={`${season.show_id}/season/${season.season_number}`}>
+        <Link
+            href={`${season.show_id}/season/${season.season_number}`}
+            prefetch
+        >
             <Card
                 radius="md"
                 w={140}

@@ -10,12 +10,21 @@ interface AnimeCreditsCardProps {
 
 function AnimeCreditsCard({ character, seiyuus }: AnimeCreditsCardProps) {
     return (
-        <Card radius="md" withBorder w={280} mr={20}>
+        <Card
+            radius="md"
+            withBorder
+            w={300}
+            mr={20}
+            mt={10}
+            mih={264}
+            shadow="none"
+        >
             <Group wrap="nowrap" gap="md" justify="center">
                 <Stack gap={8} mih={200}>
                     <Image
                         src={character.picture}
                         h={186}
+                        mih={186}
                         mah={186}
                         maw={124}
                         radius={"md"}
@@ -81,15 +90,23 @@ function AnimeCreditsCard({ character, seiyuus }: AnimeCreditsCardProps) {
                             alt={seiyuus[0]?.name}
                             fit="cover"
                             style={{ objectPosition: "top" }}
-                            fallbackSrc={`https://placehold.co/124x186?text=${seiyuus[0]?.name}`}
+                            fallbackSrc={`https://placehold.co/124x186?text=${
+                                seiyuus[0]?.name || `${character.name}'s seiyuu`
+                            }`}
                         />
                     )}
                     <Tooltip
-                        label={seiyuus.map((s) => s.name).join(", ")}
+                        label={
+                            seiyuus.length
+                                ? seiyuus.map((s) => s.name).join(", ")
+                                : `${character.name}'s seiyuu`
+                        }
                         openDelay={150}
                     >
                         <Text size="sm" fw={500} lineClamp={1} w={124} truncate>
-                            {seiyuus.map((s) => s.name).join(", ")}
+                            {seiyuus.length
+                                ? seiyuus.map((s) => s.name).join(", ")
+                                : `${character.name}'s seiyuu`}
                         </Text>
                     </Tooltip>
                 </Stack>

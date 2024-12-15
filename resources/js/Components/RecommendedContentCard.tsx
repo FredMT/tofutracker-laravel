@@ -17,7 +17,7 @@ function RecommendedContentCard({ content }: RecommendedContentCardProps) {
             style={{ background: "rgba(0, 0, 0, 0)" }}
             shadow="none"
         >
-            <Link href={route(`${type}.show`, content.id)}>
+            <Link href={route(`${type}.show`, content.id)} prefetch>
                 <Card.Section pos="relative">
                     {!!content.vote_average && (
                         <Badge

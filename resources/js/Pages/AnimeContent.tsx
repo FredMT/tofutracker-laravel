@@ -1,3 +1,4 @@
+import AnimeRecommendedContent from "@/Components/AnimeRecommendedContent";
 import { ContentActions } from "@/Components/ContentActions/ContentActions";
 import { ContentBanner } from "@/Components/ContentBanner";
 import { ContentCredits } from "@/Components/ContentCredits";
@@ -13,7 +14,7 @@ import { useContent } from "@/hooks/useContent";
 import ContentLayout from "@/Layouts/ContentLayout";
 import { PageProps } from "@/types";
 import { Anime, ShowData, MovieData } from "@/types/anime";
-import { Head } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
 import {
     Box,
     Divider,
@@ -84,7 +85,9 @@ export default function AnimeContent() {
                                 <ContentCredits containerWidth={width * 0.95} />
 
                                 {/* <Divider my={16} /> */}
-                                {/* <SimilarContent containerWidth={width * 0.95} /> */}
+                                <AnimeRecommendedContent
+                                    containerWidth={width * 0.95}
+                                />
                             </Box>
                         </Stack>
                     }
@@ -118,14 +121,15 @@ export default function AnimeContent() {
                             <ContentCredits containerWidth={width * 0.67} />
                             {/* {isTV(tmdbData) && <ContentEpisodes />} */}
                             <Divider my={16} />
-                            <Space h={100} />
                             {/* {isTV(tmdbData) && (
                                 <>
                                 <Seasons containerWidth={width * 0.67} />
                                 <Divider my={16} />
                                 </>
-                                )}
-                                <SimilarContent containerWidth={width * 0.67} /> */}
+                                )} */}
+                            <AnimeRecommendedContent
+                                containerWidth={width * 0.67}
+                            />
                         </Box>
                     }
                 />

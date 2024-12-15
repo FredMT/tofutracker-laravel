@@ -67,7 +67,7 @@ interface BaseData {
     tagline: string;
     vote_average: number;
     vote_count: number;
-    recommendations: Recommendations;
+    recommendations: AnimeRecommendation[];
     videos: Videos;
     certification: string;
 }
@@ -153,40 +153,11 @@ export interface ProductionCountry {
     name: string;
 }
 
-interface BaseRecommendationResult {
-    backdrop_path: string;
-    id: number;
-    overview: string;
+export interface AnimeRecommendation {
+    map_id: number;
     poster_path: string;
-    adult: boolean;
-    original_language: OriginalLanguage;
-    genre_ids: number[];
-    popularity: number;
     vote_average: number;
-    vote_count: number;
-}
-
-export interface ShowRecommendationResult extends BaseRecommendationResult {
-    media_type: MediaType.Tv;
-    name: string;
-    original_name: string;
-    first_air_date: Date;
-    origin_country: OriginCountry[];
-}
-
-export interface MovieRecommendationResult extends BaseRecommendationResult {
-    media_type: MediaType.Movie;
-    title: string;
-    original_title: string;
-    release_date: Date;
-    video: boolean;
-}
-
-export interface Recommendations {
-    page: number;
-    results: (ShowRecommendationResult | MovieRecommendationResult)[];
-    total_pages: number;
-    total_results: number;
+    collection_name: string;
 }
 
 export interface SpokenLanguage {

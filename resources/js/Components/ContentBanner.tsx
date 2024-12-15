@@ -100,7 +100,7 @@ function BannerContent({
             </Paper>
             <Group gap={2} justify="center">
                 {genres.map((genre: Genre) => (
-                    <Badge key={genre.id} variant="outline">
+                    <Badge key={genre.id} variant="filled" color="black">
                         {genre.name}
                     </Badge>
                 ))}

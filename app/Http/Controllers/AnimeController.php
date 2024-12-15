@@ -6,7 +6,6 @@ use App\Actions\Anime\GetAnidbData;
 use App\Actions\Anime\GetAnimeTypeAction;
 use App\Actions\Anime\GetTmdbData;
 use App\Models\AnimeMap;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -35,14 +34,6 @@ class AnimeController extends Controller
             $collectionName = $animeMap->collection_name ?? json_decode($tmdbData->getContent(), true)['data']['title'];
             $type = $this->getAnimeType->execute($accessId);
 
-            // return response()->json([
-            //     $type => [
-            //         'tmdbData' => json_decode($tmdbData->getContent(), true),
-            //         'anidbData' => $anidbData,
-            //         'collection_name' => $collectionName,
-            //     ],
-            //     'user_library' => null
-            // ]);
             return Inertia::render('AnimeContent', [
                 'type' => $type,
                 $type => [
