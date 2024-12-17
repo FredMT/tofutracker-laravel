@@ -19,7 +19,7 @@ class TvSeasonController extends Controller
     /**
      * Store or retrieve a TV season with async updates
      */
-    public function store(string $tvId, string $seasonNumber): Response
+    public function show(string $tvId, string $seasonNumber): Response
     {
         try {
             $cacheKey = "tv_season_{$tvId}_{$seasonNumber}";

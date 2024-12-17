@@ -1,6 +1,13 @@
 .imageWrapper {
     position: relative;
     width: 100%;
+    max-height: 220px;
+
+    @media (min-width: 900px) {
+        .imageWrapper {
+            max-width: 380px;
+        }
+    }
 }
 
 .imageOverlay {
@@ -26,18 +33,4 @@
     border-radius: 4px;
     display: inline-flex;
     width: fit-content;
-}
-
-.actionsPaper {
-    background-color: light-dark(
-        var(--mantine-color-dark-light),
-        var(--mantine-color-gray-light)
-    );
-}
-
-@media (min-width: 900) {
-    .actionsPaper {
-        min-width: 34px;
-        max-width: 34px;
-    }
 }

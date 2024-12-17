@@ -11,7 +11,7 @@ class AnidbCreator extends Model
     use HasFactory;
 
     protected $table = 'anidb_creators';
-
+    protected $hidden = ['id', 'anime_id', 'created_at', 'updated_at'];
 
 
     protected $fillable = [

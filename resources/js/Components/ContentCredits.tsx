@@ -1,13 +1,28 @@
 import { Carousel } from "@mantine/carousel";
-import { Container, Divider, Stack, Tabs, Text, Title } from "@mantine/core";
+import {
+    Container,
+    Divider,
+    Space,
+    Stack,
+    Tabs,
+    Text,
+    Title,
+} from "@mantine/core";
 import { useState } from "react";
 import PersonCard from "./PersonCard";
 import AnimeCreditsCard from "./AnimeCreditsCard";
 import classes from "./ContentCredits.module.css";
 import { useContent } from "@/hooks/useContent";
 import { useAnimeContent } from "@/hooks/useAnimeContent";
-import { TmdbPerson, AnimePerson, ContentCreditsProps } from "@/types";
+import {
+    TmdbPerson,
+    AnimePerson,
+    ContentCreditsProps,
+    PageProps,
+} from "@/types";
 import { useMediaQuery } from "@mantine/hooks";
+import { usePage } from "@inertiajs/react";
+import { Cast } from "@/types/animeseason";
 
 export function ContentCredits({
     containerWidth,
@@ -16,21 +31,48 @@ export function ContentCredits({
     const regularContent = useContent();
     const animeContent = useAnimeContent();
     const isMobile = useMediaQuery("(max-width: 640px)");
+    const type = usePage<PageProps>().props.type as string;
+    const { animeseason } = usePage<PageProps>().props;
 
     if (!regularContent && !animeContent) return null;
     if (regularContent?.type === "tvseason") return null;
 
     const [activeTab, setActiveTab] = useState<"cast" | "crew">("cast");
 
-    if (animeContent) {
-        const { cast, seiyuu } = animeContent.anidbData.credits;
+    const shouldRenderAnimeCredits = [
+        "animeseason",
+        "animetv",
+        "animemovie",
+    ].includes(type);
 
+    if (!shouldRenderAnimeCredits) return null;
+
+    let cast: Cast[] = [];
+    let seiyuu: Cast[] = [];
+
+    if (type === "animeseason" && animeseason) {
+        cast = animeseason.credits.cast;
+        seiyuu = animeseason.credits.seiyuu;
+    } else if (animeContent?.anidbData.credits) {
+        cast = animeContent.anidbData.credits.cast;
+        seiyuu = animeContent.anidbData.credits.seiyuu;
+    }
+
+    if (!cast || !seiyuu) return null;
+
+    if (animeContent || animeseason) {
         return (
             <>
+                <Space h={24} hiddenFrom="smlg" />
                 <Divider my={16} />
                 <Stack>
                     <Title order={3}>Cast and Credits</Title>
-                    <Container size={containerWidth} className="select-none">
+                    <Container
+                        size={containerWidth}
+                        className="select-none"
+                        px={0}
+                        mx={0}
+                    >
                         <Carousel
                             height={280}
                             slideSize="300px"
@@ -45,10 +87,13 @@ export function ContentCredits({
                                 <Carousel.Slide key={character.id}>
                                     <AnimeCreditsCard
                                         character={character}
-                                        seiyuus={seiyuu.filter((s) =>
-                                            s.characters
-                                                .split(", ")
-                                                .includes(character.name)
+                                        seiyuus={seiyuu.filter(
+                                            (s) =>
+                                                s.characters
+                                                    ?.split(", ")
+                                                    ?.includes(
+                                                        character.name
+                                                    ) ?? false
                                         )}
                                     />
                                 </Carousel.Slide>

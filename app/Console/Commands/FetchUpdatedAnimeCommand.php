@@ -22,8 +22,6 @@ class FetchUpdatedAnimeCommand extends Command
                 return;
             }
 
-            // Get the current time
-            $currentTime = now();
 
             // Dispatch jobs with delay to respect rate limit
             foreach ($result['anime_ids'] as $index => $animeId) {

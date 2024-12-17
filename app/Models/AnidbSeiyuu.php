@@ -11,6 +11,7 @@ class AnidbSeiyuu extends Model
     use HasFactory;
 
     protected $table = 'anidb_seiyuus';
+    protected $hidden = ['created_at', 'updated_at'];
 
 
     protected $fillable = [

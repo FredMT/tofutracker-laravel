@@ -4,6 +4,20 @@ export interface Anime {
     collection_name: string;
 }
 
+export interface BaseCharacter {
+    id: number;
+    name: string;
+    picture: string;
+}
+
+export interface CastMember extends BaseCharacter {
+    seiyuu: string;
+}
+
+export interface SeiyuuMember extends BaseCharacter {
+    characters: string;
+}
+
 export interface AnidbData {
     other_related_ids: RelatedAnimeData[];
     prequel_sequel_chains: Record<string, RelatedAnimeData[]>;
@@ -12,6 +26,7 @@ export interface AnidbData {
 
 export interface RelatedAnimeData {
     id: number;
+    map_id: number;
     type: string;
     episode_count: number;
     season: string | null;

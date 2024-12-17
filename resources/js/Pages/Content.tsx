@@ -1,5 +1,5 @@
+import { BannerImageContainer } from "@/Components/BannerImageContainer";
 import { ContentActions } from "@/Components/ContentActions/ContentActions";
-import { ContentBanner } from "@/Components/ContentBanner";
 import { ContentCredits } from "@/Components/ContentCredits";
 import ContentDetails from "@/Components/ContentDetails";
 import ContentEpisodes from "@/Components/ContentEpisodes";
@@ -32,7 +32,7 @@ export default function Content(props: PageProps) {
         <>
             <Head title={content.title} />
             <ThemeButton />
-            <ContentBanner />
+            <BannerImageContainer />
             <ResponsiveContainer>
                 <Space h={24} />
                 <ContentLayout

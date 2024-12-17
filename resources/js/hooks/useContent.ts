@@ -2,7 +2,7 @@ import { PageProps } from "@/types";
 import { usePage } from "@inertiajs/react";
 
 export function useContent() {
-    const { type, movie, tv, tvseason, animetv, animemovie } =
+    const { type, movie, tv, tvseason, animetv, animemovie, animeseason } =
         usePage<PageProps>().props;
 
     const content =
@@ -16,6 +16,8 @@ export function useContent() {
             ? animetv
             : type === "animemovie"
             ? animemovie
+            : type === "animeseason"
+            ? animeseason
             : null;
 
     return { content, type };

@@ -9,6 +9,7 @@ class AnimeMappingExternalId extends Model
 {
     protected $guarded = ['id'];
     protected $table = 'anime_mapping_external_ids';
+    protected $hidden = ['id', 'created_at', 'updated_at'];
 
     protected $casts = [
         'anisearch_id' => 'integer',

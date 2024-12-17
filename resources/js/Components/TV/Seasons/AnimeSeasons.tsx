@@ -4,6 +4,7 @@ import { Container, Stack, Title } from "@mantine/core";
 import { RelatedAnimeData } from "@/types/anime";
 import classes from "../../SimilarContent.module.css";
 import AnimeSeasonCard from "@/Components/TV/Seasons/AnimeSeasonCard";
+import { Link } from "@inertiajs/react";
 
 interface AnimeSeasonsProps {
     containerWidth: number;
@@ -41,7 +42,20 @@ export default function AnimeSeasons({
                 >
                     {items.map((season) => (
                         <Carousel.Slide key={season.id}>
-                            <AnimeSeasonCard season={season} />
+                            {season.type === "Music Video" ||
+                            season.type === "unknown" ? (
+                                <AnimeSeasonCard season={season} />
+                            ) : (
+                                <Link
+                                    href={route("anime.season.show", {
+                                        id: season.map_id,
+                                        seasonId: season.id,
+                                    })}
+                                    prefetch
+                                >
+                                    <AnimeSeasonCard season={season} />
+                                </Link>
+                            )}
                         </Carousel.Slide>
                     ))}
                 </Carousel>

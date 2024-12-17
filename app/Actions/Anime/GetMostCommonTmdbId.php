@@ -44,7 +44,7 @@ class GetMostCommonTmdbId
                     ->toArray();
 
                 if (empty($tmdbIds)) {
-                    throw new \Exception('No TMDb ID found for the given access ID.');
+                    throw new \Exception('No TMDb ID found for the given anime.');
                 }
 
                 $counts = array_count_values($tmdbIds);

@@ -1,6 +1,7 @@
 import { Anime } from "@/types/anime";
 import { Config } from "ziggy-js";
 import { WatchStatus } from "./enums";
+import { AnimeSeason } from "@/types/animeseason";
 
 export interface User {
     id: number;
@@ -25,6 +26,7 @@ export type PageProps<
     tv?: TvShow;
     animetv?: Anime;
     animemovie?: Anime;
+    animeseason?: AnimeSeason;
     flash?: FlashMessage;
     ziggy: Config & { location: string };
     user_library?: {
@@ -39,6 +41,7 @@ export type PageProps<
         | { type: "tvseason"; tvseason: TvSeason }
         | { type: "animetv"; animetv: Main }
         | { type: "animemovie"; animemovie: Main }
+        | { type: "animeseason"; animemovie: AnimeSeason }
     );
 
 interface BaseContent {
@@ -210,14 +213,14 @@ interface ContentSummaryProps {
     slideSize?: string;
 }
 
-interface Episode {
+export interface Episode {
     id: number;
     name: string;
     overview: string;
     episode_number: number;
     air_date: string;
     still_path: string;
-    vote_average: number;
+    vote_average?: number;
     runtime: number;
 }
 

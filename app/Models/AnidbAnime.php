@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Actions\Anime\GetAnimeEpisodes;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,6 +13,7 @@ class AnidbAnime extends Model
     use HasFactory;
 
     protected $table = 'anidb_anime';
+    protected $hidden = ['created_at', 'updated_at'];
 
     protected $fillable = [
         'id',
@@ -66,5 +69,10 @@ class AnidbAnime extends Model
     public function externalLinks(): HasMany
     {
         return $this->hasMany(AnidbExternalLink::class, 'anime_id');
+    }
+
+    public function mappedEpisodes()
+    {
+        return app(GetAnimeEpisodes::class)->execute($this->id);
     }
 }

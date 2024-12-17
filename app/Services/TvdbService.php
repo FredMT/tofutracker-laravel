@@ -95,9 +95,6 @@ class TvdbService
             Log::info($logMessage, [
                 'series_id' => $seriesId,
                 'season_id' => $season->id,
-                'slug' => $season->slug,
-                'status_keep_updated' => $season->status_keep_updated,
-                'last_fetched_at' => $season->last_fetched_at,
                 'months_until_next_check' => $season->last_fetched_at ? 1 - now()->diffInMonths($season->last_fetched_at) : null
             ]);
             return;
@@ -109,9 +106,6 @@ class TvdbService
             Log::info('Skipping update - no new updates from TVDB because api response lastUpdated is not newer than local lastUpdated', [
                 'series_id' => $seriesId,
                 'season_id' => $season->id,
-                'slug' => $season->slug,
-                'local_last_updated' => $season->last_updated,
-                'api_last_updated' => $apiLastUpdated
             ]);
 
             // Update last_fetched_at even though we're not updating content
@@ -121,13 +115,6 @@ class TvdbService
 
         Log::info('Dispatching update job for existing season', [
             'series_id' => $seriesId,
-            'season_id' => $season->id,
-            'slug' => $season->slug,
-            'status_keep_updated' => $season->status_keep_updated,
-            'last_fetched_at' => $season->last_fetched_at,
-            'months_since_last_fetch' => $season->last_fetched_at ? now()->diffInMonths($season->last_fetched_at) : null,
-            'local_last_updated' => $season->last_updated,
-            'api_last_updated' => $apiLastUpdated
         ]);
 
         UpdateTvdbAnimeSeasonJob::dispatch($season, $completeData);

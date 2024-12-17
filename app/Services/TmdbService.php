@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\AnimeMappingExternalId;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Log;
@@ -19,7 +20,6 @@ class TmdbService
             'Accept' => 'application/json',
         ])->baseUrl($this->baseUrl);
     }
-
 
 
     public function getMovie(string $id): array
@@ -216,5 +216,47 @@ class TmdbService
                 ->values()
                 ->all();
         })[array_rand(cache()->get('trending_backdrops', []))] ?? null;
+    }
+
+    public function getBackdropAndLogoForAnidbId(int $anidbId): ?array
+    {
+        try {
+            $externalId = AnimeMappingExternalId::where('anidb_id', $anidbId)
+                ->whereNotNull('themoviedb_id')
+                ->first();
+
+            if (!$externalId) {
+                return null;
+            }
+
+            $endpoint = $externalId->type === 'MOVIE' ? 'movie' : 'tv';
+
+            $response = $this->client
+                ->get("/{$endpoint}/{$externalId->themoviedb_id}/images", [
+                    'include_image_language' => 'en,null'
+                ]);
+
+            if (!$response->successful()) {
+                return null;
+            }
+
+            $data = $response->json();
+
+            $backdrop = collect($data['backdrops'])
+                ->sortByDesc('vote_count')
+                ->first();
+
+            $logo = collect($data['logos'])
+                ->sortByDesc('vote_count')
+                ->first();
+
+            return [
+                'backdrop_path' => $backdrop['file_path'] ?? null,
+                'logo_path' => $logo['file_path'] ?? null
+            ];
+        } catch (\Exception $e) {
+            Log::error("Error getting TMDB ID for AniDB ID {$anidbId}: " . $e->getMessage());
+            return null;
+        }
     }
 }

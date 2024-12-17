@@ -11,6 +11,7 @@ class AnidbEpisode extends Model
     use HasFactory;
 
     protected $table = 'anidb_episodes';
+    protected $hidden = ['created_at', 'updated_at'];
 
 
     protected $fillable = [

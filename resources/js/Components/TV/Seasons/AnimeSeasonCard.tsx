@@ -1,5 +1,6 @@
 import { Badge, Card, Image, Stack, Text, Tooltip } from "@mantine/core";
 import { RelatedAnimeData } from "@/types/anime";
+import { Link } from "@inertiajs/react";
 
 interface AnimeSeasonCardProps {
     season: RelatedAnimeData;

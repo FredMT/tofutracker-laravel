@@ -28,7 +28,6 @@ class CreateTvdbAnimeSeasonJob implements ShouldQueue
         $this->seasonData = [
             'id' => $completeData->data->id,
             'slug' => $completeData->data->slug,
-            'image' => $completeData->data->image,
             'status' => [
                 'name' => $completeData->data->status->name,
                 'recordType' => $completeData->data->status->recordType,
@@ -67,7 +66,6 @@ class CreateTvdbAnimeSeasonJob implements ShouldQueue
         $season = TvdbAnimeSeason::create([
             'id' => $this->seasonData['id'],
             'slug' => $this->seasonData['slug'],
-            'image' => $this->seasonData['image'],
             'status_name' => $this->seasonData['status']['name'],
             'status_record_type' => $this->seasonData['status']['recordType'],
             'status_keep_updated' => $this->seasonData['status']['keepUpdated'],

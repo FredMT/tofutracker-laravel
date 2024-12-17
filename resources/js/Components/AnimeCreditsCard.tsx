@@ -2,10 +2,11 @@ import { CastMember, SeiyuuMember } from "@/types/anime";
 import { Card, Group, Image, Stack, Text, Tooltip } from "@mantine/core";
 import { Carousel } from "@mantine/carousel";
 import classes from "./AnimeCreditsCard.module.css";
+import { Cast } from "@/types/animeseason";
 
 interface AnimeCreditsCardProps {
-    character: CastMember;
-    seiyuus: SeiyuuMember[];
+    character: CastMember | Cast;
+    seiyuus: (SeiyuuMember | Cast)[];
 }
 
 function AnimeCreditsCard({ character, seiyuus }: AnimeCreditsCardProps) {
@@ -28,6 +29,7 @@ function AnimeCreditsCard({ character, seiyuus }: AnimeCreditsCardProps) {
                         mah={186}
                         maw={124}
                         radius={"md"}
+                        loading="lazy"
                         w={124}
                         alt={character.name}
                         fit="cover"
@@ -67,6 +69,7 @@ function AnimeCreditsCard({ character, seiyuus }: AnimeCreditsCardProps) {
                                         mah={186}
                                         maw={124}
                                         mih={186}
+                                        loading="lazy"
                                         radius={"md"}
                                         miw={124}
                                         w={124}

@@ -12,6 +12,8 @@ class AnidbCharacter extends Model
     use HasFactory;
 
     protected $table = 'anidb_characters';
+    protected $hidden = ['created_at', 'updated_at'];
+
 
 
     protected $fillable = [

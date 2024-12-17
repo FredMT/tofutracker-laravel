@@ -13,7 +13,6 @@ class TvdbAnimeSeason extends Model
     protected $fillable = [
         'id',
         'slug',
-        'image',
         'status_name',
         'status_record_type',
         'status_keep_updated',

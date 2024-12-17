@@ -32,7 +32,6 @@ class UpdateTvdbAnimeSeasonJob implements ShouldQueue
         ]);
 
         $this->season->update([
-            'image' => $this->completeData->data->image,
             'status_name' => $this->completeData->data->status->name,
             'status_record_type' => $this->completeData->data->status->recordType,
             'status_keep_updated' => $this->completeData->data->status->keepUpdated,

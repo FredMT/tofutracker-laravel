@@ -24,6 +24,7 @@ const theme = createTheme({
         xs: "20em",
         sm: "40em",
         md: "48em",
+        smlg: "56.25em",
         lg: "64em",
         xl: "80em",
     },

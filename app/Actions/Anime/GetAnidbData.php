@@ -47,7 +47,8 @@ class GetAnidbData
                     'season' => $data['season'],
                     'title' => $data['title_main'],
                     'rating' => $data['rating'] === '0.00' ? null : $data['rating'],
-                    'picture' => $data['picture']
+                    'picture' => $data['picture'],
+                    'map_id' => $relatedEntry->map_id,
                 ] : null;
             })->filter()->values()->toArray();
 
@@ -61,7 +62,7 @@ class GetAnidbData
                 $chainAnime = $chain->entries()
                     ->orderBy('sequence_order')
                     ->get()
-                    ->map(function ($entry) use ($anidbAnimeData) {
+                    ->map(function ($entry) use ($anidbAnimeData, $chain) {
                         $data = $anidbAnimeData[$entry->anime_id] ?? null;
                         return $data ? [
                             'id' => $data['id'],
@@ -70,7 +71,8 @@ class GetAnidbData
                             'season' => $data['season'],
                             'title' => $data['title_main'],
                             'rating' => $data['rating'] === '0.00' ? null : $data['rating'],
-                            'picture' => $data['picture']
+                            'picture' => $data['picture'],
+                            'map_id' => $chain->map_id,
                         ] : null;
                     })
                     ->filter()

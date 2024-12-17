@@ -1,0 +1,9 @@
+.summaryGroup {
+    justify-content: flex-start;
+}
+
+@media (max-width: 768px) {
+    .summaryGroup {
+        justify-content: center;
+    }
+}

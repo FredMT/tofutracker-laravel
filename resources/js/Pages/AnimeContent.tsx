@@ -1,6 +1,6 @@
 import AnimeRecommendedContent from "@/Components/AnimeRecommendedContent";
+import { BannerImageContainer } from "@/Components/BannerImageContainer";
 import { ContentActions } from "@/Components/ContentActions/ContentActions";
-import { ContentBanner } from "@/Components/ContentBanner";
 import { ContentCredits } from "@/Components/ContentCredits";
 import ContentDetails from "@/Components/ContentDetails";
 import { ContentSummary } from "@/Components/ContentSummary";
@@ -37,7 +37,7 @@ export default function AnimeContent() {
         <>
             <Head title={content.collection_name} />
             <ThemeButton />
-            <ContentBanner />
+            <BannerImageContainer />
             <ResponsiveContainer>
                 <Space h={24} />
                 <ContentLayout
@@ -111,10 +111,9 @@ export default function AnimeContent() {
                             </Stack>
                             <Space h={24} />
                             <ContentCredits containerWidth={width * 0.67} />
-                            <Divider my={24} />
+                            <Divider my={16} />
 
                             <Seasons containerWidth={width * 0.67} />
-                            <Divider my={16} />
                             <AnimeRecommendedContent
                                 containerWidth={width * 0.67}
                             />

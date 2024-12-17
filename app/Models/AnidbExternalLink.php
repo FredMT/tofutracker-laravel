@@ -11,6 +11,8 @@ class AnidbExternalLink extends Model
     use HasFactory;
 
     protected $table = 'anidb_external_links';
+    protected $hidden = ['id', 'anime_id', 'created_at', 'updated_at'];
+
 
 
     protected $fillable = [

@@ -1,9 +1,11 @@
 <?php
 
+use App\Actions\Anime\GetAnimeEpisodesAction;
 use App\Http\Controllers\AnimeController;
 use App\Http\Controllers\AnimeMappingController;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TestController;
 use App\Http\Controllers\TvController;
 use App\Http\Controllers\TvSeasonController;
 use App\Http\Middleware\CheckAnimeMapping;
@@ -92,10 +94,15 @@ Route::get('/tv/{id}', [TvController::class, 'show'])
     ->middleware(CheckAnimeMapping::class)
     ->name('tv.show');
 
-Route::get('/tv/{id}/season/{seasonNumber}', [TvSeasonController::class, 'store'])
+Route::get('/tv/{id}/season/{seasonNumber}', [TvSeasonController::class, 'show'])
     ->middleware(CheckAnimeMapping::class)
     ->name('tv.season.show');
 
+Route::get('/anime/episodes/{anidbid}', [AnimeMappingController::class, 'mapAnimeEpisodes'])
+    ->where('anidbid', '[0-9]+')
+    ->name('anime.season.episodes');
+
 Route::get('/anime/{id}', [AnimeController::class, 'show'])->name('anime.show');
+Route::get('/anime/{id}/season/{seasonId}', [AnimeController::class, 'showSeason'])->name('anime.season.show');
 
 require __DIR__ . '/auth.php';
