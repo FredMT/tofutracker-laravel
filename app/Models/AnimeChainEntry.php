@@ -17,4 +17,9 @@ class AnimeChainEntry extends Model
     {
         return $this->belongsTo(AnimePrequelSequelChain::class, 'chain_id');
     }
+
+    public function anime(): BelongsTo
+    {
+        return $this->belongsTo(AnidbAnime::class, 'anime_id');
+    }
 }

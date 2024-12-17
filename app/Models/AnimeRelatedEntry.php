@@ -16,4 +16,9 @@ class AnimeRelatedEntry extends Model
     {
         return $this->belongsTo(AnimeMap::class, 'map_id');
     }
+
+    public function anime(): BelongsTo
+    {
+        return $this->belongsTo(AnidbAnime::class, 'anime_id');
+    }
 }

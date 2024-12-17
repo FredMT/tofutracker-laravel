@@ -1,17 +1,12 @@
 <?php
 
-use App\Actions\Anime\GetAnimeEpisodesAction;
 use App\Http\Controllers\AnimeController;
 use App\Http\Controllers\AnimeMappingController;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\TestController;
 use App\Http\Controllers\TvController;
 use App\Http\Controllers\TvSeasonController;
 use App\Http\Middleware\CheckAnimeMapping;
-use App\Services\AnimeRelationshipService;
-use App\Services\TmdbService;
-use App\Services\TvdbService;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Illuminate\Http\Request;

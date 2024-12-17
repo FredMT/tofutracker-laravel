@@ -3,11 +3,20 @@ import ProfileLayout from "@/Layouts/ProfileLayout";
 import { Head, usePage } from "@inertiajs/react";
 import { MoviePageProps, PageProps } from "@/types";
 import { LibraryEntry } from "@/types";
-import { Container, Divider, Group, Stack, Tabs, Text } from "@mantine/core";
+import {
+    Container,
+    Divider,
+    Group,
+    Space,
+    Stack,
+    Tabs,
+    Text,
+} from "@mantine/core";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
 import { useLibraryData } from "@/hooks/useLibraryData";
 import { UserProfileHeader } from "@/Components/UserProfileHeader";
 import { LibraryGrid } from "@/Components/LibraryGrid";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 
 interface Props extends MoviePageProps {
     library: {
@@ -58,17 +67,20 @@ export default function UserProfile({ library: initialLibrary }: Props) {
     return (
         <>
             <Head title="User Profile" />
-            <UserImage />
-            <Container size={1200}>
-                <ProfileLayout
-                    left={
-                        <UserProfileHeader
-                            username={props.auth.user.username}
-                        />
-                    }
-                    right={rightContent}
-                />
-            </Container>
+            <AuthenticatedLayout>
+                <Space h={64} style={{ background: "rgba(0, 0, 0, 0.7)" }} />
+                <UserImage />
+                <Container size={1200}>
+                    <ProfileLayout
+                        left={
+                            <UserProfileHeader
+                                username={props.auth.user.username}
+                            />
+                        }
+                        right={rightContent}
+                    />
+                </Container>
+            </AuthenticatedLayout>
         </>
     );
 }

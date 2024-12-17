@@ -21,7 +21,7 @@ export default function ThemeButton() {
                         computedColorScheme === "light" ? "dark" : "light"
                     )
                 }
-                variant="default"
+                variant="outline"
                 size="lg"
                 aria-label="Toggle color scheme"
             >

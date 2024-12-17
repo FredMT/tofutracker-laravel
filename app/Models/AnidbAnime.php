@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Znck\Eloquent\Relations\BelongsToThrough;
 
 class AnidbAnime extends Model
 {
-    use HasFactory;
-
+    use \Znck\Eloquent\Traits\BelongsToThrough;
     protected $table = 'anidb_anime';
     protected $hidden = ['created_at', 'updated_at'];
 
@@ -74,5 +74,67 @@ class AnidbAnime extends Model
     public function mappedEpisodes()
     {
         return app(GetAnimeEpisodes::class)->execute($this->id);
+    }
+
+    public function relatedEntries(): HasMany
+    {
+        return $this->hasMany(AnimeRelatedEntry::class, 'anime_id');
+    }
+
+    public function chainEntries(): HasMany
+    {
+        return $this->hasMany(AnimeChainEntry::class, 'anime_id');
+    }
+
+    public function relatedEntryMap(): BelongsToThrough
+    {
+        return $this->belongsToThrough(
+            AnimeMap::class,
+            AnimeRelatedEntry::class,
+            null,
+            '',
+            [AnimeRelatedEntry::class => 'anime_id']
+        );
+    }
+
+    private function getMapId($anidbId)
+    {
+        $mapId = AnimeChainEntry::where('anime_id', $anidbId)
+            ->join('anime_prequel_sequel_chains', 'anime_chain_entries.chain_id', '=', 'anime_prequel_sequel_chains.id')
+            ->value('anime_prequel_sequel_chains.map_id');
+
+        if ($mapId) {
+            return $mapId;
+        }
+
+        $mapId = AnimeRelatedEntry::where('anime_id', $anidbId)->value('map_id');
+
+        if ($mapId) {
+            return $mapId;
+        }
+
+        throw new \Exception("Map ID not found for Anidb ID: " . $anidbId);
+    }
+
+    public function map()
+    {
+        return AnimeMap::query()
+            ->where(function ($query) {
+                // Through anime_chain_entries
+                $query->whereExists(function ($subquery) {
+                    $subquery->from('anime_prequel_sequel_chains')
+                        ->join('anime_chain_entries', 'anime_chain_entries.chain_id', '=', 'anime_prequel_sequel_chains.id')
+                        ->whereColumn('anime_prequel_sequel_chains.map_id', '=', 'anime_maps.id')
+                        ->where('anime_chain_entries.anime_id', '=', $this->id);
+                })
+                    // Through anime_related_entries
+                    ->orWhereExists(function ($subquery) {
+                        $subquery->from('anime_related_entries')
+                            ->whereColumn('anime_related_entries.map_id', '=', 'anime_maps.id')
+                            ->where('anime_related_entries.anime_id', '=', $this->id);
+                    });
+            })
+            ->select('anime_maps.id as map_id')
+            ->value('map_id');
     }
 }

@@ -2,8 +2,10 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\AnidbAnime;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -23,10 +25,22 @@ class CheckAnimeMapping
             return $response->json();
         });
 
-        if (!empty($mapping)) {
-            return redirect()->to("/anime/{$id}");
+        if (empty($mapping)) {
+            return $next($request);
         }
 
-        return $next($request);
+        $firstAnidb = Arr::first($mapping, fn($value) => is_numeric($value['anidb'] ?? null));
+        $anidbId = $firstAnidb['anidb'] ?? null;
+
+
+        if (!$anidbId) {
+            return $next($request);
+        }
+
+        $mapId = AnidbAnime::find($anidbId)->map();
+
+        return $mapId
+            ? redirect()->to("/anime/{$mapId}")
+            : $next($request);
     }
 }

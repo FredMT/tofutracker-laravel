@@ -1,7 +1,8 @@
 import ContentEpisodeCard from "@/Components/ContentEpisodeCard";
 import { PageProps } from "@/types";
 import { usePage } from "@inertiajs/react";
-import { Spoiler, Stack, Tabs, Title } from "@mantine/core";
+import { Button, Space, Spoiler, Stack, Tabs, Title } from "@mantine/core";
+import { useState } from "react";
 
 function AnimeContentEpisodes() {
     const { animeseason } = usePage<PageProps>().props;
@@ -25,6 +26,22 @@ function AnimeContentEpisodes() {
     const hasMainEpisodes = Object.keys(filteredMainEpisodes).length > 0;
     const hasSpecialEpisodes = Object.keys(filteredSpecialEpisodes).length > 0;
 
+    const [mainVisibleCount, setMainVisibleCount] = useState(25);
+    const [specialVisibleCount, setSpecialVisibleCount] = useState(25);
+
+    const paginatedMainEpisodes = Object.fromEntries(
+        Object.entries(filteredMainEpisodes).slice(0, mainVisibleCount)
+    );
+
+    const paginatedSpecialEpisodes = Object.fromEntries(
+        Object.entries(filteredSpecialEpisodes).slice(0, specialVisibleCount)
+    );
+
+    const hasMoreMainEpisodes =
+        Object.keys(filteredMainEpisodes).length > mainVisibleCount;
+    const hasMoreSpecialEpisodes =
+        Object.keys(filteredSpecialEpisodes).length > specialVisibleCount;
+
     if (!hasMainEpisodes && !hasSpecialEpisodes) return null;
 
     return (
@@ -40,15 +57,22 @@ function AnimeContentEpisodes() {
                     )}
                 </Tabs.List>
 
-                {hasMainEpisodes && (
-                    <Spoiler
-                        maxHeight={600}
-                        showLabel="Show more"
-                        hideLabel="Show less"
-                    >
+                <Spoiler
+                    maxHeight={1000}
+                    showLabel="Show more"
+                    hideLabel="Show less"
+                    styles={{
+                        control: {
+                            display: "flex",
+                            justifyContent: "flex-end",
+                            marginTop: "8px",
+                        },
+                    }}
+                >
+                    {hasMainEpisodes && (
                         <Tabs.Panel value="main">
                             <Stack mt="md">
-                                {Object.entries(filteredMainEpisodes).map(
+                                {Object.entries(paginatedMainEpisodes).map(
                                     ([number, episode]) => (
                                         <ContentEpisodeCard
                                             key={`main-${number}`}
@@ -57,32 +81,53 @@ function AnimeContentEpisodes() {
                                         />
                                     )
                                 )}
+                                {hasMoreMainEpisodes && (
+                                    <Button
+                                        onClick={() =>
+                                            setMainVisibleCount(
+                                                (prev) => prev + 25
+                                            )
+                                        }
+                                        className="text-blue-500 hover:underline"
+                                    >
+                                        Show more episodes
+                                    </Button>
+                                )}
                             </Stack>
+                            <Space h={16} />
                         </Tabs.Panel>
-                    </Spoiler>
-                )}
+                    )}
 
-                {hasSpecialEpisodes && (
-                    <Spoiler
-                        maxHeight={600}
-                        showLabel="Show more"
-                        hideLabel="Show less"
-                    >
-                        <Tabs.Panel value="special">
-                            <Stack mt="md">
-                                {Object.entries(filteredSpecialEpisodes).map(
-                                    ([number, episode]) => (
+                    {hasSpecialEpisodes && (
+                        <>
+                            <Tabs.Panel value="special">
+                                <Stack mt="md">
+                                    {Object.entries(
+                                        paginatedSpecialEpisodes
+                                    ).map(([number, episode]) => (
                                         <ContentEpisodeCard
-                                            key={`main-${number}`}
+                                            key={`special-${number}`}
                                             episode={episode}
                                             imageSource="tvdb"
                                         />
-                                    )
-                                )}
-                            </Stack>
-                        </Tabs.Panel>
-                    </Spoiler>
-                )}
+                                    ))}
+                                    {hasMoreSpecialEpisodes && (
+                                        <Button
+                                            onClick={() =>
+                                                setSpecialVisibleCount(
+                                                    (prev) => prev + 25
+                                                )
+                                            }
+                                            className="text-blue-500 hover:underline"
+                                        >
+                                            Show more episodes
+                                        </Button>
+                                    )}
+                                </Stack>
+                            </Tabs.Panel>
+                        </>
+                    )}
+                </Spoiler>
             </Tabs>
         </Stack>
     );

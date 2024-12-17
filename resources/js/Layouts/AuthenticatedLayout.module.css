@@ -1,0 +1,9 @@
+.menuDropdown {
+    backdrop-filter: blur(12px);
+    background-color: light-dark(white, black);
+}
+
+.navbar {
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px);
+}
