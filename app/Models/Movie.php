@@ -29,6 +29,14 @@ class Movie extends Model
         });
     }
 
+    public function title(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->data['title'] ?? null;
+        });
+    }
+
+
     public function logos(): Attribute
     {
         return Attribute::get(function () {

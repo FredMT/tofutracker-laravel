@@ -24,12 +24,21 @@ export function RateContent() {
         post(route(`${type}.library.update-rating`, { movie_id: content.id }), {
             preserveScroll: true,
             onSuccess: (res: any) => {
-                if (res?.props?.flash?.success) {
+                if (res.props.flash.success) {
                     notifications.show({
                         color: "teal",
                         title: "Success",
                         message: res?.props?.flash?.message,
                         icon: <Check size={18} />,
+                        autoClose: 3000,
+                    });
+                }
+                if (!res.props.flash.success) {
+                    notifications.show({
+                        color: "red",
+                        icon: <CircleAlertIcon size={18} />,
+                        title: "Error",
+                        message: res.props.flash.message || "An error occurred",
                         autoClose: 3000,
                     });
                 }
@@ -39,7 +48,7 @@ export function RateContent() {
                     color: "red",
                     icon: <CircleAlertIcon size={18} />,
                     title: "Error",
-                    message: res?.props?.flash?.message || "An error occurred",
+                    message: res.props.flash.message || "An error occurred",
                     autoClose: 3000,
                 });
             },

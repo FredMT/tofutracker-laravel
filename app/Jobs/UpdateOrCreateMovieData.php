@@ -25,6 +25,7 @@ class UpdateOrCreateMovieData implements ShouldQueue
         try {
             $response = app(TmdbService::class)->getMovie($this->movieId);
 
+
             if (isset($response['data']['success']) && $response['data']['success'] === false) {
                 Log::error("Failed to update movie {$this->movieId}: {$response['data']['status_message']}");
                 return;
@@ -46,7 +47,7 @@ class UpdateOrCreateMovieData implements ShouldQueue
                     ]
                 );
 
-                $filteredData = $movie->filteredData();
+                $filteredData = $movie->filteredData;
                 Cache::put("movie.{$this->movieId}", $filteredData, now()->addHours(6));
             }
         } catch (\Exception $e) {

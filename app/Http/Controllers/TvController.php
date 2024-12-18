@@ -20,15 +20,10 @@ class TvController extends Controller
     {
         $tvShowData = $this->tvShowActions->fetchTvShow($id);
 
-        $userLibraryData = $request->user()?->library()
-            ->where('media_id', $id)
-            ->where('media_type', 'tv')
-            ->first();
-
 
         return Inertia::render('Content', [
             'tv' => $tvShowData,
-            'user_library' => $userLibraryData,
+            'user_library' => null,
             'type' => 'tv'
         ]);
     }

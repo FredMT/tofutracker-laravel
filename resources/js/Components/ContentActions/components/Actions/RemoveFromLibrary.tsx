@@ -22,8 +22,19 @@ function RemoveFromLibrary() {
                     notifications.show({
                         color: "teal",
                         title: "Success",
-                        message: `${content?.title} deleted from library`,
+                        message: `${content?.title} removed from library`,
                         icon: <Check size={18} />,
+                        autoClose: 3000,
+                    });
+                }
+                if (!res.props.flash?.success) {
+                    notifications.show({
+                        color: "red",
+                        title: "Error",
+                        message:
+                            res.props.flash?.message ||
+                            `Failed to remove ${content?.title} from library`,
+                        icon: <CircleAlertIcon size={18} />,
                         autoClose: 3000,
                     });
                 }
@@ -32,7 +43,9 @@ function RemoveFromLibrary() {
                 notifications.show({
                     color: "red",
                     title: "Error",
-                    message: res.props.flash?.message || "An error occurred",
+                    message:
+                        res.props.flash?.message ||
+                        `An error occurred while removing ${content?.title} from library`,
                     icon: <CircleAlertIcon size={18} />,
                     autoClose: 3000,
                 });

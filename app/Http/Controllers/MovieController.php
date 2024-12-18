@@ -9,8 +9,6 @@ use Inertia\Response;
 use Illuminate\Support\Facades\Cache;
 use App\Jobs\UpdateOrCreateMovieData;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Gate;
 use App\Models\UserMovie;
 
 class MovieController extends Controller
@@ -48,7 +46,6 @@ class MovieController extends Controller
                 UpdateOrCreateMovieData::dispatch($id);
             }
 
-            Cache::put($cacheKey, $existingMovie->filteredData, now()->addHours(6));
 
             return Inertia::render('Content', [
                 'movie' => $existingMovie->filteredData,
@@ -77,17 +74,15 @@ class MovieController extends Controller
         $response = $this->tmdbService->getMovie($id);
 
         if (isset($response['data']['success']) && $response['data']['success'] === false) {
-            Log::error("Failed to fetch movie {$id}: {$response['data']['status_message']}");
+            logger()->error("Failed to fetch movie {$id}: {$response['data']['status_message']}");
             abort(404, $response['data']['status_message'] ?? 'Movie not found');
         }
-
-        Log::info("Fetched movie {$id} from TMDB");
 
         $movieData = $response['data'];
         $etag = $response['etag'] ?? null;
 
         if (!$etag) {
-            Log::warning("No etag received for movie {$id}");
+            logger()->warning("No etag received for movie {$id}");
         }
 
         Movie::create([

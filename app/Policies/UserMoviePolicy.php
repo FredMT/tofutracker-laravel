@@ -13,7 +13,7 @@ class UserMoviePolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,7 +21,7 @@ class UserMoviePolicy
      */
     public function view(User $user, UserMovie $userMovie): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -29,7 +29,7 @@ class UserMoviePolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->hasVerifiedEmail();
     }
 
     /**

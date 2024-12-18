@@ -11,53 +11,48 @@ use App\Models\UserMoviePlay;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rules\Enum;
+use Illuminate\Support\Facades\Pipeline;
+use App\Pipeline\UserMovie\EnsureUserLibrary;
+use App\Pipeline\UserMovie\CreateUserMovie;
+use App\Pipeline\UserMovie\CreateUserMoviePlay;
+use App\Pipeline\UserMovie\EnsureMovieExists;
+use App\Pipeline\UserMovie\UpdateMovieRating;
+use Illuminate\Validation\Rule;
 
 class UserMovieController extends Controller
 {
 
     public function store(Request $request)
     {
+        if ($request->user()->cannot('create', UserMovie::class)) {
+            return back()->with([
+                'success' => false,
+                'message' => "You are not authorized to create a movie entry",
+            ]);
+        }
+
         $validated = $request->validate([
-            'movie_id' => ['required', 'integer', 'exists:movies,id'],
-            'watch_status' => ['nullable', new Enum(WatchStatus::class)],
-            'rating' => ['nullable', 'numeric', 'min:1', 'max:10'],
+            'movie_id' => ['required', 'integer'],
         ]);
 
         try {
             return DB::transaction(function () use ($validated, $request) {
-                // Ensure user has a movie library
-                $userLibrary = UserLibrary::firstOrCreate([
-                    'user_id' => $request->user()->id,
-                    'type' => MediaType::MOVIE,
-                ]);
-
-                // Create or update user movie entry
-                $userMovie = UserMovie::updateOrCreate(
-                    [
-                        'user_id' => $request->user()->id,
-                        'movie_id' => $validated['movie_id'],
-                    ],
-                    [
-                        'user_library_id' => $userLibrary->id,
-                        'watch_status' => $validated['watch_status'] ?? WatchStatus::COMPLETED,
-                        'rating' => $validated['rating'] ?? null,
-                    ]
-                );
-
-                if (($validated['watch_status'] ?? WatchStatus::COMPLETED) === WatchStatus::COMPLETED
-                ) {
-                    UserMoviePlay::create([
-                        'user_movie_id' => $userMovie->id,
-                        'user_id' => $request->user()->id,
-                        'movie_id' => $validated['movie_id'],
-                        'watched_at' => now(),
-                    ]);
-                }
-
-                return back()->with([
-                    'success' => true,
-                    'message' => "Movie added to library",
-                ]);
+                return Pipeline::send([
+                    'user' => $request->user(),
+                    'validated' => $validated,
+                ])
+                    ->through([
+                        EnsureMovieExists::class,
+                        EnsureUserLibrary::class,
+                        CreateUserMovie::class,
+                        CreateUserMoviePlay::class,
+                    ])
+                    ->then(function ($payload) {
+                        return back()->with([
+                            'success' => true,
+                            'message' => "{$payload['movie_title']} added to library",
+                        ]);
+                    });
             });
         } catch (\Exception $e) {
             logger()->error('Failed to add movie to library: ' . $e->getMessage());
@@ -68,138 +63,77 @@ class UserMovieController extends Controller
         }
     }
 
-    public function updateRating(Request $request, $movieId)
+    public function update(Request $request, $movieId)
     {
         $validated = $request->validate([
-            'rating' => ['required', 'numeric', 'min:1', 'max:10'],
+            'rating' => ['sometimes', 'numeric', 'min:1', 'max:10'],
+            'watch_status' => ['sometimes', Rule::enum(WatchStatus::class)],
         ]);
 
         try {
             return DB::transaction(function () use ($validated, $request, $movieId) {
-                // Try to find existing user movie entry
+                // Find existing movie or prepare for creation
                 $userMovie = UserMovie::where([
                     'user_id' => $request->user()->id,
                     'movie_id' => $movieId,
                 ])->first();
 
-                // If movie exists, check authorization and update
-                if ($userMovie) {
-                    if ($request->user()->cannot('update', $userMovie)) {
-                        return back()->with([
-                            'success' => false,
-                            'message' => "You are not authorized to update this movie's rating",
-                        ]);
-                    }
-
-                    $userMovie->update([
-                        'rating' => $validated['rating']
-                    ]);
-
+                // Check authorization
+                if ($userMovie && $request->user()->cannot('update', $userMovie)) {
                     return back()->with([
-                        'success' => true,
-                        'message' => "Movie rating updated successfully",
+                        'success' => false,
+                        'message' => "You are not authorized to update this movie",
                     ]);
                 }
 
-                // If movie doesn't exist, create new entries
-                // First, ensure user has a movie library
-                $userLibrary = UserLibrary::firstOrCreate([
-                    'user_id' => $request->user()->id,
-                    'type' => MediaType::MOVIE,
-                ]);
-
-                // Create user movie entry
-                $userMovie = UserMovie::create([
-                    'user_id' => $request->user()->id,
-                    'movie_id' => $movieId,
-                    'user_library_id' => $userLibrary->id,
-                    'watch_status' => WatchStatus::COMPLETED,
-                    'rating' => $validated['rating'],
-                ]);
-
-                // Create play record since we're marking it as COMPLETED
-                UserMoviePlay::create([
-                    'user_movie_id' => $userMovie->id,
-                    'user_id' => $request->user()->id,
-                    'movie_id' => $movieId,
-                    'watched_at' => now(),
-                ]);
-
-                return back()->with([
-                    'success' => true,
-                    'message' => "Movie added to library with rating",
-                ]);
-            });
-        } catch (\Exception $e) {
-            logger()->error('Failed to update movie rating: ' . $e->getMessage());
-            return back()->with([
-                'success' => false,
-                'message' => "An error occurred while updating movie rating",
-            ]);
-        }
-    }
-
-    public function updateStatus(Request $request, $movieId)
-    {
-        $validated = $request->validate([
-            'watch_status' => ['required', new Enum(WatchStatus::class)],
-        ]);
-
-
-        try {
-            return DB::transaction(function () use ($validated, $request, $movieId) {
-                // Try to find existing user movie entry
-                $userMovie = UserMovie::where([
-                    'user_id' => $request->user()->id,
-                    'movie_id' => $movieId,
-                ])->first();
-
-                // If movie exists, check authorization and update
-                if ($userMovie) {
-                    if ($request->user()->cannot('update', $userMovie)) {
-                        return back()->with([
-                            'success' => false,
-                            'message' => "You are not authorized to update this movie's status",
-                        ]);
-                    }
-
-                    $userMovie->update([
-                        'watch_status' => $validated['watch_status']
-                    ]);
-
-                    // If status is changed to COMPLETED , add a play record
-                    if ($validated['watch_status'] === WatchStatus::COMPLETED->value) {
-                        UserMoviePlay::create([
-                            'user_movie_id' => $userMovie->id,
-                            'user_id' => $request->user()->id,
-                            'movie_id' => $movieId,
-                            'watched_at' => now(),
-                        ]);
-                    }
-
+                // Check if trying to update to the same watch status
+                if (
+                    isset($validated['watch_status']) &&
+                    $userMovie &&
+                    WatchStatus::from($validated['watch_status']) === $userMovie->watch_status
+                ) {
                     return back()->with([
-                        'success' => true,
-                        'message' => "Movie status updated successfully",
+                        'success' => false,
+                        'message' => "Movie is already marked as {$userMovie->watch_status->value}",
                     ]);
                 }
 
-                // If movie doesn't exist, create new entries
-                // First, ensure user has a movie library
-                $userLibrary = UserLibrary::firstOrCreate([
-                    'user_id' => $request->user()->id,
-                    'type' => MediaType::MOVIE,
-                ]);
+                // Check if trying to update to the same rating
+                if (
+                    isset($validated['rating']) &&
+                    $userMovie &&
+                    (float) $validated['rating'] === (float) $userMovie->rating
+                ) {
+                    return back()->with([
+                        'success' => false,
+                        'message' => "Movie already has a rating of {$userMovie->rating}",
+                    ]);
+                }
 
-                // Create user movie entry
-                $userMovie = UserMovie::create([
-                    'user_id' => $request->user()->id,
-                    'movie_id' => $movieId,
-                    'user_library_id' => $userLibrary->id,
-                    'watch_status' => $validated['watch_status'],
-                ]);
+                // Ensure user has a library if this is a new entry
+                if (!$userMovie) {
+                    $userLibrary = UserLibrary::firstOrCreate([
+                        'user_id' => $request->user()->id,
+                        'type' => MediaType::MOVIE,
+                    ]);
+                }
 
+                // Update or create the movie entry
+                $userMovie = UserMovie::updateOrCreate(
+                    [
+                        'user_id' => $request->user()->id,
+                        'movie_id' => $movieId,
+                    ],
+                    array_merge(
+                        [
+                            'user_library_id' => $userLibrary->id ?? $userMovie->user_library_id,
+                        ],
+                        collect($validated)->only(['rating', 'watch_status'])->toArray()
+                    )
+                );
 
-                if ($validated['watch_status'] === WatchStatus::COMPLETED->value) {
+                // Create play record if status is set to COMPLETED
+                if (isset($validated['watch_status']) && WatchStatus::from($validated['watch_status']) === WatchStatus::COMPLETED) {
                     UserMoviePlay::create([
                         'user_movie_id' => $userMovie->id,
                         'user_id' => $request->user()->id,
@@ -208,16 +142,23 @@ class UserMovieController extends Controller
                     ]);
                 }
 
+                $message = collect([
+                    isset($validated['rating']) ? 'rating' : null,
+                    isset($validated['watch_status']) ? 'status' : null,
+                ])
+                    ->filter()
+                    ->join(' and ');
+
                 return back()->with([
                     'success' => true,
-                    'message' => "Movie added to library with status",
+                    'message' => "Movie $message updated successfully",
                 ]);
             });
         } catch (\Exception $e) {
-            logger()->error('Failed to update movie status: ' . $e->getMessage());
+            logger()->error('Failed to update movie: ' . $e->getMessage());
             return back()->with([
                 'success' => false,
-                'message' => "An error occurred while updating movie status",
+                'message' => "An error occurred while updating movie",
             ]);
         }
     }
@@ -226,13 +167,10 @@ class UserMovieController extends Controller
     {
         try {
             return DB::transaction(function () use ($request, $movieId) {
-                // Find the specific user movie entry
                 $userMovie = UserMovie::where([
                     'user_id' => $request->user()->id,
                     'movie_id' => $movieId,
                 ])->first();
-
-
 
                 if (!$userMovie) {
                     return back()->with([
@@ -248,9 +186,7 @@ class UserMovieController extends Controller
                     ]);
                 }
 
-                $libraryId = $userMovie->user_library_id;
-
-                UserLibrary::find($libraryId)->delete();
+                $userMovie->delete();
 
                 return back()->with([
                     'success' => true,

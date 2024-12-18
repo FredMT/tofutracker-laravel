@@ -48,8 +48,6 @@ export function WatchStatusSelect() {
                                 autoClose: 3000,
                             });
                         }
-                    },
-                    onError: (res: any) => {
                         if (!res.props.flash.success) {
                             notifications.show({
                                 color: "red",
@@ -61,6 +59,16 @@ export function WatchStatusSelect() {
                                 autoClose: 3000,
                             });
                         }
+                    },
+                    onError: (res: any) => {
+                        notifications.show({
+                            color: "red",
+                            icon: <CircleAlertIcon size={18} />,
+                            title: "Error",
+                            message:
+                                res.props.flash.message || "An error occurred",
+                            autoClose: 3000,
+                        });
                     },
                 }
             );

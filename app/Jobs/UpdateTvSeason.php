@@ -21,6 +21,10 @@ class UpdateTvSeason implements ShouldQueue
 
     public function handle(TvShowActions $actions): void
     {
-        $actions->updateTvSeason($this->season, $this->data);
+        try {
+            $actions->updateTvSeason($this->season, $this->data);
+        } catch (\Exception $e) {
+            logger()->error('Failed to update TV season: ' . $e->getMessage());
+        }
     }
 }

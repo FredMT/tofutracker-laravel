@@ -33,7 +33,7 @@ class TvSeasonController extends Controller
 
             return Inertia::render('Content', [
                 'tvseason' => $seasonData,
-                'user_library' => true,
+                'user_library' => null,
                 'type' => 'tvseason'
             ]);
         } catch (\Exception $e) {

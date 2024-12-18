@@ -16,16 +16,16 @@ function AddToLibrary() {
         post(route(`${type}.library.store`, { movie_id: content.id }), {
             preserveScroll: true,
             onSuccess: (res: any) => {
-                if (res.props.flash?.success) {
+                if (res.props.flash.success) {
                     notifications.show({
                         color: "teal",
                         title: "Success",
-                        message: `${content.title} added to library`,
+                        message: `${res.props.flash.message}`,
                         icon: <Check size={18} />,
                         autoClose: 3000,
                     });
                 }
-                if (!res.props.flash?.success) {
+                if (!res.props.flash.success) {
                     notifications.show({
                         color: "red",
                         title: "Error",

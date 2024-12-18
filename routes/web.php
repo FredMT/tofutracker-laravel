@@ -72,9 +72,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('movie.library.store');
     Route::delete('/movies/library/{movie_id}', [UserMovieController::class, 'destroy'])
         ->name('movie.library.destroy');
-    Route::patch('/movie/library/status/{movie_id}', [UserMovieController::class, 'updateStatus'])
+    Route::patch('/movie/library/status/{movie_id}', [UserMovieController::class, 'update'])
         ->name('movie.library.update-status');
-    Route::post('/movie/library/rating/{movie_id}', [UserMovieController::class, 'updateRating'])
+    Route::post('/movie/library/rating/{movie_id}', [UserMovieController::class, 'update'])
         ->name('movie.library.update-rating');
 });
 
