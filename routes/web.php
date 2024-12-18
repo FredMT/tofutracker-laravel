@@ -7,6 +7,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TvController;
 use App\Http\Controllers\TvSeasonController;
 use App\Http\Controllers\UserMovieController;
+use App\Http\Controllers\UserTvEpisodeController;
 use App\Http\Middleware\CheckAnimeMapping;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -76,6 +77,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('movie.library.update-status');
     Route::post('/movie/library/rating/{movie_id}', [UserMovieController::class, 'update'])
         ->name('movie.library.update-rating');
+
+    // Add TV Episode routes
+    Route::post('/tv/episode/{episode_id}', [UserTvEpisodeController::class, 'store'])
+        ->name('tv.episode.store');
 });
 
 

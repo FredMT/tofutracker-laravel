@@ -16,8 +16,14 @@ class TvSeason extends Model
 
     protected $casts = [
         'data' => 'array',
+        'season_number' => 'integer',
         'updated_at' => 'datetime'
     ];
+
+    public function seasonNumber(): Attribute
+    {
+        return Attribute::get(fn() => $this->data['season_number'] ?? null);
+    }
 
     public function show(): BelongsTo
     {
@@ -128,6 +134,7 @@ class TvSeason extends Model
 
             return [
                 'id' => $data['id'],
+                'show_id' => $show->id,
                 'title' => $show->data['name'] . ' - ' . $data['name'],
                 'type' => 'tvseason',
                 'overview' => $this->getOverview(),
@@ -164,6 +171,17 @@ class TvSeason extends Model
                     'crew' => $this->getCrew(),
                 ],
             ];
+        });
+    }
+
+    protected static function booted()
+    {
+        static::creating(function ($season) {
+            $season->season_number = $season->data['season_number'] ?? null;
+        });
+
+        static::updating(function ($season) {
+            $season->season_number = $season->data['season_number'] ?? null;
         });
     }
 }

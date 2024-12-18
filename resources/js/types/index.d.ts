@@ -24,6 +24,7 @@ export type PageProps<
     };
     movie?: Movie;
     tv?: TvShow;
+    tvseason?: TvSeason;
     animetv?: Anime;
     animemovie?: Anime;
     animeseason?: AnimeSeason;
@@ -72,6 +73,7 @@ interface TvSeason extends BaseContent {
     season_number: number;
     air_date: string;
     episodes: Episode[];
+    show_id: number;
 }
 
 export interface Movie extends BaseContent {

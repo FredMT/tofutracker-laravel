@@ -40,7 +40,7 @@ export default function ContentEpisodeCard({
                             </svg>`
                         )}`}
                     />
-                    <EpisodeActions episode_id={episode.id} watched={false} />
+                    <EpisodeActions episode_id={episode.id} />
                 </Stack>
 
                 <Stack ml={16} py={4}>
@@ -107,7 +107,7 @@ export default function ContentEpisodeCard({
                         </Stack>
                     </div>
                 </div>
-                <EpisodeActions episode_id={episode.id} watched={false} />
+                <EpisodeActions episode_id={episode.id} />
             </Stack>
         </>
     );

@@ -27,4 +27,9 @@ class UserLibrary extends Model
     {
         return $this->hasMany(UserMovie::class);
     }
+
+    public function shows(): HasMany
+    {
+        return $this->hasMany(UserTvShow::class);
+    }
 }
