@@ -57,7 +57,7 @@ class TvShowActions
      */
     public function getSeasonAndQueueUpdateIfNeeded(TvShow $tvShow, string $seasonNumber): TvSeason
     {
-        $season = $tvShow->seasons()
+        $season = $tvShow->seasons
             ->where('season_number', $seasonNumber)
             ->first();
 

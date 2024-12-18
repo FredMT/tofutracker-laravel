@@ -2,22 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Pipeline\TV\EnsureUserTvLibrary;
+use App\Pipeline\TV\EnsureUserTvShow;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Pipeline;
-use App\Pipeline\TV\EnsureUserTvLibrary;
-use App\Pipeline\TV\EnsureUserTvShow;
+use App\Pipeline\UserTvSeason\ValidateSeasonRelations;
+use App\Pipeline\UserTvSeason\CreateUserTvSeason;
+use App\Pipeline\UserTvSeason\CreateUserTvSeasonPlay;
+use App\Pipeline\UserTvSeason\CreateUserTvEpisodes;
 use App\Pipeline\Shared\UpdateShowStatus;
-use App\Pipeline\UserTvEpisode\ValidateEpisodeRelations;
-use App\Pipeline\UserTvEpisode\EnsureTvShowExists;
-use App\Pipeline\UserTvEpisode\EnsureUserTvSeason;
-use App\Pipeline\UserTvEpisode\CreateUserTvEpisode;
-use App\Pipeline\UserTvEpisode\CreateUserTvEpisodePlay;
-use App\Pipeline\UserTvEpisode\UpdateSeasonStatus;
-use App\Models\UserTvEpisode;
+use App\Models\UserTvSeason;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
-class UserTvEpisodeController extends Controller
+class UserTvSeasonController extends Controller
 {
     use AuthorizesRequests;
 
@@ -26,7 +24,6 @@ class UserTvEpisodeController extends Controller
         $validated = $request->validate([
             'show_id' => ['required', 'integer'],
             'season_id' => ['required', 'integer'],
-            'episode_id' => ['required', 'integer'],
         ]);
 
         try {
@@ -36,29 +33,26 @@ class UserTvEpisodeController extends Controller
                     'validated' => $validated,
                 ])
                     ->through([
-                        ValidateEpisodeRelations::class,
-                        EnsureTvShowExists::class,
+                        ValidateSeasonRelations::class,
                         EnsureUserTvLibrary::class,
                         EnsureUserTvShow::class,
-                        EnsureUserTvSeason::class,
-                        CreateUserTvEpisode::class,
-                        CreateUserTvEpisodePlay::class,
-                        UpdateSeasonStatus::class,
+                        CreateUserTvSeason::class,
+                        CreateUserTvEpisodes::class,
+                        CreateUserTvSeasonPlay::class,
                         UpdateShowStatus::class,
                     ])
                     ->then(function ($payload) {
                         return back()->with([
                             'success' => true,
-                            'message' => "Episode '{$payload['episode_title']}' added to {$payload['show_title']} in your library",
+                            'message' => "Season '{$payload['season_title']}' added to {$payload['show_title']} in your library",
                         ]);
                     });
             });
         } catch (\Exception $e) {
-            logger()->error('Failed to add episode to library: ' . $e->getMessage());
-            logger()->error($e->getTraceAsString());
+            logger()->error('Failed to add season to library: ' . $e->getMessage());
             return back()->with([
                 'success' => false,
-                'message' => "An error occurred while adding episode to library",
+                'message' => "An error occurred while adding season to library",
             ]);
         }
     }
@@ -68,40 +62,38 @@ class UserTvEpisodeController extends Controller
         $validated = $request->validate([
             'show_id' => ['required', 'integer'],
             'season_id' => ['required', 'integer'],
-            'episode_id' => ['required', 'integer'],
         ]);
 
         try {
-            $episode = UserTvEpisode::where([
+            $season = UserTvSeason::where([
                 'user_id' => $request->user()->id,
-                'episode_id' => $validated['episode_id'],
-                'show_id' => $validated['show_id'],
                 'season_id' => $validated['season_id'],
+                'show_id' => $validated['show_id'],
             ])->firstOrFail();
 
-            $this->authorize('delete', $episode);
+            $this->authorize('delete', $season);
 
-            $episode->delete();
+            $season->delete();
 
             return back()->with([
                 'success' => true,
-                'message' => "Episode removed from your library",
+                'message' => "Season removed from your library",
             ]);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return back()->with([
                 'success' => false,
-                'message' => "Episode not found in your library",
+                'message' => "Season not found in your library",
             ]);
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             return back()->with([
                 'success' => false,
-                'message' => "You are not authorized to remove this episode",
+                'message' => "You are not authorized to remove this season",
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to remove episode from library: ' . $e->getMessage());
+            logger()->error('Failed to remove season from library: ' . $e->getMessage());
             return back()->with([
                 'success' => false,
-                'message' => "An error occurred while removing episode from library",
+                'message' => "An error occurred while removing season from library",
             ]);
         }
     }

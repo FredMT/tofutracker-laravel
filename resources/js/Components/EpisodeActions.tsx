@@ -1,8 +1,9 @@
 import { Button, Paper } from "@mantine/core";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, XCircle } from "lucide-react";
 import { useForm, usePage } from "@inertiajs/react";
 import { notifications } from "@mantine/notifications";
 import { PageProps } from "@/types";
+import { useState } from "react";
 
 interface EpisodeActionsProps {
     episode_id: number;
@@ -16,53 +17,94 @@ interface FormErrors {
 }
 
 export default function EpisodeActions({ episode_id }: EpisodeActionsProps) {
-    const { tvseason } = usePage<PageProps>().props;
-
-    if (!tvseason) return null;
+    const { tvseason, user_library } = usePage<PageProps>().props;
+    const [isHovered, setIsHovered] = useState(false);
 
     const form = useForm<{
         episode_id: number;
-        show_id: number;
-        season_id: number;
+        show_id?: number;
+        season_id?: number;
     }>({
         episode_id,
-        show_id: tvseason.show_id,
-        season_id: tvseason.id,
+        show_id: tvseason?.show_id,
+        season_id: tvseason?.id,
     });
 
+    const isEpisodeWatched = user_library?.episodes?.some(
+        (episode) =>
+            episode.id === episode_id && episode.watch_status === "COMPLETED"
+    );
+
     const handleEpisodeAction = () => {
-        form.post(route("tv.episode.store", { episode_id }), {
-            preserveScroll: true,
-            onSuccess: () => {
-                notifications.show({
-                    title: "Success",
-                    message: "Episode status updated",
-                    color: "green",
-                });
-            },
-            onError: (errors: FormErrors) => {
-                notifications.show({
-                    title: "Error",
-                    message:
-                        errors.message || "Failed to update episode status",
-                    color: "red",
-                });
-            },
-        });
+        if (isEpisodeWatched) {
+            form.delete(route("tv.episode.destroy", { episode_id }), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    notifications.show({
+                        title: "Success",
+                        message: "Episode removed from your library",
+                        color: "green",
+                    });
+                },
+                onError: (errors: FormErrors) => {
+                    notifications.show({
+                        title: "Error",
+                        message:
+                            errors.message ||
+                            "Failed to remove episode from library",
+                        color: "red",
+                    });
+                },
+            });
+        } else {
+            form.post(route("tv.episode.store", { episode_id }), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    notifications.show({
+                        title: "Success",
+                        message: "Episode added to your library",
+                        color: "green",
+                    });
+                },
+                onError: (errors: FormErrors) => {
+                    notifications.show({
+                        title: "Error",
+                        message:
+                            errors.message ||
+                            "Failed to add episode to library",
+                        color: "red",
+                    });
+                },
+            });
+        }
     };
 
     return (
         <Paper>
             <Button
-                leftSection={<CheckCircle2 size={24} />}
+                leftSection={
+                    isEpisodeWatched && isHovered ? (
+                        <XCircle size={24} />
+                    ) : (
+                        <CheckCircle2 size={24} />
+                    )
+                }
                 size="xs"
                 p={4}
-                variant="outline"
+                variant={
+                    isEpisodeWatched
+                        ? isHovered
+                            ? "outline"
+                            : "filled"
+                        : "outline"
+                }
+                color={isEpisodeWatched && isHovered ? "red" : "grape"}
                 fullWidth
-                color="grape"
                 onClick={handleEpisodeAction}
                 loading={form.processing}
                 disabled={form.processing}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
             />
         </Paper>
     );

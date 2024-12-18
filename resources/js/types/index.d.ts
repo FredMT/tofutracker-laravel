@@ -35,6 +35,11 @@ export type PageProps<
         watch_status: keyof typeof WatchStatus | null;
         rating: number | null;
         is_private: boolean;
+        episodes?: Array<{
+            id: number;
+            watch_status: keyof typeof WatchStatus;
+            rating: number | null;
+        }>;
     } | null;
 } & (
         | { type: "movie"; movie: Movie }

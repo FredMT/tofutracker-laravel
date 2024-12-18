@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Pipeline\UserTvEpisode;
+namespace App\Pipeline\TV;
 
 use App\Enums\WatchStatus;
 use App\Models\UserTvShow;

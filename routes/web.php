@@ -8,6 +8,7 @@ use App\Http\Controllers\TvController;
 use App\Http\Controllers\TvSeasonController;
 use App\Http\Controllers\UserMovieController;
 use App\Http\Controllers\UserTvEpisodeController;
+use App\Http\Controllers\UserTvSeasonController;
 use App\Http\Middleware\CheckAnimeMapping;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -81,6 +82,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Add TV Episode routes
     Route::post('/tv/episode/{episode_id}', [UserTvEpisodeController::class, 'store'])
         ->name('tv.episode.store');
+    Route::delete('/tv/episode/{episode_id}', [UserTvEpisodeController::class, 'destroy'])
+        ->name('tv.episode.destroy');
+    Route::post('/tv/season/library', [UserTvSeasonController::class, 'store'])->name('tv.season.library.store');
+    Route::delete('/tv/season/library', [UserTvSeasonController::class, 'destroy'])->name('tv.season.library.destroy');
 });
 
 
