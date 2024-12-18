@@ -9,29 +9,38 @@ function AddToLibrary() {
     if (!content) return null;
 
     const { post, processing } = useForm({
-        media_id: content.id,
-        media_type: type,
-        status: "COMPLETED",
+        movie_id: content.id,
     });
 
     const handleAdd = () => {
-        post(route(`${type}.library.add`, content.id), {
+        post(route(`${type}.library.store`, { movie_id: content.id }), {
             preserveScroll: true,
-            onSuccess: () => {
-                notifications.show({
-                    color: "teal",
-                    title: "Success",
-                    message: `${content.title} added to library`,
-                    icon: <Check size={18} />,
-                    autoClose: 3000,
-                });
+            onSuccess: (res: any) => {
+                if (res.props.flash?.success) {
+                    notifications.show({
+                        color: "teal",
+                        title: "Success",
+                        message: `${content.title} added to library`,
+                        icon: <Check size={18} />,
+                        autoClose: 3000,
+                    });
+                }
+                if (!res.props.flash?.success) {
+                    notifications.show({
+                        color: "red",
+                        title: "Error",
+                        icon: <CircleAlertIcon size={18} />,
+                        message: `An error occurred while trying to add ${content.title} to library`,
+                        autoClose: 3000,
+                    });
+                }
             },
             onError: () => {
                 notifications.show({
                     color: "red",
                     title: "Error",
                     icon: <CircleAlertIcon size={18} />,
-                    message: "An error occurred",
+                    message: `An error occurred while trying to add ${content.title} to library`,
                     autoClose: 3000,
                 });
             },

@@ -6,6 +6,7 @@ use App\Http\Controllers\MovieController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TvController;
 use App\Http\Controllers\TvSeasonController;
+use App\Http\Controllers\UserMovieController;
 use App\Http\Middleware\CheckAnimeMapping;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -67,13 +68,13 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::post('/movie/library/add/{movie_id}', [MovieController::class, 'addToLibrary'])
-        ->name('movie.library.add');
-    Route::delete('/movie/library/remove/{movie_id}', [MovieController::class, 'removeFromLibrary'])
-        ->name('movie.library.remove');
-    Route::patch('/movie/library/status/{movie_id}', [MovieController::class, 'updateStatus'])
+    Route::post('/movies/library/{movie_id}', [UserMovieController::class, 'store'])
+        ->name('movie.library.store');
+    Route::delete('/movies/library/{movie_id}', [UserMovieController::class, 'destroy'])
+        ->name('movie.library.destroy');
+    Route::patch('/movie/library/status/{movie_id}', [UserMovieController::class, 'updateStatus'])
         ->name('movie.library.update-status');
-    Route::post('/movie/library/rating/{movie_id}', [MovieController::class, 'updateRating'])
+    Route::post('/movie/library/rating/{movie_id}', [UserMovieController::class, 'updateRating'])
         ->name('movie.library.update-rating');
 });
 

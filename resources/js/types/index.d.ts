@@ -31,7 +31,7 @@ export type PageProps<
     ziggy: Config & { location: string };
     user_library?: {
         id: number;
-        status: keyof typeof WatchStatus | null;
+        watch_status: keyof typeof WatchStatus | null;
         rating: number | null;
         is_private: boolean;
     } | null;

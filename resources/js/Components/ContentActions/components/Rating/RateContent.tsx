@@ -21,7 +21,7 @@ export function RateContent() {
     });
 
     const submit = () => {
-        post(route(`${type}.library.update-rating`, content.id), {
+        post(route(`${type}.library.update-rating`, { movie_id: content.id }), {
             preserveScroll: true,
             onSuccess: (res: any) => {
                 if (res?.props?.flash?.success) {

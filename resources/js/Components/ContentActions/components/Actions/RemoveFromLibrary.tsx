@@ -10,11 +10,11 @@ function RemoveFromLibrary() {
     const stack = useModalsStack(["confirm-delete"]);
 
     const { delete: remove, processing } = useForm({
-        media_id: content.id,
+        movie_id: content.id,
     });
 
     function handleRemove() {
-        remove(route(`${type}.library.remove`, content?.id), {
+        remove(route(`${type}.library.destroy`, { movie_id: content.id }), {
             preserveScroll: true,
             onSuccess: (res: any) => {
                 stack.closeAll();

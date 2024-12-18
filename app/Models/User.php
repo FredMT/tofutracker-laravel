@@ -47,28 +47,4 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
         ];
     }
-
-    /**
-     * Get the user's library entries.
-     */
-    public function library(): HasMany
-    {
-        return $this->hasMany(UserLibrary::class);
-    }
-
-
-    /**
-     * Get all movies in the user's library.
-     */
-    public function movies(): HasManyThrough
-    {
-        return $this->hasManyThrough(
-            Movie::class,
-            UserLibrary::class,
-            'user_id', // Foreign key on UserLibrary table
-            'id',      // Foreign key on Movie table
-            'id',      // Local key on User table
-            'media_id' // Local key on UserLibrary table
-        )->where('media_type', 'movie');
-    }
 }
