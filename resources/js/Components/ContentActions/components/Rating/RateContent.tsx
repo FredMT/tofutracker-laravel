@@ -20,8 +20,22 @@ export function RateContent() {
         rating: user_library?.rating ?? 0,
     });
 
+    const getRouteParams = () => {
+        switch (type) {
+            case "movie":
+                return { movie_id: content.id };
+            case "tv":
+                return { tv_id: content.id };
+            case "tvseason":
+                return {
+                    show_id: content.show_id,
+                    season_id: content.id,
+                };
+        }
+    };
+
     const submit = () => {
-        post(route(`${type}.library.update-rating`, { movie_id: content.id }), {
+        post(route(`${type}.library.rate`, getRouteParams()), {
             preserveScroll: true,
             onSuccess: (res: any) => {
                 if (res.props.flash.success) {
@@ -57,6 +71,17 @@ export function RateContent() {
 
     const RatingComponent = isMobile ? MobileRating : DesktopRating;
 
+    const getContentType = () => {
+        switch (type) {
+            case "movie":
+                return "movie";
+            case "tv":
+                return "show";
+            case "tvseason":
+                return "season";
+        }
+    };
+
     return (
         <>
             <RatingComponent
@@ -77,7 +102,7 @@ export function RateContent() {
             >
                 {user_library?.rating
                     ? `Your rating: ${user_library.rating}`
-                    : `Rate this ${type}`}
+                    : `Rate this ${getContentType()}`}
             </Button>
         </>
     );

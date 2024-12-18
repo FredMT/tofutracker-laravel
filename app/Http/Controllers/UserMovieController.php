@@ -86,6 +86,11 @@ class UserMovieController extends Controller
                     ]);
                 }
 
+                // If rating is provided but watch_status isn't, set it to COMPLETED
+                if (isset($validated['rating']) && !isset($validated['watch_status'])) {
+                    $validated['watch_status'] = WatchStatus::COMPLETED->value;
+                }
+
                 // Check if trying to update to the same watch status
                 if (
                     isset($validated['watch_status']) &&
@@ -132,8 +137,11 @@ class UserMovieController extends Controller
                     )
                 );
 
-                // Create play record if status is set to COMPLETED
-                if (isset($validated['watch_status']) && WatchStatus::from($validated['watch_status']) === WatchStatus::COMPLETED) {
+                // Create play record if status is set to COMPLETED (either explicitly or via rating)
+                if (
+                    (isset($validated['watch_status']) && WatchStatus::from($validated['watch_status']) === WatchStatus::COMPLETED) ||
+                    isset($validated['rating'])
+                ) {
                     UserMoviePlay::create([
                         'user_movie_id' => $userMovie->id,
                         'user_id' => $request->user()->id,

@@ -77,7 +77,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/movie/library/status/{movie_id}', [UserMovieController::class, 'update'])
         ->name('movie.library.update-status');
     Route::post('/movie/library/rating/{movie_id}', [UserMovieController::class, 'update'])
-        ->name('movie.library.update-rating');
+        ->name('movie.library.rate');
 
     // Add TV Episode routes
     Route::post('/tv/episode/{episode_id}', [UserTvEpisodeController::class, 'store'])
