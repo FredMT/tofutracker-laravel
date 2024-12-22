@@ -8,7 +8,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 use JsonStreamingParser\Parser;
 
 class ImportAnimeDataJob implements ShouldQueue
@@ -34,10 +33,10 @@ class ImportAnimeDataJob implements ShouldQueue
             $parser = new Parser($stream, $listener);
             $parser->parse();
             fclose($stream);
-            Log::info('Anime data import completed successfully');
+            logger()->info('Anime data import completed successfully');
         } catch (\Exception $e) {
             fclose($stream);
-            Log::error('Error parsing JSON: ' . $e->getMessage());
+            logger()->error('Error importing anime data: ' . $e->getMessage());
             throw $e;
         }
     }

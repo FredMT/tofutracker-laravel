@@ -6,7 +6,6 @@ use App\Models\AnidbAnime;
 use App\Models\AnidbCharacter;
 use App\Models\AnidbSeiyuu;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class AnidbXmlDatabaseService
 {
@@ -38,10 +37,10 @@ class AnidbXmlDatabaseService
             $this->processExternalLinks($anime, $parsedData['external_links']);
 
             DB::commit();
-            Log::info('Successfully processed anime XML', ['anime_id' => $anime->id]);
+            logger()->info('Successfully processed anime XML', ['anime_id' => $anime->id]);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error processing anime XML', [
+            logger()->error('Error processing anime XML', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
@@ -72,7 +71,7 @@ class AnidbXmlDatabaseService
                 ]
             );
         } catch (\Exception $e) {
-            Log::error('Error processing anime record', [
+            logger()->error('Error processing anime record', [
                 'data' => $data,
                 'error' => $e->getMessage()
             ]);
@@ -101,7 +100,7 @@ class AnidbXmlDatabaseService
                 // Process seiyuus for this character
                 $this->processSeiyuus($character, $characterData['seiyuus'] ?? []);
             } catch (\Exception $e) {
-                Log::error('Error processing character', [
+                logger()->error('Error processing character', [
                     'character_id' => $characterData['character_id'] ?? 'unknown',
                     'error' => $e->getMessage()
                 ]);
@@ -117,7 +116,7 @@ class AnidbXmlDatabaseService
         foreach ($seiyuus as $seiyuuData) {
             try {
                 if (empty($seiyuuData['seiyuu_id']) || empty($seiyuuData['name'])) {
-                    Log::warning('Skipping invalid seiyuu data', [
+                    logger()->warning('Skipping invalid seiyuu data', [
                         'seiyuu_data' => $seiyuuData,
                         'character_id' => $character->id
                     ]);
@@ -134,7 +133,7 @@ class AnidbXmlDatabaseService
 
                 $seiyuuIds[] = $seiyuu->id;
             } catch (\Exception $e) {
-                Log::error('Error processing seiyuu', [
+                logger()->error('Error processing seiyuu', [
                     'seiyuu_data' => $seiyuuData,
                     'character_id' => $character->id,
                     'error' => $e->getMessage()
@@ -148,7 +147,7 @@ class AnidbXmlDatabaseService
             try {
                 $character->seiyuus()->sync($seiyuuIds);
             } catch (\Exception $e) {
-                Log::error('Error syncing seiyuus for character', [
+                logger()->error('Error syncing seiyuus for character', [
                     'character_id' => $character->id,
                     'seiyuu_ids' => $seiyuuIds,
                     'error' => $e->getMessage()
@@ -179,7 +178,7 @@ class AnidbXmlDatabaseService
                     ]
                 );
             } catch (\Exception $e) {
-                Log::error('Error processing episode', [
+                logger()->error('Error processing episode', [
                     'episode_id' => $episodeData['episode_id'] ?? 'unknown',
                     'anime_id' => $anime->id,
                     'error' => $e->getMessage()
@@ -201,7 +200,7 @@ class AnidbXmlDatabaseService
                     ]
                 );
             } catch (\Exception $e) {
-                Log::error('Error processing related anime', [
+                logger()->error('Error processing related anime', [
                     'related_anime_id' => $relatedData['related_anime_id'] ?? 'unknown',
                     'anime_id' => $anime->id,
                     'error' => $e->getMessage()
@@ -222,7 +221,7 @@ class AnidbXmlDatabaseService
                     ]
                 );
             } catch (\Exception $e) {
-                Log::error('Error processing similar anime', [
+                logger()->error('Error processing similar anime', [
                     'similar_anime_id' => $similarData['similar_anime_id'] ?? 'unknown',
                     'anime_id' => $anime->id,
                     'error' => $e->getMessage()
@@ -244,7 +243,7 @@ class AnidbXmlDatabaseService
                     ]
                 );
             } catch (\Exception $e) {
-                Log::error('Error processing creator', [
+                logger()->error('Error processing creator', [
                     'creator_id' => $creatorData['creator_id'] ?? 'unknown',
                     'anime_id' => $anime->id,
                     'error' => $e->getMessage()
@@ -259,7 +258,7 @@ class AnidbXmlDatabaseService
         foreach ($links as $linkData) {
             try {
                 if (!in_array($linkData['type'], $this->getAllowedExternalLinkTypes())) {
-                    Log::warning('Skipping invalid external link type', [
+                    logger()->warning('Skipping invalid external link type', [
                         'type' => $linkData['type'],
                         'anime_id' => $anime->id
                     ]);
@@ -273,7 +272,7 @@ class AnidbXmlDatabaseService
                     ],
                 );
             } catch (\Exception $e) {
-                Log::error('Error processing external link', [
+                logger()->error('Error processing external link', [
                     'type' => $linkData['type'] ?? 'unknown',
                     'anime_id' => $anime->id,
                     'error' => $e->getMessage()

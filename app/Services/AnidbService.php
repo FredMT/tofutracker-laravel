@@ -3,9 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Log;
 use App\Models\AnidbAnime;
-use App\Models\AnidbCharacter;
 use App\Models\AnidbSeiyuu;
 use Illuminate\Support\Facades\DB;
 
@@ -38,7 +36,7 @@ class AnidbService
         try {
             $path = storage_path('app/anidb/anime.json');
             if (!File::exists($path)) {
-                Log::error('AniDB JSON file not found at: ' . $path);
+                logger()->error('AniDB JSON file not found at: ' . $path);
                 return null;
             }
             $jsonContent = File::get($path);
@@ -48,7 +46,7 @@ class AnidbService
             }
             return null;
         } catch (\Exception $e) {
-            Log::error('Error reading AniDB JSON file: ' . $e->getMessage());
+            logger()->error('Error reading AniDB JSON file: ' . $e->getMessage());
             return null;
         }
     }
@@ -101,7 +99,7 @@ class AnidbService
                 'external_links' => $this->parseExternalLinks($anime['resources'][0]['resource'] ?? [])
             ];
         } catch (\Exception $e) {
-            Log::error('Error parsing anime data', [
+            logger()->error('Error parsing anime data', [
                 'error' => $e->getMessage(),
                 'anime_id' => $anime['attrs']['id'] ?? 'unknown'
             ]);
@@ -264,7 +262,7 @@ class AnidbService
                 $parsedData['anime']
             );
 
-            Log::info('Created/Updated anime record', ['id' => $anime->id]);
+            logger()->info('Created/Updated anime record', ['id' => $anime->id]);
 
             // Store related data
             $this->processCharacters($anime, $parsedData['characters']);
@@ -291,7 +289,7 @@ class AnidbService
                 // Sync seiyuus for the character
                 $seiyuuIds = [];
                 foreach ($seiyuus as $seiyuuData) {
-                    Log::info('Processing seiyuu', ['seiyuu_id' => $seiyuuData['seiyuu_id']]);
+                    logger()->info('Processing seiyuu', ['seiyuu_id' => $seiyuuData['seiyuu_id']]);
                     $seiyuu = AnidbSeiyuu::updateOrCreate(
                         ['seiyuu_id' => $seiyuuData['seiyuu_id']],
                         $seiyuuData
@@ -299,7 +297,7 @@ class AnidbService
                     $seiyuuIds[] = $seiyuu->id;
                 }
                 // Before sync - log the IDs being synced
-                Log::info('Syncing seiyuus for character', [
+                logger()->info('Syncing seiyuus for character', [
                     'character_id' => $character->character_id,
                     'seiyuu_ids_to_sync' => $seiyuuIds
                 ]);
@@ -308,14 +306,14 @@ class AnidbService
                 $syncResult = $character->seiyuus()->sync($seiyuuIds);
 
                 // After sync - log the sync results
-                Log::info('Seiyuu sync completed', [
+                logger()->info('Seiyuu sync completed', [
                     'character_id' => $character->character_id,
                     'attached' => $syncResult['attached'],
                     'detached' => $syncResult['detached'],
                     'updated' => $syncResult['updated']
                 ]);
             } catch (\Exception $e) {
-                Log::error('Error processing character', [
+                logger()->error('Error processing character', [
                     'character_id' => $characterData['character_id'] ?? 'unknown',
                     'error' => $e->getMessage()
                 ]);
@@ -333,7 +331,7 @@ class AnidbService
                     $episodeData
                 );
             } catch (\Exception $e) {
-                Log::error('Error processing episode', [
+                logger()->error('Error processing episode', [
                     'episode_id' => $episodeData['episode_id'] ?? 'unknown',
                     'anime_id' => $anime->id,
                     'error' => $e->getMessage()
@@ -352,7 +350,7 @@ class AnidbService
                     $relatedData
                 );
             } catch (\Exception $e) {
-                Log::error('Error processing related anime', [
+                logger()->error('Error processing related anime', [
                     'related_anime_id' => $relatedData['related_anime_id'] ?? 'unknown',
                     'anime_id' => $anime->id,
                     'error' => $e->getMessage()
@@ -371,7 +369,7 @@ class AnidbService
                     $similarData
                 );
             } catch (\Exception $e) {
-                Log::error('Error processing similar anime', [
+                logger()->error('Error processing similar anime', [
                     'similar_anime_id' => $similarData['similar_anime_id'] ?? 'unknown',
                     'anime_id' => $anime->id,
                     'error' => $e->getMessage()
@@ -390,7 +388,7 @@ class AnidbService
                     $creatorData
                 );
             } catch (\Exception $e) {
-                Log::error('Error processing creator', [
+                logger()->error('Error processing creator', [
                     'creator_id' => $creatorData['creator_id'] ?? 'unknown',
                     'anime_id' => $anime->id,
                     'error' => $e->getMessage()
@@ -412,7 +410,7 @@ class AnidbService
                     $linkData
                 );
             } catch (\Exception $e) {
-                Log::error('Error processing external link', [
+                logger()->error('Error processing external link', [
                     'type' => $linkData['type'] ?? 'unknown',
                     'anime_id' => $anime->id,
                     'error' => $e->getMessage()

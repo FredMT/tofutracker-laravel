@@ -6,8 +6,10 @@ import { PageProps } from "@/types";
 import { usePage } from "@inertiajs/react";
 import { Stack } from "@mantine/core";
 
+type MoviePageProps = PageProps<{ type: "movie" }>;
+
 export default function MovieActions() {
-    const { user_library } = usePage<PageProps>().props;
+    const { user_library } = usePage<MoviePageProps>().props;
 
     const hasLibraryEntry =
         user_library &&

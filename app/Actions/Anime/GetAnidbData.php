@@ -9,7 +9,6 @@ use App\Models\AnimePrequelSequelChain;
 use App\Models\AnimeChainEntry;
 use App\Models\AnimeRelatedEntry;
 use App\Models\AnidbCharacter;
-use Illuminate\Support\Facades\Log;
 
 class GetAnidbData
 {
@@ -174,7 +173,7 @@ class GetAnidbData
                 ]
             ];
         } catch (\Exception $e) {
-            Log::error('Error processing anime data', [
+            logger()->error('Error processing anime data', [
                 'error' => $e->getMessage(),
                 'map_id' => $animeMap->id
             ]);

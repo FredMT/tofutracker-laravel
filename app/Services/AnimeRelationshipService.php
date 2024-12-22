@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\AnidbAnime;
 use App\Models\AnimeMap;
-use Illuminate\Support\Facades\Log;
 
 class AnimeRelationshipService
 {
@@ -22,7 +21,7 @@ class AnimeRelationshipService
      */
     public function getRelatedAnimeIds(int $animeId, array &$processedIds = [], int $depth = 0): array
     {
-        Log::info("Processing ID: " . $animeId);
+        logger()->info("Processing ID: " . $animeId);
 
         // First check if this ID exists in any existing map's data
         $existingMaps = AnimeMap::all();
@@ -32,14 +31,14 @@ class AnimeRelationshipService
             foreach ($map->data['prequel_sequel_chains'] as $chain) {
                 $chainIds = array_merge($chainIds, $chain);
                 if (in_array($animeId, $chain)) {
-                    Log::info("Found ID in prequel/sequel chain");
+                    logger()->info("Found ID in prequel/sequel chain");
                     return array_merge(['source_id' => $animeId], $map->data);
                 }
             }
 
             // If we haven't found it in any chain but it's in other_related_ids
             if (in_array($animeId, $map->data['other_related_ids'])) {
-                Log::info("Found ID in other_related_ids");
+                logger()->info("Found ID in other_related_ids");
                 return array_merge(['source_id' => $animeId], $map->data);
             }
         }
@@ -117,7 +116,7 @@ class AnimeRelationshipService
         // Build initial relationship map
         $this->buildRelationshipMap($animeId);
         $rootId = $this->findRootPrequel($animeId);
-        Log::info("Root ID found: " . $rootId);
+        logger()->info("Root ID found: " . $rootId);
 
         // Process from root
         $this->visitedIds = [$rootId];
@@ -156,7 +155,7 @@ class AnimeRelationshipService
                 $lastMap = AnimeMap::orderBy('id', 'desc')->first();
                 $nextAccessId = $lastMap ? $lastMap->id + 1 : 100;
 
-                Log::info("Creating new map with id: " . $nextAccessId);
+                logger()->info("Creating new map with id: " . $nextAccessId);
                 AnimeMap::create([
                     'id' => $nextAccessId,
                     'data' => $currentResult
@@ -173,7 +172,7 @@ class AnimeRelationshipService
             $lastMap = AnimeMap::orderBy('id', 'desc')->first();
             $nextAccessId = $lastMap ? $lastMap->id + 1 : 100;
 
-            Log::info("Creating new map with id: " . $nextAccessId);
+            logger()->info("Creating new map with id: " . $nextAccessId);
             AnimeMap::create([
                 'id' => $nextAccessId,
                 'data' => [
@@ -450,7 +449,7 @@ class AnimeRelationshipService
         $lastMap = AnimeMap::orderBy('id', 'desc')->first();
         $nextAccessId = $lastMap ? $lastMap->id + 1 : 100;
 
-        Log::info("Creating new map with id: " . $nextAccessId);
+        logger()->info("Creating new map with id: " . $nextAccessId);
         AnimeMap::create([
             'id' => $nextAccessId,
             'data' => $data

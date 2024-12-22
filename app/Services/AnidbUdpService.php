@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Log;
 use Exception;
 
 class AnidbUdpService
@@ -55,7 +54,7 @@ class AnidbUdpService
 
             throw new Exception("Unexpected response: $response");
         } catch (Exception $e) {
-            Log::error('AniDB UDP API Error: ' . $e->getMessage());
+            logger()->error('AniDB UDP API Error: ' . $e->getMessage());
             throw $e;
         }
     }

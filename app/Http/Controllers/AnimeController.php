@@ -8,14 +8,18 @@ use App\Actions\Anime\GetTmdbData;
 use App\Models\AnidbAnime;
 use App\Models\AnimeMap;
 use App\Models\AnimeMappingExternalId;
+use App\Models\UserAnime;
+use App\Models\UserAnimeCollection;
 use App\Services\TmdbService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Support\Facades\Cache;
+use App\Models\AnimeRelatedEntry;
+use App\Models\AnimeChainEntry;
 
 class AnimeController extends Controller
 {
@@ -33,7 +37,7 @@ class AnimeController extends Controller
     }
 
 
-    public function show($accessId): Response
+    public function show($accessId)
     {
         try {
             $animeMap = AnimeMap::where('id', $accessId)->firstOrFail();
@@ -43,24 +47,67 @@ class AnimeController extends Controller
             $collectionName = $animeMap->collection_name ?? json_decode($tmdbData->getContent(), true)['data']['title'];
             $type = $this->getAnimeType->execute($accessId);
 
+            // Get first entry from prequel_sequel_chains
+            $firstChainEntry = null;
+            if (!empty($anidbData['prequel_sequel_chains'])) {
+                $firstChain = array_values($anidbData['prequel_sequel_chains'])[0] ?? [];
+                $firstChainEntry = $firstChain[0] ?? null;
+            }
+
+            // Get user's anime library entry if it exists
+            $userLibrary = null;
+            if (Auth::check()) {
+                $userAnimeCollection = UserAnimeCollection::where('map_id', $accessId)
+                    ->whereHas('userLibrary', function ($query) {
+                        $query->where('user_id', Auth::id());
+                    })
+                    ->with(['anime' => function ($query) {
+                        $query->select(['id', 'user_anime_collection_id', 'anidb_id', 'is_movie', 'rating', 'watch_status']);
+                    }])
+                    ->first();
+
+                if ($userAnimeCollection) {
+                    $userLibrary = [
+                        'collection' => [
+                            'id' => $userAnimeCollection->id,
+                            'user_library_id' => $userAnimeCollection->user_library_id,
+                            'map_id' => $userAnimeCollection->map_id,
+                            'rating' => $userAnimeCollection->rating,
+                            'watch_status' => $userAnimeCollection->watch_status,
+                        ],
+                        'anime' => $userAnimeCollection->anime->map(function ($anime) {
+                            return [
+                                'id' => $anime->id,
+                                'anidb_id' => $anime->anidb_id,
+                                'is_movie' => $anime->is_movie,
+                                'rating' => $anime->rating,
+                                'watch_status' => $anime->watch_status,
+                            ];
+                        })->toArray()
+                    ];
+                }
+            }
+
             return Inertia::render('AnimeContent', [
                 'type' => $type,
                 $type => [
                     'tmdbData' => json_decode($tmdbData->getContent(), true),
                     'anidbData' => $anidbData,
                     'collection_name' => $collectionName,
+                    'map_id' => $firstChainEntry ? $firstChainEntry['map_id'] : $accessId,
+                    'anidb_id' => $firstChainEntry ? $firstChainEntry['id'] : null,
                 ],
-                'user_library' => null
+                'user_library' => $userLibrary
             ]);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response()->json(['error' => 'Anime not found'], 404);
+            abort(400, "Could not find this anime");
         } catch (\JsonException $e) {
-            return response()->json(['error' => 'Failed to process TMDB data'], 500);
+            abort(500, "Problem on our end finding this anime");
         } catch (\Exception $e) {
-            Log::info('Error processing anime data', [
+            logger()->error('Error processing anime data', [
                 'error' => $e->getMessage(),
             ]);
-            return response()->json(['error' => 'An error occurred while fetching anime data'], 500);
+            abort(500, "Problem on our end finding this anime");
         }
     }
 
@@ -81,7 +128,7 @@ class AnimeController extends Controller
 
             return $hasRelatedEntry || $hasChainEntry;
         } catch (\Exception $e) {
-            Log::error('Error verifying season relationship', [
+            logger()->error('Error verifying season relationship', [
                 'error' => $e->getMessage(),
                 'access_id' => $accessId,
                 'season_id' => $seasonId
@@ -100,7 +147,7 @@ class AnimeController extends Controller
                 throw new Exception('Music videos or unknown type are not supported');
             }
         } catch (\Exception $e) {
-            Log::error('Error checking anime type', [
+            logger()->error('Error checking anime type', [
                 'error' => $e->getMessage(),
                 'season_id' => $seasonId
             ]);
@@ -149,8 +196,6 @@ class AnimeController extends Controller
 
 
             $anime->setAttribute('mapped_episodes', $anime->mappedEpisodes());
-
-
 
             // Process characters and seiyuus
             $mainCharacters = $anime->characters
@@ -309,11 +354,14 @@ class AnimeController extends Controller
                 return !is_null($link['identifier']);
             });
 
+            $mapId = $anime->map();
 
             unset($anime['characters']);
 
             // Convert to array and set all properties
             $anime = $anime->toArray();
+
+            $anime['map_id'] = $mapId;
 
             // Get TMDB backdrop and logo
             $tmdbImages = $this->tmdbService->getBackdropAndLogoForAnidbId($seasonId);
@@ -326,6 +374,7 @@ class AnimeController extends Controller
             $anime['startdate'] = $this->formatDate($anime['startdate']);
             $anime['enddate'] = $this->formatDate($anime['enddate']);
             $totalRuntime = null;
+
 
             // Format dates in mapped_episodes using Carbon
             if (isset($anime['mapped_episodes'])) {
@@ -347,7 +396,7 @@ class AnimeController extends Controller
                             return [
                                 'season' => $episode['season'] ?? 1,
                                 'episode_number' => $episode['episode'] ?? null,
-                                'id' => $episode['id'] ?? null,
+                                'id' => $episode['tvdb_id'] ?? null,
                                 'name' => $episode['name'] ?? null,
                                 'air_date' => isset($episode['aired'])
                                     ? $this->formatDate($episode['aired'])
@@ -355,7 +404,6 @@ class AnimeController extends Controller
                                 'runtime' => $episode['runtime'] ?? null,
                                 'overview' => $episode['overview'] ?? null,
                                 'still_path' => $episode['image'] ?? null,
-                                'absolute_number' => $episode['absolute_number'] ?? null
                             ];
                         })
                         ->toArray();
@@ -367,7 +415,7 @@ class AnimeController extends Controller
                             return [
                                 'season' => $episode['season'] ?? 0,
                                 'episode_number' => $episode['episode'] ?? null,
-                                'id' => $episode['id'] ?? null,
+                                'id' => $episode['tvdb_id'] ?? null,
                                 'name' => $episode['name'] ?? null,
                                 'air_date' => isset($episode['aired'])
                                     ? $this->formatDate($episode['aired'])
@@ -375,7 +423,6 @@ class AnimeController extends Controller
                                 'runtime' => $episode['runtime'] ?? null,
                                 'overview' => $episode['overview'] ?? null,
                                 'still_path' => $episode['image'] ?? null,
-                                'absolute_number' => $episode['absolute_number'] ?? null
                             ];
                         })
                         ->toArray();
@@ -388,40 +435,57 @@ class AnimeController extends Controller
             $anime['external_links'] = array_values($externalLinks);
             $anime['videos'] = $videos;
 
+            $userLibrary = null;
+
+            if (Auth::check()) {
+                $userAnime = UserAnime::with('episodes')
+                    ->whereHas('collection', function ($query) use ($seasonId) {
+                        $query->whereHas('userLibrary', function ($query) {
+                            $query->where('user_id', Auth::id());
+                        });
+                    })
+                    ->where('anidb_id', $seasonId)
+                    ->select(['id', 'watch_status', 'rating'])
+                    ->first();
+
+                if ($userAnime) {
+                    $userLibrary = [
+                        'id' => $userAnime->id,
+                        'watch_status' => $userAnime->watch_status,
+                        'rating' => $userAnime->rating,
+                        'type' => 'animeseason',
+                        'episodes' => $userAnime->episodes->map(function ($episode) {
+                            return [
+                                'id' => $episode->id,
+                                'user_id' => $episode->user_id,
+                                'user_anime_id' => $episode->user_anime_id,
+                                'episode_id' => $episode->episode_id,
+                                'watch_status' => $episode->watch_status,
+                                'rating' => $episode->rating,
+                                'is_special' => $episode->is_special,
+                            ];
+                        })->toArray()
+                    ];
+                }
+            }
+
             return Inertia::render(
                 'AnimeSeasonContent',
                 [
                     'animeseason' => $anime,
-                    'user_library' => null,
+                    'user_library' => $userLibrary,
                     'type' => 'animeseason'
                 ]
             );
-            // return $anime;
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Anime not found'], 404);
         } catch (\Exception $e) {
-            Log::error('Error fetching anime season', [
+            logger()->error('Error fetching anime season', [
                 'error' => $e->getMessage(),
                 'access_id' => $accessId,
                 'season_id' => $seasonId
             ]);
             return response()->json(['error' => 'An error occurred while fetching anime data'], 500);
         }
-    }
-
-    public function cachedSeason($mapId, $seasonId): Response
-    {
-        $anime = (Cache::remember('anime_season_' . $mapId . '_' . $seasonId, now()->addMinutes(15), function () use ($mapId, $seasonId) {
-            return $this->showSeason($mapId, $seasonId);
-        }));
-
-        return Inertia::render(
-            'AnimeSeasonContent',
-            [
-                'animeseason' => $anime,
-                'user_library' => null,
-                'type' => 'animeseason'
-            ]
-        );
     }
 }

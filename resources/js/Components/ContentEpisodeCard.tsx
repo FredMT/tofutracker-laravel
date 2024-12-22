@@ -3,13 +3,16 @@ import { Episode } from "@/types";
 import { Flex, Group, Image, Spoiler, Stack, Text, Title } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import styles from "./ContentEpisodes.module.css";
+import AnimeEpisodeActions from "@/Components/AnimeEpisodeActions";
 
 export default function ContentEpisodeCard({
     episode,
     imageSource,
+    type,
 }: {
     episode: Episode;
     imageSource: string;
+    type: "anime" | "tv";
 }) {
     const isDesktop = useMediaQuery("(min-width: 900px)");
     const imageBaseUrl =
@@ -40,7 +43,12 @@ export default function ContentEpisodeCard({
                             </svg>`
                         )}`}
                     />
-                    <EpisodeActions episode_id={episode.id} />
+                    {type === "anime" && (
+                        <AnimeEpisodeActions episodal_id={episode.id} />
+                    )}
+                    {type === "tv" && (
+                        <EpisodeActions episodal_id={episode.id} />
+                    )}
                 </Stack>
 
                 <Stack ml={16} py={4}>
@@ -107,7 +115,10 @@ export default function ContentEpisodeCard({
                         </Stack>
                     </div>
                 </div>
-                <EpisodeActions episode_id={episode.id} />
+                {type === "anime" && (
+                    <AnimeEpisodeActions episodal_id={episode.id} />
+                )}
+                {type === "tv" && <EpisodeActions episodal_id={episode.id} />}
             </Stack>
         </>
     );

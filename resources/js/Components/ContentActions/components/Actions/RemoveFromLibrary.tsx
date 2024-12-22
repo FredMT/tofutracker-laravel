@@ -59,6 +59,7 @@ function RemoveFromLibrary() {
                 <Modal
                     {...stack.register("confirm-delete")}
                     title={`Remove ${content.title}?`}
+                    centered
                 >
                     Are you sure you want to remove this item from your library?
                     <Group mt="lg" justify="flex-end">

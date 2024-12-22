@@ -1,18 +1,31 @@
-import MovieActions from "@/Components/ContentActions/components/MovieActions";
-import TvSeasonActions from "@/Components/ContentActions/components/TvSeasonActions";
 import { PageProps } from "@/types";
 import { usePage } from "@inertiajs/react";
+import MovieActions from "./components/MovieActions";
+import TvShowActions from "./components/TvShowActions";
+import TvSeasonActions from "./components/TvSeasonActions";
+import AnimeMovieActions from "./components/AnimeMovieActions";
+import AnimeTvActions from "@/Components/ContentActions/components/AnimeTvActions";
+import AnimeSeasonActions from "@/Components/ContentActions/components/AnimeSeasonActions";
 
-export function ContentActions() {
+function ContentActions() {
     const { type } = usePage<PageProps>().props;
-    if (!type) return null;
 
     switch (type) {
         case "movie":
             return <MovieActions />;
+        case "tv":
+            return <TvShowActions />;
         case "tvseason":
             return <TvSeasonActions />;
+        case "animemovie":
+            return <AnimeMovieActions />;
+        case "animetv":
+            return <AnimeTvActions />;
+        case "animeseason":
+            return <AnimeSeasonActions />;
         default:
             return null;
     }
 }
+
+export default ContentActions;

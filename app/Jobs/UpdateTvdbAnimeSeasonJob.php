@@ -9,7 +9,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
 class UpdateTvdbAnimeSeasonJob implements ShouldQueue
 {
@@ -26,7 +25,7 @@ class UpdateTvdbAnimeSeasonJob implements ShouldQueue
 
     public function handle()
     {
-        Log::info('Starting update of TVDB anime season', [
+        logger()->info('Starting update of TVDB anime season', [
             'season_id' => $this->season->id,
             'slug' => $this->season->slug
         ]);
@@ -40,21 +39,21 @@ class UpdateTvdbAnimeSeasonJob implements ShouldQueue
             'last_fetched_at' => now(),
         ]);
 
-        Log::info('Updated TVDB anime season metadata', [
+        logger()->info('Updated TVDB anime season metadata', [
             'season_id' => $this->season->id,
             'new_last_updated' => $this->completeData->data->lastUpdated
         ]);
 
         $updateAction = app(TVDBUpdateTvdbAnimeEpisodesAction::class);
 
-        Log::info('Starting episode updates via action', [
+        logger()->info('Starting episode updates via action', [
             'season_id' => $this->season->id,
             'episode_count' => count($this->completeData->data->episodes)
         ]);
 
         $updateAction->execute($this->season, $this->completeData->data->episodes);
 
-        Log::info('Completed update of TVDB anime season and episodes', [
+        logger()->info('Completed update of TVDB anime season and episodes', [
             'season_id' => $this->season->id
         ]);
     }

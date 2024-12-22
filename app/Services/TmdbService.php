@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\AnimeMappingExternalId;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Support\Facades\Log;
 
 class TmdbService
 {
@@ -37,7 +36,7 @@ class TmdbService
                 'etag' => $response->header('etag')
             ];
         } catch (\Exception $e) {
-            Log::error("TMDB API error: " . $e->getMessage());
+            logger()->error("TMDB API error: " . $e->getMessage());
             throw $e;
         }
     }
@@ -72,7 +71,7 @@ class TmdbService
                 'etag' => $response->header('etag')
             ];
         } catch (\Exception $e) {
-            Log::error("TMDB API error: " . $e->getMessage());
+            logger()->error("TMDB API error: " . $e->getMessage());
             throw $e;
         }
     }
@@ -93,7 +92,7 @@ class TmdbService
                 'etag' => $response->header('etag')
             ];
         } catch (\Exception $e) {
-            Log::error("TMDB API error: " . $e->getMessage());
+            logger()->error("TMDB API error: " . $e->getMessage());
             throw $e;
         }
     }
@@ -116,7 +115,7 @@ class TmdbService
                 $highestVotedLogo = collect($logos)->sortByDesc('vote_count')->first();
                 $data['logo_path'] = $highestVotedLogo['file_path'] ?? null;
             } catch (\Exception $e) {
-                Log::warning("Failed to extract logo path for TV show ID: {$id}", [
+                logger()->warning("Failed to extract logo path for TV show ID: {$id}", [
                     'error' => $e->getMessage()
                 ]);
                 $data['logo_path'] = null;
@@ -129,7 +128,7 @@ class TmdbService
                 $usRating = collect($contentRatings)->firstWhere('iso_3166_1', 'US');
                 $data['certification'] = $usRating['rating'] ?? null;
             } catch (\Exception $e) {
-                Log::warning("Failed to extract content rating for TV show ID: {$id}", [
+                logger()->warning("Failed to extract content rating for TV show ID: {$id}", [
                     'error' => $e->getMessage()
                 ]);
                 $data['content_rating'] = null;
@@ -142,7 +141,7 @@ class TmdbService
                 $data['title'] = $data['name'] ?? null;
                 unset($data['name']);
             } catch (\Exception $e) {
-                Log::warning("Failed to set title for TV show ID: {$id}", [
+                logger()->warning("Failed to set title for TV show ID: {$id}", [
                     'error' => $e->getMessage()
                 ]);
                 $data['title'] = null;
@@ -153,7 +152,7 @@ class TmdbService
                 'etag' => $response->header('etag')
             ];
         } catch (\Exception $e) {
-            Log::error("TMDB API error: " . $e->getMessage());
+            logger()->error("TMDB API error: " . $e->getMessage());
             throw $e;
         }
     }
@@ -172,7 +171,7 @@ class TmdbService
                 'etag' => $response->header('etag')
             ];
         } catch (\Exception $e) {
-            Log::error("TMDB API error: " . $e->getMessage());
+            logger()->error("TMDB API error: " . $e->getMessage());
             throw $e;
         }
     }
@@ -255,7 +254,7 @@ class TmdbService
                 'logo_path' => $logo['file_path'] ?? null
             ];
         } catch (\Exception $e) {
-            Log::error("Error getting TMDB ID for AniDB ID {$anidbId}: " . $e->getMessage());
+            logger()->error("Error getting TMDB ID for AniDB ID {$anidbId}: " . $e->getMessage());
             return null;
         }
     }

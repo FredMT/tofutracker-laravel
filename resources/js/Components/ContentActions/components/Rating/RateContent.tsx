@@ -25,7 +25,7 @@ export function RateContent() {
             case "movie":
                 return { movie_id: content.id };
             case "tv":
-                return { tv_id: content.id };
+                return { show_id: content.id };
             case "tvseason":
                 return {
                     show_id: content.show_id,
@@ -89,7 +89,7 @@ export function RateContent() {
                 close={close}
                 rating={data.rating}
                 setRating={(val) => setData("rating", val)}
-                content={content}
+                title={content.title}
                 onSubmit={submit}
                 processing={processing}
             />

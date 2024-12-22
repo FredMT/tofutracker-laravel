@@ -2,15 +2,15 @@
 
 namespace App\Actions\Anime;
 
+use App\Jobs\SyncAnimeEpisodeMappings;
 use App\Models\AnidbAnime;
 use App\Jobs\SyncTvdbAnimeData;
-use App\Models\AnidbEpisode;
 use App\Services\TvdbService;
 use GuzzleHttp\Client;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 use SimpleXMLElement;
 use Exception;
+use Illuminate\Support\Facades\Bus;
 
 class GetAnimeEpisodes
 {
@@ -21,57 +21,26 @@ class GetAnimeEpisodes
 
     public function execute(int $anidbid): array
     {
-        return Cache::remember("anime_episodes_{$anidbid}", now()->addSeconds(1), function () use ($anidbid) {
-            try {
-                // First try to get episodes from XML mapping
-                $animeRecord = $this->getAnimeRecord($anidbid);
-                $anime = $this->fetchAnimeFromXml($anidbid);
-                $tvdbId = $this->validateTvdbId($anime, $anidbid);
+        try {
+            // First try to get episodes from XML mapping
+            $animeRecord = $this->getAnimeRecord($anidbid);
+            $anime = $this->fetchAnimeFromXml($anidbid);
+            $tvdbId = $this->validateTvdbId($anime, $anidbid);
 
-                $mapping = $this->mapper->mapEpisodes($anime, $animeRecord->episode_count);
+            $mapping = $this->mapper->mapEpisodes($anime, $animeRecord->episode_count);
+            $enhancedMapping = $this->enhanceWithEpisodeData($mapping, $tvdbId);
 
-                SyncTvdbAnimeData::dispatch($tvdbId);
-                return $this->enhanceWithEpisodeData($mapping, $tvdbId);
-            } catch (\Exception $e) {
-                Log::info('Falling back to database episodes', ['anidb_id' => $anidbid]);
-                return $this->getEpisodesFromDatabase($anidbid);
-            }
-        });
-    }
-
-    private function getEpisodesFromDatabase(int $anidbid): array
-    {
-        $episodes = AnidbEpisode::where('anime_id', $anidbid)
-            ->orderBy('episode_number')
-            ->get();
-
-        $mainEpisodes = [];
-        $specialEpisodes = [];
-
-        foreach ($episodes as $episode) {
-            $episodeData = [
-                'season' => $episode->type === '1' ? 1 : 0,
-                'episode' => (int) $episode->episode_number,
-                'id' => $episode->episode_id,
-                'name' => $episode->title_en ?? $episode->title_ja,
-                'aired' => $episode->airdate,
-                'runtime' => $episode->length,
-                'overview' => $episode->summary,
-                'image' => null,
-                'absolute_number' => (int) $episode->episode_number
-            ];
-
-            if ($episode->type === '1') {
-                $mainEpisodes[$episode->episode_number] = $episodeData;
-            } else {
-                $specialEpisodes[$episode->episode_number] = $episodeData;
-            }
+            Bus::chain([
+                new SyncTvdbAnimeData($tvdbId),
+                new SyncAnimeEpisodeMappings($anidbid, $tvdbId, $enhancedMapping)
+            ])->dispatch();
+            return $enhancedMapping;
+        } catch (\Exception $e) {
+            logger()->info('Falling back to database episodes', ['anidb_id' => $anidbid]);
+            logger()->error($e->getMessage());
+            logger()->error($e->getTraceAsString());
+            abort(500, "Could not receive episodes");
         }
-
-        return [
-            'mainEpisodes' => $mainEpisodes,
-            'specialEpisodes' => $specialEpisodes
-        ];
     }
 
     private function getAnimeRecord(int $anidbid): AnidbAnime
@@ -111,7 +80,7 @@ class GetAnimeEpisodes
 
             throw new Exception("Anime with anidbid {$anidbid} not found in mapping list.");
         } catch (Exception $e) {
-            Log::warning('Anime not found in XML', ['searched_anidbid' => $anidbid]);
+            logger()->warning('Anime not found in XML', ['searched_anidbid' => $anidbid]);
             throw $e;
         }
     }
@@ -136,42 +105,39 @@ class GetAnimeEpisodes
             return $mapping;
         }
 
-        return Cache::remember($cacheKey, now()->addSeconds(1), function () use ($episodes, $mapping) {
-            // Create episode lookup from API response (optimized)
-            $episodeLookup = [];
-            foreach ($episodes as $episode) {
-                $key = "{$episode->seasonNumber}_{$episode->number}";
-                $episodeLookup[$key] = $episode;
-            }
+        // Create episode lookup from API response (optimized)
+        $episodeLookup = [];
+        foreach ($episodes as $episode) {
+            $key = "{$episode->seasonNumber}_{$episode->number}";
+            $episodeLookup[$key] = $episode;
+        }
 
-            $enhancedMapping = [
-                'mainEpisodes' => [],
-                'specialEpisodes' => []
-            ];
+        $enhancedMapping = [
+            'mainEpisodes' => [],
+            'specialEpisodes' => []
+        ];
 
-            // Process main episodes and special episodes together
-            foreach (['mainEpisodes', 'specialEpisodes'] as $episodeType) {
-                foreach ($mapping[$episodeType] as $key => $episodeMap) {
-                    $lookupKey = "{$episodeMap['season']}_{$episodeMap['episode']}";
+        // Process main episodes and special episodes together
+        foreach (['mainEpisodes', 'specialEpisodes'] as $episodeType) {
+            foreach ($mapping[$episodeType] as $key => $episodeMap) {
+                $lookupKey = "{$episodeMap['season']}_{$episodeMap['episode']}";
 
-                    if (isset($episodeLookup[$lookupKey])) {
-                        $tvdbEpisode = $episodeLookup[$lookupKey];
-                        $enhancedMapping[$episodeType][$key] = array_merge($episodeMap, [
-                            'name' => $tvdbEpisode->name,
-                            'overview' => $tvdbEpisode->overview,
-                            'aired' => $tvdbEpisode->aired,
-                            'runtime' => $tvdbEpisode->runtime,
-                            'image' => $tvdbEpisode->image,
-                            'tvdb_id' => $tvdbEpisode->id,
-                        ]);
-                    } else {
-                        $enhancedMapping[$episodeType][$key] = $episodeMap;
-                    }
+                if (isset($episodeLookup[$lookupKey])) {
+                    $tvdbEpisode = $episodeLookup[$lookupKey];
+                    $enhancedMapping[$episodeType][$key] = array_merge($episodeMap, [
+                        'name' => $tvdbEpisode->name,
+                        'overview' => $tvdbEpisode->overview,
+                        'aired' => $tvdbEpisode->aired,
+                        'runtime' => $tvdbEpisode->runtime,
+                        'image' => $tvdbEpisode->image,
+                        'tvdb_id' => $tvdbEpisode->id,
+                    ]);
+                } else {
+                    $enhancedMapping[$episodeType][$key] = $episodeMap;
                 }
             }
+        }
 
-            Log::info($enhancedMapping);
-            return $enhancedMapping;
-        });
+        return $enhancedMapping;
     }
 }

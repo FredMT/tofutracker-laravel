@@ -14,6 +14,11 @@ export const externalLinkMapping: LinkMapping = {
         url: (id) => `https://www.amazon.com/dp/${id}`,
         icon: "/icons/amazonprime.svg",
     },
+    primevideo: {
+        name: "Amazon",
+        url: (id) => `https://www.amazon.com/dp/${id}`,
+        icon: "/icons/amazonprime.svg",
+    },
     netflix: {
         name: "Netflix",
         url: (id) => `https://www.netflix.com/title/${id}`,
@@ -79,5 +84,10 @@ export const externalLinkMapping: LinkMapping = {
         name: "IMDB",
         url: (id) => `https://www.imdb.com/title/${id}`,
         icon: "/icons/imdb.svg",
+    },
+    animenewsnetwork: {
+        name: "Anime News Network",
+        url: (id) => `https://www.imdb.com/title/${id}`,
+        icon: "/icons/ann.webp",
     },
 };

@@ -61,9 +61,26 @@ class AnimeEpisodeMapper
                     if (!empty($individualMappings)) {
                         $mappings = explode(';', trim($individualMappings, ';'));
                         foreach ($mappings as $map) {
-                            list($anidbEp, $tvdbEpString) = explode('-', $map);
-                            $tvdbEpisodes = explode('+', $tvdbEpString);
-                            foreach ($tvdbEpisodes as $tvdbEp) {
+                            if (empty($map)) continue;
+
+                            list($anidbEp, $tvdbEp) = explode('-', $map);
+                            // If tvdbEp is 0, skip this mapping
+                            if ((int)$tvdbEp === 0) continue;
+
+                            // Check if this TVDB episode already exists in mainEpisodes
+                            $tvdbEpisodeExists = false;
+                            foreach ($mainEpisodes as $existingEpisode) {
+                                if (
+                                    $existingEpisode['season'] === $tvdbMainSeason &&
+                                    $existingEpisode['episode'] === (int)$tvdbEp
+                                ) {
+                                    $tvdbEpisodeExists = true;
+                                    break;
+                                }
+                            }
+
+                            // Only add if this TVDB episode hasn't been mapped yet
+                            if (!$tvdbEpisodeExists) {
                                 $mainEpisodes[(int)$anidbEp] = [
                                     'season' => $tvdbMainSeason,
                                     'episode' => (int)$tvdbEp,

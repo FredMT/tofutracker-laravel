@@ -24,6 +24,8 @@ class UserTvEpisode extends Model
         'rating' => 'float',
     ];
 
+    protected $hidden = ['created_at', 'updated_at', 'user_tv_season_id'];
+
     public function userTvSeason(): BelongsTo
     {
         return $this->belongsTo(UserTvSeason::class);

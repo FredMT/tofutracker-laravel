@@ -1,5 +1,5 @@
 import { BannerImageContainer } from "@/Components/BannerImageContainer";
-import { ContentActions } from "@/Components/ContentActions/ContentActions";
+import ContentActions from "@/Components/ContentActions/ContentActions";
 import { ContentCredits } from "@/Components/ContentCredits";
 import ContentDetails from "@/Components/ContentDetails";
 import ContentEpisodes from "@/Components/ContentEpisodes";

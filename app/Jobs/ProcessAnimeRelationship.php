@@ -8,7 +8,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
 class ProcessAnimeRelationship implements ShouldQueue
 {
@@ -31,15 +30,15 @@ class ProcessAnimeRelationship implements ShouldQueue
      */
     public function handle(AnimeRelationshipService $service): void
     {
-        Log::info("Processing relationships for anime ID: {$this->animeId}");
+        logger()->info("Processing relationships for anime ID: {$this->animeId}");
 
         try {
             $service->getRelatedAnimeIds($this->animeId);
-            Log::info("Successfully processed relationships for anime ID: {$this->animeId}");
+            logger()->info("Successfully processed relationships for anime ID: {$this->animeId}");
         } catch (\Exception $e) {
-            Log::error("Failed to process relationships for anime ID: {$this->animeId}", [
-                'error' => $e->getMessage()
-            ]);
+            logger()->error("Failed to process relationships for anime ID: {$this->animeId}");
+            logger()->error($e->getMessage());
+            logger()->error($e->getTraceAsString());
             throw $e;
         }
     }

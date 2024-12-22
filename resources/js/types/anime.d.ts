@@ -2,6 +2,8 @@ export interface Anime {
     tmdbData: TmdbData;
     anidbData: AnidbData;
     collection_name: string;
+    map_id: number;
+    anidb_id: number;
 }
 
 export interface BaseCharacter {

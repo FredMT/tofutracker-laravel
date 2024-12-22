@@ -8,7 +8,6 @@ use App\Models\AnimeRelatedEntry;
 use App\Models\AnimePrequelSequelChain;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Log;
 
 class TmdbAnimeResource extends JsonResource
 {

@@ -10,7 +10,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class ProcessTvSeasons implements ShouldQueue
 {
@@ -60,7 +59,7 @@ class ProcessTvSeasons implements ShouldQueue
                     }
                 }
 
-                Log::info("Etag is the same, skipping update for TV show {$this->showId} and season {$seasonData['season_number']}");
+                logger()->info("Etag is the same, skipping update for TV show {$this->showId} and season {$seasonData['season_number']}");
             } else {
                 // Create new season
                 $season = TvSeason::create([
@@ -87,7 +86,7 @@ class ProcessTvSeasons implements ShouldQueue
                 }
             }
         } catch (\Exception $e) {
-            Log::error("Error processing TV season: " . $e->getMessage(), [
+            logger()->error("Error processing TV season: " . $e->getMessage(), [
                 'show_id' => $this->showId,
                 'season_number' => $this->seasonNumber
             ]);

@@ -16,6 +16,61 @@ interface FlashMessage {
     message: string;
 }
 
+interface BaseUserLibrary {
+    type: "movie" | "tv" | "tvseason";
+    id: number;
+    watch_status: string | null;
+    rating: number | null;
+    episodes?: {
+        episode_id: number;
+        watch_status: string | null;
+        rating: number | null;
+    }[];
+}
+
+interface AnimeSeasonUserLibrary {
+    id: number;
+    watch_status: WatchStatus;
+    rating: number | null;
+    episodes: Array<{
+        id: number;
+        user_id: number | null;
+        user_anime_id: number;
+        episode_id: number;
+        watch_status: WatchStatus;
+        rating: number | null;
+        is_special: boolean;
+    }>;
+}
+
+interface AnimeUserLibrary {
+    type: "animemovie" | "animetv" | "animeseason";
+    collection: {
+        id: number;
+        user_library_id: number;
+        map_id: number;
+        rating: number | null;
+        watch_status: WatchStatus;
+    };
+    anime: Array<{
+        id: number;
+        anidb_id: number | null;
+        is_movie: boolean;
+        rating: number | null;
+        watch_status: WatchStatus;
+    }>;
+}
+
+type UserLibrary = BaseUserLibrary | AnimeUserLibrary;
+
+type ContentTypeToLibrary<T> = T extends { type: "movie" | "tv" | "tvseason" }
+    ? BaseUserLibrary
+    : T extends { type: "animeseason" }
+    ? AnimeSeasonUserLibrary
+    : T extends { type: "animemovie" | "animetv" }
+    ? AnimeUserLibrary
+    : never;
+
 export type PageProps<
     T extends Record<string, unknown> = Record<string, unknown>
 > = T & {
@@ -30,24 +85,18 @@ export type PageProps<
     animeseason?: AnimeSeason;
     flash?: FlashMessage;
     ziggy: Config & { location: string };
-    user_library?: {
-        id: number;
-        watch_status: keyof typeof WatchStatus | null;
-        rating: number | null;
-        is_private: boolean;
-        episodes?: Array<{
-            id: number;
-            watch_status: keyof typeof WatchStatus;
-            rating: number | null;
-        }>;
-    } | null;
+    user_library: ContentTypeToLibrary<T> | null;
 } & (
         | { type: "movie"; movie: Movie }
         | { type: "tv"; tv: TvShow }
         | { type: "tvseason"; tvseason: TvSeason }
         | { type: "animetv"; animetv: Main }
         | { type: "animemovie"; animemovie: Main }
-        | { type: "animeseason"; animemovie: AnimeSeason }
+        | {
+              type: "animeseason";
+              animeseason: AnimeSeason;
+              user_library: AnimeSeasonUserLibrary;
+          }
     );
 
 interface BaseContent {
@@ -188,20 +237,6 @@ interface Recommended {
     release_date: Date;
 }
 
-export interface LibraryEntry {
-    id: number;
-    media_id: number;
-    media_type: string;
-    status: WatchStatus;
-    rating: number | null;
-    is_private: boolean;
-    created_at: string;
-    movie_data?: {
-        poster_path: string;
-        title: string;
-    };
-}
-
 interface ContentCreditsProps {
     containerWidth: number;
     slideSize?: string;
@@ -251,7 +286,6 @@ interface AnimePerson extends BasePerson {
     characters?: string; // For crew members
 }
 
-interface ContentCreditsProps {
-    containerWidth: number;
-    slideSize?: string;
-}
+export type AnimeType = {
+    type: "animemovie" | "animetv";
+};

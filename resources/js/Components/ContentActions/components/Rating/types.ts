@@ -7,6 +7,6 @@ export interface RatingProps {
     close: () => void;
     rating: number;
     setRating: (value: number) => void;
-    content: Content;
+    title: string;
     processing: boolean;
 }

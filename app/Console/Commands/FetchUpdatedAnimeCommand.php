@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Jobs\ProcessAnimeXmlJob;
 use App\Services\AnidbUdpService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 
 class FetchUpdatedAnimeCommand extends Command
 {
@@ -18,7 +17,7 @@ class FetchUpdatedAnimeCommand extends Command
             $result = $udpService->getUpdatedAnime(1);
 
             if (!isset($result['anime_ids']) || empty($result['anime_ids'])) {
-                Log::info('No anime updates found');
+                logger()->info('No anime updates found');
                 return;
             }
 
@@ -28,11 +27,11 @@ class FetchUpdatedAnimeCommand extends Command
                 ProcessAnimeXmlJob::dispatch($animeId);
             }
 
-            Log::info('Queued anime updates for processing', [
+            logger()->info('Queued anime updates for processing', [
                 'count' => count($result['anime_ids'])
             ]);
         } catch (\Exception $e) {
-            Log::error('Failed to fetch anime updates', [
+            logger()->error('Failed to fetch anime updates', [
                 'error' => $e->getMessage()
             ]);
         }

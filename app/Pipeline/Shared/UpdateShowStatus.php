@@ -33,8 +33,11 @@ class UpdateShowStatus
             ->whereIn('season_id', $seasonIds)
             ->count();
 
+
+        $userTvShow = UserTvShow::where(['user_id' => $payload['user']->id, 'show_id' => $payload['validated']['show_id']])->first();
+        logger()->info($userTvShow);
         // If all seasons are completed, mark show as completed and create play record
-        if ($totalSeasons === $completedSeasons) {
+        if ($totalSeasons === $completedSeasons && $payload['show']->watch_status !== WatchStatus::COMPLETED) {
             $payload['show']->update(['watch_status' => WatchStatus::COMPLETED]);
 
             // Create play record for the show

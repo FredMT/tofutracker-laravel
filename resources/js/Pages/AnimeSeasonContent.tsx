@@ -1,7 +1,7 @@
 import AnimeContentEpisodes from "@/Components/AnimeContentEpisodes";
 import AnimeRelatedContent from "@/Components/AnimeRelatedContent";
 import { BannerImageContainer } from "@/Components/BannerImageContainer";
-import { ContentActions } from "@/Components/ContentActions/ContentActions";
+import ContentActions from "@/Components/ContentActions/ContentActions";
 import { ContentCredits } from "@/Components/ContentCredits";
 import { ContentSummary } from "@/Components/ContentSummary";
 import PosterImage from "@/Components/PosterImage";

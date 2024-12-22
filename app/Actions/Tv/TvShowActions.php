@@ -10,7 +10,6 @@ use App\Models\TvSeason;
 use App\Services\TmdbService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 
 class TvShowActions
 {
@@ -198,7 +197,7 @@ class TvShowActions
 
             return $tvShow->refresh();
         } catch (\Exception $e) {
-            Log::error("Error updating TV show: " . $e->getMessage());
+            logger()->error("Error updating TV show: " . $e->getMessage());
             throw $e;
         }
     }
@@ -259,7 +258,7 @@ class TvShowActions
 
             return $tvSeason->refresh();
         } catch (\Exception $e) {
-            Log::error("Error updating TV season: " . $e->getMessage());
+            logger()->error("Error updating TV season: " . $e->getMessage());
             throw $e;
         }
     }

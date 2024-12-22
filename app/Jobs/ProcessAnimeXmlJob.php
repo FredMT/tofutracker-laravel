@@ -9,7 +9,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 
 class ProcessAnimeXmlJob implements ShouldQueue
@@ -51,13 +50,11 @@ class ProcessAnimeXmlJob implements ShouldQueue
                     // Process the XML
                     $service->processXmlContent($xmlContent);
 
-                    Log::info('Successfully processed anime', ['anime_id' => $this->animeId]);
+                    logger()->info('Successfully processed anime', ['anime_id' => $this->animeId]);
                 } catch (\Exception $e) {
-                    Log::error('Failed to process anime', [
-                        'anime_id' => $this->animeId,
-                        'error' => $e->getMessage(),
-                        'trace' => $e->getTraceAsString()
-                    ]);
+                    logger()->error('Failed to process anime', ['anime_id' => $this->animeId]);
+                    logger()->error($e->getMessage());
+                    logger()->error($e->getTraceAsString());
                     throw $e; // Re-throw to trigger job failure
                 }
             },

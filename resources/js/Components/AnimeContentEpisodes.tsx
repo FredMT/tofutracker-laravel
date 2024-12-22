@@ -78,6 +78,7 @@ function AnimeContentEpisodes() {
                                             key={`main-${number}`}
                                             episode={episode}
                                             imageSource="tvdb"
+                                            type="anime"
                                         />
                                     )
                                 )}
@@ -109,6 +110,7 @@ function AnimeContentEpisodes() {
                                             key={`special-${number}`}
                                             episode={episode}
                                             imageSource="tvdb"
+                                            type="anime"
                                         />
                                     ))}
                                     {hasMoreSpecialEpisodes && (

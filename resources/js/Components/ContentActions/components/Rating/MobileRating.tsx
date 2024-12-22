@@ -14,7 +14,7 @@ export function MobileRating({
     close,
     rating,
     setRating,
-    content,
+    title,
     onSubmit,
     processing,
 }: RatingProps & { onSubmit: () => void }) {
@@ -36,7 +36,7 @@ export function MobileRating({
             >
                 <RatingStar rating={rating} />
                 <Stack>
-                    <Title>Rate: {content.title}</Title>
+                    <Title>Rate: {title}</Title>
                     <Group justify="center" mt="xl">
                         <MantineRating
                             value={rating}

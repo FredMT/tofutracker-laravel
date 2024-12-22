@@ -8,7 +8,7 @@ export function DesktopRating({
     close,
     rating,
     setRating,
-    content,
+    title,
     onSubmit,
     processing,
 }: RatingProps & { onSubmit: () => void }) {
@@ -32,7 +32,7 @@ export function DesktopRating({
                 <RatingStar rating={rating} />
                 <div style={{ textAlign: "center" }}>
                     <Title style={{ marginBottom: "1rem" }}>
-                        Rate: {content.title}
+                        Rate: {title}
                     </Title>
                     <Group justify="center" mt="xl">
                         <MantineRating

@@ -6,7 +6,7 @@ import { PageProps } from "@/types";
 import { useState } from "react";
 
 interface EpisodeActionsProps {
-    episode_id: number;
+    episodal_id: number;
 }
 
 interface FormErrors {
@@ -16,7 +16,7 @@ interface FormErrors {
     episode_id?: string;
 }
 
-export default function EpisodeActions({ episode_id }: EpisodeActionsProps) {
+export default function EpisodeActions({ episodal_id }: EpisodeActionsProps) {
     const { tvseason, user_library } = usePage<PageProps>().props;
     const [isHovered, setIsHovered] = useState(false);
 
@@ -25,39 +25,43 @@ export default function EpisodeActions({ episode_id }: EpisodeActionsProps) {
         show_id?: number;
         season_id?: number;
     }>({
-        episode_id,
+        episode_id: episodal_id,
         show_id: tvseason?.show_id,
         season_id: tvseason?.id,
     });
 
     const isEpisodeWatched = user_library?.episodes?.some(
-        (episode) =>
-            episode.id === episode_id && episode.watch_status === "COMPLETED"
+        (episodes) =>
+            episodal_id === episodes.episode_id &&
+            episodes.watch_status === "COMPLETED"
     );
 
     const handleEpisodeAction = () => {
         if (isEpisodeWatched) {
-            form.delete(route("tv.episode.destroy", { episode_id }), {
-                preserveScroll: true,
-                onSuccess: () => {
-                    notifications.show({
-                        title: "Success",
-                        message: "Episode removed from your library",
-                        color: "green",
-                    });
-                },
-                onError: (errors: FormErrors) => {
-                    notifications.show({
-                        title: "Error",
-                        message:
-                            errors.message ||
-                            "Failed to remove episode from library",
-                        color: "red",
-                    });
-                },
-            });
+            form.delete(
+                route("tv.episode.destroy", { episode_id: episodal_id }),
+                {
+                    preserveScroll: true,
+                    onSuccess: () => {
+                        notifications.show({
+                            title: "Success",
+                            message: "Episode removed from your library",
+                            color: "green",
+                        });
+                    },
+                    onError: (errors: FormErrors) => {
+                        notifications.show({
+                            title: "Error",
+                            message:
+                                errors.message ||
+                                "Failed to remove episode from library",
+                            color: "red",
+                        });
+                    },
+                }
+            );
         } else {
-            form.post(route("tv.episode.store", { episode_id }), {
+            form.post(route("tv.episode.store", { episode_id: episodal_id }), {
                 preserveScroll: true,
                 onSuccess: () => {
                     notifications.show({

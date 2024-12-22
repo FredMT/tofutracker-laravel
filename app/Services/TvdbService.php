@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
+use App\Exceptions\Tvdb\TvdbSyncException;
 use App\Models\TvdbAnimeSeason;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Cache;
 use App\Jobs\CreateTvdbAnimeSeasonJob;
 use App\Jobs\UpdateTvdbAnimeSeasonJob;
-use Illuminate\Support\Facades\Log;
 
 class TvdbService
 {
@@ -25,7 +25,7 @@ class TvdbService
 
     public function getEpisodes(int $seriesId)
     {
-        return Cache::remember("tvdb.episodes.{$seriesId}", 15 * 60, function () use ($seriesId) {
+        return Cache::remember("tvdb.episodes.{$seriesId}", now()->addMinutes(30), function () use ($seriesId) {
             $allEpisodes = [];
             $nextUrl = "/series/{$seriesId}/episodes/default/eng";
 
@@ -43,45 +43,46 @@ class TvdbService
 
     public function getEpisodesWithAllData(int $seriesId)
     {
-        $completeData = null;
-        $allEpisodes = [];
-        $nextUrl = "/series/{$seriesId}/episodes/default/eng";
+        return Cache::remember("tvdb.series.{$seriesId}", now()->addMinutes(30), function () use ($seriesId) {
+            $completeData = null;
+            $allEpisodes = [];
+            $nextUrl = "/series/{$seriesId}/episodes/default/eng";
 
-        while ($nextUrl) {
-            $response = $this->client->get($nextUrl);
-            $data = json_decode($response->body());
+            while ($nextUrl) {
+                $response = $this->client->get($nextUrl);
+                $data = json_decode($response->body());
 
-            // Store the complete data structure on first iteration
-            if (!$completeData) {
-                $completeData = $data;
+                // Store the complete data structure on first iteration
+                if (!$completeData) {
+                    $completeData = $data;
+                }
+
+                // Merge episodes from each page
+                $allEpisodes = array_merge($allEpisodes, $data->data->episodes);
+
+                $nextUrl = $data->links->next;
             }
 
-            // Merge episodes from each page
-            $allEpisodes = array_merge($allEpisodes, $data->data->episodes);
+            // Update the episodes array in the complete data structure
+            $completeData->data->episodes = $allEpisodes;
 
-            $nextUrl = $data->links->next;
-        }
-
-        // Update the episodes array in the complete data structure
-        $completeData->data->episodes = $allEpisodes;
-
-        return $completeData;
+            return $completeData;
+        });
     }
 
     public function syncTvdbAnimeData(int $seriesId)
     {
-        Log::info('Starting sync of TVDB anime data', ['series_id' => $seriesId]);
+        logger()->info('Starting sync of TVDB anime data', ['series_id' => $seriesId]);
 
         $completeData = $this->getEpisodesWithAllData($seriesId);
         $season = TvdbAnimeSeason::where('slug', $completeData->data->slug)->first();
 
         if (!$season) {
-            Log::info('No existing season found, dispatching creation job', [
+            logger()->info('No existing season found, dispatching creation job', [
                 'series_id' => $seriesId,
                 'slug' => $completeData->data->slug
             ]);
-            CreateTvdbAnimeSeasonJob::dispatch($completeData);
-            return;
+            return CreateTvdbAnimeSeasonJob::dispatch($completeData);
         }
 
         $shouldUpdate = $season->status_keep_updated ||
@@ -92,28 +93,27 @@ class TvdbService
                 ? 'Skipping update - monthly check not due yet'
                 : 'Skipping update - status_keep_updated is false and no previous fetch';
 
-            Log::info($logMessage, [
+            logger()->info($logMessage, [
                 'series_id' => $seriesId,
                 'season_id' => $season->id,
                 'months_until_next_check' => $season->last_fetched_at ? 1 - now()->diffInMonths($season->last_fetched_at) : null
             ]);
-            return;
+            throw new TvdbSyncException('Update not needed', 0, null);
         }
 
         // Compare lastUpdated timestamps
         $apiLastUpdated = $completeData->data->lastUpdated;
         if ($season->last_updated >= $apiLastUpdated) {
-            Log::info('Skipping update - no new updates from TVDB because api response lastUpdated is not newer than local lastUpdated', [
+            logger()->info('Skipping update - no new updates from TVDB because api response lastUpdated is not newer than local lastUpdated', [
                 'series_id' => $seriesId,
-                'season_id' => $season->id,
             ]);
 
             // Update last_fetched_at even though we're not updating content
             $season->update(['last_fetched_at' => now()]);
-            return;
+            throw new TvdbSyncException('No new updates available', 0, null);
         }
 
-        Log::info('Dispatching update job for existing season', [
+        logger()->info('Dispatching update job for existing season', [
             'series_id' => $seriesId,
         ]);
 

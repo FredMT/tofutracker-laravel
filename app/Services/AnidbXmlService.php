@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use SimpleXMLElement;
-use Illuminate\Support\Facades\Log;
 
 class AnidbXmlService
 {
@@ -69,7 +68,7 @@ class AnidbXmlService
 
             return $data;
         } catch (\Exception $e) {
-            Log::error('Error parsing anime XML: ' . $e->getMessage(), [
+            logger()->error('Error parsing anime XML: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString()
             ]);
             throw $e;

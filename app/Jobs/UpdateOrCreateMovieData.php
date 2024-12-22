@@ -8,7 +8,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 use App\Services\TmdbService;
 
@@ -27,7 +26,7 @@ class UpdateOrCreateMovieData implements ShouldQueue
 
 
             if (isset($response['data']['success']) && $response['data']['success'] === false) {
-                Log::error("Failed to update movie {$this->movieId}: {$response['data']['status_message']}");
+                logger()->error("Failed to update movie {$this->movieId}: {$response['data']['status_message']}");
                 return;
             }
 
@@ -51,7 +50,7 @@ class UpdateOrCreateMovieData implements ShouldQueue
                 Cache::put("movie.{$this->movieId}", $filteredData, now()->addHours(6));
             }
         } catch (\Exception $e) {
-            Log::error("Error updating movie {$this->movieId}: " . $e->getMessage());
+            logger()->error("Error updating movie {$this->movieId}: " . $e->getMessage());
             throw $e;
         }
     }

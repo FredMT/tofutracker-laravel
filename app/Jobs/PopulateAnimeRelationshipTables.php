@@ -11,7 +11,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
 class PopulateAnimeRelationshipTables implements ShouldQueue
 {
@@ -24,7 +23,7 @@ class PopulateAnimeRelationshipTables implements ShouldQueue
         $maps = AnimeMap::all();
 
         foreach ($maps as $map) {
-            Log::info("Processing map ID: {$map->id}");
+            logger()->info("Processing map ID: {$map->id}");
 
             try {
                 // Process prequel/sequel chains
@@ -45,12 +44,13 @@ class PopulateAnimeRelationshipTables implements ShouldQueue
                                     'sequence_order' => $sequenceOrder + 1
                                 ]);
                             } catch (\Illuminate\Database\UniqueConstraintViolationException $e) {
-                                Log::info("Skipping duplicate chain entry for anime_id: {$animeId} in chain: {$chainModel->id}");
+                                logger()->info("Skipping duplicate chain entry for anime_id: {$animeId} in chain: {$chainModel->id}");
+                                logger()->info($e->getMessage());
                                 continue;
                             }
                         }
                     } catch (\Exception $e) {
-                        Log::error("Error processing chain for map {$map->id}: " . $e->getMessage());
+                        logger()->error("Error processing chain for map {$map->id}: " . $e->getMessage());
                         continue;
                     }
                 }
@@ -63,12 +63,13 @@ class PopulateAnimeRelationshipTables implements ShouldQueue
                             'anime_id' => $animeId
                         ]);
                     } catch (\Illuminate\Database\UniqueConstraintViolationException $e) {
-                        Log::info("Skipping duplicate related entry for anime_id: {$animeId} in map: {$map->id}");
+                        logger()->info("Skipping duplicate related entry for anime_id: {$animeId} in map: {$map->id}");
+                        logger()->info($e->getMessage());
                         continue;
                     }
                 }
             } catch (\Exception $e) {
-                Log::error("Error processing map {$map->id}: " . $e->getMessage());
+                logger()->error("Error processing map {$map->id}: " . $e->getMessage());
                 continue;
             }
         }

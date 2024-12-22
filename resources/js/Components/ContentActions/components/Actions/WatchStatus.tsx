@@ -9,7 +9,7 @@ import { useEffect } from "react";
 
 export function WatchStatusSelect() {
     const { user_library } = usePage<PageProps>().props;
-    const { content } = useContent();
+    const { content, type } = useContent();
     if (!content) return null;
 
     const statusOptions = Object.values(WatchStatus).map((status) => ({
@@ -34,33 +34,30 @@ export function WatchStatusSelect() {
             data.watch_status &&
             data.watch_status !== user_library?.watch_status
         ) {
-            patch(
-                route("movie.library.update-status", { movie_id: content.id }),
-                {
-                    preserveScroll: true,
-                    onSuccess: (res: any) => {
-                        if (res.props.flash.success) {
-                            notifications.show({
-                                color: "teal",
-                                title: "Success",
-                                message: res.props.flash.message,
-                                icon: <Check size={18} />,
-                                autoClose: 3000,
-                            });
-                        }
-                        if (!res.props.flash.success) {
-                            notifications.show({
-                                color: "red",
-                                icon: <CircleAlertIcon size={18} />,
-                                title: "Error",
-                                message:
-                                    res.props.flash.message ||
-                                    "An error occurred",
-                                autoClose: 3000,
-                            });
-                        }
-                    },
-                    onError: (res: any) => {
+            const route_name = `${type}.library.update-status`;
+            const route_params =
+                type === "movie"
+                    ? { movie_id: content.id }
+                    : type === "tvseason"
+                    ? {
+                          show_id: content.show_id,
+                          season_id: content.id,
+                      }
+                    : {};
+
+            patch(route(route_name, route_params), {
+                preserveScroll: true,
+                onSuccess: (res: any) => {
+                    if (res.props.flash.success) {
+                        notifications.show({
+                            color: "teal",
+                            title: "Success",
+                            message: res.props.flash.message,
+                            icon: <Check size={18} />,
+                            autoClose: 3000,
+                        });
+                    }
+                    if (!res.props.flash.success) {
                         notifications.show({
                             color: "red",
                             icon: <CircleAlertIcon size={18} />,
@@ -69,15 +66,35 @@ export function WatchStatusSelect() {
                                 res.props.flash.message || "An error occurred",
                             autoClose: 3000,
                         });
-                    },
-                }
-            );
+                    }
+                },
+                onError: (res: any) => {
+                    notifications.show({
+                        color: "red",
+                        icon: <CircleAlertIcon size={18} />,
+                        title: "Error",
+                        message: res.props.flash.message || "An error occurred",
+                        autoClose: 3000,
+                    });
+                },
+            });
         }
     }, [data.watch_status]);
 
+    const getPlaceholder = () => {
+        switch (type) {
+            case "movie":
+                return "Choose Movie Status";
+            case "tvseason":
+                return "Choose Season Status";
+            default:
+                return "Choose Status";
+        }
+    };
+
     return (
         <Select
-            placeholder="Choose Status"
+            placeholder={getPlaceholder()}
             data={statusOptions}
             value={data.watch_status}
             onChange={(val) => setData("watch_status", val as WatchStatus)}

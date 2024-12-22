@@ -9,7 +9,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
 class CreateTvdbAnimeSeasonJob implements ShouldQueue
 {
@@ -58,7 +57,7 @@ class CreateTvdbAnimeSeasonJob implements ShouldQueue
 
     public function handle()
     {
-        Log::info('Starting creation of new TVDB anime season', [
+        logger()->info('Starting creation of new TVDB anime season', [
             'slug' => $this->seasonData['slug'],
             'episode_count' => count($this->episodes)
         ]);
@@ -76,7 +75,7 @@ class CreateTvdbAnimeSeasonJob implements ShouldQueue
 
         foreach (array_chunk($this->episodes, self::BATCH_SIZE) as $index => $chunk) {
             try {
-                Log::info('Processing episode chunk', [
+                logger()->info('Processing episode chunk', [
                     'season_id' => $season->id,
                     'chunk_number' => $index + 1,
                     'chunk_size' => count($chunk)
@@ -88,7 +87,7 @@ class CreateTvdbAnimeSeasonJob implements ShouldQueue
 
                 TvdbAnimeEpisode::insert($episodesData);
             } catch (\Exception $e) {
-                Log::error('Error processing episode chunk', [
+                logger()->error('Error processing episode chunk', [
                     'season_id' => $season->id,
                     'chunk_number' => $index + 1,
                     'error' => $e->getMessage()
@@ -97,7 +96,7 @@ class CreateTvdbAnimeSeasonJob implements ShouldQueue
             }
         }
 
-        Log::info('Completed creation of TVDB anime season and episodes', [
+        logger()->info('Completed creation of TVDB anime season and episodes', [
             'season_id' => $season->id,
             'total_episodes' => count($this->episodes)
         ]);
@@ -105,7 +104,7 @@ class CreateTvdbAnimeSeasonJob implements ShouldQueue
 
     public function failed(\Throwable $exception)
     {
-        Log::error('Failed to create TVDB anime season', [
+        logger()->error('Failed to create TVDB anime season', [
             'slug' => $this->seasonData['slug'],
             'error' => $exception->getMessage(),
             'trace' => $exception->getTraceAsString()

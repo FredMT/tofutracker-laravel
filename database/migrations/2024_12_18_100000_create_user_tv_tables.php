@@ -15,7 +15,7 @@ return new class extends Migration
             $table->foreignId('user_library_id')->constrained('user_libraries')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('show_id')->constrained('tv_shows')->cascadeOnDelete();
-            $table->enum('watch_status', array_column(WatchStatus::cases(), 'value'));
+            $table->enum('watch_status', array_column(WatchStatus::cases(), 'value'))->nullable();
             $table->float('rating')->nullable();
             $table->timestamps();
 
@@ -29,7 +29,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('show_id')->constrained('tv_shows')->cascadeOnDelete();
             $table->foreignId('season_id')->constrained('tv_seasons')->cascadeOnDelete();
-            $table->enum('watch_status', array_column(WatchStatus::cases(), 'value'));
+            $table->enum('watch_status', array_column(WatchStatus::cases(), 'value'))->nullable();
             $table->float('rating')->nullable();
             $table->timestamps();
 

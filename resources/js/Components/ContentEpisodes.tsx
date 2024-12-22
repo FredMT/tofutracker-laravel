@@ -16,6 +16,7 @@ function ContentEpisodes() {
                     episode={episode}
                     key={episode.id}
                     imageSource="tmdb"
+                    type="tv"
                 />
             ))}
         </Stack>

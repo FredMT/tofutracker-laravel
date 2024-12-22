@@ -34,42 +34,28 @@ class TvSeasonController extends Controller
             });
 
             // Get user's library data if authenticated
-            $userLibraryData = null;
+            $userLibrary = null;
             if (Auth::check()) {
-                $user = Auth::user();
-
-                // Get user's season data
                 $userSeason = UserTvSeason::where([
-                    'user_id' => $user->id,
+                    'user_id' => Auth::id(),
                     'season_id' => $seasonData['id'],
+                    'show_id' => $seasonData['show_id'],
+
                 ])->first();
 
-                // Get user's episode data
-                $userEpisodes = UserTvEpisode::where([
-                    'user_id' => $user->id,
-                    'show_id' => $seasonData['show_id'],
-                ])
-                    ->whereIn('episode_id', collect($seasonData['episodes'])->pluck('id'))
-                    ->get()
-                    ->keyBy('episode_id');
-
-                // Add user data to season
-                $userLibraryData = [
-                    'watch_status' => $userSeason?->watch_status,
-                    'rating' => $userSeason?->rating,
-                    'episodes' => $userEpisodes->map(function ($episode) {
-                        return [
-                            'id' => $episode->episode_id,
-                            'watch_status' => $episode->watch_status,
-                            'rating' => $episode->rating,
-                        ];
-                    })->values()->all(),
-                ];
+                if ($userSeason) {
+                    $userLibrary = [
+                        'id' => $userSeason->id,
+                        'watch_status' => $userSeason->watch_status?->value,
+                        'rating' => $userSeason->rating,
+                        'episodes' => $userSeason->episodes
+                    ];
+                }
             }
 
             return Inertia::render('Content', [
                 'tvseason' => $seasonData,
-                'user_library' => $userLibraryData,
+                'user_library' => $userLibrary,
                 'type' => 'tvseason'
             ]);
         } catch (\Exception $e) {

@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Exceptions\Tvdb\TvdbSyncException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -32,6 +33,13 @@ class SyncTvdbAnimeData implements ShouldQueue
      */
     public function handle(TvdbService $tvdbService)
     {
-        $tvdbService->syncTvdbAnimeData($this->tvdbId);
+        try {
+            $tvdbService->syncTvdbAnimeData($this->tvdbId);
+        } catch (TvdbSyncException $e) {
+            logger()->error('Error syncing TVDB anime data: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            $this->fail($e);
+            logger()->error('Error syncing TVDB anime data: ' . $e->getMessage());
+        }
     }
 }

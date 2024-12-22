@@ -11,9 +11,16 @@ use App\Pipeline\UserTvSeason\ValidateSeasonRelations;
 use App\Pipeline\UserTvSeason\CreateUserTvSeason;
 use App\Pipeline\UserTvSeason\CreateUserTvSeasonPlay;
 use App\Pipeline\UserTvSeason\CreateUserTvEpisodes;
+use App\Pipeline\UserTvSeason\UpdateWatchStatus;
 use App\Pipeline\Shared\UpdateShowStatus;
 use App\Models\UserTvSeason;
+use App\Models\UserTvShow;
+use App\Models\UserLibrary;
+use App\Enums\MediaType;
+use App\Enums\WatchStatus;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Gate;
 
 class UserTvSeasonController extends Controller
 {
@@ -94,6 +101,154 @@ class UserTvSeasonController extends Controller
             return back()->with([
                 'success' => false,
                 'message' => "An error occurred while removing season from library",
+            ]);
+        }
+    }
+
+    public function update(Request $request)
+    {
+        $validated = $request->validate([
+            'show_id' => ['required', 'integer'],
+            'season_id' => ['required', 'integer'],
+            'rating' => ['required', 'numeric', 'min:1', 'max:10'],
+        ]);
+
+        try {
+            return DB::transaction(function () use ($validated, $request) {
+                // Try to find existing user season entry
+                $userSeason = UserTvSeason::where([
+                    'user_id' => $request->user()->id,
+                    'season_id' => $validated['season_id'],
+                    'show_id' => $validated['show_id'],
+                ])->first();
+
+                // If season exists, check authorization and update
+                if ($userSeason) {
+                    $this->authorize('update', $userSeason);
+
+                    // Check if trying to update to the same rating
+                    if ((float) $validated['rating'] === (float) $userSeason->rating) {
+                        return back()->with([
+                            'success' => false,
+                            'message' => "Season already has a rating of {$userSeason->rating}",
+                        ]);
+                    }
+
+                    $userSeason->update(['rating' => $validated['rating']]);
+
+                    return back()->with([
+                        'success' => true,
+                        'message' => "Season rating updated successfully",
+                    ]);
+                }
+
+                // If season doesn't exist, create new entries
+                // First, ensure user has a TV library
+                $userLibrary = UserLibrary::firstOrCreate([
+                    'user_id' => $request->user()->id,
+                    'type' => MediaType::TV,
+                ]);
+
+                // Then, ensure user has a TV show entry
+                $userShow = UserTvShow::firstOrCreate(
+                    [
+                        'user_id' => $request->user()->id,
+                        'show_id' => $validated['show_id'],
+                    ],
+                    [
+                        'user_library_id' => $userLibrary->id,
+                    ]
+                );
+
+                // Finally, create the season entry with the rating
+                UserTvSeason::create([
+                    'user_id' => $request->user()->id,
+                    'user_tv_show_id' => $userShow->id,
+                    'show_id' => $validated['show_id'],
+                    'season_id' => $validated['season_id'],
+                    'rating' => $validated['rating'],
+                ]);
+
+                return back()->with([
+                    'success' => true,
+                    'message' => "Season added to library with rating",
+                ]);
+            });
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return back()->with([
+                'success' => false,
+                'message' => "You are not authorized to update this season",
+            ]);
+        } catch (\Exception $e) {
+            logger()->error('Failed to update season rating: ' . $e->getMessage());
+            return back()->with([
+                'success' => false,
+                'message' => "An error occurred while updating season rating",
+            ]);
+        }
+    }
+
+    public function watch_status(Request $request)
+    {
+        $validated = $request->validate([
+            'show_id' => ['required', 'integer'],
+            'season_id' => ['required', 'integer'],
+            'watch_status' => ['required', Rule::enum(WatchStatus::class)],
+        ]);
+
+        try {
+            return DB::transaction(function () use ($validated, $request) {
+                // Try to find existing user season entry
+                $userSeason = UserTvSeason::where([
+                    'user_id' => $request->user()->id,
+                    'season_id' => $validated['season_id'],
+                    'show_id' => $validated['show_id'],
+                ])->first();
+
+                // Check gate authorization
+                if (!Gate::allows('update-season-watch-status', $userSeason)) {
+                    throw new \Illuminate\Auth\Access\AuthorizationException();
+                }
+
+                // Check if trying to update to the same status
+                if ($userSeason && $userSeason->watch_status === WatchStatus::from($validated['watch_status'])) {
+                    return back()->with([
+                        'success' => false,
+                        'message' => "Season is already marked as {$validated['watch_status']}",
+                    ]);
+                }
+
+                return Pipeline::send([
+                    'user' => $request->user(),
+                    'validated' => $validated,
+                    'user_season' => $userSeason,
+                ])
+                    ->through([
+                        ValidateSeasonRelations::class,
+                        EnsureUserTvLibrary::class,
+                        EnsureUserTvShow::class,
+                        CreateUserTvSeason::class,
+                        UpdateWatchStatus::class,
+                        UpdateShowStatus::class,
+                    ])
+                    ->then(function ($payload) {
+                        $status = $payload['validated']['watch_status'];
+                        return back()->with([
+                            'success' => true,
+                            'message' => "Season marked as $status",
+                        ]);
+                    });
+            });
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return back()->with([
+                'success' => false,
+                'message' => "You are not authorized to update this season",
+            ]);
+        } catch (\Exception $e) {
+            logger()->error('Failed to update season watch status: ' . $e->getMessage());
+            return back()->with([
+                'success' => false,
+                'message' => "An error occurred while updating season watch status",
             ]);
         }
     }

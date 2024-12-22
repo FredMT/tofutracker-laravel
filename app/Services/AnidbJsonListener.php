@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use JsonStreamingParser\Listener\ListenerInterface;
-use Illuminate\Support\Facades\Log;
 
 class AnidbJsonListener implements ListenerInterface
 {
@@ -82,7 +81,7 @@ class AnidbJsonListener implements ListenerInterface
         try {
             $this->anidbService->storeAnimeData($data);
         } catch (\Exception $e) {
-            Log::error('Error processing anime data: ' . $e->getMessage(), [
+            logger()->error('Error processing anime data: ' . $e->getMessage(), [
                 'anime_id' => $data['attrs']['id'] ?? 'unknown'
             ]);
         }
@@ -91,6 +90,6 @@ class AnidbJsonListener implements ListenerInterface
     public function whitespace(string $whitespace): void
     {
         // Not needed for our implementation
-        Log::debug('Whitespace: ' . $whitespace);
+        logger()->warningdebug('Whitespace: ' . $whitespace);
     }
 }

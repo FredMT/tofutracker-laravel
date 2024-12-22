@@ -3,6 +3,7 @@ import { BaseCharacter } from "@/types/anime";
 
 export interface AnimeSeason {
     id: number;
+    map_id: number;
     type: string;
     episode_count: number;
     startdate: string;

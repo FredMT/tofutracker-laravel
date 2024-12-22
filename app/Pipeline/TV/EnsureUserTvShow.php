@@ -17,7 +17,6 @@ class EnsureUserTvShow
             ],
             [
                 'user_library_id' => $payload['library']->id,
-                'watch_status' => WatchStatus::WATCHING,
             ]
         );
 
