@@ -1,0 +1,9 @@
+.tab {
+    border-bottom: 2px solid transparent;
+    transition: border-color 200ms ease;
+    padding: var(--mantine-spacing-md) 0;
+
+    &[data-active] {
+        border-color: var(--mantine-color-violet-filled);
+    }
+}

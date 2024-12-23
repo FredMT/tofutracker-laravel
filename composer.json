@@ -7,6 +7,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "ext-libxml": "*",
         "ext-simplexml": "*",
         "inertiajs/inertia-laravel": "2.0",
         "laravel/framework": "^11.31",
@@ -17,8 +18,7 @@
         "predis/predis": "^2.3",
         "salsify/json-streaming-parser": "^8.3",
         "staudenmeir/belongs-to-through": "^2.16",
-        "tightenco/ziggy": "^2.0",
-        "ext-libxml": "*"
+        "tightenco/ziggy": "^2.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.14",

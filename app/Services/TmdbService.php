@@ -258,4 +258,25 @@ class TmdbService
             return null;
         }
     }
+
+    public function search(string $query, int $page = 1): array
+    {
+        try {
+            $response = $this->client->get('/search/multi', [
+                'query' => $query,
+                'include_adult' => false,
+                'language' => 'en-US',
+                'page' => $page
+            ]);
+
+            if (!$response->successful()) {
+                throw new \Exception('TMDB search request failed');
+            }
+
+            return $response->json();
+        } catch (\Exception $e) {
+            logger()->error("TMDB Search API error: " . $e->getMessage());
+            throw $e;
+        }
+    }
 }

@@ -1,10 +1,10 @@
 import { PageProps } from "@/types";
 import { usePage } from "@inertiajs/react";
 import { Stack } from "@mantine/core";
-import AddShowToLibrary from "./Actions/AddShowToLibrary";
-import RemoveShowFromLibrary from "./Actions/RemoveShowFromLibrary";
+import AddShowToLibrary from "./Actions/AddToLibrary/Tv/AddShowToLibrary";
+import RemoveShowFromLibrary from "./Actions/RemoveFromLibrary/Tv/RemoveShowFromLibrary";
 import { RateContent } from "./Rating/RateContent";
-import TvShowWatchStatus from "@/Components/ContentActions/components/Actions/TvShowWatchStatus";
+import TvShowWatchStatus from "@/Components/ContentActions/components/Actions/WatchStatus/Tv/TvShowWatchStatus";
 
 function TvShowActions() {
     const { user_library } = usePage<PageProps>().props;

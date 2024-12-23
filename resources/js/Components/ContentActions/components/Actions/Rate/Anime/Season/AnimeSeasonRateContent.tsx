@@ -1,41 +1,32 @@
-import { useContent } from "@/hooks/useContent";
 import useForm from "@/hooks/useForm";
-import { PageProps } from "@/types";
+import { AnimeSeasonUserLibrary, AnimeType, PageProps } from "@/types";
 import { usePage } from "@inertiajs/react";
 import { Button } from "@mantine/core";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { Check, CircleAlertIcon, Star } from "lucide-react";
-import { DesktopRating } from "../../../Content/Shared/DesktopRating";
-import { MobileRating } from "../../../Content/Shared/MobileRating";
+import { AnimeSeason } from "@/types/animeseason";
+import { MobileRating } from "@/Components/Content/Shared/MobileRating";
+import { DesktopRating } from "@/Components/Content/Shared/DesktopRating";
 
-export function RateContent() {
-    const { user_library } = usePage<PageProps>().props;
-    const { content, type } = useContent();
-    if (!content) return null;
+export default function AnimeSeasonRateContent() {
+    const { animeseason, user_library } = usePage<
+        PageProps & { type: "animeseason" }
+    >().props;
+
+    if (!animeseason) return null;
+
     const [opened, { open, close }] = useDisclosure(false);
     const isMobile = useMediaQuery("(max-width: 50em)");
 
     const { data, setData, post, processing } = useForm({
-        rating: user_library?.rating ?? 0,
+        anidb_id: (animeseason as AnimeSeason).id,
+        map_id: (animeseason as AnimeSeason).map_id,
+        rating: (user_library as AnimeSeasonUserLibrary)?.rating ?? 0,
     });
 
-    const getRouteParams = () => {
-        switch (type) {
-            case "movie":
-                return { movie_id: content.id };
-            case "tv":
-                return { show_id: content.id };
-            case "tvseason":
-                return {
-                    show_id: content.show_id,
-                    season_id: content.id,
-                };
-        }
-    };
-
     const submit = () => {
-        post(route(`${type}.library.rate`, getRouteParams()), {
+        post(route(`anime.season.library.rate`), {
             preserveScroll: true,
             onSuccess: (res: any) => {
                 if (res.props.flash.success) {
@@ -71,17 +62,6 @@ export function RateContent() {
 
     const RatingComponent = isMobile ? MobileRating : DesktopRating;
 
-    const getContentType = () => {
-        switch (type) {
-            case "movie":
-                return "movie";
-            case "tv":
-                return "show";
-            case "tvseason":
-                return "season";
-        }
-    };
-
     return (
         <>
             <RatingComponent
@@ -89,7 +69,7 @@ export function RateContent() {
                 close={close}
                 rating={data.rating}
                 setRating={(val) => setData("rating", val)}
-                title={content.title}
+                title={(animeseason as AnimeSeason).title_main}
                 onSubmit={submit}
                 processing={processing}
             />
@@ -100,9 +80,11 @@ export function RateContent() {
                 leftSection={<Star size={14} />}
                 onClick={open}
             >
-                {user_library?.rating
-                    ? `Your rating: ${user_library.rating}`
-                    : `Rate this ${getContentType()}`}
+                {(user_library as AnimeSeasonUserLibrary)?.rating
+                    ? `Your rating: ${
+                          (user_library as AnimeSeasonUserLibrary).rating
+                      }`
+                    : `Rate this anime season`}
             </Button>
         </>
     );

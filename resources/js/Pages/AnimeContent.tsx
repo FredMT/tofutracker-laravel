@@ -1,11 +1,10 @@
-import AnimeRecommendedContent from "@/Components/AnimeRecommendedContent";
-import { BannerImageContainer } from "@/Components/BannerImageContainer";
+import AnimeRecommendedContent from "@/Components/Content/Shared/Anime/AnimeRecommendedContent";
+import { BannerImageContainer } from "@/Components/Content/Shared/Regular/BannerImageContainer";
 import ContentActions from "@/Components/ContentActions/ContentActions";
-import { ContentCredits } from "@/Components/ContentCredits";
-import { ContentSummary } from "@/Components/ContentSummary";
-import PosterImage from "@/Components/PosterImage";
+import { ContentCredits } from "@/Components/Content/Shared/Regular/ContentCredits";
+import { ContentSummary } from "@/Components/Content/Shared/Regular/ContentSummary";
+import PosterImage from "@/Components/Content/Shared/PosterImage";
 import ResponsiveContainer from "@/Components/ResponsiveContainer";
-import ThemeButton from "@/Components/ThemeButton";
 import Seasons from "@/Components/TV/Seasons/Seasons";
 import { useAnimeContent } from "@/hooks/useAnimeContent";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";

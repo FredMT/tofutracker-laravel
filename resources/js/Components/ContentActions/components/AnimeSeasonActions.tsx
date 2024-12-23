@@ -1,7 +1,7 @@
-import AddAnimeSeasonToLibrary from "@/Components/ContentActions/components/Actions/AddAnimeSeasonToLibrary";
-import AnimeSeasonWatchStatus from "@/Components/ContentActions/components/Actions/AnimeSeasonWatchStatus";
-import RemoveAnimeSeasonFromLibrary from "@/Components/ContentActions/components/Actions/RemoveAnimeSeasonFromLibrary";
-import AnimeSeasonRateContent from "@/Components/ContentActions/components/Rating/AnimeSeasonRateContent";
+import AddAnimeSeasonToLibrary from "@/Components/ContentActions/components/Actions/AddToLibrary/Anime/Season/AddAnimeSeasonToLibrary";
+import AnimeSeasonRateContent from "@/Components/ContentActions/components/Actions/Rate/Anime/Season/AnimeSeasonRateContent";
+import RemoveAnimeSeasonFromLibrary from "@/Components/ContentActions/components/Actions/RemoveFromLibrary/Anime/Season/RemoveAnimeSeasonFromLibrary";
+import AnimeSeasonWatchStatus from "@/Components/ContentActions/components/Actions/WatchStatus/Tv/Season/AnimeSeasonWatchStatus";
 import { PageProps } from "@/types";
 import { usePage } from "@inertiajs/react";
 import { Stack } from "@mantine/core";

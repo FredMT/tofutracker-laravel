@@ -1,36 +1,34 @@
-import { useContent } from "@/hooks/useContent";
+import { DesktopRating } from "@/Components/Content/Shared/DesktopRating";
+import { MobileRating } from "@/Components/Content/Shared/MobileRating";
 import useForm from "@/hooks/useForm";
-import { PageProps } from "@/types";
+import { AnimeType, PageProps } from "@/types";
 import { usePage } from "@inertiajs/react";
 import { Button } from "@mantine/core";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { Check, CircleAlertIcon, Star } from "lucide-react";
-import { DesktopRating } from "../../../Content/Shared/DesktopRating";
-import { MobileRating } from "../../../Content/Shared/MobileRating";
 
-export function RateContent() {
-    const { user_library } = usePage<PageProps>().props;
-    const { content, type } = useContent();
-    if (!content) return null;
+export default function AnimeRateContent() {
+    const { type, animemovie, animeseason, animetv, user_library } =
+        usePage<PageProps<AnimeType>>().props;
+
     const [opened, { open, close }] = useDisclosure(false);
     const isMobile = useMediaQuery("(max-width: 50em)");
 
     const { data, setData, post, processing } = useForm({
-        rating: user_library?.rating ?? 0,
+        rating: user_library?.collection.rating ?? 0,
     });
 
     const getRouteParams = () => {
         switch (type) {
-            case "movie":
-                return { movie_id: content.id };
-            case "tv":
-                return { show_id: content.id };
-            case "tvseason":
+            case "animemovie":
                 return {
-                    show_id: content.show_id,
-                    season_id: content.id,
+                    anidb_id: animemovie.anidb_id,
+                    map_id: animemovie.map_id,
                 };
+            case "animetv":
+                return { map_id: animetv.map_id };
+                defaulnt: throw new Error("Invalid anime type");
         }
     };
 
@@ -73,12 +71,19 @@ export function RateContent() {
 
     const getContentType = () => {
         switch (type) {
-            case "movie":
+            case "animemovie":
                 return "movie";
-            case "tv":
-                return "show";
-            case "tvseason":
-                return "season";
+            case "animetv":
+                return "anime collection";
+        }
+    };
+
+    const getContentTitle = () => {
+        switch (type) {
+            case "animemovie":
+                return animemovie.collection_name;
+            case "animetv":
+                return animetv.collection_name;
         }
     };
 
@@ -89,7 +94,7 @@ export function RateContent() {
                 close={close}
                 rating={data.rating}
                 setRating={(val) => setData("rating", val)}
-                title={content.title}
+                title={getContentTitle()}
                 onSubmit={submit}
                 processing={processing}
             />
@@ -100,8 +105,8 @@ export function RateContent() {
                 leftSection={<Star size={14} />}
                 onClick={open}
             >
-                {user_library?.rating
-                    ? `Your rating: ${user_library.rating}`
+                {user_library?.collection.rating
+                    ? `Your rating: ${user_library.collection.rating}`
                     : `Rate this ${getContentType()}`}
             </Button>
         </>

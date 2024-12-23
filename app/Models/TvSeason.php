@@ -112,6 +112,7 @@ class TvSeason extends Model
     public function filteredData(): Attribute
     {
         return Attribute::get(function () {
+            $this->loadMissing(['show', 'episodes']);
             $data = $this->data;
 
             // Calculate total runtime from episodes

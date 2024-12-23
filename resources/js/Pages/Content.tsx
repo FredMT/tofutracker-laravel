@@ -1,14 +1,11 @@
-import { BannerImageContainer } from "@/Components/BannerImageContainer";
+import { BannerImageContainer } from "@/Components/Content/Shared/Regular/BannerImageContainer";
 import ContentActions from "@/Components/ContentActions/ContentActions";
-import { ContentCredits } from "@/Components/ContentCredits";
-import ContentDetails from "@/Components/ContentDetails";
-import ContentEpisodes from "@/Components/ContentEpisodes";
-import { ContentSummary } from "@/Components/ContentSummary";
-import PosterImage from "@/Components/PosterImage";
+import { ContentCredits } from "@/Components/Content/Shared/Regular/ContentCredits";
+import ContentDetails from "@/Components/Content/Shared/Regular/ContentDetails";
+import { ContentSummary } from "@/Components/Content/Shared/Regular/ContentSummary";
+import PosterImage from "@/Components/Content/Shared/PosterImage";
 import ResponsiveContainer from "@/Components/ResponsiveContainer";
-import SimilarContent from "@/Components/SimilarContent";
-import ThemeButton from "@/Components/ThemeButton";
-import Seasons from "@/Components/TV/Seasons/Seasons";
+import SimilarContent from "@/Components/Content/Shared/SimilarContent";
 import { useContent } from "@/hooks/useContent";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import ContentLayout from "@/Layouts/ContentLayout";
@@ -24,6 +21,8 @@ import {
     Title,
 } from "@mantine/core";
 import { useViewportSize } from "@mantine/hooks";
+import ContentEpisodes from "@/Components/Content/Episodes/ContentEpisodes";
+import Seasons from "@/Components/Content/TV/Seasons/Seasons";
 
 export default function Content(props: PageProps) {
     const { width } = useViewportSize();
@@ -44,12 +43,14 @@ export default function Content(props: PageProps) {
                                     <Title order={2} ta="center">
                                         {content.title} ({content.year})
                                     </Title>
+                                    <Space h={8} />
 
                                     {content.tagline && (
                                         <Text ta={"center"}>
                                             {content.tagline}
                                         </Text>
                                     )}
+                                    <Space h={16} />
                                     <ContentSummary />
                                 </Box>
                                 <ContentActions />

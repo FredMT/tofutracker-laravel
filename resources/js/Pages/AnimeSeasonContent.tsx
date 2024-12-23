@@ -1,10 +1,10 @@
-import AnimeContentEpisodes from "@/Components/AnimeContentEpisodes";
-import AnimeRelatedContent from "@/Components/AnimeRelatedContent";
-import { BannerImageContainer } from "@/Components/BannerImageContainer";
+import AnimeContentEpisodes from "@/Components/Content/Shared/Anime/AnimeContentEpisodes";
+import AnimeRelatedContent from "@/Components/Content/Shared/Anime/AnimeRelatedContent";
+import { BannerImageContainer } from "@/Components/Content/Shared/Regular/BannerImageContainer";
 import ContentActions from "@/Components/ContentActions/ContentActions";
-import { ContentCredits } from "@/Components/ContentCredits";
-import { ContentSummary } from "@/Components/ContentSummary";
-import PosterImage from "@/Components/PosterImage";
+import { ContentCredits } from "@/Components/Content/Shared/Regular/ContentCredits";
+import { ContentSummary } from "@/Components/Content/Shared/Regular/ContentSummary";
+import PosterImage from "@/Components/Content/Shared/PosterImage";
 import ResponsiveContainer from "@/Components/ResponsiveContainer";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import ContentLayout from "@/Layouts/ContentLayout";

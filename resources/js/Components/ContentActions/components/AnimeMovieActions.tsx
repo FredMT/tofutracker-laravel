@@ -1,10 +1,10 @@
 import { PageProps } from "@/types";
 import { usePage } from "@inertiajs/react";
 import { Stack } from "@mantine/core";
-import AddAnimeMovieToLibrary from "./Actions/AddAnimeMovieToLibrary";
-import RemoveAnimeMovieFromLibrary from "./Actions/RemoveAnimeMovieFromLibrary";
-import { AnimeRateContent } from "@/Components/ContentActions/components/Rating/AnimeRateContent";
-import AnimeMovieWatchStatus from "@/Components/ContentActions/components/Actions/AnimeMovieWatchStatus";
+import AddAnimeMovieToLibrary from "./Actions/AddToLibrary/Anime/Movie/AddAnimeMovieToLibrary";
+import RemoveAnimeMovieFromLibrary from "./Actions/RemoveFromLibrary/Anime/Movie/RemoveAnimeMovieFromLibrary";
+import AnimeMovieWatchStatus from "@/Components/ContentActions/components/Actions/WatchStatus/Anime/Movie/AnimeMovieWatchStatus";
+import AnimeRateContent from "@/Components/ContentActions/components/Actions/Rate/Anime/Shared/AnimeRateContent";
 
 function AnimeMovieActions() {
     const { user_library } = usePage<PageProps>().props;

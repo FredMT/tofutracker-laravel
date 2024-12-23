@@ -212,6 +212,7 @@ class TvShow extends Model
     public function filteredData(): Attribute
     {
         return Attribute::get(function () {
+            $this->loadMissing(['seasons.episodes']);
             $data = $this->data;
 
             // Convert empty string to null for overview
