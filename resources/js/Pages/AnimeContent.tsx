@@ -38,7 +38,7 @@ export default function AnimeContent() {
                     <Space h={24} />
                     <ContentLayout
                         left={
-                            <Stack gap={24} align="center">
+                            <Stack gap={24}>
                                 <PosterImage />
                                 <Box hiddenFrom="sm">
                                     <Title order={2} ta="center">
@@ -50,9 +50,8 @@ export default function AnimeContent() {
                                             {tmdbData.tagline}
                                         </Text>
                                     )}
-                                    <Divider my={16} />
+                                    <Space h={16} />
                                     <ContentSummary />
-                                    <Divider my={16} />
                                 </Box>
                                 <ContentActions />
                                 <Box hiddenFrom="sm">
@@ -90,9 +89,7 @@ export default function AnimeContent() {
                                     {tmdbData.tagline && (
                                         <Text>{tmdbData.tagline}</Text>
                                     )}
-                                    <Divider my={8} />
                                     <ContentSummary />
-                                    <Divider my={8} />
                                 </Stack>
                                 <Stack mt={16}>
                                     <Title order={3}>Overview</Title>

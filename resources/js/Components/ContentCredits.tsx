@@ -58,7 +58,7 @@ export function ContentCredits({
         seiyuu = animeContent.anidbData.credits.seiyuu;
     }
 
-    if (!cast || !seiyuu) return null;
+    if (!cast.length || !seiyuu.length) return null;
 
     if (animeContent || animeseason) {
         return (
