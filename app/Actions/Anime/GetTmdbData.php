@@ -80,6 +80,7 @@ class GetTmdbData
                 return null;
             })
             ->filter()
+            ->unique('map_id')
             ->values()
             ->toArray();
     }
