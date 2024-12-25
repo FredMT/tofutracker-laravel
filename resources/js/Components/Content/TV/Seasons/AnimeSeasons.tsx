@@ -3,8 +3,8 @@ import { useAnimeContent } from "@/hooks/useAnimeContent";
 import { RelatedAnimeData } from "@/types/anime";
 import { Link } from "@inertiajs/react";
 import { Carousel } from "@mantine/carousel";
-import { Container, Stack, Title } from "@mantine/core";
-import classes from "../../../Content/Shared/SimilarContent.module.css";
+import { Stack, Title } from "@mantine/core";
+import { CustomCarousel } from "@/Components/Shared/CustomCarousel";
 
 interface AnimeSeasonsProps {
     containerWidth: number;
@@ -24,42 +24,31 @@ export default function AnimeSeasons({
     const renderCarousel = (items: RelatedAnimeData[], title: string) => (
         <Stack key={title}>
             <Title order={3}>{title}</Title>
-            <Container
-                size={containerWidth}
-                px={0}
-                mx={0}
-                className="select-none"
+            <CustomCarousel
+                containerWidth={containerWidth}
+                slideSize={slideSize}
+                height={300}
+                slidesToScroll={3}
             >
-                <Carousel
-                    height={300}
-                    slideSize={slideSize}
-                    align="start"
-                    slidesToScroll={3}
-                    classNames={{
-                        control: classes.carouselControl,
-                        controls: classes.carouselControls,
-                    }}
-                >
-                    {items.map((season) => (
-                        <Carousel.Slide key={season.id}>
-                            {season.type === "Music Video" ||
-                            season.type === "unknown" ? (
+                {items.map((season) => (
+                    <Carousel.Slide key={season.id}>
+                        {season.type === "Music Video" ||
+                        season.type === "unknown" ? (
+                            <AnimeSeasonCard season={season} />
+                        ) : (
+                            <Link
+                                href={route("anime.season.show", {
+                                    id: season.map_id,
+                                    seasonId: season.id,
+                                })}
+                                prefetch
+                            >
                                 <AnimeSeasonCard season={season} />
-                            ) : (
-                                <Link
-                                    href={route("anime.season.show", {
-                                        id: season.map_id,
-                                        seasonId: season.id,
-                                    })}
-                                    prefetch
-                                >
-                                    <AnimeSeasonCard season={season} />
-                                </Link>
-                            )}
-                        </Carousel.Slide>
-                    ))}
-                </Carousel>
-            </Container>
+                            </Link>
+                        )}
+                    </Carousel.Slide>
+                ))}
+            </CustomCarousel>
         </Stack>
     );
 

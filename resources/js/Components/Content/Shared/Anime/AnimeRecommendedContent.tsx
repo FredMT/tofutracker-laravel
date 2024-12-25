@@ -1,10 +1,10 @@
 import { useAnimeContent } from "@/hooks/useAnimeContent";
 import { AnimeRecommendation } from "@/types/anime";
 import { Carousel } from "@mantine/carousel";
-import { Container, Stack, Title } from "@mantine/core";
-import classes from "./AnimeRecommendedContent.module.css";
+import { Stack, Title } from "@mantine/core";
 import AnimeRecommendedContentCard from "@/Components/Content/Shared/Anime/AnimeRecommendedContentCard";
 import { usePage } from "@inertiajs/react";
+import { CustomCarousel } from "@/Components/Shared/CustomCarousel";
 
 interface AnimeRecommendedContentProps {
     containerWidth: number;
@@ -23,33 +23,22 @@ export default function AnimeRecommendedContent({
     return (
         <Stack>
             <Title order={3}>Recommended</Title>
-            <Container
-                size={containerWidth}
-                px={0}
-                mx={0}
-                className="select-none"
+            <CustomCarousel
+                containerWidth={containerWidth}
+                slideSize={slideSize}
+                height={300}
+                slidesToScroll={3}
             >
-                <Carousel
-                    height={300}
-                    slideSize={slideSize}
-                    align="start"
-                    slidesToScroll={3}
-                    classNames={{
-                        control: classes.carouselControl,
-                        controls: classes.carouselControls,
-                    }}
-                >
-                    {tmdbData.recommendations
-                        .filter((rec) => rec.map_id !== +currentMapId!)
-                        .map((recommendation: AnimeRecommendation) => (
-                            <Carousel.Slide key={recommendation.map_id}>
-                                <AnimeRecommendedContentCard
-                                    content={recommendation}
-                                />
-                            </Carousel.Slide>
-                        ))}
-                </Carousel>
-            </Container>
+                {tmdbData.recommendations
+                    .filter((rec) => rec.map_id !== +currentMapId!)
+                    .map((recommendation: AnimeRecommendation) => (
+                        <Carousel.Slide key={recommendation.map_id}>
+                            <AnimeRecommendedContentCard
+                                content={recommendation}
+                            />
+                        </Carousel.Slide>
+                    ))}
+            </CustomCarousel>
         </Stack>
     );
 }

@@ -26,9 +26,11 @@ export interface UserTvShow {
     poster_path: string | null;
     release_date: number | null;
     rating: number | null;
-    watch_status: WatchStatus;
+    watch_status: keyof typeof WatchStatus;
     added_at: string;
     seasons: UserTvSeason[];
+    total_seasons: number;
+    user_total_seasons: number;
 }
 
 export interface UserTvSeason {
@@ -37,7 +39,7 @@ export interface UserTvSeason {
     poster_path: string | null;
     release_date: number | null;
     rating: number | null;
-    watch_status: WatchStatus;
+    watch_status: keyof typeof WatchStatus;
     added_at: string;
     season_number: number;
     watched_episodes: number;
@@ -50,7 +52,7 @@ export interface UserTvGenre {
 }
 
 export interface UserTvFilters {
-    status: WatchStatus | null;
+    status: keyof typeof WatchStatus | null;
     title: string | null;
     from_date: string | null;
     to_date: string | null;

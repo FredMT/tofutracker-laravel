@@ -107,6 +107,18 @@ class UserTvShowCollection extends Collection
                 ]);
             }
 
+            // Get total seasons count from show (excluding season 0)
+            $totalSeasons = $userTvShow->show->seasons()
+                ->where('season_number', '>', 0)
+                ->count();
+
+            // Get user's total seasons count (excluding season 0)
+            $userTotalSeasons = $userTvShow->seasons()
+                ->whereHas('season', function ($query) {
+                    $query->where('season_number', '>', 0);
+                })
+                ->count();
+
             // Transform seasons data
             $seasons = $userTvShow->seasons->map(function ($userSeason) {
                 $airDate = isset($userSeason->season->data['air_date'])
@@ -144,6 +156,8 @@ class UserTvShowCollection extends Collection
                 'watch_status' => $userTvShow->watch_status->value,
                 'added_at' => $userTvShow->created_at->format('j F, Y'),
                 'seasons' => $seasons,
+                'total_seasons' => $totalSeasons,
+                'user_total_seasons' => $userTotalSeasons,
             ];
         })->values()->all();
     }

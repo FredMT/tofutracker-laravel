@@ -1,17 +1,7 @@
-import { Carousel } from "@mantine/carousel";
-import {
-    Container,
-    Divider,
-    Space,
-    Stack,
-    Tabs,
-    Text,
-    Title,
-} from "@mantine/core";
+import { Divider, Space, Stack, Tabs, Text, Title } from "@mantine/core";
 import { useState } from "react";
 import PersonCard from "./PersonCard";
 import AnimeCreditsCard from "../Anime/AnimeCreditsCard";
-import classes from "./ContentCredits.module.css";
 import { useContent } from "@/hooks/useContent";
 import { useAnimeContent } from "@/hooks/useAnimeContent";
 import {
@@ -20,9 +10,10 @@ import {
     ContentCreditsProps,
     PageProps,
 } from "@/types";
-import { useMediaQuery } from "@mantine/hooks";
 import { usePage } from "@inertiajs/react";
 import { Cast } from "@/types/animeseason";
+import { CustomCarousel } from "@/Components/Shared/CustomCarousel";
+import { Carousel } from "@mantine/carousel";
 
 export function ContentCredits({
     containerWidth,
@@ -30,7 +21,6 @@ export function ContentCredits({
 }: ContentCreditsProps) {
     const regularContent = useContent();
     const animeContent = useAnimeContent();
-    const isMobile = useMediaQuery("(max-width: 640px)");
     const type = usePage<PageProps>().props.type as string;
     const { animeseason } = usePage<PageProps>().props;
 
@@ -69,46 +59,35 @@ export function ContentCredits({
                     <Divider my={16} />
                     <Stack>
                         <Title order={3}>Cast and Credits</Title>
-                        <Container
-                            size={containerWidth}
-                            className="select-none"
-                            px={0}
-                            mx={0}
+                        <CustomCarousel
+                            containerWidth={containerWidth}
+                            height={280}
+                            slideSize="300px"
+                            slidesToScroll={2}
                         >
-                            <Carousel
-                                height={280}
-                                slideSize="300px"
-                                align="start"
-                                slidesToScroll={isMobile ? 1 : 2}
-                                classNames={{
-                                    control: classes.carouselControl,
-                                    controls: classes.carouselControls,
-                                }}
-                            >
-                                {cast.map((character) => (
-                                    <Carousel.Slide key={character.id}>
-                                        <AnimeCreditsCard
-                                            character={character}
-                                            seiyuus={seiyuu.filter(
-                                                (s) =>
-                                                    s.characters
-                                                        ?.split(", ")
-                                                        ?.includes(
-                                                            character.name
-                                                        ) ?? false
-                                            )}
-                                        />
-                                    </Carousel.Slide>
-                                ))}
-                            </Carousel>
-                        </Container>
+                            {cast.map((character) => (
+                                <Carousel.Slide key={character.id}>
+                                    <AnimeCreditsCard
+                                        character={character}
+                                        seiyuus={seiyuu.filter(
+                                            (s) =>
+                                                s.characters
+                                                    ?.split(", ")
+                                                    ?.includes(
+                                                        character.name
+                                                    ) ?? false
+                                        )}
+                                    />
+                                </Carousel.Slide>
+                            ))}
+                        </CustomCarousel>
                     </Stack>
                 </>
             );
         }
     }
 
-    // Regular content rendering (existing code)
+    // Regular content rendering
     const people = (
         activeTab === "cast"
             ? regularContent!.content.credits.cast
@@ -132,28 +111,22 @@ export function ContentCredits({
                 </Tabs.List>
             </Tabs>
 
-            <Container size={containerWidth} px={0} mx={0}>
-                <Carousel
-                    height={300}
-                    slideSize={slideSize}
-                    align="start"
-                    slidesToScroll={3}
-                    classNames={{
-                        control: classes.carouselControl,
-                        controls: classes.carouselControls,
-                    }}
-                >
-                    {people.map((person) => (
-                        <Carousel.Slide key={person.id}>
-                            <PersonCard
-                                person={person}
-                                type={activeTab}
-                                isAnime={false}
-                            />
-                        </Carousel.Slide>
-                    ))}
-                </Carousel>
-            </Container>
+            <CustomCarousel
+                containerWidth={containerWidth}
+                slideSize={slideSize}
+                height={300}
+                slidesToScroll={3}
+            >
+                {people.map((person) => (
+                    <Carousel.Slide key={person.id}>
+                        <PersonCard
+                            person={person}
+                            type={activeTab}
+                            isAnime={false}
+                        />
+                    </Carousel.Slide>
+                ))}
+            </CustomCarousel>
         </>
     );
 }

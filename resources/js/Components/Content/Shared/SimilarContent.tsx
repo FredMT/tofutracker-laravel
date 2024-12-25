@@ -1,9 +1,9 @@
 import { useContent } from "@/hooks/useContent";
 import { Similar } from "@/types";
 import { Carousel } from "@mantine/carousel";
-import { Container, Stack, Title } from "@mantine/core";
-import classes from "./SimilarContent.module.css";
+import { Stack, Title } from "@mantine/core";
 import SimilarContentCard from "./SimilarContentCard";
+import { CustomCarousel } from "@/Components/Shared/CustomCarousel";
 
 interface SimilarContentProps {
     containerWidth: number;
@@ -20,24 +20,18 @@ export default function SimilarContent({
     return (
         <Stack>
             <Title order={3}>Similar</Title>
-            <Container size={containerWidth} px={0} mx={0}>
-                <Carousel
-                    height={300}
-                    slideSize={slideSize}
-                    align="start"
-                    slidesToScroll={3}
-                    classNames={{
-                        control: classes.carouselControl,
-                        controls: classes.carouselControls,
-                    }}
-                >
-                    {content.similar.map((similar: Similar) => (
-                        <Carousel.Slide key={similar.id}>
-                            <SimilarContentCard content={similar} />
-                        </Carousel.Slide>
-                    ))}
-                </Carousel>
-            </Container>
+            <CustomCarousel
+                containerWidth={containerWidth}
+                slideSize={slideSize}
+                height={300}
+                slidesToScroll={3}
+            >
+                {content.similar.map((similar: Similar) => (
+                    <Carousel.Slide key={similar.id}>
+                        <SimilarContentCard content={similar} />
+                    </Carousel.Slide>
+                ))}
+            </CustomCarousel>
         </Stack>
     );
 }

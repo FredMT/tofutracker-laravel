@@ -1,8 +1,8 @@
 import { CastMember, SeiyuuMember } from "@/types/anime";
 import { Card, Group, Image, Stack, Text, Tooltip } from "@mantine/core";
 import { Carousel } from "@mantine/carousel";
-import classes from "./AnimeCreditsCard.module.css";
 import { Cast } from "@/types/animeseason";
+import { CustomCarousel } from "@/Components/Shared/CustomCarousel";
 
 interface AnimeCreditsCardProps {
     character: CastMember | Cast;
@@ -45,21 +45,13 @@ function AnimeCreditsCard({ character, seiyuus }: AnimeCreditsCardProps) {
 
                 <Stack gap={8} mih={200}>
                     {seiyuus.length > 1 ? (
-                        <Carousel
-                            h={186}
-                            mah={186}
-                            mih={186}
-                            miw={124}
-                            maw={124}
-                            w={124}
+                        <CustomCarousel
+                            height={186}
+                            containerWidth={124}
+                            slideSize="124px"
                             withControls={true}
-                            withIndicators={false}
                             align="start"
-                            draggable={false}
-                            classNames={{
-                                control: classes.carouselControl,
-                                controls: classes.carouselControls,
-                            }}
+                            slidesToScroll={1}
                         >
                             {seiyuus.map((seiyuu) => (
                                 <Carousel.Slide key={seiyuu.id}>
@@ -80,7 +72,7 @@ function AnimeCreditsCard({ character, seiyuus }: AnimeCreditsCardProps) {
                                     />
                                 </Carousel.Slide>
                             ))}
-                        </Carousel>
+                        </CustomCarousel>
                     ) : (
                         <Image
                             src={seiyuus[0]?.picture}
