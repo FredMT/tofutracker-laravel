@@ -4,9 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\UserMovie;
+use App\Models\UserTvShow;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Enums\WatchStatus;
+use DateTime;
+use App\Actions\UserController\Tv\ValidateShowFilters;
+use App\Actions\UserController\Tv\GetUserTvGenres;
+use App\Actions\UserController\Tv\GenerateShowMessages;
+use App\Actions\UserController\Tv\GetUserData;
 
 class UserController extends Controller
 {
@@ -189,6 +195,59 @@ class UserController extends Controller
             'movies' => $movies->toArray(),
             'genres' => $userGenres,
             'filters' => $this->getFilters($request),
+        ]);
+    }
+
+    public function showTvApi(string $username, Request $request)
+    {
+        $user = User::where('username', $username)->firstOrFail();
+
+        $userData = app(GetUserData::class)->handle($user);
+
+        if (!$userData) return abort(404);
+
+        $errors = app(ValidateShowFilters::class)->handle($request);
+
+        // If there are any validation errors, return early with empty arrays
+        if (!empty($errors)) {
+            return response()->json([
+                'success' => false,
+                'messages' => [],
+                'errors' => $errors,
+                'data' => [
+                    'shows' => [],
+                    'genres' => [],
+                    'filters' => $this->getFilters($request),
+                    'userData' => $userData
+                ]
+            ]);
+        }
+
+        $userGenres = app(GetUserTvGenres::class)->handle($user);
+
+        $shows = $user->shows()
+            ->with([
+                'show',
+                'seasons.season.episodes',
+                'seasons.episodes.episode'
+            ])
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->applyFilters($this->getFilters($request))
+            ->toPresentation();
+
+        $messages = app(GenerateShowMessages::class)->handle($request, $shows);
+
+        return response()->json([
+            'success' => true,
+            'messages' => $messages,
+            'errors' => $errors,
+            'data' => [
+                'shows' => $shows,
+                'genres' => $userGenres,
+                'filters' => $this->getFilters($request),
+                'userData' => $userData
+            ]
         ]);
     }
 }

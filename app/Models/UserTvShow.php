@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Collections\UserTvShowCollection;
 use App\Enums\WatchStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -46,5 +47,10 @@ class UserTvShow extends Model
     public function plays(): MorphMany
     {
         return $this->morphMany(UserTvPlay::class, 'playable');
+    }
+
+    public function newCollection(array $models = []): UserTvShowCollection
+    {
+        return new UserTvShowCollection($models);
     }
 }
