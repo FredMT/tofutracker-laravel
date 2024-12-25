@@ -1,0 +1,14 @@
+[class*="mantine-Popover-dropdown"] {
+    background-color: light-dark(#2e2e2e, #121212) !important;
+    border-color: light-dark(#121212, #ededed) !important;
+}
+
+[class*="mantine-PillsInput-input"] {
+    background-color: light-dark(#ededed, #121212) !important;
+    border-color: light-dark(#121212, #2e2e2e) !important;
+}
+
+[class*="mantine-TextInput-input"] {
+    background-color: transparent !important;
+    border-color: light-dark(#121212, #2e2e2e) !important;
+}

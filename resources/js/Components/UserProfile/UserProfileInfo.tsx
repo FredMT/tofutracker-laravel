@@ -43,7 +43,14 @@ export function UserProfileInfo({ username, createdAt }: UserProfileInfoProps) {
                     >
                         Movie list
                     </Button>
-                    <Button bg={`#222222`} bd={0}>
+                    <Button
+                        bg={`${
+                            component === "UserTv" ? "violet.9" : "#222222"
+                        }`}
+                        component={Link}
+                        href={`/user/${username}/tv`}
+                        bd={0}
+                    >
                         TV List
                     </Button>
                     <Button bg={`#222222`} bd={0}>

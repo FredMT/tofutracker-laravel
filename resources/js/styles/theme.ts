@@ -3,12 +3,12 @@ import {
     Card,
     Container,
     createTheme,
-    DEFAULT_THEME,
     rem,
-    UnstyledButton,
+    Select,
     virtualColor,
 } from "@mantine/core";
-
+import { DatePickerInput } from "@mantine/dates";
+import "./theme.module.css";
 const CONTAINER_SIZES: Record<string, string> = {
     xxs: rem("200px"),
     xs: rem("350px"),
@@ -348,11 +348,26 @@ const theme = createTheme({
         //             dropdown: "globalMantineHoverCard",
         //         }),
         //     }),
-        //     Select: Select.extend({
-        //         defaultProps: {
-        //             checkIconPosition: "right",
-        //         },
-        //     }),
+        Select: Select.extend({
+            styles: {
+                input: {
+                    backgroundColor: "transparent",
+                    borderColor: "light-dark(#222222, #2e2e2e)",
+                },
+                dropdown: {
+                    backgroundColor: "light-dark(#2e2e2e, #121212)",
+                    borderColor: "light-dark(#222222, #2e2e2e)",
+                },
+            },
+        }),
+        DatePickerInput: DatePickerInput.extend({
+            styles: {
+                input: {
+                    backgroundColor: "transparent",
+                    borderColor: "light-dark(#222222, #2e2e2e)",
+                },
+            },
+        }),
         //     Tabs: Tabs.extend({
         //         defaultProps: {
         //             variant: "outline",

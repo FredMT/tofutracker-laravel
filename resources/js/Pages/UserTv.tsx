@@ -11,7 +11,7 @@ import { Head } from "@inertiajs/react";
 import { Box, Space, Stack, Text, Title } from "@mantine/core";
 import { useEffect } from "react";
 
-function UserMovies({ userData, filters }: PageProps) {
+function UserTv({ userData, filters }: PageProps) {
     const filterStore = useFilterStore();
 
     useEffect(() => {
@@ -55,10 +55,10 @@ function UserMovies({ userData, filters }: PageProps) {
     );
 }
 
-UserMovies.layout = (page: any) => (
+UserTv.layout = (page: any) => (
     <AuthenticatedLayout>
         <UserProfileLayout children={page} userData={page.props.userData} />
     </AuthenticatedLayout>
 );
 
-export default UserMovies;
+export default UserTv;
