@@ -1,0 +1,11 @@
+.profileActionSection {
+    margin-left: 0;
+    text-align: center;
+}
+
+@media (min-width: 860px) {
+    .profileActionSection {
+        margin-left: 150px;
+        text-align: start;
+    }
+}

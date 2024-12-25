@@ -3,16 +3,8 @@ import SearchResultsList from "@/Components/Search/SearchResultsList";
 import TabItem from "@/Components/Search/TabItem";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { SearchResults } from "@/types/search";
-import { Head, usePage, router } from "@inertiajs/react";
-import {
-    Badge,
-    Group,
-    ScrollArea,
-    Space,
-    Tabs,
-    Text,
-    TextInput,
-} from "@mantine/core";
+import { Head, router } from "@inertiajs/react";
+import { Space, Tabs, TextInput } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import { SearchIcon } from "lucide-react";
 import React from "react";
@@ -28,11 +20,7 @@ interface PageProps {
     };
 }
 
-export default function Search({
-    search_results,
-    query = "",
-    flash,
-}: PageProps) {
+export default function Search({ search_results, query = "" }: PageProps) {
     const [search, setSearch] = React.useState(query);
     const [debounced] = useDebouncedValue(search, 300);
     const [activeTab, setActiveTab] = React.useState<TabValue>("movies");

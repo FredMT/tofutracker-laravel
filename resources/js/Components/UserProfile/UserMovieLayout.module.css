@@ -1,0 +1,12 @@
+.borderTop {
+    @media (min-width: 860px) {
+        border-top: 1px solid #222222;
+    }
+}
+
+.leftColumn {
+    @media (min-width: 860px) {
+        border-right: 1px solid #222222;
+        padding-right: var(--mantine-spacing-md);
+    }
+}

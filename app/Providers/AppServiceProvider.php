@@ -14,6 +14,7 @@ use Illuminate\Auth\Access\Response;
 use App\Models\UserAnime;
 use App\Models\UserAnimeCollection;
 use App\Models\UserAnimeEpisode;
+use App\Models\UserMovie;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -32,6 +33,15 @@ class AppServiceProvider extends ServiceProvider
     {
         Vite::prefetch(concurrency: 3);
         Model::preventLazyLoading();
+
+        Gate::define('rate-movie', function (User $user, ?UserMovie $userMovie = null) {
+            if (!$userMovie) {
+                return Response::allow();
+            }
+            return $user->id === $userMovie->user_id
+                ? Response::allow()
+                : Response::deny('You do not own this movie.');
+        });
 
         Gate::define('delete-tv-show', function (User $user, UserTvShow $userShow) {
             return $user->id === $userShow->user_id

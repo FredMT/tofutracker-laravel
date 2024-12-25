@@ -32,9 +32,4 @@ class UserAnimeCollection extends Model
     {
         return $this->hasMany(UserAnime::class);
     }
-
-    public function collectionAnime(): HasMany
-    {
-        return $this->hasMany(UserAnime::class, 'user_anime_collection_id');
-    }
 }

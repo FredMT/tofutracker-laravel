@@ -10,6 +10,7 @@ use App\Http\Controllers\UserAnimeEpisodeController;
 use App\Http\Controllers\UserAnimeMovieController;
 use App\Http\Controllers\UserAnimeSeasonController;
 use App\Http\Controllers\UserAnimeTvController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserMovieController;
 use App\Http\Controllers\UserTvEpisodeController;
 use App\Http\Controllers\UserTvSeasonController;
@@ -19,17 +20,23 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use App\Http\Controllers\SearchController;
-
-
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', []);
 });
 
-Route::get('/dashboard', function (Request $request) {
+Route::get('/me', function () {
+    if (!Auth::check()) {
+        return redirect()->route('login');
+    }
+    return redirect()->route('user.profile', ['username' => Auth::user()->username]);
+})->name('me');
 
-    return Inertia::render('UserProfile');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/user/{username}/movies', [UserController::class, 'showMovies'])
+    ->name('user.movies');
+Route::get('/user/{username}', [UserController::class, 'show'])->name('user.profile');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -44,7 +51,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('movie.library.destroy');
     Route::patch('/movie/library/status/{movie_id}', [UserMovieController::class, 'update'])
         ->name('movie.library.update-status');
-    Route::post('/movie/library/rating/{movie_id}', [UserMovieController::class, 'update'])
+    Route::post('/movie/library/rating/{movie_id}', [UserMovieController::class, 'rate'])
         ->name('movie.library.rate');
 
     Route::post('/tv/episode/{episode_id}', [UserTvEpisodeController::class, 'store'])
@@ -109,5 +116,7 @@ Route::get('/anime/{id}', [AnimeController::class, 'show'])->name('anime.show');
 Route::get('/anime/{id}/season/{seasonId}', [AnimeController::class, 'showSeason'])->name('anime.season.show');
 
 Route::get('/search', [SearchController::class, 'search'])->name('search');
+
+
 
 require __DIR__ . '/auth.php';

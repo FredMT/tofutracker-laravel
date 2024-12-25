@@ -1,0 +1,38 @@
+.bannerContainer {
+    position: relative;
+    width: 100%;
+}
+
+.avatarOverlay {
+    position: absolute;
+    bottom: -30px;
+    left: 0;
+    right: 0;
+    z-index: 1;
+}
+
+.avatarWrapper {
+    display: flex;
+}
+
+.usernameTitle {
+    margin-left: 0;
+    text-align: center;
+}
+
+@media (max-width: 860px) {
+    .avatarWrapper {
+        justify-content: center;
+    }
+}
+
+@media (min-width: 860px) {
+    .avatarWrapper {
+        justify-content: flex-start;
+    }
+
+    .usernameTitle {
+        margin-left: 150px;
+        text-align: start;
+    }
+}

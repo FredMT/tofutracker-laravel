@@ -72,7 +72,6 @@ class UserMovieController extends Controller
 
         try {
             return DB::transaction(function () use ($validated, $request, $movieId) {
-                // Find existing movie or prepare for creation
                 $userMovie = UserMovie::where([
                     'user_id' => $request->user()->id,
                     'movie_id' => $movieId,
@@ -86,9 +85,11 @@ class UserMovieController extends Controller
                     ]);
                 }
 
-                // If rating is provided but watch_status isn't, set it to COMPLETED
+                // If rating is provided but watch_status isn't, only set COMPLETED if movie isn't already completed
                 if (isset($validated['rating']) && !isset($validated['watch_status'])) {
-                    $validated['watch_status'] = WatchStatus::COMPLETED->value;
+                    if (!$userMovie || $userMovie->watch_status !== WatchStatus::COMPLETED) {
+                        $validated['watch_status'] = WatchStatus::COMPLETED->value;
+                    }
                 }
 
                 // Check if trying to update to the same watch status
@@ -121,27 +122,21 @@ class UserMovieController extends Controller
                         'user_id' => $request->user()->id,
                         'type' => MediaType::MOVIE,
                     ]);
-                }
 
-                // Update or create the movie entry
-                $userMovie = UserMovie::updateOrCreate(
-                    [
-                        'user_id' => $request->user()->id,
-                        'movie_id' => $movieId,
-                    ],
-                    array_merge(
+                    // Update or create the movie entry
+                    $userMovie = UserMovie::updateOrCreate(
                         [
-                            'user_library_id' => $userLibrary->id ?? $userMovie->user_library_id,
+                            'user_id' => $request->user()->id,
+                            'movie_id' => $movieId,
                         ],
-                        collect($validated)->only(['rating', 'watch_status'])->toArray()
-                    )
-                );
+                        array_merge(
+                            [
+                                'user_library_id' => $userLibrary->id ?? $userMovie->user_library_id,
+                            ],
+                            collect($validated)->only(['rating', 'watch_status'])->toArray()
+                        )
+                    );
 
-                // Create play record if status is set to COMPLETED (either explicitly or via rating)
-                if (
-                    (isset($validated['watch_status']) && WatchStatus::from($validated['watch_status']) === WatchStatus::COMPLETED) ||
-                    isset($validated['rating'])
-                ) {
                     UserMoviePlay::create([
                         'user_movie_id' => $userMovie->id,
                         'user_id' => $request->user()->id,
@@ -149,6 +144,8 @@ class UserMovieController extends Controller
                         'watched_at' => now(),
                     ]);
                 }
+
+
 
                 $message = collect([
                     isset($validated['rating']) ? 'rating' : null,
@@ -208,5 +205,27 @@ class UserMovieController extends Controller
                 'message' => "An error occurred while removing movie from library",
             ]);
         }
+    }
+
+    public function rate(Request $request, $movieId)
+    {
+        $validated = $request->validate([
+            'rating' => ['required', 'numeric', 'min:1', 'max:10'],
+        ]);
+
+        $validated['movie_id'] = $movieId;
+
+        return Pipeline::send([
+            'user' => $request->user(),
+            'validated' => $validated,
+        ])->through([
+            \App\Pipeline\UserMovie\Rate\EnsureMovieExists::class,
+            \App\Pipeline\UserMovie\Rate\UpdateOrCreateUserMovie::class,
+        ])->then(function ($payload) {
+            return back()->with([
+                'success' => true,
+                'message' => "Successfully rated movie",
+            ]);
+        });
     }
 }

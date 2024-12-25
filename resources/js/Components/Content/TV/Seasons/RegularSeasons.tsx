@@ -3,7 +3,7 @@ import { Container, Stack, Title } from "@mantine/core";
 import { PageProps } from "@/types";
 import { usePage } from "@inertiajs/react";
 import SeasonCard from "./SeasonCard";
-import classes from "../../../Components/Content/Shared/SimilarContent.module.css";
+import classes from "../../../Content/Shared/SimilarContent.module.css";
 interface SeasonsProps {
     containerWidth: number;
     slideSize?: string;

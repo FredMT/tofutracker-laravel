@@ -5,7 +5,6 @@ import { ContentCredits } from "@/Components/Content/Shared/Regular/ContentCredi
 import { ContentSummary } from "@/Components/Content/Shared/Regular/ContentSummary";
 import PosterImage from "@/Components/Content/Shared/PosterImage";
 import ResponsiveContainer from "@/Components/ResponsiveContainer";
-import Seasons from "@/Components/TV/Seasons/Seasons";
 import { useAnimeContent } from "@/hooks/useAnimeContent";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import ContentLayout from "@/Layouts/ContentLayout";
@@ -20,6 +19,7 @@ import {
     Title,
 } from "@mantine/core";
 import { useViewportSize } from "@mantine/hooks";
+import Seasons from "@/Components/Content/TV/Seasons/Seasons";
 
 export default function AnimeContent() {
     const { width } = useViewportSize();

@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tmdb_genres', function (Blueprint $table) {
-            $table->id()->primary();
-            $table->text('name');
+        Schema::table('users', function (Blueprint $table) {
+            $table->text('bio')->nullable();
         });
     }
 
@@ -22,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tmdb_genres');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('bio');
+        });
     }
 };

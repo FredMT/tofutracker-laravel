@@ -38,73 +38,74 @@ export function ContentCredits({
     if (regularContent?.type === "tvseason") return null;
 
     const [activeTab, setActiveTab] = useState<"cast" | "crew">("cast");
+    if (type !== "movie" && type !== "tv") {
+        const shouldRenderAnimeCredits = [
+            "animeseason",
+            "animetv",
+            "animemovie",
+        ].includes(type);
 
-    const shouldRenderAnimeCredits = [
-        "animeseason",
-        "animetv",
-        "animemovie",
-    ].includes(type);
+        if (!shouldRenderAnimeCredits) return null;
 
-    if (!shouldRenderAnimeCredits) return null;
+        let cast: Cast[] = [];
+        let seiyuu: Cast[] = [];
 
-    let cast: Cast[] = [];
-    let seiyuu: Cast[] = [];
+        if (type === "animeseason" && animeseason) {
+            cast = animeseason.credits.cast;
+            seiyuu = animeseason.credits.seiyuu;
+        } else if (animeContent?.anidbData.credits) {
+            cast = animeContent.anidbData.credits.cast;
+            seiyuu = animeContent.anidbData.credits.seiyuu;
+        }
 
-    if (type === "animeseason" && animeseason) {
-        cast = animeseason.credits.cast;
-        seiyuu = animeseason.credits.seiyuu;
-    } else if (animeContent?.anidbData.credits) {
-        cast = animeContent.anidbData.credits.cast;
-        seiyuu = animeContent.anidbData.credits.seiyuu;
-    }
+        if (!cast || !seiyuu) return null;
 
-    if (!cast || !seiyuu) return null;
+        if (!cast.length || !seiyuu.length) return null;
 
-    if (!cast.length || !seiyuu.length) return null;
-
-    if (animeContent || animeseason) {
-        return (
-            <>
-                <Space h={24} hiddenFrom="smlg" />
-                <Divider my={16} />
-                <Stack>
-                    <Title order={3}>Cast and Credits</Title>
-                    <Container
-                        size={containerWidth}
-                        className="select-none"
-                        px={0}
-                        mx={0}
-                    >
-                        <Carousel
-                            height={280}
-                            slideSize="300px"
-                            align="start"
-                            slidesToScroll={isMobile ? 1 : 2}
-                            classNames={{
-                                control: classes.carouselControl,
-                                controls: classes.carouselControls,
-                            }}
+        if (animeContent || animeseason) {
+            return (
+                <>
+                    <Space h={24} hiddenFrom="smlg" />
+                    <Divider my={16} />
+                    <Stack>
+                        <Title order={3}>Cast and Credits</Title>
+                        <Container
+                            size={containerWidth}
+                            className="select-none"
+                            px={0}
+                            mx={0}
                         >
-                            {cast.map((character) => (
-                                <Carousel.Slide key={character.id}>
-                                    <AnimeCreditsCard
-                                        character={character}
-                                        seiyuus={seiyuu.filter(
-                                            (s) =>
-                                                s.characters
-                                                    ?.split(", ")
-                                                    ?.includes(
-                                                        character.name
-                                                    ) ?? false
-                                        )}
-                                    />
-                                </Carousel.Slide>
-                            ))}
-                        </Carousel>
-                    </Container>
-                </Stack>
-            </>
-        );
+                            <Carousel
+                                height={280}
+                                slideSize="300px"
+                                align="start"
+                                slidesToScroll={isMobile ? 1 : 2}
+                                classNames={{
+                                    control: classes.carouselControl,
+                                    controls: classes.carouselControls,
+                                }}
+                            >
+                                {cast.map((character) => (
+                                    <Carousel.Slide key={character.id}>
+                                        <AnimeCreditsCard
+                                            character={character}
+                                            seiyuus={seiyuu.filter(
+                                                (s) =>
+                                                    s.characters
+                                                        ?.split(", ")
+                                                        ?.includes(
+                                                            character.name
+                                                        ) ?? false
+                                            )}
+                                        />
+                                    </Carousel.Slide>
+                                ))}
+                            </Carousel>
+                        </Container>
+                    </Stack>
+                </>
+            );
+        }
     }
 
     // Regular content rendering (existing code)

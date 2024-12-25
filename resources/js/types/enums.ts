@@ -7,7 +7,6 @@ export enum WatchStatus {
     DROPPED = "DROPPED",
 }
 
-// Add a display mapping
 export const WatchStatusDisplay: Record<WatchStatus, string> = {
     [WatchStatus.COMPLETED]: "Completed",
     [WatchStatus.PLANNING]: "Planning",

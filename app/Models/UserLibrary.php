@@ -32,4 +32,9 @@ class UserLibrary extends Model
     {
         return $this->hasMany(UserTvShow::class);
     }
+
+    public function animeCollections(): HasMany
+    {
+        return $this->hasMany(UserAnimeCollection::class);
+    }
 }

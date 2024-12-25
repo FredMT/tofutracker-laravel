@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\DB;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -53,5 +56,29 @@ class User extends Authenticatable implements MustVerifyEmail
     public function library(): HasOne
     {
         return $this->hasOne(UserLibrary::class);
+    }
+
+    public function movies(): HasMany
+    {
+        return $this->hasMany(UserMovie::class);
+    }
+
+    public function shows(): HasMany
+    {
+        return $this->hasMany(UserTvShow::class);
+    }
+
+    public function animeCollections(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            UserAnimeCollection::class,
+            UserLibrary::class,
+            'user_id', // Foreign key on user_libraries table
+            'user_library_id', // Foreign key on user_anime_collections table
+            'id', // Local key on users table
+            'id'  // Local key on user_libraries table
+        )->whereHas('userLibrary', function ($query) {
+            $query->where('type', 'anime');
+        });
     }
 }

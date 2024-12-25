@@ -17,6 +17,37 @@ class Movie extends Model
         'updated_at' => 'datetime'
     ];
 
+    public function budget(): Attribute
+    {
+        return Attribute::get(function () {
+            $budget = $this->data['budget'] ?? null;
+            return $budget > 0 ? $budget : null;
+        });
+    }
+
+    public function revenue(): Attribute
+    {
+        return Attribute::get(function () {
+            $revenue = $this->data['revenue'] ?? null;
+            return $revenue > 0 ? $revenue : null;
+        });
+    }
+
+    public function runtime(): Attribute
+    {
+        return Attribute::get(function () {
+            $runtime = $this->data['runtime'] ?? null;
+            return $runtime > 0 ? $runtime : null;
+        });
+    }
+
+    public function popularity(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->data['popularity'] ?? null;
+        });
+    }
+
     public function genres(): Attribute
     {
         return Attribute::get(function () {
@@ -24,6 +55,44 @@ class Movie extends Model
                 return [
                     'id' => $genre['id'],
                     'name' => $genre['name']
+                ];
+            })->values();
+        });
+    }
+
+    public function keywords(): Attribute
+    {
+        return Attribute::get(function () {
+            return collect($this->data['keywords']['keywords'] ?? [])->map(function ($keyword) {
+                return [
+                    'id' => $keyword['id'],
+                    'name' => $keyword['name']
+                ];
+            })->values();
+        });
+    }
+
+    public function productionCompanies(): Attribute
+    {
+        return Attribute::get(function () {
+            return collect($this->data['production_companies'] ?? [])->map(function ($company) {
+                return [
+                    'id' => $company['id'],
+                    'name' => $company['name'],
+                    'logo_path' => $company['logo_path'],
+                    'origin_country' => $company['origin_country']
+                ];
+            })->values();
+        });
+    }
+
+    public function productionCountries(): Attribute
+    {
+        return Attribute::get(function () {
+            return collect($this->data['production_countries'] ?? [])->map(function ($country) {
+                return [
+                    'name' => $country['name'],
+                    'iso_3166_1' => $country['iso_3166_1']
                 ];
             })->values();
         });

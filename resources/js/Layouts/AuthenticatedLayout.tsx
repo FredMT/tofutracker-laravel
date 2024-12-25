@@ -100,7 +100,7 @@ export default function AuthenticatedLayout({
                                             >
                                                 <Menu.Item
                                                     component={Link}
-                                                    href={route("dashboard")}
+                                                    href={route("me")}
                                                 >
                                                     Profile
                                                 </Menu.Item>
@@ -217,7 +217,7 @@ export default function AuthenticatedLayout({
                             <Button
                                 size="md"
                                 component={Link}
-                                href={route("dashboard")}
+                                href={route("me")}
                             >
                                 Profile
                             </Button>

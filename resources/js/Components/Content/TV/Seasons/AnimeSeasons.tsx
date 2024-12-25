@@ -4,7 +4,7 @@ import { RelatedAnimeData } from "@/types/anime";
 import { Link } from "@inertiajs/react";
 import { Carousel } from "@mantine/carousel";
 import { Container, Stack, Title } from "@mantine/core";
-import classes from "../../Content/Shared/SimilarContent.module.css";
+import classes from "../../../Content/Shared/SimilarContent.module.css";
 
 interface AnimeSeasonsProps {
     containerWidth: number;
