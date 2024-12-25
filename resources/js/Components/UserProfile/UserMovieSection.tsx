@@ -62,16 +62,15 @@ export function UserMovieSection() {
                     {hasFilters ? "Filtered results: " : ""}
                     Showing {movies.from}-{movies.to} of {movies.total} results
                 </Text>
-                <Pagination
-                    value={movies.current_page}
-                    onChange={handlePageChange}
-                    total={movies.last_page}
-                    withEdges
-                    siblings={2}
-                />
-                <Text style={{ visibility: "hidden" }}>
-                    Showing {movies.from}-{movies.to} of {movies.total} results
-                </Text>
+                {movies.data.length > 23 && (
+                    <Pagination
+                        value={movies.current_page}
+                        onChange={handlePageChange}
+                        total={movies.last_page}
+                        withEdges
+                        siblings={2}
+                    />
+                )}
             </Group>
         </>
     );

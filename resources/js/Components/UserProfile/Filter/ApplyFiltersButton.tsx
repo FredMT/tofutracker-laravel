@@ -28,6 +28,7 @@ export function ApplyFiltersButton({ onApply }: ApplyFiltersButtonProps) {
             fullWidth
             onClick={handleApply}
             disabled={!hasFiltersExceptSearch}
+            mt={20}
         >
             Apply Filters
         </Button>

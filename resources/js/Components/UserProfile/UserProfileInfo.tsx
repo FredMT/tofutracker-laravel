@@ -1,5 +1,6 @@
 import { Button, Flex, ScrollArea, Stack, Text, Title } from "@mantine/core";
 import classes from "./UserProfileInfo.module.css";
+import { Link, usePage } from "@inertiajs/react";
 
 interface UserProfileInfoProps {
     username: string;
@@ -7,6 +8,7 @@ interface UserProfileInfoProps {
 }
 
 export function UserProfileInfo({ username, createdAt }: UserProfileInfoProps) {
+    const { component } = usePage();
     return (
         <Flex
             direction={{ base: "column", gtmd: "row" }}
@@ -28,16 +30,23 @@ export function UserProfileInfo({ username, createdAt }: UserProfileInfoProps) {
                 w={{ base: "100%", sm: "auto" }}
             >
                 <Flex gap="md" justify={{ base: "center", sm: "flex-start" }}>
-                    <Button bg="#222222" bd={0}>
+                    <Button bg={`#222222`} bd={0}>
                         Activity
                     </Button>
-                    <Button bg="#222222" bd={0}>
+                    <Button
+                        bg={`${
+                            component === "UserMovies" ? "violet.9" : "#222222"
+                        }`}
+                        bd={0}
+                        component={Link}
+                        href={`/user/${username}/movies`}
+                    >
                         Movie list
                     </Button>
-                    <Button bg="#222222" bd={0}>
+                    <Button bg={`#222222`} bd={0}>
                         TV List
                     </Button>
-                    <Button bg="#222222" bd={0}>
+                    <Button bg={`#222222`} bd={0}>
                         Anime List
                     </Button>
                 </Flex>
