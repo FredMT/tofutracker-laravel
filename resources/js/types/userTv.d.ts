@@ -1,4 +1,24 @@
 import { WatchStatus } from "./enums";
+import { PageProps as InertiaPageProps } from "@inertiajs/core";
+
+export interface User {
+    id: number;
+    username: string;
+    email: string;
+    email_verified_at: Date;
+    created_at: Date;
+    updated_at: Date;
+    bio: string;
+}
+
+export interface Auth {
+    user: User | null;
+}
+
+export interface Flash {
+    success?: boolean;
+    message?: string;
+}
 
 export interface UserTvShow {
     id: number;
@@ -58,4 +78,12 @@ export interface UserTvApiResponse {
         filters: UserTvFilters;
         userData: UserData;
     };
+}
+
+export interface PageProps extends InertiaPageProps {
+    auth: Auth;
+    flash: Flash;
+    errors: Record<string, string>;
+    userData: UserData;
+    data: UserTvApiResponse;
 }

@@ -81,7 +81,6 @@ class UserController extends Controller
             'userData' => [
                 'id' => $user->id,
                 'username' => $user->username,
-                'name' => $user->name,
                 'created_at' => 'Joined ' . $user->created_at->format('F Y'),
                 'avatar_url' => $user->avatar_url,
             ],
@@ -214,12 +213,10 @@ class UserController extends Controller
                 'success' => false,
                 'messages' => [],
                 'errors' => $errors,
-                'data' => [
-                    'shows' => [],
-                    'genres' => [],
-                    'filters' => $this->getFilters($request),
-                    'userData' => $userData
-                ]
+                'shows' => [],
+                'genres' => [],
+                'filters' => $this->getFilters($request),
+                'userData' => $userData
             ]);
         }
 
@@ -242,12 +239,10 @@ class UserController extends Controller
             'success' => true,
             'messages' => $messages,
             'errors' => $errors,
-            'data' => [
-                'shows' => $shows,
-                'genres' => $userGenres,
-                'filters' => $this->getFilters($request),
-                'userData' => $userData
-            ]
+            'userData' => $userData,
+            'filters' => $this->getFilters($request),
+            'genres' => $userGenres,
+            'shows' => $shows,
         ]);
     }
 }
