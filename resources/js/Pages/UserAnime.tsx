@@ -1,10 +1,9 @@
-import TvCard from "@/Components/Shared/UserTv/TvCard";
 import FilterButtonGroup from "@/Components/UserProfile/Filter/FilterButtonGroup";
+import AnimeCard from "@/Components/Shared/UserAnime/AnimeCard";
 import { useFilterStore } from "@/hooks/useFilterStore";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import UserProfileLayout from "@/Layouts/UserProfileLayout";
-import { UserData } from "@/types/userData";
-import { UserTvShow } from "@/types/userTv";
+import { UserAnimePageProps } from "@/types/userAnime";
 import { Head } from "@inertiajs/react";
 import {
     Alert,
@@ -17,23 +16,13 @@ import {
 } from "@mantine/core";
 import { useEffect } from "react";
 
-interface Props {
-    userData: UserData;
-    filters: {
-        status: string | null;
-        title: string | null;
-        from_date: string | null;
-        to_date: string | null;
-        genres: string | null;
-    };
-    shows: UserTvShow[];
-    genres: { id: number; name: string }[];
-    messages: string[];
-    errors: string[];
-    success: boolean;
-}
-
-function UserTv({ userData, filters, shows, genres, messages }: Props) {
+function UserAnime({
+    userData,
+    filters,
+    collections,
+    genres,
+    messages,
+}: UserAnimePageProps) {
     const filterStore = useFilterStore();
 
     useEffect(() => {
@@ -52,36 +41,36 @@ function UserTv({ userData, filters, shows, genres, messages }: Props) {
 
     return (
         <>
-            <Head title={`${userData.username}'s Shows`} />
+            <Head title={`${userData.username}'s Anime`} />
             <Divider my={16} />
             <Group>
                 <FilterButtonGroup contentType="anime" />
             </Group>
             <Space h={12} />
-
             <Stack gap={12}>
-                <Title order={2}>TV Shows</Title>
-                {messages.length > 0 ? (
+                <Title order={2}>Anime</Title>
+                {messages.length > 0 && (
                     <Alert variant="light" color="blue">
                         {messages[0]}
                     </Alert>
-                ) : (
-                    <Flex gap={6} wrap="wrap" justify="flex-start">
-                        {shows.map((show) => (
-                            <TvCard key={show.id} show={show} />
-                        ))}
-                    </Flex>
                 )}
+                <Flex gap={6} wrap="wrap" justify="flex-start">
+                    {collections.map((collection) => (
+                        <AnimeCard
+                            key={collection.id}
+                            collection={collection}
+                        />
+                    ))}
+                </Flex>
             </Stack>
-            <Space h={20} />
         </>
     );
 }
 
-UserTv.layout = (page: any) => (
+UserAnime.layout = (page: any) => (
     <AuthenticatedLayout>
         <UserProfileLayout children={page} userData={page.props.userData} />
     </AuthenticatedLayout>
 );
 
-export default UserTv;
+export default UserAnime;

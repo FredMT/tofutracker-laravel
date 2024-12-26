@@ -8,7 +8,13 @@ import dayjs from "dayjs";
 import { router, usePage } from "@inertiajs/react";
 import { PageProps, UserTvGenre } from "@/types/userTv";
 
-export default function FilterButtonGroup() {
+interface FilterButtonGroupProps {
+    contentType: "movies" | "tv" | "anime";
+}
+
+export default function FilterButtonGroup({
+    contentType,
+}: FilterButtonGroupProps) {
     const { genres, userData, filters, messages, errors } =
         usePage<PageProps>().props;
     const filterStore = useFilterStore();
@@ -76,7 +82,10 @@ export default function FilterButtonGroup() {
             );
         }
 
-        router.get(`/user/${userData.username}/tv`, Object.fromEntries(params));
+        router.get(
+            `/user/${userData.username}/${contentType}`,
+            Object.fromEntries(params)
+        );
     };
 
     const handleClearFilters = () => {
@@ -86,7 +95,7 @@ export default function FilterButtonGroup() {
         filterStore.setTitle(null);
 
         if (hasUrlFilters) {
-            router.get(`/user/${userData.username}/tv`);
+            router.get(`/user/${userData.username}/${contentType}`);
         }
     };
 
@@ -165,14 +174,14 @@ export default function FilterButtonGroup() {
         <>
             {isMobile ? (
                 <>
-                    <FilterSearchInput contentType="tv" />
+                    <FilterSearchInput contentType={contentType} />
                     <DatesProvider settings={{ locale: "en", timezone: "UTC" }}>
                         {filterControls}
                     </DatesProvider>
                 </>
             ) : (
                 <>
-                    <FilterSearchInput contentType="tv" />
+                    <FilterSearchInput contentType={contentType} />
                     <DatesProvider settings={{ locale: "en", timezone: "UTC" }}>
                         {filterControls}
                     </DatesProvider>

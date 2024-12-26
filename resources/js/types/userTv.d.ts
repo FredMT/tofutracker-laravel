@@ -31,6 +31,8 @@ export interface UserTvShow {
     seasons: UserTvSeason[];
     total_seasons: number;
     user_total_seasons: number;
+    total_episodes?: number;
+    watched_episodes?: number;
 }
 
 export interface UserTvSeason {

@@ -1,0 +1,43 @@
+.ratingBadge {
+    border: 3px solid;
+    border-color: light-dark(#ededed, #121212);
+    border-radius: 6px;
+    position: absolute;
+    top: -10px;
+    right: 20px;
+    padding: 12px 10px;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.posterImage {
+    min-height: 210px;
+    min-width: 150px;
+    max-height: 260px;
+    max-width: 172px;
+    width: 150px;
+    height: 210px;
+}
+
+.chevron {
+    transition: transform 200ms ease;
+}
+
+.chevronUp {
+    transform: rotate(90deg);
+}
+
+.chevronDown {
+    transform: rotate(0deg);
+}
+
+@media (min-width: 640px) {
+    .posterImage {
+        width: 172px;
+        height: 260px;
+    }
+
+    .ratingBadge {
+        right: 0px;
+    }
+}

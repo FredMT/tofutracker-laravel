@@ -208,7 +208,83 @@ class UserController extends Controller
 
         // If there are any validation errors, return early with empty arrays
         if (!empty($errors)) {
-            return response()->json([
+            return Inertia::render('UserAnime', [
+                'success' => false,
+                'messages' => [],
+                'errors' => $errors,
+                'collections' => [],
+                'genres' => [],
+                'filters' => $this->getFilters($request),
+                'userData' => $userData
+            ]);
+        }
+
+        // Get user's anime collections with necessary relationships
+        $collections = UserAnimeCollection::query()
+            ->with([
+                'anime.anime',
+                'anime.episodes',
+                'animeMap.chains.entries.anime',
+                'animeMap.relatedEntries.anime',
+                'userLibrary'
+            ])
+            ->whereHas('userLibrary', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Get unique genres from TMDB data (will be populated by the collection)
+        $userGenres = collect();
+        $collections->each(function ($collection) use (&$userGenres) {
+            if ($collection->animeMap->most_common_tmdb_id && $collection->animeMap->tmdb_type) {
+                $tmdbData = app(\App\Services\TmdbService::class);
+                try {
+                    $data = $collection->animeMap->tmdb_type === 'movie'
+                        ? $tmdbData->getMovieBasic($collection->animeMap->most_common_tmdb_id)
+                        : $tmdbData->getTvBasic($collection->animeMap->most_common_tmdb_id);
+
+                    if ($data && isset($data['genres'])) {
+                        $userGenres = $userGenres->concat($data['genres']);
+                    }
+                } catch (\Exception $e) {
+                    logger()->error("Failed to fetch TMDB data: " . $e->getMessage());
+                }
+            }
+        });
+
+        $userGenres = $userGenres->unique('id')->values();
+
+        // Apply filters and transform data
+        $filteredCollections = $collections->applyFilters($this->getFilters($request));
+        $presentedCollections = $filteredCollections->toPresentation();
+
+        $messages = app(GenerateAnimeMessages::class)->handle($request, $presentedCollections);
+
+        return Inertia::render('UserAnime', [
+            'success' => true,
+            'messages' => $messages,
+            'errors' => $errors,
+            'userData' => $userData,
+            'collections' => $presentedCollections,
+            'genres' => $userGenres,
+            'filters' => $this->getFilters($request),
+        ]);
+    }
+
+    public function showAnimeApi(string $username, Request $request)
+    {
+        $user = User::where('username', $username)->firstOrFail();
+
+        $userData = app(GetUserData::class)->handle($user);
+
+        if (!$userData) return abort(404);
+
+        $errors = app(ValidateAnimeFilters::class)->handle($request);
+
+        // If there are any validation errors, return early with empty arrays
+        if (!empty($errors)) {
+            return Inertia::render('UserAnime', [
                 'success' => false,
                 'messages' => [],
                 'errors' => $errors,

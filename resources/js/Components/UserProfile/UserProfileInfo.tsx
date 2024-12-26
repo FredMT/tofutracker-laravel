@@ -53,7 +53,14 @@ export function UserProfileInfo({ username, createdAt }: UserProfileInfoProps) {
                     >
                         TV List
                     </Button>
-                    <Button bg={`#222222`} bd={0}>
+                    <Button
+                        bg={`${
+                            component === "UserAnime" ? "violet.9" : "#222222"
+                        }`}
+                        bd={0}
+                        component={Link}
+                        href={`/user/${username}/anime`}
+                    >
                         Anime List
                     </Button>
                 </Flex>

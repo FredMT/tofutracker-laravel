@@ -1,0 +1,15 @@
+.posterImage {
+    min-height: 210px;
+    min-width: 150px;
+    max-height: 260px;
+    max-width: 172px;
+    width: 150px;
+    height: 210px;
+    object-fit: cover;
+}
+
+.ratingBadge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+}

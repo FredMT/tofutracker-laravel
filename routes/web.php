@@ -111,10 +111,6 @@ Route::get('/tv/{id}/season/{seasonNumber}', [TvSeasonController::class, 'show']
     ->middleware(CheckAnimeMapping::class)
     ->name('tv.season.show');
 
-Route::get('/anime/episodes/{anidbid}', [AnimeMappingController::class, 'mapAnimeEpisodes'])
-    ->where('anidbid', '[0-9]+')
-    ->name('anime.season.episodes');
-
 Route::get('/anime/{id}', [AnimeController::class, 'show'])->name('anime.show');
 Route::get('/anime/{id}/season/{seasonId}', [AnimeController::class, 'showSeason'])->name('anime.season.show');
 

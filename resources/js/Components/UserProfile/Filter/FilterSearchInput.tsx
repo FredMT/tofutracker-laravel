@@ -6,7 +6,7 @@ import { useDebouncedValue } from "@mantine/hooks";
 import { useEffect, useRef } from "react";
 
 interface FilterSearchInputProps {
-    contentType: "movies" | "tv";
+    contentType: "movies" | "tv" | "anime";
 }
 
 export function FilterSearchInput({ contentType }: FilterSearchInputProps) {
@@ -43,12 +43,23 @@ export function FilterSearchInput({ contentType }: FilterSearchInputProps) {
         );
     }, [debouncedSearch, userData.username, contentType]);
 
+    const getPlaceholder = () => {
+        switch (contentType) {
+            case "movies":
+                return "Shawshank";
+            case "tv":
+                return "The 100";
+            case "anime":
+                return "Death Note";
+            default:
+                return "";
+        }
+    };
+
     return (
         <TextInput
             label={`Search your ${contentType}`}
-            placeholder={`Search your ${contentType}: ${
-                contentType === "movies" ? "Shawshank" : "The 100"
-            }`}
+            placeholder={`Search your ${contentType}: ${getPlaceholder()}`}
             value={title ?? ""}
             onChange={(event) => setTitle(event.currentTarget.value || null)}
             w="100%"
