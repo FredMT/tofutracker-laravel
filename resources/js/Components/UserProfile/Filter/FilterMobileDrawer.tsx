@@ -9,7 +9,11 @@ import { Button, Drawer, Stack, Title } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useMemo } from "react";
 
-function FilterMobileDrawer() {
+interface FilterMobileDrawerProps {
+    contentType: "movies" | "tv";
+}
+
+function FilterMobileDrawer({ contentType }: FilterMobileDrawerProps) {
     const [opened, { open, close }] = useDisclosure(false);
     const { status, fromDate, toDate, genres, title } = useFilterStore();
 
@@ -38,7 +42,7 @@ function FilterMobileDrawer() {
                     </Drawer.Header>
                     <Drawer.Body>
                         <Stack>
-                            <FilterSearchInput />
+                            <FilterSearchInput contentType={contentType} />
                             <FilterWatchStatusSelect />
                             <DateRangeFilter placeholder="Select a date range (double click a date for a single date)" />
                             <Stack gap={4}>

@@ -143,61 +143,8 @@ class UserController extends Controller
         ];
     }
 
+
     public function showTv(string $username, Request $request)
-    {
-        $user = User::where('username', $username)->firstOrFail();
-
-        $query = $user->movies()
-            ->with(['movie' => function ($query) {
-                $query->select('id', 'data');
-            }])
-            ->select(['id', 'user_id', 'movie_id', 'rating', 'watch_status', 'created_at']);
-
-        $userGenres = UserMovie::query()
-            ->with(['movie'])
-            ->whereHas('userLibrary', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })
-            ->get()
-            ->flatMap(function ($userMovie) {
-                return $userMovie->movie->genres;
-            })
-            ->unique('id')
-            ->values()
-            ->toArray();
-
-        // Apply filters
-        $this->applyFilters($query, $request);
-
-        $movies = $query->orderBy('created_at', 'desc')
-            ->paginate(24)
-            ->through(function ($userMovie) {
-                return [
-                    'id' => $userMovie->movie->id,
-                    'title' => $userMovie->movie->data['title'] ?? null,
-                    'poster_path' => $userMovie->movie->data['poster_path'] ?? null,
-                    'release_date' => $userMovie->movie->data['release_date'] ?? null,
-                    'rating' => $userMovie->rating,
-                    'watch_status' => $userMovie->watch_status->value,
-                    'added_at' => $userMovie->created_at->format('j F, Y'),
-                ];
-            });
-
-        return Inertia::render('UserTv', [
-            'userData' => [
-                'id' => $user->id,
-                'username' => $user->username,
-                'name' => $user->name,
-                'created_at' => 'Joined ' . $user->created_at->format('F Y'),
-                'avatar_url' => $user->avatar_url,
-            ],
-            'movies' => $movies->toArray(),
-            'genres' => $userGenres,
-            'filters' => $this->getFilters($request),
-        ]);
-    }
-
-    public function showTvApi(string $username, Request $request)
     {
         $user = User::where('username', $username)->firstOrFail();
 
@@ -209,7 +156,7 @@ class UserController extends Controller
 
         // If there are any validation errors, return early with empty arrays
         if (!empty($errors)) {
-            return response()->json([
+            return Inertia::render('UserTv', [
                 'success' => false,
                 'messages' => [],
                 'errors' => $errors,
@@ -235,7 +182,7 @@ class UserController extends Controller
 
         $messages = app(GenerateShowMessages::class)->handle($request, $shows);
 
-        return response()->json([
+        return Inertia::render('UserTv', [
             'success' => true,
             'messages' => $messages,
             'errors' => $errors,

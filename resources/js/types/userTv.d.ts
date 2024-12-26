@@ -74,18 +74,20 @@ export interface UserTvApiResponse {
         genres?: string;
         dates?: string;
     };
-    data: {
-        shows: UserTvShow[];
-        genres: UserTvGenre[];
-        filters: UserTvFilters;
-        userData: UserData;
-    };
+    shows: UserTvShow[];
+    genres: UserTvGenre[];
+    filters: UserTvFilters;
+    userData: UserData;
 }
 
 export interface PageProps extends InertiaPageProps {
     auth: Auth;
     flash: Flash;
     errors: Record<string, string>;
+    success: boolean;
+    messages: string[];
     userData: UserData;
-    data: UserTvApiResponse;
+    filters: UserTvFilters;
+    genres: UserTvGenre[];
+    shows: UserTvShow[];
 }

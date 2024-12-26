@@ -1,9 +1,10 @@
 import { UserTvShow } from "@/types/userTv";
-import { Card, Title } from "@mantine/core";
+import { Card, Text, Title, Tooltip } from "@mantine/core";
 import { useState } from "react";
 import TvSeasonModal from "../TvSeasonModal";
 import TvCardPoster from "./TvCardPoster";
 import TvCardSeasonsBadge from "./TvCardSeasonsBadge";
+import { Link } from "@inertiajs/react";
 
 interface TvCardProps {
     show: UserTvShow;
@@ -16,10 +17,16 @@ export function TvCard({ show }: TvCardProps) {
         <>
             <Card maw={180} bg="transparent" bd={0} shadow="none">
                 <TvCardPoster show={show} />
-                <Card.Section>
-                    <Title order={4} lineClamp={2} fw={500}>
-                        {show.title}
-                    </Title>
+                <Card.Section
+                    component={Link}
+                    href={route("tv.show", { id: show.id })}
+                    prefetch
+                >
+                    <Tooltip label={show.title} openDelay={150}>
+                        <Text lineClamp={1} fw={500}>
+                            {show.title}
+                        </Text>
+                    </Tooltip>
                 </Card.Section>
                 <TvCardSeasonsBadge
                     show={show}

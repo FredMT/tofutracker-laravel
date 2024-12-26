@@ -33,7 +33,7 @@ function UserMovies({ userData, filters }: PageProps) {
             <Head title={`${userData.username}'s Movies`} />
             <Space h={16} hiddenFrom="gtmd" />
             <Box hiddenFrom="gtmd">
-                <FilterMobile />
+                <FilterMobile contentType="movies" />
             </Box>
             <Space h={24} />
             <UserMovieLayout
@@ -44,8 +44,7 @@ function UserMovies({ userData, filters }: PageProps) {
                             Movies
                         </Title>
                         <Stack gap={4} visibleFrom="gtmd">
-                            <Text fw={500}>Search movies</Text>
-                            <FilterSearchInput />
+                            <FilterSearchInput contentType="movies" />
                         </Stack>
                         <UserMovieSection />
                     </Stack>

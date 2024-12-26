@@ -37,8 +37,6 @@ Route::get('/user/{username}/movies', [UserController::class, 'showMovies'])
     ->name('user.movies');
 Route::get('/user/{username}/tv', [UserController::class, 'showTv'])
     ->name('user.tv');
-Route::get('/user/{username}/tv/api', [UserController::class, 'showTvApi'])
-    ->name('user.tv.api');
 Route::get('/user/{username}', [UserController::class, 'show'])->name('user.profile');
 
 Route::middleware('auth')->group(function () {

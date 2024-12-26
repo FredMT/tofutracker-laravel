@@ -1,12 +1,16 @@
 import { useFilterStore } from "@/stores/filterStore";
-import { PageProps } from "@/types/userMovies";
+import { UserData } from "@/types/userData";
 import { router, usePage } from "@inertiajs/react";
 import { TextInput } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import { useEffect, useRef } from "react";
 
-export function FilterSearchInput() {
-    const { userData } = usePage<PageProps>().props;
+interface FilterSearchInputProps {
+    contentType: "movies" | "tv";
+}
+
+export function FilterSearchInput({ contentType }: FilterSearchInputProps) {
+    const { userData } = usePage<{ userData: UserData }>().props;
     const { title, setTitle } = useFilterStore();
     const [debouncedSearch] = useDebouncedValue(title ?? "", 300);
     const isFirstRender = useRef(true);
@@ -29,7 +33,7 @@ export function FilterSearchInput() {
         if (debouncedSearch === currentParams.get("title")) return;
 
         router.get(
-            `/user/${userData.username}/movies`,
+            `/user/${userData.username}/${contentType}`,
             debouncedSearch ? { title: debouncedSearch } : {},
             {
                 preserveState: true,
@@ -37,13 +41,17 @@ export function FilterSearchInput() {
                 replace: true,
             }
         );
-    }, [debouncedSearch, userData.username]);
+    }, [debouncedSearch, userData.username, contentType]);
 
     return (
         <TextInput
-            placeholder="Search your movies"
+            label={`Search your ${contentType}`}
+            placeholder={`Search your ${contentType}: ${
+                contentType === "movies" ? "Shawshank" : "The 100"
+            }`}
             value={title ?? ""}
             onChange={(event) => setTitle(event.currentTarget.value || null)}
+            w="100%"
         />
     );
 }

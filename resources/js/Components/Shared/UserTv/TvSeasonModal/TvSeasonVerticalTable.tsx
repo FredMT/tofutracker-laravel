@@ -1,6 +1,7 @@
 import { UserTvShow } from "@/types/userTv";
 import { Link } from "@inertiajs/react";
-import { Badge, Stack, Table, Title } from "@mantine/core";
+import { Badge, Group, Stack, Table, Title } from "@mantine/core";
+import { ExternalLink } from "lucide-react";
 
 interface TvSeasonVerticalTableProps {
     show: UserTvShow;
@@ -32,9 +33,12 @@ export function TvSeasonVerticalTable({
                                     })}
                                     prefetch
                                 >
-                                    <Title order={5} lineClamp={1}>
-                                        {season.title}
-                                    </Title>
+                                    <Group>
+                                        <Title order={5} lineClamp={1}>
+                                            {season.title}
+                                        </Title>
+                                        <ExternalLink size={16} />
+                                    </Group>
                                 </Link>
                             </Table.Td>
                         </Table.Tr>
