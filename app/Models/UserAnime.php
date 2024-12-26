@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\WatchStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -18,7 +19,9 @@ class UserAnime extends Model
     ];
 
     protected $casts = [
-        'is_movie' => 'boolean'
+        'is_movie' => 'boolean',
+        'rating' => 'float',
+        'watch_status' => WatchStatus::class
     ];
 
     public function collection(): BelongsTo

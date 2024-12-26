@@ -5,12 +5,12 @@ namespace App\Services;
 use App\Models\AnimeMappingExternalId;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Support\Facades\Cache;
 
 class TmdbService
 {
     private PendingRequest $client;
     private string $baseUrl = 'https://api.themoviedb.org/3';
-    private const MAX_REQUESTS_PER_SECOND = 45;
 
     public function __construct()
     {
@@ -18,6 +18,56 @@ class TmdbService
             'Authorization' => 'Bearer ' . config('services.tmdb.token'),
             'Accept' => 'application/json',
         ])->baseUrl($this->baseUrl);
+    }
+
+    public function getMovieBasic(string $id)
+    {
+        try {
+            return Cache::remember("tmdb_movie_basic_{$id}", now()->addMonth(), function () use ($id) {
+                $response = Http::withToken(config('services.tmdb.token'))
+                    ->get("{$this->baseUrl}/movie/{$id}");
+
+                $movieData = $response->json();
+
+                return [
+                    'title' => $movieData['title'],
+                    'poster_path' => $movieData['poster_path'],
+                    'genres' => collect($movieData['genres'])->map(fn($genre) => [
+                        'id' => $genre['id'],
+                        'name' => $genre['name']
+                    ]),
+                    'release_date' => substr($movieData['release_date'], 0, 4)
+                ];
+            });
+        } catch (\Exception $e) {
+            logger()->error("TMDB API error: " . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function getTvBasic(string $id)
+    {
+        try {
+            return Cache::remember("tmdb_tv_basic_{$id}", now()->addMonth(), function () use ($id) {
+                $response = Http::withToken(config('services.tmdb.token'))
+                    ->get("{$this->baseUrl}/tv/{$id}");
+
+                $tvData = $response->json();
+
+                return [
+                    'title' => $tvData['name'],
+                    'poster_path' => $tvData['poster_path'],
+                    'genres' => collect($tvData['genres'])->map(fn($genre) => [
+                        'id' => $genre['id'],
+                        'name' => $genre['name']
+                    ]),
+                    'release_date' => substr($tvData['first_air_date'], 0, 4)
+                ];
+            });
+        } catch (\Exception $e) {
+            logger()->error("TMDB API error: " . $e->getMessage());
+            throw $e;
+        }
     }
 
 
@@ -96,6 +146,8 @@ class TmdbService
             throw $e;
         }
     }
+
+
 
     public function getTvAnime(string $id): array
     {

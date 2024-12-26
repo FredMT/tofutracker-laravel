@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Collections\UserAnimeCollectionCollection;
 use App\Enums\WatchStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,6 +18,10 @@ class UserAnimeCollection extends Model
         'watch_status'
     ];
 
+    protected $casts = [
+        'watch_status' => WatchStatus::class,
+        'rating' => 'float',
+    ];
 
     public function userLibrary(): BelongsTo
     {
@@ -31,5 +36,10 @@ class UserAnimeCollection extends Model
     public function anime(): HasMany
     {
         return $this->hasMany(UserAnime::class);
+    }
+
+    public function newCollection(array $models = []): UserAnimeCollectionCollection
+    {
+        return new UserAnimeCollectionCollection($models);
     }
 }

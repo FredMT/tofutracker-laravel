@@ -16,6 +16,15 @@ Route::prefix('tmdb')->group(function () {
     });
 
     // TV routes
+    Route::get('/movie/basic/{id}', function (string $id) {
+        return app(TmdbService::class)->getMovieBasic($id);
+    });
+
+    // TV routes
+    Route::get('/tv/basic/{id}', function (string $id) {
+        return app(TmdbService::class)->getTvBasic($id);
+    });
+    // TV routes
     Route::get('/tv/{id}', function (string $id) {
         return app(TmdbService::class)->getTv($id);
     });

@@ -7,7 +7,7 @@ import { usePage } from "@inertiajs/react";
 import { Stack } from "@mantine/core";
 
 export default function AnimeSeasonActions() {
-    const { user_library } = usePage<PageProps>().props;
+    const { user_library, auth } = usePage<PageProps>().props;
 
     return (
         <Stack gap={8} w={"100%"}>
@@ -17,7 +17,7 @@ export default function AnimeSeasonActions() {
                 <AddAnimeSeasonToLibrary />
             )}
             <AnimeSeasonRateContent />
-            <AnimeSeasonWatchStatus />
+            {auth.user && <AnimeSeasonWatchStatus />}
         </Stack>
     );
 }

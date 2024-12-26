@@ -7,7 +7,7 @@ import AnimeMovieWatchStatus from "@/Components/ContentActions/components/Action
 import AnimeRateContent from "@/Components/ContentActions/components/Actions/Rate/Anime/Shared/AnimeRateContent";
 
 function AnimeMovieActions() {
-    const { user_library } = usePage<PageProps>().props;
+    const { user_library, auth } = usePage<PageProps>().props;
 
     return (
         <Stack gap={8} w={"100%"}>
@@ -17,7 +17,7 @@ function AnimeMovieActions() {
                 <AddAnimeMovieToLibrary />
             )}
             <AnimeRateContent />
-            <AnimeMovieWatchStatus />
+            {auth.user && <AnimeMovieWatchStatus />}
         </Stack>
     );
 }

@@ -9,7 +9,7 @@ import RemoveAnimeTvFromLibrary from "@/Components/ContentActions/components/Act
 import AnimeRateContent from "@/Components/ContentActions/components/Actions/Rate/Anime/Shared/AnimeRateContent";
 
 export default function AnimeTvActions() {
-    const { user_library } = usePage<PageProps>().props;
+    const { user_library, auth } = usePage<PageProps>().props;
 
     return (
         <Stack gap={8} w={"100%"}>
@@ -19,7 +19,7 @@ export default function AnimeTvActions() {
                 <AddAnimeTvToLibrary />
             )}
             <AnimeRateContent />
-            <AnimeTvWatchStatus />
+            {auth.user && <AnimeTvWatchStatus />}
         </Stack>
     );
 }

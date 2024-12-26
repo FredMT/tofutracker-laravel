@@ -9,7 +9,7 @@ import { Stack } from "@mantine/core";
 type MoviePageProps = PageProps<{ type: "movie" }>;
 
 export default function MovieActions() {
-    const { user_library } = usePage<MoviePageProps>().props;
+    const { user_library, auth } = usePage<MoviePageProps>().props;
 
     const hasLibraryEntry =
         user_library &&
@@ -19,7 +19,7 @@ export default function MovieActions() {
         <Stack gap={8} w={"100%"}>
             {hasLibraryEntry ? <RemoveFromLibrary /> : <AddToLibrary />}
             <RateContent />
-            <WatchStatusSelect />
+            {auth.user && <WatchStatusSelect />}
         </Stack>
     );
 }

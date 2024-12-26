@@ -7,7 +7,7 @@ import { RateContent } from "./Rating/RateContent";
 import { WatchStatusSelect } from "@/Components/ContentActions/components/Actions/WatchStatus/Movie/WatchStatus";
 
 function TvSeasonActions() {
-    const { tvseason, user_library } = usePage<PageProps>().props;
+    const { tvseason, user_library, auth } = usePage<PageProps>().props;
     if (!tvseason) return null;
 
     return (
@@ -20,7 +20,7 @@ function TvSeasonActions() {
                 <AddSeasonToLibrary />
             )}
             <RateContent />
-            <WatchStatusSelect />
+            {auth.user && <WatchStatusSelect />}
         </Stack>
     );
 }

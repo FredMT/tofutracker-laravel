@@ -37,6 +37,8 @@ Route::get('/user/{username}/movies', [UserController::class, 'showMovies'])
     ->name('user.movies');
 Route::get('/user/{username}/tv', [UserController::class, 'showTv'])
     ->name('user.tv');
+Route::get('/user/{username}/anime', [UserController::class, 'showAnime'])
+    ->name('user.anime');
 Route::get('/user/{username}', [UserController::class, 'show'])->name('user.profile');
 
 Route::middleware('auth')->group(function () {

@@ -81,7 +81,7 @@ class GetAnimeEpisodes
             throw new Exception("Anime with anidbid {$anidbid} not found in mapping list.");
         } catch (Exception $e) {
             logger()->warning('Anime not found in XML', ['searched_anidbid' => $anidbid]);
-            throw $e;
+            abort(404);
         }
     }
 

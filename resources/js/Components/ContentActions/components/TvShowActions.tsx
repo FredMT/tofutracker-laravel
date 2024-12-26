@@ -7,13 +7,13 @@ import { RateContent } from "./Rating/RateContent";
 import TvShowWatchStatus from "@/Components/ContentActions/components/Actions/WatchStatus/Tv/TvShowWatchStatus";
 
 function TvShowActions() {
-    const { user_library } = usePage<PageProps>().props;
+    const { user_library, auth } = usePage<PageProps>().props;
 
     return (
         <Stack gap={8} w={"100%"}>
             {user_library ? <RemoveShowFromLibrary /> : <AddShowToLibrary />}
             <RateContent />
-            <TvShowWatchStatus />
+            {auth.user && <TvShowWatchStatus />}
         </Stack>
     );
 }
