@@ -17,9 +17,6 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Support\Facades\Cache;
-use App\Models\AnimeRelatedEntry;
-use App\Models\AnimeChainEntry;
 
 class AnimeController extends Controller
 {
@@ -108,67 +105,6 @@ class AnimeController extends Controller
                 'error' => $e->getMessage(),
             ]);
             abort(500, "Problem on our end finding this anime");
-        }
-    }
-
-    private function verifySeasonRelationship(int $accessId, int $seasonId): bool
-    {
-        try {
-            $hasRelatedEntry = AnimeMap::where('id', $accessId)
-                ->whereHas('relatedEntries', function ($query) use ($seasonId) {
-                    $query->where('anime_id', $seasonId);
-                })
-                ->exists();
-
-            $hasChainEntry = AnimeMap::where('id', $accessId)
-                ->whereHas('chains.entries', function ($query) use ($seasonId) {
-                    $query->where('anime_id', $seasonId);
-                })
-                ->exists();
-
-            return $hasRelatedEntry || $hasChainEntry;
-        } catch (\Exception $e) {
-            logger()->error('Error verifying season relationship', [
-                'error' => $e->getMessage(),
-                'access_id' => $accessId,
-                'season_id' => $seasonId
-            ]);
-            abort(400, 'Season not found');
-        }
-    }
-
-    private function checkAnimeType(int $seasonId): void
-    {
-        try {
-            $animeType = AnidbAnime::where('id', $seasonId)
-                ->value('type');
-
-            if ($animeType === 'Music Video' || $animeType === "unknown") {
-                throw new Exception('Music videos or unknown type are not supported');
-            }
-        } catch (\Exception $e) {
-            logger()->error('Error checking anime type', [
-                'error' => $e->getMessage(),
-                'season_id' => $seasonId
-            ]);
-
-            abort(500, 'Error checking anime type');
-        }
-    }
-
-    /**
-     * Format date string to readable format or null if invalid
-     */
-    private function formatDate(?string $date): ?string
-    {
-        if (empty($date) || $date === '1970-01-01T00:00:00.000000Z') {
-            return null;
-        }
-
-        try {
-            return Carbon::parse($date)->format('jS F, Y');
-        } catch (\Exception $e) {
-            return null;
         }
     }
 
@@ -486,6 +422,67 @@ class AnimeController extends Controller
                 'season_id' => $seasonId
             ]);
             return response()->json(['error' => 'An error occurred while fetching anime data'], 500);
+        }
+    }
+
+    private function verifySeasonRelationship(int $accessId, int $seasonId): bool
+    {
+        try {
+            $hasRelatedEntry = AnimeMap::where('id', $accessId)
+                ->whereHas('relatedEntries', function ($query) use ($seasonId) {
+                    $query->where('anime_id', $seasonId);
+                })
+                ->exists();
+
+            $hasChainEntry = AnimeMap::where('id', $accessId)
+                ->whereHas('chains.entries', function ($query) use ($seasonId) {
+                    $query->where('anime_id', $seasonId);
+                })
+                ->exists();
+
+            return $hasRelatedEntry || $hasChainEntry;
+        } catch (\Exception $e) {
+            logger()->error('Error verifying season relationship', [
+                'error' => $e->getMessage(),
+                'access_id' => $accessId,
+                'season_id' => $seasonId
+            ]);
+            abort(400, 'Season not found');
+        }
+    }
+
+    private function checkAnimeType(int $seasonId): void
+    {
+        try {
+            $animeType = AnidbAnime::where('id', $seasonId)
+                ->value('type');
+
+            if ($animeType === 'Music Video' || $animeType === "unknown") {
+                throw new Exception('Music videos or unknown type are not supported');
+            }
+        } catch (\Exception $e) {
+            logger()->error('Error checking anime type', [
+                'error' => $e->getMessage(),
+                'season_id' => $seasonId
+            ]);
+
+            abort(500, 'Error checking anime type');
+        }
+    }
+
+    /**
+     * Format date string to readable format or null if invalid
+     */
+    private function formatDate(?string $date): ?string
+    {
+        if (empty($date) || $date === '1970-01-01T00:00:00.000000Z') {
+            return null;
+        }
+
+        try {
+            return Carbon::parse($date)->format('jS F, Y');
+        } catch (\Exception $e) {
+            return null;
         }
     }
 }

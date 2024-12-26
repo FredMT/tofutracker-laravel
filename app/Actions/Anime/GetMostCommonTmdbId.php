@@ -10,14 +10,14 @@ use Illuminate\Support\Facades\Cache;
 
 class GetMostCommonTmdbId
 {
-    public function execute($accessId)
+    public function execute($mapId)
     {
         return Cache::remember(
-            'most_common_tmdb_id_' . $accessId,
+            'most_common_tmdb_id_' . $mapId,
             now()->addMonth(),
-            function () use ($accessId) {
+            function () use ($mapId) {
                 // Try to fetch the AnimeMap record with the most_common_tmdb_id
-                $animeMap = AnimeMap::where('id', $accessId)->first();
+                $animeMap = AnimeMap::where('id', $mapId)->first();
 
                 if ($animeMap && $animeMap->most_common_tmdb_id) {
                     return [
