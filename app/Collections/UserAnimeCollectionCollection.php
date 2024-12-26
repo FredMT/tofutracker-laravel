@@ -190,6 +190,41 @@ class UserAnimeCollectionCollection extends Collection
             );
     }
 
+    private function isStandaloneMovie($userAnimeCollection, $userAnime): bool
+    {
+        // Check if it's the only entry in the chain/related entries
+        $totalEntries = $userAnimeCollection->animeMap->chains()
+            ->withCount('entries')
+            ->get()
+            ->sum('entries_count');
+
+        $totalRelatedEntries = $userAnimeCollection->animeMap->relatedEntries()->count();
+
+        // If there's more than one entry, it's not a standalone movie
+        if (($totalEntries + $totalRelatedEntries) > 1) {
+            return false;
+        }
+
+        // Check if the anime type is Movie
+        return $userAnime->anime->type === 'Movie';
+    }
+
+    private function formatAnimeEntry($entry, $userAnime, $animeEpisodeStats): array
+    {
+        return [
+            'id' => $entry->anime->id,
+            'title' => $entry->anime->title_main,
+            'poster_path' => $entry->anime->picture,
+            'release_date' => $entry->anime->startdate ? Carbon::parse($entry->anime->startdate)->year : null,
+            'rating' => $userAnime->rating,
+            'watch_status' => $userAnime->watch_status->value,
+            'added_at' => $userAnime->created_at->format('j F, Y'),
+            'total_episodes' => $animeEpisodeStats['total_episodes'],
+            'watched_episodes' => $animeEpisodeStats['watched_episodes'],
+            'sequence_order' => $entry->sequence_order ?? 0
+        ];
+    }
+
     public function toPresentation(): array
     {
         return $this->map(function ($userAnimeCollection) {
@@ -199,9 +234,10 @@ class UserAnimeCollectionCollection extends Collection
                 !$userAnimeCollection->anime->first()?->relationLoaded('anime')
             ) {
                 $userAnimeCollection->load([
-                    'anime.anime', // Load AnidbAnime through UserAnime
-                    'anime.episodes.episode', // Load UserAnimeEpisode and its relationships
-                    'animeMap.chains.entries.anime' // Load chain entries with their anime
+                    'anime.anime',
+                    'anime.episodes.episode',
+                    'animeMap.chains.entries.anime',
+                    'animeMap.relatedEntries.anime'
                 ]);
             }
 
@@ -221,15 +257,16 @@ class UserAnimeCollectionCollection extends Collection
             $episodeStats = $this->calculateEpisodeStats($userAnimeCollection);
             $seasonStats = $this->calculateSeasonStats($userAnimeCollection);
 
-            // Transform chains into seasons
-            $seasons = $userAnimeCollection->animeMap->chains->map(function ($chain) use ($userAnimeCollection) {
-                // Get entries sorted by sequence_order with eager loaded anime
+            $movies = collect();
+            $chainSeasons = collect();
+
+            // Process chain entries
+            $userAnimeCollection->animeMap->chains->each(function ($chain) use ($userAnimeCollection, &$movies, &$chainSeasons) {
                 $entries = $chain->entries()
                     ->with('anime')
                     ->orderBy('sequence_order', 'asc')
                     ->get()
-                    ->map(function ($entry) use ($userAnimeCollection) {
-                        // Find corresponding UserAnime if it exists
+                    ->map(function ($entry) use ($userAnimeCollection, &$movies) {
                         $userAnime = $userAnimeCollection->anime
                             ->where('anidb_id', $entry->anime_id)
                             ->first();
@@ -239,36 +276,75 @@ class UserAnimeCollectionCollection extends Collection
                         }
 
                         $animeEpisodeStats = $this->calculateEpisodeStatsForAnime($userAnime);
+                        $formattedEntry = $this->formatAnimeEntry($entry, $userAnime, $animeEpisodeStats);
 
-                        return [
-                            'id' => $entry->anime->id,
-                            'title' => $entry->anime->title_main,
-                            'poster_path' => $entry->anime->picture,
-                            'release_date' => $entry->anime->startdate ? Carbon::parse($entry->anime->startdate)->year : null,
-                            'rating' => $userAnime->rating,
-                            'watch_status' => $userAnime->watch_status->value,
-                            'added_at' => $userAnime->created_at->format('j F, Y'),
-                            'total_episodes' => $animeEpisodeStats['total_episodes'],
-                            'watched_episodes' => $animeEpisodeStats['watched_episodes'],
-                            'sequence_order' => $entry->sequence_order
-                        ];
+                        // If it's a standalone movie, add to movies array
+                        if ($this->isStandaloneMovie($userAnimeCollection, $userAnime)) {
+                            $movies->push($formattedEntry);
+                            return null;
+                        }
+
+                        return $formattedEntry;
                     })
-                    ->filter() // Remove null entries
+                    ->filter()
                     ->values();
 
-                // Only return chain if it has entries
-                if ($entries->isEmpty()) {
-                    return null;
+                if ($entries->isNotEmpty()) {
+                    $chainSeasons->push([
+                        'chain_id' => $chain->id,
+                        'name' => $chain->name,
+                        'importance_order' => $chain->importance_order,
+                        'entries' => $entries,
+                        'type' => 'chain'
+                    ]);
                 }
+            });
 
-                return [
-                    'chain_id' => $chain->id,
-                    'name' => $chain->name,
-                    'importance_order' => $chain->importance_order,
-                    'entries' => $entries
-                ];
-            })
-                ->filter() // Remove null chains
+            // Process related entries
+            $relatedSeasons = collect();
+            $relatedEntries = $userAnimeCollection->animeMap->relatedEntries()
+                ->with('anime')
+                ->whereNotIn('anime_id', function ($query) use ($userAnimeCollection) {
+                    $query->select('anime_id')
+                        ->from('anime_chain_entries')
+                        ->whereIn('chain_id', $userAnimeCollection->animeMap->chains->pluck('id'));
+                })
+                ->get()
+                ->map(function ($entry) use ($userAnimeCollection, &$movies) {
+                    $userAnime = $userAnimeCollection->anime
+                        ->where('anidb_id', $entry->anime_id)
+                        ->first();
+
+                    if (!$userAnime) {
+                        return null;
+                    }
+
+                    $animeEpisodeStats = $this->calculateEpisodeStatsForAnime($userAnime);
+                    $formattedEntry = $this->formatAnimeEntry($entry, $userAnime, $animeEpisodeStats);
+
+                    // If it's a standalone movie, add to movies array
+                    if ($this->isStandaloneMovie($userAnimeCollection, $userAnime)) {
+                        $movies->push($formattedEntry);
+                        return null;
+                    }
+
+                    return $formattedEntry;
+                })
+                ->filter()
+                ->values();
+
+            if ($relatedEntries->isNotEmpty()) {
+                $relatedSeasons->push([
+                    'chain_id' => 0,
+                    'name' => 'Related Entries',
+                    'importance_order' => 9999,
+                    'entries' => $relatedEntries,
+                    'type' => 'related'
+                ]);
+            }
+
+            // Combine chain seasons and related seasons
+            $seasons = $chainSeasons->concat($relatedSeasons)
                 ->sortBy('importance_order')
                 ->values();
 
@@ -293,6 +369,7 @@ class UserAnimeCollectionCollection extends Collection
                     ];
                 })->values()->all(),
                 'seasons' => $seasons,
+                'movies' => $movies->values()->all(),
             ];
         })->values()->all();
     }

@@ -224,7 +224,8 @@ class UserController extends Controller
             ->with([
                 'anime.anime',
                 'anime.episodes',
-                'animeMap.chains',
+                'animeMap.chains.entries.anime',
+                'animeMap.relatedEntries.anime',
                 'userLibrary'
             ])
             ->whereHas('userLibrary', function ($query) use ($user) {

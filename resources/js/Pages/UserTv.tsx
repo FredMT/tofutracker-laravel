@@ -1,11 +1,10 @@
 import TvCard from "@/Components/Shared/UserTv/TvCard";
 import FilterButtonGroup from "@/Components/UserProfile/Filter/FilterButtonGroup";
-import FilterSearchInput from "@/Components/UserProfile/Filter/FilterSearchInput";
 import { useFilterStore } from "@/hooks/useFilterStore";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import UserProfileLayout from "@/Layouts/UserProfileLayout";
 import { UserData } from "@/types/userData";
-import { UserTvApiResponse, UserTvShow } from "@/types/userTv";
+import { UserTvShow } from "@/types/userTv";
 import { Head } from "@inertiajs/react";
 import {
     Alert,

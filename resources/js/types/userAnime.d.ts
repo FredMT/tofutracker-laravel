@@ -24,6 +24,7 @@ interface AnimeChain {
     name: string;
     importance_order: number;
     entries: AnimeEntry[];
+    type: "chain" | "related";
 }
 
 interface AnimeCollection {
@@ -42,6 +43,7 @@ interface AnimeCollection {
     collection_name: string | null;
     genres: Genre[];
     seasons: AnimeChain[];
+    movies: AnimeEntry[];
 }
 
 interface UserData {
