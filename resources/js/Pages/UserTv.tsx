@@ -1,17 +1,11 @@
-import BadgeBox from "@/Components/Shared/BadgeBox";
-import TvCard from "@/Components/Shared/TvCard";
-import FilterDesktop from "@/Components/UserProfile/Filter/FilterDesktop";
-import FilterMobile from "@/Components/UserProfile/Filter/FilterMobile";
-import FilterSearchInput from "@/Components/UserProfile/Filter/FilterSearchInput";
-import UserMovieLayout from "@/Components/UserProfile/UserMovieLayout";
-import UserMovieSection from "@/Components/UserProfile/UserMovieSection";
+import TvCard from "@/Components/Shared/UserTv/TvCard";
 import { useFilterStore } from "@/hooks/useFilterStore";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import UserProfileLayout from "@/Layouts/UserProfileLayout";
 import { PageProps } from "@/types/userMovies";
 import { UserTvShow } from "@/types/userTv";
 import { Head } from "@inertiajs/react";
-import { Box, Space, Stack, Text, Title } from "@mantine/core";
+import { Group, Space, TextInput } from "@mantine/core";
 import { useEffect } from "react";
 
 const show: UserTvShow = {
@@ -143,7 +137,16 @@ function UserTv({ userData, filters }: PageProps) {
 
     return (
         <>
-            <Head title={`${userData.username}'s Movies`} />
+            <Head title={`${userData.username}'s Shows`} />
+            <Space h={50} />
+            <Group>
+                <TextInput
+                    placeholder="Search your shows"
+                    w={400}
+                    miw={100}
+                    maw={400}
+                />
+            </Group>
             <Space h={50} />
             <TvCard show={show} />
             <Space h={200} />

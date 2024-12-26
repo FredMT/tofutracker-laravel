@@ -24,11 +24,11 @@
 }
 
 .chevronUp {
-    transform: rotate(0deg);
+    transform: rotate(90deg);
 }
 
 .chevronDown {
-    transform: rotate(180deg);
+    transform: rotate(0deg);
 }
 
 @media (min-width: 640px) {
