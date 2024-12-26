@@ -1,3 +1,4 @@
+import BadgeBox from "@/Components/Shared/BadgeBox";
 import TvCard from "@/Components/Shared/TvCard";
 import FilterDesktop from "@/Components/UserProfile/Filter/FilterDesktop";
 import FilterMobile from "@/Components/UserProfile/Filter/FilterMobile";
@@ -29,7 +30,7 @@ const show: UserTvShow = {
             title: "Season 1",
             poster_path: "/wgfKiqzuMrFIkU1M68DDDY8kGC1.jpg",
             release_date: 2011,
-            rating: null,
+            rating: 2,
             watch_status: "COMPLETED",
             added_at: "23 December, 2024",
             season_number: 1,
