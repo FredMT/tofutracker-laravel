@@ -1,0 +1,30 @@
+.searchIcon {
+    color: #666666;
+}
+
+.searchInput {
+    background-color: light-dark(#ededed, #121212);
+    border: 1px solid #2c2e33;
+    color: white;
+}
+
+.searchInput::placeholder {
+    color: #666666;
+}
+
+.searchDropdown {
+    background-color: #25262b;
+    backdrop-filter: blur(64px);
+}
+
+.menuItem {
+    padding: 0;
+}
+
+.menuItem[data-hovered] {
+    background-color: #2c2e33;
+}
+
+[data-mantine-color-scheme="light"] .menuItem[data-hovered] {
+    background-color: #f1f3f5;
+}

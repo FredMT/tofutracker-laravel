@@ -1,9 +1,11 @@
 import { PropsWithChildren, useEffect, useState } from "react";
 import styles from "./AuthenticatedLayout.module.css";
-import Logo from "./components/Logo";
-import UserMenu from "./components/UserMenu";
-import MobileMenu from "./components/MobileMenu";
-import MobileMenuButton from "./components/MobileMenuButton";
+import Logo from "@/Layouts/AuthenticatedLayout/components/Logo";
+import MobileMenuButton from "@/Layouts/AuthenticatedLayout/components/MobileMenuButton";
+import MobileMenu from "@/Layouts/AuthenticatedLayout/components/MobileMenu";
+import { Box, Group } from "@mantine/core";
+import SearchBar from "@/Layouts/AuthenticatedLayout/components/UserMenu/SearchBar/SearchBar";
+import UserMenu from "@/Layouts/AuthenticatedLayout/components/UserMenu/UserMenu";
 
 export default function AuthenticatedLayout({
     children,
@@ -12,10 +14,17 @@ export default function AuthenticatedLayout({
         useState(false);
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
 
     useEffect(() => {
         const controlNavbar = () => {
             const currentScrollY = window.scrollY;
+
+            // Don't hide navbar if search is open
+            if (isSearchOpen) {
+                setIsVisible(true);
+                return;
+            }
 
             if (currentScrollY < lastScrollY || currentScrollY < 10) {
                 setIsVisible(true);
@@ -31,7 +40,7 @@ export default function AuthenticatedLayout({
         return () => {
             window.removeEventListener("scroll", controlNavbar);
         };
-    }, [lastScrollY]);
+    }, [lastScrollY, isSearchOpen]);
 
     return (
         <div className="min-h-screen relative">
@@ -42,7 +51,12 @@ export default function AuthenticatedLayout({
             >
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex h-16 justify-between">
-                        <Logo />
+                        <Group>
+                            <Logo />
+                            <Box visibleFrom="smmdlg">
+                                <SearchBar onOpenChange={setIsSearchOpen} />
+                            </Box>
+                        </Group>
                         <UserMenu />
                         <MobileMenuButton
                             showingNavigationDropdown={

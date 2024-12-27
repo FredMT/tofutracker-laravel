@@ -21,6 +21,8 @@ use Inertia\Inertia;
 use Illuminate\Http\Request;
 use App\Http\Controllers\SearchController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\JsonSearchController;
+use App\Http\Controllers\QuickSearchController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', []);
@@ -115,6 +117,7 @@ Route::get('/anime/{id}', [AnimeController::class, 'show'])->name('anime.show');
 Route::get('/anime/{id}/season/{seasonId}', [AnimeController::class, 'showSeason'])->name('anime.season.show');
 
 Route::get('/search', [SearchController::class, 'search'])->name('search');
+Route::get('/quicksearch', QuickSearchController::class)->name('quicksearch');
 
 
 
