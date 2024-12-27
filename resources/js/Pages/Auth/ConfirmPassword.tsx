@@ -1,7 +1,24 @@
 import { Head, useForm } from "@inertiajs/react";
+import {
+    Button,
+    Container,
+    Group,
+    Image,
+    PasswordInput,
+    Title,
+    Box,
+    Stack,
+    Text,
+} from "@mantine/core";
 import { FormEventHandler } from "react";
+import styles from "./Login.module.css";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
 
-export default function ConfirmPassword() {
+export default function ConfirmPassword({
+    backdropImage,
+}: {
+    backdropImage: string;
+}) {
     const { data, setData, post, processing, errors, reset } = useForm({
         password: "",
     });
@@ -17,35 +34,70 @@ export default function ConfirmPassword() {
     return (
         <>
             <Head title="Confirm Password" />
+            <div className={styles.pageWrapper}>
+                <Container size="100%" p={0} className={styles.container}>
+                    <Group
+                        h="100%"
+                        wrap="nowrap"
+                        className={styles.contentWrapper}
+                    >
+                        <Box className={styles.formSection}>
+                            <Stack
+                                w="100%"
+                                maw={350}
+                                mx="auto"
+                                className={styles.formWrapper}
+                            >
+                                <Title>Confirm Password</Title>
 
-            <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
-                This is a secure area of the application. Please confirm your
-                password before continuing.
+                                <Text size="sm" c="dimmed">
+                                    This is a secure area of the application.
+                                    Please confirm your password before
+                                    continuing.
+                                </Text>
+
+                                <form onSubmit={submit}>
+                                    <Stack>
+                                        <PasswordInput
+                                            label="Password"
+                                            id="password"
+                                            value={data.password}
+                                            onChange={(e) =>
+                                                setData(
+                                                    "password",
+                                                    e.target.value
+                                                )
+                                            }
+                                            required
+                                            error={errors.password}
+                                            autoFocus
+                                        />
+
+                                        <Button
+                                            type="submit"
+                                            disabled={processing}
+                                            fullWidth
+                                        >
+                                            Confirm
+                                        </Button>
+                                    </Stack>
+                                </form>
+                            </Stack>
+                        </Box>
+                        <Box className={styles.imageSection}>
+                            <Image
+                                src={`https://image.tmdb.org/t/p/original${backdropImage}`}
+                                alt="Confirm password background"
+                                className={styles.backgroundImage}
+                            />
+                        </Box>
+                    </Group>
+                </Container>
             </div>
-
-            <form onSubmit={submit}>
-                {/* <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
-
-                    <TextInput
-                        id="password"
-                        type="password"
-                        name="password"
-                        value={data.password}
-                        className="mt-1 block w-full"
-                        isFocused={true}
-                        onChange={(e) => setData("password", e.target.value)}
-                    />
-
-                    <InputError message={errors.password} className="mt-2" />
-                </div>
-
-                <div className="mt-4 flex items-center justify-end">
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Confirm
-                    </PrimaryButton>
-                </div> */}
-            </form>
         </>
     );
 }
+
+ConfirmPassword.layout = (page: any) => (
+    <AuthenticatedLayout>{page}</AuthenticatedLayout>
+);
