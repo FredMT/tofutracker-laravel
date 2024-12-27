@@ -20,7 +20,7 @@ interface PageProps {
     };
 }
 
-export default function Search({ search_results, query = "" }: PageProps) {
+function Search({ search_results, query = "" }: PageProps) {
     const [search, setSearch] = React.useState(query);
     const [debounced] = useDebouncedValue(search, 300);
     const [activeTab, setActiveTab] = React.useState<TabValue>("movies");
@@ -75,77 +75,78 @@ export default function Search({ search_results, query = "" }: PageProps) {
     return (
         <>
             <Head title={query ? `Search results for "${query}"` : "Search"} />
-            <AuthenticatedLayout>
-                <Space h={64} />
-                <ResponsiveContainer>
-                    <div className="py-5">
-                        <TextInput
-                            leftSectionPointerEvents="none"
-                            leftSection={<SearchIcon />}
-                            label="Search"
-                            size="xl"
-                            value={search}
-                            onChange={(event) =>
-                                setSearch(event.currentTarget.value)
-                            }
-                        />
+            <Space h={64} />
+            <ResponsiveContainer>
+                <div className="py-5">
+                    <TextInput
+                        leftSectionPointerEvents="none"
+                        leftSection={<SearchIcon />}
+                        label="Search"
+                        size="xl"
+                        value={search}
+                        onChange={(event) =>
+                            setSearch(event.currentTarget.value)
+                        }
+                    />
+                    <Space h={24} />
+                    <Tabs
+                        defaultValue="movies"
+                        value={activeTab}
+                        onChange={(value) => setActiveTab(value as TabValue)}
+                    >
+                        <Tabs.List grow>
+                            <TabItem
+                                label="Movies"
+                                value="movies"
+                                count={search_results?.movies.length}
+                            />
+                            <TabItem
+                                label="TV Shows"
+                                value="tv"
+                                count={search_results?.tv.length}
+                            />
+                            <TabItem
+                                label="Anime"
+                                value="anime"
+                                count={search_results?.anime.length}
+                            />
+                        </Tabs.List>
+
                         <Space h={24} />
-                        <Tabs
-                            defaultValue="movies"
-                            value={activeTab}
-                            onChange={(value) =>
-                                setActiveTab(value as TabValue)
-                            }
-                        >
-                            <Tabs.List grow>
-                                <TabItem
-                                    label="Movies"
-                                    value="movies"
-                                    count={search_results?.movies.length}
+                        <Tabs.Panel value="movies">
+                            {search_results?.movies && (
+                                <SearchResultsList
+                                    items={search_results.movies}
+                                    type="movies"
                                 />
-                                <TabItem
-                                    label="TV Shows"
-                                    value="tv"
-                                    count={search_results?.tv.length}
+                            )}
+                        </Tabs.Panel>
+
+                        <Tabs.Panel value="tv">
+                            {search_results?.tv && (
+                                <SearchResultsList
+                                    items={search_results.tv}
+                                    type="tv"
                                 />
-                                <TabItem
-                                    label="Anime"
-                                    value="anime"
-                                    count={search_results?.anime.length}
+                            )}
+                        </Tabs.Panel>
+
+                        <Tabs.Panel value="anime">
+                            {search_results?.anime && (
+                                <SearchResultsList
+                                    items={search_results.anime}
+                                    type="anime"
                                 />
-                            </Tabs.List>
-
-                            <Space h={24} />
-                            <Tabs.Panel value="movies">
-                                {search_results?.movies && (
-                                    <SearchResultsList
-                                        items={search_results.movies}
-                                        type="movies"
-                                    />
-                                )}
-                            </Tabs.Panel>
-
-                            <Tabs.Panel value="tv">
-                                {search_results?.tv && (
-                                    <SearchResultsList
-                                        items={search_results.tv}
-                                        type="tv"
-                                    />
-                                )}
-                            </Tabs.Panel>
-
-                            <Tabs.Panel value="anime">
-                                {search_results?.anime && (
-                                    <SearchResultsList
-                                        items={search_results.anime}
-                                        type="anime"
-                                    />
-                                )}
-                            </Tabs.Panel>
-                        </Tabs>
-                    </div>
-                </ResponsiveContainer>
-            </AuthenticatedLayout>
+                            )}
+                        </Tabs.Panel>
+                    </Tabs>
+                </div>
+            </ResponsiveContainer>
         </>
     );
 }
+Search.layout = (page: any) => (
+    <AuthenticatedLayout>{page}</AuthenticatedLayout>
+);
+
+export default Search;

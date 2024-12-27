@@ -21,7 +21,7 @@ import {
 import { useViewportSize } from "@mantine/hooks";
 import Seasons from "@/Components/Content/TV/Seasons/Seasons";
 
-export default function AnimeContent() {
+function AnimeContent() {
     const { width } = useViewportSize();
     const animeContent = useAnimeContent();
     if (!animeContent) return null;
@@ -31,65 +31,28 @@ export default function AnimeContent() {
     return (
         <>
             <Head title={content.collection_name} />
-            <AuthenticatedLayout>
-                <BannerImageContainer />
-                <ResponsiveContainer>
-                    <Space h={24} />
-                    <ContentLayout
-                        left={
-                            <Stack gap={24}>
-                                <PosterImage />
-                                <Box hiddenFrom="sm">
-                                    <Title order={2} ta="center">
-                                        {content.collection_name}
-                                    </Title>
+            <BannerImageContainer />
+            <ResponsiveContainer>
+                <Space h={24} />
+                <ContentLayout
+                    left={
+                        <Stack gap={24}>
+                            <PosterImage />
+                            <Box hiddenFrom="sm">
+                                <Title order={2} ta="center">
+                                    {content.collection_name}
+                                </Title>
 
-                                    {tmdbData.tagline && (
-                                        <Text ta={"center"}>
-                                            {tmdbData.tagline}
-                                        </Text>
-                                    )}
-                                    <Space h={16} />
-                                    <ContentSummary />
-                                </Box>
-                                <ContentActions />
-                                <Box hiddenFrom="sm">
-                                    <Stack mt={16}>
-                                        <Title order={3}>Overview</Title>
-                                        <Spoiler
-                                            maxHeight={120}
-                                            showLabel="Show more"
-                                            hideLabel="Hide"
-                                        >
-                                            <Text>
-                                                {tmdbData.overview ??
-                                                    "No overview available"}
-                                            </Text>
-                                        </Spoiler>
-                                    </Stack>
-                                    <Space h={24} />
-                                    <ContentCredits
-                                        containerWidth={width * 0.95}
-                                    />
-                                    <Divider my={24} />
-
-                                    <Seasons containerWidth={width * 0.95} />
-
-                                    <AnimeRecommendedContent
-                                        containerWidth={width * 0.95}
-                                    />
-                                </Box>
-                            </Stack>
-                        }
-                        right={
-                            <Box visibleFrom="sm">
-                                <Stack gap={8}>
-                                    <Title order={2}>{tmdbData.title}</Title>
-                                    {tmdbData.tagline && (
-                                        <Text>{tmdbData.tagline}</Text>
-                                    )}
-                                    <ContentSummary />
-                                </Stack>
+                                {tmdbData.tagline && (
+                                    <Text ta={"center"}>
+                                        {tmdbData.tagline}
+                                    </Text>
+                                )}
+                                <Space h={16} />
+                                <ContentSummary />
+                            </Box>
+                            <ContentActions />
+                            <Box hiddenFrom="sm">
                                 <Stack mt={16}>
                                     <Title order={3}>Overview</Title>
                                     <Spoiler
@@ -104,18 +67,57 @@ export default function AnimeContent() {
                                     </Spoiler>
                                 </Stack>
                                 <Space h={24} />
-                                <ContentCredits containerWidth={width * 0.67} />
-                                <Divider my={16} />
+                                <ContentCredits containerWidth={width * 0.95} />
+                                <Divider my={24} />
 
-                                <Seasons containerWidth={width * 0.67} />
+                                <Seasons containerWidth={width * 0.95} />
+
                                 <AnimeRecommendedContent
-                                    containerWidth={width * 0.67}
+                                    containerWidth={width * 0.95}
                                 />
                             </Box>
-                        }
-                    />
-                </ResponsiveContainer>
-            </AuthenticatedLayout>
+                        </Stack>
+                    }
+                    right={
+                        <Box visibleFrom="sm">
+                            <Stack gap={8}>
+                                <Title order={2}>{tmdbData.title}</Title>
+                                {tmdbData.tagline && (
+                                    <Text>{tmdbData.tagline}</Text>
+                                )}
+                                <ContentSummary />
+                            </Stack>
+                            <Stack mt={16}>
+                                <Title order={3}>Overview</Title>
+                                <Spoiler
+                                    maxHeight={120}
+                                    showLabel="Show more"
+                                    hideLabel="Hide"
+                                >
+                                    <Text>
+                                        {tmdbData.overview ??
+                                            "No overview available"}
+                                    </Text>
+                                </Spoiler>
+                            </Stack>
+                            <Space h={24} />
+                            <ContentCredits containerWidth={width * 0.67} />
+                            <Divider my={16} />
+
+                            <Seasons containerWidth={width * 0.67} />
+                            <AnimeRecommendedContent
+                                containerWidth={width * 0.67}
+                            />
+                        </Box>
+                    }
+                />
+            </ResponsiveContainer>
         </>
     );
 }
+
+AnimeContent.layout = (page: any) => (
+    <AuthenticatedLayout>{page}</AuthenticatedLayout>
+);
+
+export default AnimeContent;
