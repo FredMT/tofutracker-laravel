@@ -1,0 +1,14 @@
+.boundedContainer {
+    padding-inline: 24px;
+    width: 100%;
+    max-width: 1240px;
+    margin: 0 auto;
+
+    @media (min-width: 640px) {
+        padding-inline: 20px;
+    }
+
+    @media (min-width: 1280px) {
+        padding-inline: 40px;
+    }
+}

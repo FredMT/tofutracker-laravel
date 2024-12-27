@@ -4,6 +4,7 @@ use App\Http\Controllers\AnimeController;
 use App\Http\Controllers\AnimeMappingController;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TvController;
 use App\Http\Controllers\TvSeasonController;
 use App\Http\Controllers\UserAnimeEpisodeController;
@@ -44,9 +45,11 @@ Route::get('/user/{username}/anime', [UserController::class, 'showAnime'])
 Route::get('/user/{username}', [UserController::class, 'show'])->name('user.profile');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
+    Route::patch('/settings/username', [SettingsController::class, 'updateUsername'])->name('settings.username.update')->middleware('verified');
+    // Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    // Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
