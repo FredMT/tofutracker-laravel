@@ -9,7 +9,7 @@
 }
 
 .searchInput::placeholder {
-    color: #666666;
+    color: light-dark(#ededed, #ededed);
 }
 
 .searchDropdown {

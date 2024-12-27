@@ -27,9 +27,14 @@ export function UserProfileInfo({ username, createdAt }: UserProfileInfoProps) {
                 scrollHideDelay={500}
                 offsetScrollbars
                 scrollbarSize={4}
+                mih={40}
                 w={{ base: "100%", sm: "auto" }}
             >
-                <Flex gap="md" justify={{ base: "center", sm: "flex-start" }}>
+                <Flex
+                    gap="md"
+                    justify={{ base: "center", sm: "flex-start" }}
+                    style={{ position: "relative", zIndex: 2 }}
+                >
                     <Button bg={`#222222`} bd={0}>
                         Activity
                     </Button>
