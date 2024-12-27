@@ -13,7 +13,7 @@ import {
 } from "@mantine/core";
 import { FormEventHandler } from "react";
 import styles from "./Register.module.css";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
 
 export default function Register({ backdropImage }: { backdropImage: string }) {
     const { data, setData, post, processing, errors, reset } = useForm({

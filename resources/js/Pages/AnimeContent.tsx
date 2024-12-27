@@ -6,7 +6,7 @@ import { ContentSummary } from "@/Components/Content/Shared/Regular/ContentSumma
 import PosterImage from "@/Components/Content/Shared/PosterImage";
 import ResponsiveContainer from "@/Components/ResponsiveContainer";
 import { useAnimeContent } from "@/hooks/useAnimeContent";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
 import ContentLayout from "@/Layouts/ContentLayout";
 import { Head } from "@inertiajs/react";
 import {

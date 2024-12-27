@@ -7,7 +7,7 @@ import PosterImage from "@/Components/Content/Shared/PosterImage";
 import ResponsiveContainer from "@/Components/ResponsiveContainer";
 import SimilarContent from "@/Components/Content/Shared/SimilarContent";
 import { useContent } from "@/hooks/useContent";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
 import ContentLayout from "@/Layouts/ContentLayout";
 import { PageProps } from "@/types";
 import { Head } from "@inertiajs/react";

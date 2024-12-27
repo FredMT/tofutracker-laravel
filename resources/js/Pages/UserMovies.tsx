@@ -4,7 +4,7 @@ import FilterSearchInput from "@/Components/UserProfile/Filter/FilterSearchInput
 import UserMovieLayout from "@/Components/UserProfile/UserMovieLayout";
 import UserMovieSection from "@/Components/UserProfile/UserMovieSection";
 import { useFilterStore } from "@/hooks/useFilterStore";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
 import UserProfileLayout from "@/Layouts/UserProfileLayout";
 import { PageProps } from "@/types/userMovies";
 import { Head } from "@inertiajs/react";

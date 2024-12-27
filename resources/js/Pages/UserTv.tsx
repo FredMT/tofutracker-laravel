@@ -1,7 +1,7 @@
 import TvCard from "@/Components/Shared/UserTv/TvCard";
 import FilterButtonGroup from "@/Components/UserProfile/Filter/FilterButtonGroup";
 import { useFilterStore } from "@/hooks/useFilterStore";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
 import UserProfileLayout from "@/Layouts/UserProfileLayout";
 import { UserData } from "@/types/userData";
 import { UserTvShow } from "@/types/userTv";
@@ -33,7 +33,7 @@ interface Props {
     success: boolean;
 }
 
-function UserTv({ userData, filters, shows, genres, messages }: Props) {
+function UserTv({ userData, filters, shows, messages }: Props) {
     const filterStore = useFilterStore();
 
     useEffect(() => {

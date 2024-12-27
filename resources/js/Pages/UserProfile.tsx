@@ -1,7 +1,7 @@
 import ResponsiveContainer from "@/Components/ResponsiveContainer";
 import UserBanner from "@/Components/UserProfile/UserBanner";
 import UserProfileInfo from "@/Components/UserProfile/UserProfileInfo";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import { Box, Space } from "@mantine/core";
 

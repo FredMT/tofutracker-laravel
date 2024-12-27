@@ -6,7 +6,7 @@ import { ContentCredits } from "@/Components/Content/Shared/Regular/ContentCredi
 import { ContentSummary } from "@/Components/Content/Shared/Regular/ContentSummary";
 import PosterImage from "@/Components/Content/Shared/PosterImage";
 import ResponsiveContainer from "@/Components/ResponsiveContainer";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
 import ContentLayout from "@/Layouts/ContentLayout";
 import AnimeSeasonDetails from "@/Pages/AnimeSeasonDetails";
 import { PageProps } from "@/types";

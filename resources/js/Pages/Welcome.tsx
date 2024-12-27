@@ -1,12 +1,14 @@
 import ThemeButton from "@/Components/ThemeButton";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
 import { PageProps } from "@/types";
 import { Head } from "@inertiajs/react";
-import { Button } from "@mantine/core";
+import { Button, Space } from "@mantine/core";
 
-export default function Welcome() {
+function Welcome() {
     return (
         <>
             <Head title="Welcome" />
+            <Space h={64} />
             {/* <div className="bg-gray-50 text-black/50 dark:bg-black dark:text-white/50">
                 <img
                     id="background"
@@ -353,3 +355,9 @@ export default function Welcome() {
         </>
     );
 }
+
+Welcome.layout = (page: any) => (
+    <AuthenticatedLayout>{page}</AuthenticatedLayout>
+);
+
+export default Welcome;

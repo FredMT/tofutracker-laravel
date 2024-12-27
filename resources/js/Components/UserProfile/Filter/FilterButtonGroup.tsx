@@ -15,8 +15,7 @@ interface FilterButtonGroupProps {
 export default function FilterButtonGroup({
     contentType,
 }: FilterButtonGroupProps) {
-    const { genres, userData, filters, messages, errors } =
-        usePage<PageProps>().props;
+    const { genres, userData, filters } = usePage<PageProps>().props;
     const filterStore = useFilterStore();
     const isMobile = useMediaQuery("(max-width: 640px)");
 

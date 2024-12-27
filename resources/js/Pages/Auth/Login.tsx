@@ -14,7 +14,7 @@ import {
 } from "@mantine/core";
 import { FormEventHandler } from "react";
 import styles from "./Login.module.css";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
 
 export default function Login({
     status,

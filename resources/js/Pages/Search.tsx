@@ -1,7 +1,7 @@
 import ResponsiveContainer from "@/Components/ResponsiveContainer";
 import SearchResultsList from "@/Components/Search/SearchResultsList";
 import TabItem from "@/Components/Search/TabItem";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
 import { SearchResults } from "@/types/search";
 import { Head, router } from "@inertiajs/react";
 import { Space, Tabs, TextInput } from "@mantine/core";

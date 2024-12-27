@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\WatchStatus;
+use App\Models\TvdbAnimeEpisode;
 use Illuminate\Database\Eloquent\Concerns\HasRelationships;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -34,8 +35,13 @@ class UserAnimeEpisode extends Model
         return $this->belongsTo(UserAnime::class);
     }
 
-    public function plays()
+    public function plays(): MorphMany
     {
         return $this->morphMany(UserAnimePlay::class, 'playable');
+    }
+
+    public function episode(): BelongsTo
+    {
+        return $this->belongsTo(TvdbAnimeEpisode::class, 'episode_id');
     }
 }

@@ -16,6 +16,7 @@ use App\Actions\UserController\Tv\GenerateShowMessages;
 use App\Actions\UserController\Tv\GetUserData;
 use App\Actions\UserController\Anime\ValidateAnimeFilters;
 use App\Actions\UserController\Anime\GenerateAnimeMessages;
+use Illuminate\Support\Facades\Cache;
 
 class UserController extends Controller
 {
@@ -219,14 +220,18 @@ class UserController extends Controller
             ]);
         }
 
-        // Get user's anime collections with necessary relationships
+        // Get user's anime collections with all necessary relationships
         $collections = UserAnimeCollection::query()
             ->with([
                 'anime.anime',
-                'anime.episodes',
+                'anime.episodes.episode',
+                'animeMap',
                 'animeMap.chains.entries.anime',
                 'animeMap.relatedEntries.anime',
-                'userLibrary'
+                'userLibrary',
+                'animeMap.chains' => function ($query) {
+                    $query->withCount('entries');
+                }
             ])
             ->whereHas('userLibrary', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
@@ -234,22 +239,31 @@ class UserController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Get unique genres from TMDB data (will be populated by the collection)
+        // Cache TMDB data and collect genres
         $userGenres = collect();
-        $collections->each(function ($collection) use (&$userGenres) {
-            if ($collection->animeMap->most_common_tmdb_id && $collection->animeMap->tmdb_type) {
-                $tmdbData = app(\App\Services\TmdbService::class);
-                try {
-                    $data = $collection->animeMap->tmdb_type === 'movie'
-                        ? $tmdbData->getMovieBasic($collection->animeMap->most_common_tmdb_id)
-                        : $tmdbData->getTvBasic($collection->animeMap->most_common_tmdb_id);
+        $tmdbCache = collect();
 
-                    if ($data && isset($data['genres'])) {
-                        $userGenres = $userGenres->concat($data['genres']);
+        $collections->each(function ($collection) use (&$userGenres, &$tmdbCache) {
+            if ($collection->animeMap && $collection->animeMap->most_common_tmdb_id && $collection->animeMap->tmdb_type) {
+                $cacheKey = "tmdb_data_{$collection->animeMap->tmdb_type}_{$collection->animeMap->most_common_tmdb_id}";
+
+                $tmdbData = Cache::remember($cacheKey, now()->addDays(1), function () use ($collection) {
+                    $tmdbService = app(\App\Services\TmdbService::class);
+                    try {
+                        return $collection->animeMap->tmdb_type === 'movie'
+                            ? $tmdbService->getMovieBasic($collection->animeMap->most_common_tmdb_id)
+                            : $tmdbService->getTvBasic($collection->animeMap->most_common_tmdb_id);
+                    } catch (\Exception $e) {
+                        logger()->error("Failed to fetch TMDB data: " . $e->getMessage());
+                        return null;
                     }
-                } catch (\Exception $e) {
-                    logger()->error("Failed to fetch TMDB data: " . $e->getMessage());
+                });
+
+                if ($tmdbData && isset($tmdbData['genres'])) {
+                    $userGenres = $userGenres->concat($tmdbData['genres']);
                 }
+
+                $tmdbCache->put($cacheKey, $tmdbData);
             }
         });
 

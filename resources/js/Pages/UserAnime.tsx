@@ -1,7 +1,7 @@
 import FilterButtonGroup from "@/Components/UserProfile/Filter/FilterButtonGroup";
 import AnimeCard from "@/Components/Shared/UserAnime/AnimeCard";
 import { useFilterStore } from "@/hooks/useFilterStore";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
 import UserProfileLayout from "@/Layouts/UserProfileLayout";
 import { UserAnimePageProps } from "@/types/userAnime";
 import { Head } from "@inertiajs/react";
@@ -20,7 +20,6 @@ function UserAnime({
     userData,
     filters,
     collections,
-    genres,
     messages,
 }: UserAnimePageProps) {
     const filterStore = useFilterStore();
