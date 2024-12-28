@@ -19,10 +19,10 @@ export default function UpdateBannerForm() {
     const { data, setData, post, progress, processing } = useForm({
         banner: null as File | null,
     });
+    const user = usePage<PageProps>().props.auth.user;
 
-    const currentBanner = usePage<PageProps>().props.auth.user.banner
-        ? "https://tofutracker.fra1.digitaloceanspaces.com/" +
-          usePage<PageProps>().props.auth.user.banner
+    const currentBanner = user.banner
+        ? `${import.meta.env.VITE_DO_URL}/${user.banner}`
         : null;
 
     function submit(e: React.FormEvent) {

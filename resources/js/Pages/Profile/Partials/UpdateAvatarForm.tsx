@@ -1,28 +1,18 @@
-import {
-    Group,
-    Text,
-    rem,
-    Image,
-    Button,
-    Box,
-    Stack,
-    Title,
-} from "@mantine/core";
-import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
-import { useState } from "react";
-import { useForm, usePage } from "@inertiajs/react";
-import { ImagesIcon, LucideUpload, X } from "lucide-react";
 import { PageProps } from "@/types";
+import { useForm, usePage } from "@inertiajs/react";
+import { Button, Group, Image, Stack, Text, Title } from "@mantine/core";
+import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
+import { LucideUpload, X } from "lucide-react";
+import { useState } from "react";
 
 export default function UpdateAvatarForm() {
     const [preview, setPreview] = useState<string | null>(null);
     const { data, setData, post, progress, processing } = useForm({
         avatar: null as File | null,
     });
-
-    const currentAvatar = usePage<PageProps>().props.auth.user.avatar
-        ? "https://tofutracker.fra1.digitaloceanspaces.com/" +
-          usePage<PageProps>().props.auth.user.avatar
+    const { auth } = usePage<PageProps>().props;
+    const currentAvatar = auth.user.avatar
+        ? `${import.meta.env.VITE_DO_URL}/${auth.user.avatar}`
         : null;
 
     function submit(e: React.FormEvent) {
