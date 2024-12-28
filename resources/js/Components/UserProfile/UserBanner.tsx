@@ -24,7 +24,7 @@ export function UserBanner({
                 <ResponsiveContainer>
                     <div className={classes.avatarWrapper}>
                         <Avatar
-                            src="https://i.pravatar.cc/300"
+                            src={avatarUrl}
                             size={128}
                             radius="50%"
                             style={{

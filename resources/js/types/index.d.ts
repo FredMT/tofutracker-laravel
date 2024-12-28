@@ -9,6 +9,8 @@ export interface User {
     email: string;
     email_verified_at?: string;
     created_at: string;
+    avatar?: string;
+    banner?: string;
 }
 
 interface FlashMessage {

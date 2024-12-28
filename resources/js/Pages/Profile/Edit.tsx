@@ -3,14 +3,19 @@ import { Head } from "@inertiajs/react";
 import DeleteUserForm from "./Partials/DeleteUserForm";
 import UpdatePasswordForm from "./Partials/UpdatePasswordForm";
 import UpdateProfileInformationForm from "./Partials/UpdateProfileInformationForm";
+import UpdateAvatarForm from "./Partials/UpdateAvatarForm";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
 import { Paper, Space, Stack } from "@mantine/core";
 import BoundedContainer from "@/Components/BoundedContainer";
+import UpdateBannerForm from "@/Pages/Profile/Partials/UpdateBannerForm";
 
 function Edit({
     mustVerifyEmail,
     status,
-}: PageProps<{ mustVerifyEmail: boolean; status?: string }>) {
+}: PageProps<{
+    mustVerifyEmail: boolean;
+    status?: string;
+}>) {
     return (
         <>
             <Head title="Profile" />
@@ -23,6 +28,14 @@ function Edit({
                             mustVerifyEmail={mustVerifyEmail}
                             status={status}
                         />
+                    </Paper>
+
+                    <Paper shadow="sm" p="md" withBorder>
+                        <UpdateAvatarForm />
+                    </Paper>
+
+                    <Paper shadow="sm" p="md" withBorder>
+                        <UpdateBannerForm />
                     </Paper>
 
                     <Paper shadow="sm" p="md" withBorder>

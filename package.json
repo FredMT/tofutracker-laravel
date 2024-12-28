@@ -30,6 +30,7 @@
         "@mantine/carousel": "^7.14.3",
         "@mantine/core": "^7.14.3",
         "@mantine/dates": "^7.14.3",
+        "@mantine/dropzone": "^7.15.2",
         "@mantine/hooks": "^7.14.3",
         "@mantine/notifications": "^7.14.3",
         "@mantine/spotlight": "^7.14.3",

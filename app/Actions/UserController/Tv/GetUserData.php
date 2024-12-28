@@ -12,7 +12,8 @@ class GetUserData
             'id' => $user->id,
             'username' => $user->username,
             'created_at' => 'Joined ' . $user->created_at->format('F Y'),
-            'avatar_url' => $user->avatar_url,
+            'avatar' => $user->avatar,
+            'banner' => $user->banner,
         ];
     }
 }

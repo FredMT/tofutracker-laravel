@@ -35,9 +35,10 @@ class UserController extends Controller
             'userData' => [
                 'id' => $user->id,
                 'username' => $user->username,
-                'name' => $user->name,
                 'created_at' => 'Joined ' . $user->created_at->format('F Y'),
-            ]
+                'avatar' => $user->avatar,
+                'banner' => $user->banner,
+            ],
         ]);
     }
 
@@ -86,7 +87,8 @@ class UserController extends Controller
                 'id' => $user->id,
                 'username' => $user->username,
                 'created_at' => 'Joined ' . $user->created_at->format('F Y'),
-                'avatar_url' => $user->avatar_url,
+                'avatar' => $user->avatar,
+                'banner' => $user->banner,
             ],
             'movies' => $movies->toArray(),
             'genres' => $userGenres,

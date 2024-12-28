@@ -1,12 +1,10 @@
-import { Link } from "@inertiajs/react";
-import { Menu, Text } from "@mantine/core";
+import { Link, usePage } from "@inertiajs/react";
+import { Avatar, Group, Menu, Text } from "@mantine/core";
 import styles from "../../AuthenticatedLayout.module.css";
+import { PageProps } from "@/types";
 
-interface UserDropdownProps {
-    username: string;
-}
-
-export default function UserDropdown({ username }: UserDropdownProps) {
+export default function UserDropdown() {
+    const user = usePage<PageProps>().props.auth.user;
     return (
         <div className="relative ms-3">
             <Menu width={200} trigger="click-hover" position="bottom-end">
@@ -16,9 +14,16 @@ export default function UserDropdown({ username }: UserDropdownProps) {
                             type="button"
                             className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-white transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none dark:bg-gray-800 dark:text-white dark:hover:text-white"
                         >
-                            <Text c="white" size="sm">
-                                {username}
-                            </Text>
+                            <Group>
+                                <Avatar
+                                    src={`https://tofutracker.fra1.digitaloceanspaces.com/${user.avatar}`}
+                                    alt="Avatar"
+                                    size="sm"
+                                />
+                                <Text c="white" size="sm">
+                                    {user.username}
+                                </Text>
+                            </Group>
                             <svg
                                 className="-me-0.5 ms-2 h-4 w-4"
                                 xmlns="http://www.w3.org/2000/svg"

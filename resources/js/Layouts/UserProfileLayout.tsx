@@ -9,7 +9,8 @@ interface UserData {
     username: string;
     name: string;
     created_at: string;
-    avatar_url?: string;
+    avatar: string;
+    banner: string;
 }
 
 interface UserProfileLayoutProps {
@@ -23,7 +24,10 @@ export default function UserProfileLayout({
     return (
         <>
             <Space h={64} />
-            <UserBanner avatarUrl={userData.avatar_url} />
+            <UserBanner
+                bannerUrl={`https://tofutracker.fra1.digitaloceanspaces.com/${userData.banner}`}
+                avatarUrl={`https://tofutracker.fra1.digitaloceanspaces.com/${userData.avatar}`}
+            />
             <Box>
                 <ResponsiveContainer>
                     <Space h={40} hiddenFrom="gtmd" />
