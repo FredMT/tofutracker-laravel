@@ -11,6 +11,7 @@ export interface User {
     created_at: string;
     avatar?: string;
     banner?: string;
+    bio?: string;
 }
 
 interface FlashMessage {

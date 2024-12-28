@@ -80,6 +80,7 @@ class UserAnimeMovieController extends Controller
             'map_id' => ['required', 'integer', 'exists:anime_maps,id'],
         ]);
 
+
         try {
             return DB::transaction(function () use ($validated, $request) {
                 // Verify map_id is related to anidb_id
@@ -93,12 +94,16 @@ class UserAnimeMovieController extends Controller
                     ]);
                 }
 
-                // Find the user's anime entry
-                $userAnime = UserAnime::whereHas('collection', function ($query) use ($validated) {
-                    $query->where('map_id', $validated['map_id']);
+                // Find the user's anime entry, scoped to the authenticated user
+                $userAnime = UserAnime::whereHas('collection', function ($query) use ($validated, $request) {
+                    $query->where('map_id', $validated['map_id'])
+                        ->whereHas('userLibrary', function ($query) use ($request) {
+                            $query->where('user_id', $request->user()->id);
+                        });
                 })
                     ->where('anidb_id', $validated['anidb_id'])
                     ->first();
+
 
                 if (!$userAnime) {
                     return back()->with([
@@ -112,18 +117,20 @@ class UserAnimeMovieController extends Controller
                     throw new \Illuminate\Auth\Access\AuthorizationException('You do not own this anime.');
                 }
 
-
                 // Get the collection
                 $collection = $userAnime->collection;
 
                 // Delete all play records first
-                UserAnimePlay::where(function ($query) use ($userAnime) {
+                $playRecords = UserAnimePlay::where(function ($query) use ($userAnime) {
                     $query->where('playable_type', UserAnime::class)
                         ->where('playable_id', $userAnime->id);
                 })->orWhere(function ($query) use ($collection) {
                     $query->where('playable_type', UserAnimeCollection::class)
                         ->where('playable_id', $collection->id);
-                })->delete();
+                })->get();
+
+                // Delete play records (activity logs will be deleted by model events)
+                $playRecords->each->delete();
 
                 // Delete the collection
                 $collection->delete();
@@ -169,9 +176,14 @@ class UserAnimeMovieController extends Controller
                     ]);
                 }
 
+
+
                 // Find existing anime entry
-                $userAnime = UserAnime::whereHas('collection', function ($query) use ($validated) {
-                    $query->where('map_id', $validated['map_id']);
+                $userAnime = UserAnime::whereHas('collection', function ($query) use ($validated, $request) {
+                    $query->where('map_id', $validated['map_id'])
+                        ->whereHas('userLibrary', function ($query) use ($request) {
+                            $query->where('user_id', $request->user()->id);
+                        });
                 })
                     ->where('anidb_id', $validated['anidb_id'])
                     ->first();
@@ -292,6 +304,11 @@ class UserAnimeMovieController extends Controller
                                     // Create play record if status is COMPLETED
                                     if ($payload['validated']['watch_status'] === WatchStatus::COMPLETED->value) {
                                         UserAnimePlay::create([
+                                            'playable_id' => $collection->id,
+                                            'playable_type' => UserAnimeCollection::class,
+                                            'watched_at' => now()
+                                        ]);
+                                        UserAnimePlay::create([
                                             'playable_id' => $userAnime->id,
                                             'playable_type' => UserAnime::class,
                                             'watched_at' => now()
@@ -327,6 +344,11 @@ class UserAnimeMovieController extends Controller
                                     UserAnimePlay::create([
                                         'playable_id' => $userAnime->id,
                                         'playable_type' => UserAnime::class,
+                                        'watched_at' => now()
+                                    ]);
+                                    UserAnimePlay::create([
+                                        'playable_id' => $collection->id,
+                                        'playable_type' => UserAnimeCollection::class,
                                         'watched_at' => now()
                                     ]);
                                 }

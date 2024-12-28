@@ -1,6 +1,6 @@
+import ResponsiveContainer from "@/Components/ResponsiveContainer";
 import UserBanner from "@/Components/UserProfile/UserBanner";
 import UserProfileInfo from "@/Components/UserProfile/UserProfileInfo";
-import ResponsiveContainer from "@/Components/ResponsiveContainer";
 import { Box, Space } from "@mantine/core";
 import { PropsWithChildren } from "react";
 

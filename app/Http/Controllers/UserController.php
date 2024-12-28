@@ -38,6 +38,7 @@ class UserController extends Controller
                 'created_at' => 'Joined ' . $user->created_at->format('F Y'),
                 'avatar' => $user->avatar,
                 'banner' => $user->banner,
+                'bio' => $user->bio,
             ],
         ]);
     }

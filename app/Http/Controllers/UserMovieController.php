@@ -191,6 +191,13 @@ class UserMovieController extends Controller
                     ]);
                 }
 
+                // Get all play records
+                $playRecords = UserMoviePlay::where('user_movie_id', $userMovie->id)->get();
+
+                // Delete play records (activity logs will be deleted by model events)
+                $playRecords->each->delete();
+
+                // Delete the movie
                 $userMovie->delete();
 
                 return back()->with([

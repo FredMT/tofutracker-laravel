@@ -18,6 +18,8 @@ use App\Pipeline\UserAnimeSeason\CreateUserAnimeSeasonWatchStatusCollection;
 use App\Pipeline\UserAnimeSeason\UpdateUserAnimeSeasonWatchStatus;
 use App\Pipeline\UserAnimeSeason\CreateUserAnimeSeasonEpisodes;
 use App\Pipeline\UserAnimeSeason\UpdateUserAnimeCollectionWatchStatus;
+use App\Models\UserAnimePlay;
+use App\Models\UserAnimeCollection;
 
 class UserAnimeSeasonController extends Controller
 {
@@ -96,6 +98,22 @@ class UserAnimeSeasonController extends Controller
                     throw new AuthorizationException('You do not own this season.');
                 }
 
+                // Get the collection
+                $collection = $season->collection;
+
+                // Delete all play records first
+                $playRecords = UserAnimePlay::where(function ($query) use ($season) {
+                    $query->where('playable_type', UserAnime::class)
+                        ->where('playable_id', $season->id);
+                })->orWhere(function ($query) use ($collection) {
+                    $query->where('playable_type', UserAnimeCollection::class)
+                        ->where('playable_id', $collection->id);
+                })->get();
+
+                // Delete play records (activity logs will be deleted by model events)
+                $playRecords->each->delete();
+
+                // Delete the season
                 $season->delete();
 
                 return back()->with([

@@ -35,8 +35,15 @@ export function UserProfileInfo({ username, createdAt }: UserProfileInfoProps) {
                     justify={{ base: "center", sm: "flex-start" }}
                     style={{ position: "relative", zIndex: 2 }}
                 >
-                    <Button bg={`#222222`} bd={0}>
-                        Activity
+                    <Button
+                        bg={`${
+                            component === "UserProfile" ? "violet.9" : "#222222"
+                        }`}
+                        bd={0}
+                        component={Link}
+                        href={`/user/${username}`}
+                    >
+                        Overview
                     </Button>
                     <Button
                         bg={`${

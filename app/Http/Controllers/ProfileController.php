@@ -181,4 +181,20 @@ class ProfileController extends Controller
             return back()->withErrors(['banner' => 'Failed to upload banner. Please try again.']);
         }
     }
+
+    /**
+     * Update the user's bio.
+     */
+    public function updateBio(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'bio' => ['nullable', 'string', 'max:160'],
+        ]);
+
+        $request->user()->update([
+            'bio' => $validated['bio'] ?: null,
+        ]);
+
+        return back()->with('status', 'Bio updated successfully.');
+    }
 }

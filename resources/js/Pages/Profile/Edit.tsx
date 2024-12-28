@@ -8,6 +8,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayo
 import { Paper, Space, Stack } from "@mantine/core";
 import BoundedContainer from "@/Components/BoundedContainer";
 import UpdateBannerForm from "@/Pages/Profile/Partials/UpdateBannerForm";
+import UpdateBioForm from "@/Pages/Profile/Partials/UpdateBioForm";
 
 function Edit({
     mustVerifyEmail,
@@ -28,6 +29,10 @@ function Edit({
                             mustVerifyEmail={mustVerifyEmail}
                             status={status}
                         />
+                    </Paper>
+
+                    <Paper shadow="sm" p="md" withBorder>
+                        <UpdateBioForm />
                     </Paper>
 
                     <Paper shadow="sm" p="md" withBorder>

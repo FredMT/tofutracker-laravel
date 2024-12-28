@@ -50,6 +50,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/settings', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/settings/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
     Route::post('/settings/banner', [ProfileController::class, 'updateBanner'])->name('profile.banner');
+    Route::patch('/settings/bio', [ProfileController::class, 'updateBio'])->name('profile.bio');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {

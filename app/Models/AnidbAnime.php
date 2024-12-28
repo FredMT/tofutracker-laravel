@@ -41,6 +41,13 @@ class AnidbAnime extends Model
         'episode_count' => 'integer'
     ];
 
+    protected function title(): Attribute
+    {
+        return Attribute::get(
+            fn() => $this->title_main
+        );
+    }
+
     public function characters(): HasMany
     {
         return $this->hasMany(AnidbCharacter::class, 'anime_id');

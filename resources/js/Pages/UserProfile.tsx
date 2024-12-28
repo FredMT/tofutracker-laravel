@@ -1,9 +1,8 @@
-import ResponsiveContainer from "@/Components/ResponsiveContainer";
-import UserBanner from "@/Components/UserProfile/UserBanner";
-import UserProfileInfo from "@/Components/UserProfile/UserProfileInfo";
+import UserOverviewLayout from "@/Components/UserOverviewLayout";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
+import UserProfileLayout from "@/Layouts/UserProfileLayout";
 import { Head } from "@inertiajs/react";
-import { Box, Space } from "@mantine/core";
+import { Divider, Paper, Stack, Text, Title } from "@mantine/core";
 
 interface UserData {
     id: number;
@@ -12,34 +11,55 @@ interface UserData {
     created_at: string;
     avatar: string;
     banner: string;
+    bio: string;
 }
 
 interface PageProps {
     userData: UserData;
+    activities: any;
 }
 
-function UserProfile({ userData }: PageProps) {
+function UserProfile({ userData, activities }: PageProps) {
+    console.log(activities);
+    const bioSection = (
+        <Paper>
+            <Stack>
+                <Title order={3} c="dimmed">
+                    Bio
+                </Title>
+                <Text>{userData.bio}</Text>
+            </Stack>
+        </Paper>
+    );
+
+    const activitySection = (
+        <Stack>
+            <Title order={2} c="dimmed">
+                Activity
+            </Title>
+            {/* Activity content will go here */}
+        </Stack>
+    );
+
     return (
         <>
-            <Head title={`${userData.username}'s Profile`} />
-            <Space h={64} />
-
-            <UserBanner
-                bannerUrl={`https://tofutracker.fra1.digitaloceanspaces.com/${userData.banner}`}
-                avatarUrl={`https://tofutracker.fra1.digitaloceanspaces.com/${userData.avatar}`}
+            <Head title={`${userData.username}'s Activity`} />
+            <Divider my={16} />
+            <UserOverviewLayout
+                leftSection={bioSection}
+                rightSection={activitySection}
+                leftWidth={400}
+                rightWidth={600}
+                gap={16}
             />
-            <ResponsiveContainer>
-                <Space h={40} hiddenFrom="mdlg" />
-                <Space h={4} visibleFrom="mdlg" />
-                <UserProfileInfo
-                    username={userData.username}
-                    createdAt={userData.created_at}
-                />
-            </ResponsiveContainer>
         </>
     );
 }
 
-UserProfile.layout = (page: any) => <AuthenticatedLayout children={page} />;
+UserProfile.layout = (page: any) => (
+    <AuthenticatedLayout>
+        <UserProfileLayout children={page} userData={page.props.userData} />
+    </AuthenticatedLayout>
+);
 
 export default UserProfile;
