@@ -1,5 +1,15 @@
-import { useForm } from "@inertiajs/react";
+import { useForm, usePage } from "@inertiajs/react";
 import { FormEventHandler, useRef } from "react";
+import {
+    Alert,
+    Button,
+    PasswordInput,
+    Stack,
+    Text,
+    Title,
+} from "@mantine/core";
+import { notifications } from "@mantine/notifications";
+import { Check } from "lucide-react";
 
 export default function UpdatePasswordForm({
     className = "",
@@ -28,7 +38,15 @@ export default function UpdatePasswordForm({
 
         put(route("password.update"), {
             preserveScroll: true,
-            onSuccess: () => reset(),
+            onSuccess: () => {
+                reset();
+                notifications.show({
+                    title: "Password updated successfully",
+                    message: "Your password has been updated successfully.",
+                    color: "green",
+                    icon: <Check size={16} />,
+                });
+            },
             onError: (errors) => {
                 if (errors.password) {
                     reset("password", "password_confirmation");
@@ -45,97 +63,58 @@ export default function UpdatePasswordForm({
 
     return (
         <section className={className}>
-            {/* <header>
-                <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                    Update Password
-                </h2>
-
-                <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                    Ensure your account is using a long, random password to stay
-                    secure.
-                </p>
-            </header>
-
-            <form onSubmit={updatePassword} className="mt-6 space-y-6">
+            <Stack>
                 <div>
-                    <InputLabel
-                        htmlFor="current_password"
-                        value="Current Password"
-                    />
-
-                    <TextInput
-                        id="current_password"
-                        ref={currentPasswordInput}
-                        value={data.current_password}
-                        onChange={(e) =>
-                            setData('current_password', e.target.value)
-                        }
-                        type="password"
-                        className="mt-1 block w-full"
-                        autoComplete="current-password"
-                    />
-
-                    <InputError
-                        message={errors.current_password}
-                        className="mt-2"
-                    />
+                    <Title order={4}>Update Password</Title>
+                    <Text size="sm" c="dimmed">
+                        Ensure your account is using a long, random password to
+                        stay secure.
+                    </Text>
                 </div>
 
-                <div>
-                    <InputLabel htmlFor="password" value="New Password" />
+                <form onSubmit={updatePassword}>
+                    <Stack gap="md">
+                        <PasswordInput
+                            label="Current Password"
+                            ref={currentPasswordInput}
+                            value={data.current_password}
+                            onChange={(e) =>
+                                setData("current_password", e.target.value)
+                            }
+                            error={errors.current_password}
+                            autoComplete="current-password"
+                            maw={350}
+                        />
 
-                    <TextInput
-                        id="password"
-                        ref={passwordInput}
-                        value={data.password}
-                        onChange={(e) => setData('password', e.target.value)}
-                        type="password"
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                    />
+                        <PasswordInput
+                            label="New Password"
+                            ref={passwordInput}
+                            value={data.password}
+                            onChange={(e) =>
+                                setData("password", e.target.value)
+                            }
+                            error={errors.password}
+                            autoComplete="new-password"
+                            maw={350}
+                        />
 
-                    <InputError message={errors.password} className="mt-2" />
-                </div>
+                        <PasswordInput
+                            label="Confirm Password"
+                            value={data.password_confirmation}
+                            onChange={(e) =>
+                                setData("password_confirmation", e.target.value)
+                            }
+                            error={errors.password_confirmation}
+                            autoComplete="new-password"
+                            maw={350}
+                        />
 
-                <div>
-                    <InputLabel
-                        htmlFor="password_confirmation"
-                        value="Confirm Password"
-                    />
-
-                    <TextInput
-                        id="password_confirmation"
-                        value={data.password_confirmation}
-                        onChange={(e) =>
-                            setData('password_confirmation', e.target.value)
-                        }
-                        type="password"
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                    />
-
-                    <InputError
-                        message={errors.password_confirmation}
-                        className="mt-2"
-                    />
-                </div>
-
-                <div className="flex items-center gap-4">
-                    <PrimaryButton disabled={processing}>Save</PrimaryButton>
-
-                    <Transition
-                        show={recentlySuccessful}
-                        enter="transition ease-in-out"
-                        enterFrom="opacity-0"
-                        leave="transition ease-in-out"
-                        leaveTo="opacity-0"
-                    >
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                            Saved.
-                        </p>
-                    </Transition>
-                </div>
-            </form> */}
+                        <Button type="submit" loading={processing} maw={350}>
+                            Save
+                        </Button>
+                    </Stack>
+                </form>
+            </Stack>
         </section>
     );
 }

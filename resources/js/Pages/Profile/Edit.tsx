@@ -3,34 +3,41 @@ import { Head } from "@inertiajs/react";
 import DeleteUserForm from "./Partials/DeleteUserForm";
 import UpdatePasswordForm from "./Partials/UpdatePasswordForm";
 import UpdateProfileInformationForm from "./Partials/UpdateProfileInformationForm";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
+import { Paper, Space, Stack } from "@mantine/core";
+import BoundedContainer from "@/Components/BoundedContainer";
 
-export default function Edit({
+function Edit({
     mustVerifyEmail,
     status,
 }: PageProps<{ mustVerifyEmail: boolean; status?: string }>) {
     return (
         <>
             <Head title="Profile" />
+            <Space h={84} />
 
-            <div className="py-12">
-                <div className="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
-                    <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800">
+            <BoundedContainer>
+                <Stack>
+                    <Paper shadow="sm" p="md" withBorder>
                         <UpdateProfileInformationForm
                             mustVerifyEmail={mustVerifyEmail}
                             status={status}
-                            className="max-w-xl"
                         />
-                    </div>
+                    </Paper>
 
-                    <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800">
-                        <UpdatePasswordForm className="max-w-xl" />
-                    </div>
+                    <Paper shadow="sm" p="md" withBorder>
+                        <UpdatePasswordForm />
+                    </Paper>
 
-                    <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800">
-                        <DeleteUserForm className="max-w-xl" />
-                    </div>
-                </div>
-            </div>
+                    <Paper shadow="sm" p="md" withBorder>
+                        <DeleteUserForm />
+                    </Paper>
+                </Stack>
+            </BoundedContainer>
         </>
     );
 }
+
+Edit.layout = (page: any) => <AuthenticatedLayout>{page}</AuthenticatedLayout>;
+
+export default Edit;

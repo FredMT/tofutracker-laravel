@@ -20,7 +20,6 @@ export default function AuthenticatedLayout({
         const controlNavbar = () => {
             const currentScrollY = window.scrollY;
 
-            // Don't hide navbar if search is open
             if (isSearchOpen) {
                 setIsVisible(true);
                 return;

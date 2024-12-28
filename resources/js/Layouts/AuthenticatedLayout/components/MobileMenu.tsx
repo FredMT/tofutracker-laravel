@@ -48,6 +48,13 @@ export default function MobileMenu({
                     <Button
                         size="md"
                         component={Link}
+                        href={route("profile.edit")}
+                    >
+                        Settings
+                    </Button>
+                    <Button
+                        size="md"
+                        component={Link}
                         method="post"
                         href={route("logout")}
                     >

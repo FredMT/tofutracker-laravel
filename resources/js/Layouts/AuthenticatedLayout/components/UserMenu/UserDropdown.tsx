@@ -39,6 +39,9 @@ export default function UserDropdown({ username }: UserDropdownProps) {
                     <Menu.Item component={Link} href={route("me")}>
                         Profile
                     </Menu.Item>
+                    <Menu.Item component={Link} href={route("profile.edit")}>
+                        Settings
+                    </Menu.Item>
                     <Menu.Item
                         component={Link}
                         href={route("logout")}
