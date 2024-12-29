@@ -18,13 +18,19 @@ use App\Models\UserTvShow;
 use App\Models\UserLibrary;
 use App\Enums\MediaType;
 use App\Enums\WatchStatus;
+use App\Actions\Tv\Plays\DeleteUserTvSeasonPlayAction;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Gate;
+use App\Pipeline\UserTvSeason\InitializeShowStatus;
 
 class UserTvSeasonController extends Controller
 {
     use AuthorizesRequests;
+
+    public function __construct(
+        private readonly DeleteUserTvSeasonPlayAction $deleteTvSeasonPlay
+    ) {}
 
     public function store(Request $request)
     {
@@ -42,11 +48,8 @@ class UserTvSeasonController extends Controller
                     ->through([
                         ValidateSeasonRelations::class,
                         EnsureUserTvLibrary::class,
-                        EnsureUserTvShow::class,
+                        InitializeShowStatus::class,
                         CreateUserTvSeason::class,
-                        CreateUserTvEpisodes::class,
-                        CreateUserTvSeasonPlay::class,
-                        UpdateShowStatus::class,
                     ])
                     ->then(function ($payload) {
                         return back()->with([
@@ -72,20 +75,26 @@ class UserTvSeasonController extends Controller
         ]);
 
         try {
-            $season = UserTvSeason::where([
-                'user_id' => $request->user()->id,
-                'season_id' => $validated['season_id'],
-                'show_id' => $validated['show_id'],
-            ])->firstOrFail();
+            return DB::transaction(function () use ($validated, $request) {
+                $season = UserTvSeason::where([
+                    'user_id' => $request->user()->id,
+                    'season_id' => $validated['season_id'],
+                    'show_id' => $validated['show_id'],
+                ])->firstOrFail();
 
-            $this->authorize('delete', $season);
+                $this->authorize('delete', $season);
 
-            $season->delete();
+                // Delete all plays and activities first
+                $this->deleteTvSeasonPlay->execute($season);
 
-            return back()->with([
-                'success' => true,
-                'message' => "Season removed from your library",
-            ]);
+                // Then delete the season
+                $season->delete();
+
+                return back()->with([
+                    'success' => true,
+                    'message' => "Season removed from your library",
+                ]);
+            });
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return back()->with([
                 'success' => false,

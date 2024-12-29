@@ -15,11 +15,16 @@ use App\Pipeline\UserTvEpisode\CreateUserTvEpisode;
 use App\Pipeline\UserTvEpisode\CreateUserTvEpisodePlay;
 use App\Pipeline\UserTvEpisode\UpdateSeasonStatus;
 use App\Models\UserTvEpisode;
+use App\Actions\Tv\Plays\DeleteUserTvPlayAction;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class UserTvEpisodeController extends Controller
 {
     use AuthorizesRequests;
+
+    public function __construct(
+        private readonly DeleteUserTvPlayAction $deleteTvPlay
+    ) {}
 
     public function store(Request $request)
     {
@@ -72,21 +77,27 @@ class UserTvEpisodeController extends Controller
         ]);
 
         try {
-            $episode = UserTvEpisode::where([
-                'user_id' => $request->user()->id,
-                'episode_id' => $validated['episode_id'],
-                'show_id' => $validated['show_id'],
-                'season_id' => $validated['season_id'],
-            ])->firstOrFail();
+            return DB::transaction(function () use ($validated, $request) {
+                $episode = UserTvEpisode::where([
+                    'user_id' => $request->user()->id,
+                    'episode_id' => $validated['episode_id'],
+                    'show_id' => $validated['show_id'],
+                    'season_id' => $validated['season_id'],
+                ])->firstOrFail();
 
-            $this->authorize('delete', $episode);
+                $this->authorize('delete', $episode);
 
-            $episode->delete();
+                // Delete plays and activities first
+                $this->deleteTvPlay->execute($episode);
 
-            return back()->with([
-                'success' => true,
-                'message' => "Episode removed from your library",
-            ]);
+                // Then delete the episode
+                $episode->delete();
+
+                return back()->with([
+                    'success' => true,
+                    'message' => "Episode removed from your library",
+                ]);
+            });
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return back()->with([
                 'success' => false,

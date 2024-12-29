@@ -18,7 +18,7 @@ class CreateUserTvSeason
             [
                 'user_tv_show_id' => $payload['show']->id,
                 'show_id' => $payload['validated']['show_id'],
-                'watch_status' => WatchStatus::COMPLETED,
+                'watch_status' => WatchStatus::WATCHING,
             ]
         );
 

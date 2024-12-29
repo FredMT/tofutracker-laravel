@@ -5,6 +5,7 @@ namespace App\Actions\Activity;
 use App\Actions\Activity\Handlers\ActivityHandlerInterface;
 use App\Actions\Activity\Handlers\AnimeActivityHandler;
 use App\Actions\Activity\Handlers\MovieActivityHandler;
+use App\Actions\Activity\Handlers\TvActivityHandler;
 use App\Models\UserActivity;
 use Illuminate\Database\Eloquent\Model;
 
@@ -24,6 +25,7 @@ class CreateUserActivityAction
             $this->handlers = [
                 new AnimeActivityHandler(),
                 new MovieActivityHandler(),
+                new TvActivityHandler(),
                 // Add more handlers here as needed
             ];
         }

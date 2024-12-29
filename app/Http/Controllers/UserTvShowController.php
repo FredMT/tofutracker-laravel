@@ -12,6 +12,8 @@ use App\Pipeline\UserTvShow\CompleteShow;
 use App\Pipeline\UserTvShow\UpdateShowWatchStatus;
 use App\Pipeline\UserTvShow\CreateUserTvShowWithStatus;
 use App\Pipeline\UserTvShow\EnsureShowExists;
+use App\Actions\Tv\Plays\DeleteUserTvShowPlayAction;
+use App\Actions\Tv\Plays\CreateUserTvShowPlayAction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -20,6 +22,11 @@ use Illuminate\Validation\Rule;
 
 class UserTvShowController extends Controller
 {
+    public function __construct(
+        private readonly DeleteUserTvShowPlayAction $deleteTvShowPlay,
+        private readonly CreateUserTvShowPlayAction $createTvShowPlay
+    ) {}
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -70,6 +77,10 @@ class UserTvShowController extends Controller
                     throw new \Illuminate\Auth\Access\AuthorizationException('You do not own this TV show.');
                 }
 
+                // Delete all plays and activities first
+                $this->deleteTvShowPlay->execute($userShow);
+
+                // Then delete the show
                 $userShow->delete();
 
                 return back()->with([
@@ -196,40 +207,25 @@ class UserTvShowController extends Controller
 
                     // If marking as completed
                     if ($watchStatus === WatchStatus::COMPLETED) {
-                        return Pipeline::send([
-                            'user' => $request->user(),
-                            'tv_show' => $userShow->show,
-                            'user_show' => $userShow,
-                            'library' => $request->user()->library,
-                            'validated' => $validated,
-                        ])
-                            ->through([
-                                UpdateShowWatchStatus::class,
-                                CompleteShow::class,
-                            ])
-                            ->then(function ($payload) {
-                                return back()->with([
-                                    'success' => true,
-                                    'message' => "Show marked as completed",
-                                ]);
-                            });
+                        // Update status first
+                        $userShow->update(['watch_status' => $watchStatus]);
+
+                        // Create play record and activity
+                        $this->createTvShowPlay->execute($userShow);
+
+                        return back()->with([
+                            'success' => true,
+                            'message' => "Show marked as completed",
+                        ]);
                     }
 
                     // For other statuses
-                    return Pipeline::send([
-                        'user' => $request->user(),
-                        'user_show' => $userShow,
-                        'validated' => $validated,
-                    ])
-                        ->through([
-                            UpdateShowWatchStatus::class,
-                        ])
-                        ->then(function ($payload) {
-                            return back()->with([
-                                'success' => true,
-                                'message' => "Show watch status updated",
-                            ]);
-                        });
+                    $userShow->update(['watch_status' => $watchStatus]);
+
+                    return back()->with([
+                        'success' => true,
+                        'message' => "Show watch status updated",
+                    ]);
                 }
 
                 // If show doesn't exist
@@ -237,7 +233,7 @@ class UserTvShowController extends Controller
 
                 if ($watchStatus === WatchStatus::COMPLETED) {
                     // Create show and complete everything
-                    return Pipeline::send([
+                    $result = Pipeline::send([
                         'user' => $request->user(),
                         'library' => $request->user()->library,
                         'validated' => $validated,
@@ -247,12 +243,17 @@ class UserTvShowController extends Controller
                             CreateUserTvShowWithStatus::class,
                             CompleteShow::class,
                         ])
-                        ->then(function ($payload) {
-                            return back()->with([
-                                'success' => true,
-                                'message' => "Show '{$payload['show_title']}' added and marked as completed",
-                            ]);
-                        });
+                        ->thenReturn();
+
+                    // Create play record and activity for the new show
+                    if (isset($result['user_show'])) {
+                        $this->createTvShowPlay->execute($result['user_show']);
+                    }
+
+                    return back()->with([
+                        'success' => true,
+                        'message' => "Show '{$result['show_title']}' added and marked as completed",
+                    ]);
                 }
 
                 // For other statuses, just create the show

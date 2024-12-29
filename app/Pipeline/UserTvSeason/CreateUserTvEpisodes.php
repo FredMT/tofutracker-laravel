@@ -2,14 +2,18 @@
 
 namespace App\Pipeline\UserTvSeason;
 
+use App\Actions\Tv\Plays\CreateUserTvPlayAction;
 use App\Enums\WatchStatus;
 use App\Models\TvEpisode;
 use App\Models\UserTvEpisode;
-use App\Models\UserTvPlay;
 use Closure;
 
 class CreateUserTvEpisodes
 {
+    public function __construct(
+        private readonly CreateUserTvPlayAction $createTvPlay
+    ) {}
+
     public function __invoke($payload, Closure $next)
     {
         // Get all episodes for this season
@@ -34,15 +38,7 @@ class CreateUserTvEpisodes
             );
 
             // Create play record for the episode
-            UserTvPlay::create([
-                'user_id' => $payload['user']->id,
-                'user_tv_show_id' => $payload['show']->id,
-                'user_tv_season_id' => $payload['user_season']->id,
-                'user_tv_episode_id' => $userEpisode->id,
-                'playable_id' => $userEpisode->id,
-                'playable_type' => UserTvEpisode::class,
-                'watched_at' => now(),
-            ]);
+            $this->createTvPlay->execute($userEpisode);
         }
 
         return $next($payload);

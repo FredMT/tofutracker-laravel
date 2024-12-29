@@ -13,9 +13,14 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
+use App\Actions\Anime\Plays\DeleteUserAnimeCollectionPlayAction;
 
 class UserAnimeTvController extends Controller
 {
+    public function __construct(
+        private readonly DeleteUserAnimeCollectionPlayAction $deleteAnimeCollectionPlay
+    ) {}
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -85,6 +90,10 @@ class UserAnimeTvController extends Controller
                     throw new AuthorizationException('You do not own this anime.');
                 }
 
+                // Delete all plays and activities first
+                $this->deleteAnimeCollectionPlay->execute($collection);
+
+                // Then delete the collection
                 $collection->delete();
 
                 return back()->with([

@@ -1,26 +1,28 @@
 <?php
 
-namespace App\Pipeline\TV;
+namespace App\Pipeline\UserTvSeason;
 
 use App\Enums\WatchStatus;
 use App\Models\UserTvShow;
 use Closure;
 
-class EnsureUserTvShow
+class InitializeShowStatus
 {
     public function __invoke($payload, Closure $next)
     {
-        $show = UserTvShow::firstOrCreate(
+        // Find or create the show with WATCHING status
+        $userShow = UserTvShow::firstOrCreate(
             [
                 'user_id' => $payload['user']->id,
                 'show_id' => $payload['validated']['show_id'],
             ],
             [
+                'watch_status' => WatchStatus::WATCHING,
                 'user_library_id' => $payload['library']->id,
             ]
         );
 
-        $payload['show'] = $show;
+        $payload['show'] = $userShow;
 
         return $next($payload);
     }

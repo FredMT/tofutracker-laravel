@@ -2,6 +2,7 @@
 
 namespace App\Pipeline\Shared;
 
+use App\Actions\Tv\Plays\CreateUserTvShowPlayAction;
 use App\Enums\WatchStatus;
 use App\Models\TvSeason;
 use App\Models\UserTvPlay;
@@ -11,6 +12,10 @@ use Closure;
 
 class UpdateShowStatus
 {
+    public function __construct(
+        private readonly CreateUserTvShowPlayAction $createTvShowPlay
+    ) {}
+
     public function __invoke($payload, Closure $next)
     {
         // Get all non-special season IDs for this show
@@ -33,21 +38,13 @@ class UpdateShowStatus
             ->whereIn('season_id', $seasonIds)
             ->count();
 
-
         $userTvShow = UserTvShow::where(['user_id' => $payload['user']->id, 'show_id' => $payload['validated']['show_id']])->first();
-        logger()->info($userTvShow);
         // If all seasons are completed, mark show as completed and create play record
         if ($totalSeasons === $completedSeasons && $payload['show']->watch_status !== WatchStatus::COMPLETED) {
             $payload['show']->update(['watch_status' => WatchStatus::COMPLETED]);
 
-            // Create play record for the show
-            UserTvPlay::create([
-                'user_id' => $payload['user']->id,
-                'user_tv_show_id' => $payload['show']->id,
-                'playable_id' => $payload['show']->id,
-                'playable_type' => UserTvShow::class,
-                'watched_at' => now(),
-            ]);
+            // Create play record and activity for the show
+            $this->createTvShowPlay->execute($payload['show']);
         }
 
         return $next($payload);

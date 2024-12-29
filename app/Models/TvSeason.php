@@ -20,6 +20,13 @@ class TvSeason extends Model
         'updated_at' => 'datetime'
     ];
 
+    public function title(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->data['name'];
+        });
+    }
+
     public function seasonNumber(): Attribute
     {
         return Attribute::get(fn() => $this->data['season_number'] ?? null);
