@@ -2,21 +2,20 @@
 
 namespace App\Pipeline\UserMovie;
 
-use App\Models\UserMoviePlay;
+use App\Actions\Movie\Plays\CreateUserMoviePlayAction;
 use App\Enums\WatchStatus;
 use Closure;
 
 class CreateUserMoviePlay
 {
+    public function __construct(
+        private readonly CreateUserMoviePlayAction $createMoviePlay
+    ) {}
+
     public function handle($payload, Closure $next)
     {
         if (($payload['validated']['watch_status'] ?? WatchStatus::COMPLETED) === WatchStatus::COMPLETED) {
-            UserMoviePlay::create([
-                'user_movie_id' => $payload['user_movie']->id,
-                'user_id' => $payload['user']->id,
-                'movie_id' => $payload['validated']['movie_id'],
-                'watched_at' => now(),
-            ]);
+            $this->createMoviePlay->execute($payload['user_movie']);
         }
 
         return $next($payload);

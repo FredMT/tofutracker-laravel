@@ -2,15 +2,19 @@
 
 namespace App\Models;
 
-use App\Actions\DeleteUserAnimePlayAction;
+use App\Actions\Anime\Plays\DeleteUserAnimePlayAction;
 use App\Enums\WatchStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Znck\Eloquent\Traits\BelongsToThrough;
+use Znck\Eloquent\Relations\BelongsToThrough as BelongsToThroughRelation;
 
 class UserAnime extends Model
 {
+    use BelongsToThrough;
+
     protected $fillable = [
         'user_anime_collection_id',
         'anidb_id',
@@ -38,6 +42,14 @@ class UserAnime extends Model
     public function episodes(): HasMany
     {
         return $this->hasMany(UserAnimeEpisode::class);
+    }
+
+    public function user(): BelongsToThroughRelation
+    {
+        return $this->belongsToThrough(
+            User::class,
+            [UserLibrary::class, UserAnimeCollection::class],
+        );
     }
 
     protected static function boot()

@@ -8,6 +8,8 @@ use App\Models\UserMovie;
 use App\Enums\MediaType;
 use App\Enums\WatchStatus;
 use App\Models\UserMoviePlay;
+use App\Actions\Movie\Plays\CreateUserMoviePlayAction;
+use App\Actions\Movie\Plays\DeleteUserMoviePlayAction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rules\Enum;
@@ -21,6 +23,10 @@ use Illuminate\Validation\Rule;
 
 class UserMovieController extends Controller
 {
+    public function __construct(
+        private readonly CreateUserMoviePlayAction $createMoviePlay,
+        private readonly DeleteUserMoviePlayAction $deleteMoviePlay,
+    ) {}
 
     public function store(Request $request)
     {
@@ -66,7 +72,6 @@ class UserMovieController extends Controller
     public function update(Request $request, $movieId)
     {
         $validated = $request->validate([
-            'rating' => ['sometimes', 'numeric', 'min:1', 'max:10'],
             'watch_status' => ['sometimes', Rule::enum(WatchStatus::class)],
         ]);
 
@@ -85,13 +90,6 @@ class UserMovieController extends Controller
                     ]);
                 }
 
-                // If rating is provided but watch_status isn't, only set COMPLETED if movie isn't already completed
-                if (isset($validated['rating']) && !isset($validated['watch_status'])) {
-                    if (!$userMovie || $userMovie->watch_status !== WatchStatus::COMPLETED) {
-                        $validated['watch_status'] = WatchStatus::COMPLETED->value;
-                    }
-                }
-
                 // Check if trying to update to the same watch status
                 if (
                     isset($validated['watch_status']) &&
@@ -104,59 +102,42 @@ class UserMovieController extends Controller
                     ]);
                 }
 
-                // Check if trying to update to the same rating
-                if (
-                    isset($validated['rating']) &&
-                    $userMovie &&
-                    (float) $validated['rating'] === (float) $userMovie->rating
-                ) {
-                    return back()->with([
-                        'success' => false,
-                        'message' => "Movie already has a rating of {$userMovie->rating}",
-                    ]);
-                }
-
-                // Ensure user has a library if this is a new entry
                 if (!$userMovie) {
+                    // Create new movie entry
                     $userLibrary = UserLibrary::firstOrCreate([
                         'user_id' => $request->user()->id,
                         'type' => MediaType::MOVIE,
                     ]);
 
-                    // Update or create the movie entry
-                    $userMovie = UserMovie::updateOrCreate(
-                        [
-                            'user_id' => $request->user()->id,
-                            'movie_id' => $movieId,
-                        ],
-                        array_merge(
-                            [
-                                'user_library_id' => $userLibrary->id ?? $userMovie->user_library_id,
-                            ],
-                            collect($validated)->only(['rating', 'watch_status'])->toArray()
-                        )
-                    );
-
-                    UserMoviePlay::create([
-                        'user_movie_id' => $userMovie->id,
+                    $userMovie = UserMovie::create([
                         'user_id' => $request->user()->id,
                         'movie_id' => $movieId,
-                        'watched_at' => now(),
+                        'user_library_id' => $userLibrary->id,
+                        'watch_status' => $validated['watch_status'] ?? WatchStatus::COMPLETED,
                     ]);
+
+                    // Create a play record if status is COMPLETED
+                    if (($validated['watch_status'] ?? WatchStatus::COMPLETED) === WatchStatus::COMPLETED) {
+                        $this->createMoviePlay->execute($userMovie);
+                    }
+                } else {
+                    // Update existing movie
+                    $oldStatus = $userMovie->watch_status;
+                    $newStatus = WatchStatus::from($validated['watch_status']);
+
+                    $userMovie->update([
+                        'watch_status' => $newStatus
+                    ]);
+
+                    // Create a play record if status changed to COMPLETED
+                    if ($oldStatus !== WatchStatus::COMPLETED && $newStatus === WatchStatus::COMPLETED) {
+                        $this->createMoviePlay->execute($userMovie);
+                    }
                 }
-
-
-
-                $message = collect([
-                    isset($validated['rating']) ? 'rating' : null,
-                    isset($validated['watch_status']) ? 'status' : null,
-                ])
-                    ->filter()
-                    ->join(' and ');
 
                 return back()->with([
                     'success' => true,
-                    'message' => "Movie $message updated successfully",
+                    'message' => "Movie status updated successfully",
                 ]);
             });
         } catch (\Exception $e) {
@@ -191,11 +172,8 @@ class UserMovieController extends Controller
                     ]);
                 }
 
-                // Get all play records
-                $playRecords = UserMoviePlay::where('user_movie_id', $userMovie->id)->get();
-
-                // Delete play records (activity logs will be deleted by model events)
-                $playRecords->each->delete();
+                // Delete play records and activities
+                $this->deleteMoviePlay->execute($userMovie);
 
                 // Delete the movie
                 $userMovie->delete();

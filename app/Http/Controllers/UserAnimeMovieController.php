@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\MediaType;
+use App\Actions\Anime\Plays\CreateUserAnimePlayAction;
+use App\Actions\Anime\Plays\DeleteUserAnimePlayAction;
 use App\Enums\WatchStatus;
 use App\Pipeline\UserAnime\CreateUserAnimeCollection;
 use App\Pipeline\UserAnime\CreateUserAnimeMovie;
@@ -17,13 +18,7 @@ use App\Pipeline\UserAnime\CreateUserAnimeMovieWithWatchStatus;
 use App\Pipeline\UserAnime\UpdateUserAnimeMovieWithWatchStatus;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
-use App\Models\UserLibrary;
-use App\Models\UserAnimeCollection;
-use App\Models\UserAnimePlay;
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Support\Facades\Media;
-use App\Actions\CreateUserAnimePlayAction;
-use App\Actions\DeleteUserAnimePlayAction;
 use App\Pipeline\UserAnimeMovie\EnsureUserAnimeMovieLibrary;
 use App\Pipeline\UserAnimeMovie\UpdateExistingUserAnimeMovie;
 use App\Pipeline\UserAnimeMovie\CreateNewUserAnimeMovie;

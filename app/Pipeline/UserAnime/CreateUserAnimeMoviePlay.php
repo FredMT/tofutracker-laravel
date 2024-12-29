@@ -2,7 +2,7 @@
 
 namespace App\Pipeline\UserAnime;
 
-use App\Actions\CreateUserAnimePlayAction;
+use App\Actions\Anime\Plays\CreateUserAnimePlayAction;
 use App\Models\UserAnime;
 use App\Models\UserAnimeCollection;
 use Closure;

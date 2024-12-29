@@ -23,18 +23,20 @@ class UserAnimePlay extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function userAnime(): BelongsTo
-    {
-        return $this->belongsTo(UserAnime::class);
-    }
-
-    public function anime(): BelongsTo
-    {
-        return $this->belongsTo(AnidbAnime::class, 'anidb_id');
-    }
-
     public function playable(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    public function userAnimeEpisode(): BelongsTo
+    {
+        return $this->belongsTo(UserAnimeEpisode::class, 'playable_id')
+            ->where('playable_type', UserAnimeEpisode::class);
+    }
+
+    public function userAnime(): BelongsTo
+    {
+        return $this->belongsTo(UserAnime::class, 'playable_id')
+            ->where('playable_type', UserAnime::class);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Pipeline\UserAnimeSeason;
 
-use App\Actions\CreateUserAnimePlayAction;
+use App\Actions\Anime\Plays\CreateUserAnimePlayAction;
 use App\Enums\WatchStatus;
 use App\Models\AnimeEpisodeMapping;
 use App\Models\UserAnime;

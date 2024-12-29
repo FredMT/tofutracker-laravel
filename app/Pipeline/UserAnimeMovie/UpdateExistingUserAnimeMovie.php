@@ -2,7 +2,7 @@
 
 namespace App\Pipeline\UserAnimeMovie;
 
-use App\Actions\CreateUserAnimePlayAction;
+use App\Actions\Anime\Plays\CreateUserAnimePlayAction;
 use App\Enums\WatchStatus;
 use App\Models\UserAnime;
 use App\Models\UserAnimeCollection;

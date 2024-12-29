@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Actions;
+namespace App\Actions\Anime\Plays;
 
+use App\Actions\Activity\CreateUserActivityAction;
 use App\Models\UserAnime;
 use App\Models\UserAnimeCollection;
 use App\Models\UserAnimeEpisode;
@@ -10,6 +11,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class DeleteUserAnimePlayAction
 {
+    public function __construct(
+        private readonly CreateUserActivityAction $activityAction
+    ) {}
+
     /**
      * Delete play records for a single model
      */
@@ -19,6 +24,9 @@ class DeleteUserAnimePlayAction
             ->where('playable_type', $playable::class)
             ->where('playable_id', $playable->id)
             ->delete();
+
+        // Delete associated activity
+        $this->activityAction->deleteForSubject($playable);
     }
 
     /**
@@ -46,6 +54,11 @@ class DeleteUserAnimePlayAction
                 ->where('playable_type', UserAnimeEpisode::class)
                 ->whereIn('playable_id', $episodeIds)
                 ->delete();
+
+            // Delete activities for all episodes
+            $season->episodes->each(function ($episode) {
+                $this->activityAction->deleteForSubject($episode);
+            });
         }
     }
 }
