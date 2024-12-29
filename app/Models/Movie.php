@@ -17,6 +17,13 @@ class Movie extends Model
         'updated_at' => 'datetime'
     ];
 
+    public function poster(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->data['poster_path'];
+        });
+    }
+
     public function budget(): Attribute
     {
         return Attribute::get(function () {

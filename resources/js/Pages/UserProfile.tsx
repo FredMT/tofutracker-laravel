@@ -3,6 +3,9 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayo
 import UserProfileLayout from "@/Layouts/UserProfileLayout";
 import { Head } from "@inertiajs/react";
 import { Divider, Paper, Stack, Text, Title } from "@mantine/core";
+import ActivitySection from "@/Components/UserProfile/Activity/ActivitySection";
+import BoundedContainer from "@/Components/BoundedContainer";
+import ResponsiveContainer from "@/Components/ResponsiveContainer";
 
 interface UserData {
     id: number;
@@ -16,12 +19,10 @@ interface UserData {
 
 interface PageProps {
     userData: UserData;
-    activities: any;
 }
 
-function UserProfile({ userData, activities }: PageProps) {
-    console.log(activities);
-    const bioSection = (
+function UserProfile({ userData }: PageProps) {
+    const leftSection = (
         <Paper>
             <Stack>
                 <Title order={3} c="dimmed">
@@ -32,12 +33,12 @@ function UserProfile({ userData, activities }: PageProps) {
         </Paper>
     );
 
-    const activitySection = (
+    const rightSection = (
         <Stack>
             <Title order={2} c="dimmed">
                 Activity
             </Title>
-            {/* Activity content will go here */}
+            <ActivitySection />
         </Stack>
     );
 
@@ -45,13 +46,14 @@ function UserProfile({ userData, activities }: PageProps) {
         <>
             <Head title={`${userData.username}'s Activity`} />
             <Divider my={16} />
-            <UserOverviewLayout
-                leftSection={bioSection}
-                rightSection={activitySection}
-                leftWidth={400}
-                rightWidth={600}
-                gap={16}
-            />
+            <ResponsiveContainer>
+                <UserOverviewLayout
+                    leftSection={leftSection}
+                    rightSection={rightSection}
+                    leftWidth={400}
+                    gap={16}
+                />
+            </ResponsiveContainer>
         </>
     );
 }

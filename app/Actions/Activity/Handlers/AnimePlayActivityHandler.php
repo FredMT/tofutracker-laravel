@@ -32,7 +32,7 @@ class AnimePlayActivityHandler implements AnimeActivityInterface
             'subject_id' => $subject->id,
             'metadata' => $metadata,
             'description' => $this->generateDescription($anime),
-            'occurred_at' => now(),
+            'occurred_at' => now()->addSecond(),
         ]);
     }
 

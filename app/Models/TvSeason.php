@@ -37,6 +37,13 @@ class TvSeason extends Model
         return $this->belongsTo(TvShow::class, 'show_id', 'id');
     }
 
+    public function poster(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->data['poster_path'];
+        });
+    }
+
     public function episodes()
     {
         return $this->hasMany(TvEpisode::class, 'season_id', 'id');

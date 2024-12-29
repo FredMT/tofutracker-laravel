@@ -34,7 +34,7 @@ class TvShowActivityHandler implements TvShowActivityInterface
             'subject_id' => $subject->id,
             'metadata' => $metadata,
             'description' => $this->generateDescription($show),
-            'occurred_at' => now(),
+            'occurred_at' => now()->addSeconds(2),
         ]);
     }
 

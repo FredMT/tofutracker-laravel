@@ -48,6 +48,13 @@ class AnidbAnime extends Model
         );
     }
 
+    public function poster(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->picture;
+        });
+    }
+
     public function characters(): HasMany
     {
         return $this->hasMany(AnidbCharacter::class, 'anime_id');

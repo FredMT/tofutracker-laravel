@@ -19,3 +19,7 @@
     background-color: light-dark(#ededed, #121212) !important;
     border-color: light-dark(#2e2e2e, #2e2e2e) !important;
 }
+[class*="mantine-Menu-dropdown"] {
+    background-color: light-dark(#ededed, #121212) !important;
+    border-color: light-dark(#2e2e2e, #2e2e2e) !important;
+}

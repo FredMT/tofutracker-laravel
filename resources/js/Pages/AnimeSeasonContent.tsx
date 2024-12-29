@@ -13,6 +13,7 @@ import { PageProps } from "@/types";
 import { Head, usePage } from "@inertiajs/react";
 import { Box, Divider, Space, Stack, Title } from "@mantine/core";
 import { useViewportSize } from "@mantine/hooks";
+import SeasonBreadcrumbs from "@/Components/Content/TV/Seasons/SeasonBreadcrumbs";
 
 function AnimeSeasonContent() {
     const { width } = useViewportSize();
@@ -23,6 +24,9 @@ function AnimeSeasonContent() {
             <Head title={animeseason.title_main} />
             <BannerImageContainer />
             <ResponsiveContainer>
+                <Box hiddenFrom="sm" mt={12}>
+                    <SeasonBreadcrumbs />
+                </Box>
                 <Space h={24} />
                 <ContentLayout
                     left={
@@ -52,6 +56,7 @@ function AnimeSeasonContent() {
                     right={
                         <Box visibleFrom="sm">
                             <Stack gap={8}>
+                                <SeasonBreadcrumbs />
                                 <Title order={2}>
                                     {`${animeseason.title_main} (${
                                         animeseason.startdate &&

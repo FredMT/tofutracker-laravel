@@ -1,0 +1,6 @@
+.seasonBreadcrumbs {
+    color: light-dark(
+        var(--mantine-color-violet-9),
+        var(--mantine-color-violet-2)
+    );
+}

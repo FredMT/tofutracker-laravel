@@ -37,7 +37,7 @@ class TvSeasonActivityHandler implements TvActivityInterface
             'subject_id' => $subject->id,
             'metadata' => $metadata,
             'description' => $this->generateDescription($show, $season),
-            'occurred_at' => now(),
+            'occurred_at' => now()->addSecond(),
         ]);
     }
 

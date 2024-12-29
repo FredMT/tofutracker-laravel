@@ -6,8 +6,10 @@ use App\Actions\Anime\GetAnidbData;
 use App\Actions\Anime\GetAnimeTypeAction;
 use App\Actions\Anime\GetTmdbData;
 use App\Models\AnidbAnime;
+use App\Models\AnimeChainEntry;
 use App\Models\AnimeMap;
 use App\Models\AnimeMappingExternalId;
+use App\Models\AnimeRelatedEntry;
 use App\Models\UserAnime;
 use App\Models\UserAnimeCollection;
 use App\Services\TmdbService;
@@ -311,7 +313,6 @@ class AnimeController extends Controller
             $anime['enddate'] = $this->formatDate($anime['enddate']);
             $totalRuntime = null;
 
-
             // Format dates in mapped_episodes using Carbon
             if (isset($anime['mapped_episodes'])) {
                 if (isset($anime['mapped_episodes']['mainEpisodes'])) {
@@ -405,12 +406,16 @@ class AnimeController extends Controller
                 }
             }
 
+            // Generate navigation links
+            $links = $this->generateNavigationLinks($accessId, $seasonId);
+
             return Inertia::render(
                 'AnimeSeasonContent',
                 [
                     'animeseason' => $anime,
                     'user_library' => $userLibrary,
-                    'type' => 'animeseason'
+                    'type' => 'animeseason',
+                    'links' => $links
                 ]
             );
         } catch (ModelNotFoundException $e) {
@@ -422,6 +427,82 @@ class AnimeController extends Controller
                 'season_id' => $seasonId
             ]);
             return response()->json(['error' => 'An error occurred while fetching anime data'], 500);
+        }
+    }
+
+    /**
+     * Generate navigation links for anime seasons in the same chain or related entries
+     */
+    private function generateNavigationLinks(int $accessId, int $seasonId): ?array
+    {
+        try {
+            // Get the AnimeMap first to check collection_name
+            $animeMap = AnimeMap::find($accessId);
+
+            // First check if this anime is part of a chain
+            $chainEntry = AnimeChainEntry::with(['chain', 'anime'])
+                ->whereHas('anime', function ($query) use ($seasonId) {
+                    $query->where('id', $seasonId);
+                })
+                ->first();
+
+            if ($chainEntry) {
+                // Get all entries in this chain ordered by sequence
+                $chainEntries = AnimeChainEntry::with(['anime'])
+                    ->where('chain_id', $chainEntry->chain_id)
+                    ->orderBy('sequence_order')
+                    ->get();
+
+                return [
+                    'show' => [
+                        'url' => url("/anime/{$accessId}"),
+                        'name' => $animeMap->collection_name
+                    ],
+                    'seasons' => $chainEntries->map(function ($entry) use ($accessId, $seasonId) {
+                        return [
+                            'url' => url("/anime/{$accessId}/season/{$entry->anime_id}"),
+                            'name' => $entry->anime->title ?? 'Unknown Season',
+                            'season_number' => $entry->sequence_order,
+                            'is_current' => $entry->anime_id === $seasonId
+                        ];
+                    })->values()->all()
+                ];
+            }
+
+            // If not in chain, check for related entries
+            $relatedEntry = AnimeRelatedEntry::with(['anime'])
+                ->where('anime_id', $seasonId)
+                ->first();
+
+            if ($relatedEntry) {
+                // Get all related entries for this map_id
+                $relatedEntries = AnimeRelatedEntry::with(['anime'])
+                    ->where('map_id', $accessId)
+                    ->get();
+
+                return [
+                    'show' => [
+                        'url' => url("/anime/{$accessId}"),
+                        'name' => $animeMap->collection_name
+                    ],
+                    'seasons' => $relatedEntries->map(function ($entry) use ($accessId, $seasonId) {
+                        return [
+                            'url' => url("/anime/{$accessId}/season/{$entry->anime_id}"),
+                            'name' => $entry->anime->title ?? 'Unknown Season',
+                            'is_current' => $entry->anime_id === $seasonId
+                        ];
+                    })->values()->all()
+                ];
+            }
+
+            return null;
+        } catch (\Exception $e) {
+            logger()->error('Error generating navigation links', [
+                'error' => $e->getMessage(),
+                'access_id' => $accessId,
+                'season_id' => $seasonId
+            ]);
+            return null;
         }
     }
 

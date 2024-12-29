@@ -5,7 +5,6 @@ interface UserOverviewLayoutProps {
     leftSection: React.ReactNode;
     rightSection: React.ReactNode;
     leftWidth?: number;
-    rightWidth?: number;
     gap?: number;
 }
 
@@ -13,13 +12,12 @@ export default function UserOverviewLayout({
     leftSection,
     rightSection,
     leftWidth = 350,
-    rightWidth = 600,
     gap = 24,
 }: UserOverviewLayoutProps) {
     return (
         <Box>
             {/* Mobile Layout (Stack) */}
-            <Box hiddenFrom="md" w="100%">
+            <Box hiddenFrom="lg" w="100%">
                 <Stack gap={gap}>
                     <Box>{leftSection}</Box>
                     <Box>{rightSection}</Box>
@@ -27,7 +25,7 @@ export default function UserOverviewLayout({
             </Box>
 
             {/* Desktop Layout (Side by Side) */}
-            <Box visibleFrom="md" w="100%">
+            <Box visibleFrom="lg" w="100%">
                 <Box
                     style={{
                         display: "flex",
@@ -37,9 +35,7 @@ export default function UserOverviewLayout({
                     <Box style={{ flex: `0 0 ${leftWidth}px` }}>
                         {leftSection}
                     </Box>
-                    <Box style={{ flex: `0 0 ${rightWidth}px` }}>
-                        {rightSection}
-                    </Box>
+                    <Box style={{ flex: 1 }}>{rightSection}</Box>
                 </Box>
             </Box>
         </Box>

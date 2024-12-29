@@ -153,7 +153,7 @@ class UserTvShowCollection extends Collection
                 'poster_path' => $userTvShow->show->data['poster_path'] ?? null,
                 'release_date' => $firstAirDate,
                 'rating' => $userTvShow->rating,
-                'watch_status' => $userTvShow->watch_status->value,
+                'watch_status' => $userTvShow->watch_status,
                 'added_at' => $userTvShow->created_at->format('j F, Y'),
                 'seasons' => $seasons,
                 'total_seasons' => $totalSeasons,

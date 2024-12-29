@@ -31,6 +31,23 @@ class UserController extends Controller
         $user = User::where('username', $username)
             ->firstOrFail();
 
+        $activities = $user->activities()
+            ->select('id', 'description', 'metadata', 'occurred_at', 'subject_type')
+            ->orderBy('occurred_at', 'desc')
+            ->paginate(20);
+
+        // Transform the activities to only include the fields we need
+        $activities->through(function ($activity) {
+            $poster = $activity->getPoster();
+            return [
+                'id' => $activity->id,
+                'description' => $activity->description,
+                'occurred_at_diff' => $activity->occurred_at->diffForHumans(),
+                'poster_path' => $poster['path'] ?? null,
+                'poster_from' => $poster['from'] ?? null,
+            ];
+        });
+
         return Inertia::render('UserProfile', [
             'userData' => [
                 'id' => $user->id,
@@ -40,6 +57,9 @@ class UserController extends Controller
                 'banner' => $user->banner,
                 'bio' => $user->bio,
             ],
+            'activities' =>
+            Inertia::merge(fn() => $activities->items()),
+            'activities_pagination' => $activities->toArray()
         ]);
     }
 

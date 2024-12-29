@@ -85,4 +85,9 @@ class User extends Authenticatable implements MustVerifyEmail
             $query->where('type', 'anime');
         });
     }
+
+    public function activities(): HasMany
+    {
+        return $this->hasMany(UserActivity::class);
+    }
 }

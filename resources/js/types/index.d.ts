@@ -74,12 +74,34 @@ type ContentTypeToLibrary<T> = T extends { type: "movie" | "tv" | "tvseason" }
     ? AnimeUserLibrary
     : never;
 
+export interface Links {
+    show: {
+        url: string;
+        name: string | null;
+    };
+    seasons: Array<{
+        url: string;
+        name: string;
+        season_number?: number;
+        is_current: boolean;
+    }>;
+}
+
+export type ContentType =
+    | "movie"
+    | "tv"
+    | "tvseason"
+    | "animetv"
+    | "animemovie"
+    | "animeseason";
+
 export type PageProps<
     T extends Record<string, unknown> = Record<string, unknown>
 > = T & {
     auth: {
         user: User;
     };
+    type: ContentType;
     movie?: Movie;
     tv?: TvShow;
     tvseason?: TvSeason;
@@ -92,13 +114,14 @@ export type PageProps<
 } & (
         | { type: "movie"; movie: Movie }
         | { type: "tv"; tv: TvShow }
-        | { type: "tvseason"; tvseason: TvSeason }
+        | { type: "tvseason"; tvseason: TvSeason; links: Links }
         | { type: "animetv"; animetv: Main }
         | { type: "animemovie"; animemovie: Main }
         | {
               type: "animeseason";
               animeseason: AnimeSeason;
               user_library: AnimeSeasonUserLibrary;
+              links: Links;
           }
     );
 

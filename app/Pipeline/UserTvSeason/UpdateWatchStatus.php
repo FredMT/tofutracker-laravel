@@ -116,10 +116,8 @@ class UpdateWatchStatus
                         ]
                     );
                 }
+                $this->createTvSeasonPlay->execute($payload['user_season']);
             }
-
-            // Create season completion activity and play
-            $this->createTvSeasonPlay->execute($payload['user_season']);
         }
 
         // Update the season's watch status

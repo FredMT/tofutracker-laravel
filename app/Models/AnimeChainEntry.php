@@ -22,4 +22,12 @@ class AnimeChainEntry extends Model
     {
         return $this->belongsTo(AnidbAnime::class, 'anime_id');
     }
+
+    public static function getOrderedAnimeIdsForChain(int $chainId): array
+    {
+        return self::where('chain_id', $chainId)
+            ->orderBy('sequence_order', 'asc')
+            ->pluck('anime_id')
+            ->toArray();
+    }
 }

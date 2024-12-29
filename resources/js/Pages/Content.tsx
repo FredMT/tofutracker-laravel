@@ -23,6 +23,7 @@ import {
 import { useViewportSize } from "@mantine/hooks";
 import ContentEpisodes from "@/Components/Content/Episodes/ContentEpisodes";
 import Seasons from "@/Components/Content/TV/Seasons/Seasons";
+import SeasonBreadcrumbs from "@/Components/Content/TV/Seasons/SeasonBreadcrumbs";
 
 function Content(props: PageProps) {
     const { width } = useViewportSize();
@@ -33,6 +34,9 @@ function Content(props: PageProps) {
             <Head title={content.title} />
             <BannerImageContainer />
             <ResponsiveContainer>
+                <Box hiddenFrom="sm" mt={12}>
+                    <SeasonBreadcrumbs />
+                </Box>
                 <Space h={24} />
                 <ContentLayout
                     left={
@@ -92,6 +96,7 @@ function Content(props: PageProps) {
                     right={
                         <Box visibleFrom="sm">
                             <Stack gap={8}>
+                                <SeasonBreadcrumbs />
                                 <Title order={2}>
                                     {content.title} ({content.year})
                                 </Title>
