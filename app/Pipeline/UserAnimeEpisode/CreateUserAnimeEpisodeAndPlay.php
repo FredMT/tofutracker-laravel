@@ -2,13 +2,20 @@
 
 namespace App\Pipeline\UserAnimeEpisode;
 
+use App\Actions\CreateUserAnimePlayAction;
 use App\Enums\WatchStatus;
 use App\Models\UserAnimeEpisode;
-use App\Models\UserAnimePlay;
 use Closure;
 
 class CreateUserAnimeEpisodeAndPlay
 {
+    protected CreateUserAnimePlayAction $createPlayAction;
+
+    public function __construct(CreateUserAnimePlayAction $createPlayAction)
+    {
+        $this->createPlayAction = $createPlayAction;
+    }
+
     public function handle($payload, Closure $next)
     {
         // Create episode
@@ -20,11 +27,7 @@ class CreateUserAnimeEpisodeAndPlay
         ]);
 
         // Create play record for episode
-        UserAnimePlay::create([
-            'playable_id' => $episode->id,
-            'playable_type' => UserAnimeEpisode::class,
-            'watched_at' => now()
-        ]);
+        $this->createPlayAction->execute($episode);
 
         $payload['episode'] = $episode;
 

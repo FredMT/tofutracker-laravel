@@ -2,28 +2,33 @@
 
 namespace App\Pipeline\UserAnimeSeason;
 
+use App\Actions\CreateUserAnimePlayAction;
 use App\Enums\WatchStatus;
 use App\Models\AnimeEpisodeMapping;
 use App\Models\UserAnime;
 use App\Models\UserAnimeEpisode;
-use App\Models\UserAnimePlay;
 use Closure;
 
 class CreateUserAnimeSeasonEpisodes
 {
+    protected CreateUserAnimePlayAction $createPlayAction;
+
+    public function __construct(CreateUserAnimePlayAction $createPlayAction)
+    {
+        $this->createPlayAction = $createPlayAction;
+    }
+
     public function handle($payload, Closure $next)
     {
         $watchStatus = $payload['validated']['watch_status'];
-        // Update season's watch status
         $payload['season']->update(['watch_status' => $watchStatus]);
 
         // If status is COMPLETED, create all missing episodes and mark them completed
-        if ($watchStatus ===  WatchStatus::COMPLETED->value) {
+        if ($watchStatus === WatchStatus::COMPLETED->value) {
             // Get all non-special episodes for this anime
             $requiredEpisodes = AnimeEpisodeMapping::where('anidb_id', $payload['validated']['anidb_id'])
                 ->where('is_special', false)
                 ->get();
-
 
             // Get existing episode IDs
             $existingEpisodeIds = $payload['season']->episodes()
@@ -34,7 +39,7 @@ class CreateUserAnimeSeasonEpisodes
             foreach ($requiredEpisodes as $episode) {
                 if (!in_array($episode->id, $existingEpisodeIds)) {
                     // Create episode
-                    $userEpisode = UserAnimeEpisode::create([
+                    $userEpisode = UserAnimeEpisode::firstOrCreate([
                         'user_anime_id' => $payload['season']->id,
                         'episode_id' => $episode->tvdb_episode_id,
                         'watch_status' => WatchStatus::COMPLETED->value,
@@ -42,20 +47,12 @@ class CreateUserAnimeSeasonEpisodes
                     ]);
 
                     // Create play record for episode
-                    UserAnimePlay::create([
-                        'playable_id' => $userEpisode->id,
-                        'playable_type' => UserAnimeEpisode::class,
-                        'watched_at' => now()
-                    ]);
+                    $this->createPlayAction->execute($userEpisode);
                 }
             }
 
             // Create play record for the completed season
-            UserAnimePlay::create([
-                'playable_id' => $payload['season']->id,
-                'playable_type' => UserAnime::class,
-                'watched_at' => now()
-            ]);
+            $this->createPlayAction->execute($payload['season']);
         }
         return $next($payload);
     }

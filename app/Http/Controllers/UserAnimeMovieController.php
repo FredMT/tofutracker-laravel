@@ -22,9 +22,25 @@ use App\Models\UserAnimeCollection;
 use App\Models\UserAnimePlay;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Media;
+use App\Actions\CreateUserAnimePlayAction;
+use App\Actions\DeleteUserAnimePlayAction;
+use App\Pipeline\UserAnimeMovie\EnsureUserAnimeMovieLibrary;
+use App\Pipeline\UserAnimeMovie\UpdateExistingUserAnimeMovie;
+use App\Pipeline\UserAnimeMovie\CreateNewUserAnimeMovie;
 
 class UserAnimeMovieController extends Controller
 {
+    protected CreateUserAnimePlayAction $createPlayAction;
+    protected DeleteUserAnimePlayAction $deletePlayAction;
+
+    public function __construct(
+        CreateUserAnimePlayAction $createPlayAction,
+        DeleteUserAnimePlayAction $deletePlayAction
+    ) {
+        $this->createPlayAction = $createPlayAction;
+        $this->deletePlayAction = $deletePlayAction;
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -80,7 +96,6 @@ class UserAnimeMovieController extends Controller
             'map_id' => ['required', 'integer', 'exists:anime_maps,id'],
         ]);
 
-
         try {
             return DB::transaction(function () use ($validated, $request) {
                 // Verify map_id is related to anidb_id
@@ -104,7 +119,6 @@ class UserAnimeMovieController extends Controller
                     ->where('anidb_id', $validated['anidb_id'])
                     ->first();
 
-
                 if (!$userAnime) {
                     return back()->with([
                         'success' => false,
@@ -112,27 +126,14 @@ class UserAnimeMovieController extends Controller
                     ]);
                 }
 
-                // Authorize the action
                 if (Gate::denies('delete-anime', $userAnime)) {
                     throw new \Illuminate\Auth\Access\AuthorizationException('You do not own this anime.');
                 }
 
-                // Get the collection
                 $collection = $userAnime->collection;
 
-                // Delete all play records first
-                $playRecords = UserAnimePlay::where(function ($query) use ($userAnime) {
-                    $query->where('playable_type', UserAnime::class)
-                        ->where('playable_id', $userAnime->id);
-                })->orWhere(function ($query) use ($collection) {
-                    $query->where('playable_type', UserAnimeCollection::class)
-                        ->where('playable_id', $collection->id);
-                })->get();
+                $this->deletePlayAction->executeMultiple([$userAnime, $collection]);
 
-                // Delete play records (activity logs will be deleted by model events)
-                $playRecords->each->delete();
-
-                // Delete the collection
                 $collection->delete();
 
                 return back()->with([
@@ -242,122 +243,22 @@ class UserAnimeMovieController extends Controller
 
     public function watch_status(Request $request)
     {
-        // 1. Validate request
         $validated = $request->validate([
             'anidb_id' => ['required', 'integer', 'exists:anidb_anime,id'],
             'map_id' => ['required', 'integer', 'exists:anime_maps,id'],
             'watch_status' => ['required', Rule::enum(WatchStatus::class)],
         ]);
 
-        // 2. Verify anime and map relationship
-        $anime = AnidbAnime::findOrFail($validated['anidb_id']);
-        $mapId = $anime->map();
-
-        if ($mapId !== $validated['map_id']) {
-            return back()->with([
-                'success' => false,
-                'message' => 'Invalid map ID for this anime.',
-            ]);
-        }
-
         try {
-            // 3. Process watch status update within transaction
             return DB::transaction(function () use ($validated, $request) {
-                // Setup initial payload
-                $payload = [
+                return Pipeline::send([
                     'user' => $request->user(),
                     'validated' => $validated,
-                ];
-
-                // Use simplified pipeline with clear steps
-                return Pipeline::send($payload)
+                ])
                     ->through([
-                        function ($payload, $next) {
-                            // Step 1: Get or create user's anime library
-                            $payload['library'] = UserLibrary::firstOrCreate([
-                                'user_id' => $payload['user']->id,
-                                'type' => MediaType::ANIME,
-                            ]);
-                            return $next($payload);
-                        },
-                        function ($payload, $next) {
-                            // Step 2: Try to update existing anime entry
-                            $collection = UserAnimeCollection::where('map_id', $payload['validated']['map_id'])
-                                ->whereHas('userLibrary', fn($q) => $q->where('user_id', $payload['user']->id))
-                                ->first();
-
-                            if ($collection) {
-                                $userAnime = UserAnime::where('user_anime_collection_id', $collection->id)
-                                    ->where('anidb_id', $payload['validated']['anidb_id'])
-                                    ->first();
-
-                                if ($userAnime) {
-                                    // Verify ownership
-                                    if (Gate::denies('update-anime', $userAnime)) {
-                                        throw new AuthorizationException('You do not own this anime.');
-                                    }
-
-                                    // Update existing records
-                                    $collection->update(['watch_status' => $payload['validated']['watch_status']]);
-                                    $userAnime->update(['watch_status' => $payload['validated']['watch_status']]);
-
-                                    // Create play record if status is COMPLETED
-                                    if ($payload['validated']['watch_status'] === WatchStatus::COMPLETED->value) {
-                                        UserAnimePlay::create([
-                                            'playable_id' => $collection->id,
-                                            'playable_type' => UserAnimeCollection::class,
-                                            'watched_at' => now()
-                                        ]);
-                                        UserAnimePlay::create([
-                                            'playable_id' => $userAnime->id,
-                                            'playable_type' => UserAnime::class,
-                                            'watched_at' => now()
-                                        ]);
-                                    }
-
-                                    $payload['collection'] = $collection;
-                                    $payload['user_anime'] = $userAnime;
-                                    $payload['updated'] = true;
-                                }
-                            }
-                            return $next($payload);
-                        },
-                        function ($payload, $next) {
-                            // Step 3: Create new anime entry if not updated
-                            if (!isset($payload['updated'])) {
-                                // Create new collection and anime entry
-                                $collection = UserAnimeCollection::create([
-                                    'user_library_id' => $payload['library']->id,
-                                    'map_id' => $payload['validated']['map_id'],
-                                    'watch_status' => $payload['validated']['watch_status']
-                                ]);
-
-                                $userAnime = UserAnime::create([
-                                    'user_anime_collection_id' => $collection->id,
-                                    'anidb_id' => $payload['validated']['anidb_id'],
-                                    'is_movie' => true,
-                                    'watch_status' => $payload['validated']['watch_status']
-                                ]);
-
-                                // Create play record only if status is COMPLETED
-                                if ($payload['validated']['watch_status'] === WatchStatus::COMPLETED->value) {
-                                    UserAnimePlay::create([
-                                        'playable_id' => $userAnime->id,
-                                        'playable_type' => UserAnime::class,
-                                        'watched_at' => now()
-                                    ]);
-                                    UserAnimePlay::create([
-                                        'playable_id' => $collection->id,
-                                        'playable_type' => UserAnimeCollection::class,
-                                        'watched_at' => now()
-                                    ]);
-                                }
-
-                                $payload['collection'] = $collection;
-                                $payload['user_anime'] = $userAnime;
-                            }
-                            return $next($payload);
-                        },
+                        EnsureUserAnimeMovieLibrary::class,
+                        UpdateExistingUserAnimeMovie::class,
+                        CreateNewUserAnimeMovie::class,
                     ])
                     ->then(function ($payload) {
                         return back()->with([

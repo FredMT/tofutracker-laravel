@@ -2,14 +2,21 @@
 
 namespace App\Pipeline\UserAnimeEpisode;
 
+use App\Actions\CreateUserAnimePlayAction;
 use App\Enums\WatchStatus;
 use App\Models\AnimeEpisodeMapping;
 use App\Models\UserAnime;
-use App\Models\UserAnimePlay;
 use Closure;
 
 class UpdateUserAnimeEpisodeStatus
 {
+    protected CreateUserAnimePlayAction $createPlayAction;
+
+    public function __construct(CreateUserAnimePlayAction $createPlayAction)
+    {
+        $this->createPlayAction = $createPlayAction;
+    }
+
     public function handle($payload, Closure $next)
     {
         $userAnime = $payload['user_anime'];
@@ -28,12 +35,7 @@ class UpdateUserAnimeEpisodeStatus
         if ($completedEpisodeCount === $requiredEpisodeCount) {
             // Update anime status
             $userAnime->update(['watch_status' => WatchStatus::COMPLETED->value]);
-
-            UserAnimePlay::create([
-                'playable_id' => $userAnime->id,
-                'playable_type' => UserAnime::class,
-                'watched_at' => now()
-            ]);
+            $this->createPlayAction->execute($userAnime);
         }
 
         return $next($payload);

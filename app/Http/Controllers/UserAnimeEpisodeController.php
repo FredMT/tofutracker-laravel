@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\UserAnimeEpisode;
+use App\Models\UserAnimePlay;
 use App\Pipeline\UserAnimeEpisode\CreateUserAnimeEpisodeAndPlay;
 use App\Pipeline\UserAnimeEpisode\CreateUserAnimeEpisodeAnime;
 use App\Pipeline\UserAnimeEpisode\CreateUserAnimeEpisodeCollection;
@@ -15,9 +16,17 @@ use Illuminate\Support\Benchmark;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Pipeline;
+use App\Actions\DeleteUserAnimePlayAction;
 
 class UserAnimeEpisodeController extends Controller
 {
+    protected DeleteUserAnimePlayAction $deletePlayAction;
+
+    public function __construct(DeleteUserAnimePlayAction $deletePlayAction)
+    {
+        $this->deletePlayAction = $deletePlayAction;
+    }
+
     /**
      * Store or destroy an anime episode in the user's library.
      *
@@ -95,7 +104,6 @@ class UserAnimeEpisodeController extends Controller
             'tvdb_episode_id' => ['required', 'integer', 'exists:anime_episode_mappings,tvdb_episode_id'],
         ]);
 
-
         try {
             return DB::transaction(function () use ($request, $validated): RedirectResponse {
                 $episode = UserAnimeEpisode::query()
@@ -115,6 +123,9 @@ class UserAnimeEpisodeController extends Controller
                 if (Gate::denies('delete-anime-episode', $episode)) {
                     throw new \Illuminate\Auth\Access\AuthorizationException('You do not own this anime episode.');
                 }
+
+                // Delete play records
+                $this->deletePlayAction->execute($episode);
 
                 $episode->delete();
 

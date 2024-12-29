@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Actions\DeleteUserAnimePlayAction;
 use App\Enums\WatchStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -44,13 +45,10 @@ class UserAnime extends Model
         parent::boot();
 
         static::deleting(function (UserAnime $anime) {
-            UserAnimePlay::query()
-                ->where('playable_id', $anime->id)
-                ->where('playable_type', UserAnime::class)
-                ->delete();
+            $deletePlayAction = app(DeleteUserAnimePlayAction::class);
+            $deletePlayAction->execute($anime);
 
             $episodeIds = $anime->episodes()->pluck('id');
-
             if ($episodeIds->isNotEmpty()) {
                 UserAnimePlay::query()
                     ->where('playable_type', UserAnimeEpisode::class)
