@@ -76,7 +76,7 @@ class TvShow extends Model
     {
         return Attribute::get(function () {
             return $this->logos
-                ->sortByDesc('vote_count')
+                ->sortByDesc('vote_average')
                 ->first()['file_path'] ?? null;
         });
     }

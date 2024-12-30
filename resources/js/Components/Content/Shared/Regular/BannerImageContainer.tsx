@@ -16,6 +16,7 @@ export function BannerImageContainer() {
                 backdrop_path={animeseason.backdrop_path}
                 logo_path={animeseason.logo_path}
                 genres={[]} // Add genres if available in animeseason
+                height={540}
             />
         );
     }
@@ -31,6 +32,7 @@ export function BannerImageContainer() {
                 backdrop_path={tmdbData.backdrop_path}
                 logo_path={tmdbData.logo_path}
                 genres={tmdbData.genres}
+                height={540}
             />
         );
     }
@@ -44,6 +46,7 @@ export function BannerImageContainer() {
             backdrop_path={regularContent.backdrop_path}
             logo_path={regularContent.logo_path}
             genres={regularContent.genres}
+            height={540}
         />
     );
 }

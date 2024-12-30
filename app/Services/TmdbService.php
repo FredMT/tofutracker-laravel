@@ -255,6 +255,33 @@ class TmdbService
         });
     }
 
+    public function getTrendingAllPaginated(int $page = 1): array
+    {
+        try {
+            $response = $this->client->get('/trending/all/day', [
+                'language' => 'en-US',
+                'page' => $page
+            ]);
+
+            if (!$response->successful()) {
+                throw new \Exception('TMDB trending request failed');
+            }
+
+            $data = $response->json();
+
+            // Filter out items with media_type "person"
+            $data['results'] = collect($data['results'])
+                ->filter(fn($item) => $item['media_type'] !== 'person')
+                ->values()
+                ->all();
+
+            return $data;
+        } catch (\Exception $e) {
+            logger()->error("TMDB Trending API error: " . $e->getMessage());
+            throw $e;
+        }
+    }
+
     public function getRandomTrendingBackdropImage(): ?string
     {
         return cache()->remember('trending_backdrops', now()->addDay(), function () {

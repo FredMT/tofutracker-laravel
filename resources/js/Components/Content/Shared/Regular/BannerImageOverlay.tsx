@@ -33,7 +33,9 @@ export function BannerImageOverlay({
                         src={`https://image.tmdb.org/t/p/original${logo_path}`}
                         alt={title}
                         fit="contain"
-                        w={400}
+                        height={120}
+                        mih={120}
+                        mah={120}
                         className={classes.logo}
                     />
                 )}

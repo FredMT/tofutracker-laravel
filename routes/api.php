@@ -1,6 +1,8 @@
 <?php
 
+use App\Actions\Trending\GetTrendingAction;
 use App\Services\TmdbService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -46,6 +48,15 @@ Route::prefix('tmdb')->group(function () {
 
         Route::get('/all', function () {
             return app(TmdbService::class)->getTrendingAll();
+        });
+        Route::get('/allpaginated', function (Request $request) {
+            return app(TmdbService::class)->getTrendingAllPaginated(
+                $request->query('page', 1)
+            );
+        });
+        Route::get('/fuckyeah', function () {
+            set_time_limit(120); // Set 2 minutes timeout
+            return app(GetTrendingAction::class)->execute();
         });
     });
 
