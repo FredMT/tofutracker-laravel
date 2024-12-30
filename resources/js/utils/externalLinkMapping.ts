@@ -19,6 +19,11 @@ export const externalLinkMapping: LinkMapping = {
         url: (id) => `https://baike.baidu.com/item/${id}`,
         icon: "/icons/baidu.svg",
     },
+    douban: {
+        name: "Douban",
+        url: (id) => `https://douban.com/subject/${id}`,
+        icon: "/icons/douban.png",
+    },
     primevideo: {
         name: "Amazon",
         url: (id) => `https://www.amazon.com/dp/${id}`,

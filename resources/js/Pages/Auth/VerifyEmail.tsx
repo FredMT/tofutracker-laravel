@@ -92,6 +92,7 @@ export default function VerifyEmail({
                             <Image
                                 src={`https://image.tmdb.org/t/p/original${backdropImage}`}
                                 alt="Verify email background"
+                                loading="lazy"
                                 className={styles.backgroundImage}
                             />
                         </Box>

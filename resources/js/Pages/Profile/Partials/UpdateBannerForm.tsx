@@ -110,6 +110,7 @@ export default function UpdateBannerForm() {
                                     alt="New Banner"
                                     maw={530}
                                     mih={200}
+                                    loading="lazy"
                                     radius="md"
                                 />
                                 <Text size="xs" c="dimmed">
@@ -124,6 +125,7 @@ export default function UpdateBannerForm() {
                                     alt="Current Banner"
                                     maw={530}
                                     mih={200}
+                                    loading="lazy"
                                     radius="md"
                                 />
                                 <Text size="xs" c="dimmed">

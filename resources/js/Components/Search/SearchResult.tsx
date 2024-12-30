@@ -51,6 +51,7 @@ export default function SearchResult({
                     className="aspect-[2/3] object-cover transition-transform duration-300 group-hover:scale-105"
                     fallbackSrc={`https://placehold.co/300x450?text=${item.title}`}
                     radius="md"
+                    loading="lazy"
                     fit="fill"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent">
@@ -80,6 +81,7 @@ export default function SearchResult({
                             h={150}
                             w={100}
                             alt={item.title}
+                            loading="lazy"
                             fallbackSrc={`https://placehold.co/133x200?text=${item.title}`}
                         />
                     </Link>

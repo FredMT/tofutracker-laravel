@@ -1,6 +1,7 @@
 <?php
 
 use App\Actions\Trending\GetTrendingAction;
+use App\Actions\Trending\GetTrendingGenresAndWatchProvidersAction;
 use App\Services\TmdbService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -54,9 +55,13 @@ Route::prefix('tmdb')->group(function () {
                 $request->query('page', 1)
             );
         });
-        Route::get('/fuckyeah', function () {
+        Route::get('/trendingallpaginated', function () {
             set_time_limit(120); // Set 2 minutes timeout
             return app(GetTrendingAction::class)->execute();
+        });
+        Route::get('/trendingbyproviders', function () {
+            set_time_limit(180); // Set 3 minutes timeout
+            return app(GetTrendingGenresAndWatchProvidersAction::class)->execute();
         });
     });
 

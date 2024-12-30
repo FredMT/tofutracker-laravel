@@ -88,6 +88,7 @@ export default function ConfirmPassword({
                             <Image
                                 src={`https://image.tmdb.org/t/p/original${backdropImage}`}
                                 alt="Confirm password background"
+                                loading="lazy"
                                 className={styles.backgroundImage}
                             />
                         </Box>

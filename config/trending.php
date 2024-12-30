@@ -12,9 +12,12 @@ return [
     'ignored_ids' => [
         // Add IDs to ignore here
         46260, // Naruto
+        31910, // Naruto Shippuden
         37854, // One Piece
         60572, // Pokemon
-        12971 // Dragon Ball Z
+        12971, // Dragon Ball Z
+        236994, // Dragon Ball DAIMA
+        62715, // Dragon Ball Super
     ],
 
     /*

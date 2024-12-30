@@ -29,6 +29,7 @@ export default function SearchResultItem({
                 h={110}
                 w={73}
                 radius="sm"
+                loading="lazy"
                 alt={title}
                 fallbackSrc="https://placehold.co/73x110"
             />

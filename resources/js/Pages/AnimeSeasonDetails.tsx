@@ -204,6 +204,7 @@ function AnimeSeasonDetails() {
                                                 src={config.icon}
                                                 alt={config.name}
                                                 w={48}
+                                                loading="lazy"
                                                 h={16}
                                                 fit="contain"
                                             />

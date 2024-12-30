@@ -40,6 +40,7 @@ export function ActivityListItem({ activity }: ActivityListItemProps) {
                     height={100}
                     h={100}
                     w={67}
+                    loading="lazy"
                     radius="md"
                 />
                 <Stack gap={0}>

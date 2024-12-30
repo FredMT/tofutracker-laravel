@@ -46,6 +46,7 @@ export default function AnimeCard({ collection }: AnimeCardProps) {
                                 }
                                 alt={`${collection.title} Poster`}
                                 height={210}
+                                loading="lazy"
                                 className={classes.posterImage}
                                 radius="md"
                                 fallbackSrc={`https://placehold.co/172x260?text=${

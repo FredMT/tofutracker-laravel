@@ -17,6 +17,7 @@ export function UserBanner({
                 src={bannerUrl}
                 height={320}
                 h={320}
+                loading="lazy"
                 alt="Profile Banner"
                 fit="cover"
             />

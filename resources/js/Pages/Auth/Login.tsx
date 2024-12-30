@@ -121,6 +121,7 @@ function Login({
                             <Image
                                 src={`https://image.tmdb.org/t/p/original${backdropImage}`}
                                 alt="Login background"
+                                loading="lazy"
                                 className={styles.backgroundImage}
                             />
                         </Box>

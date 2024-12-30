@@ -39,6 +39,7 @@ export function TvSeasonTable({ show, sortedSeasons }: TvSeasonTableProps) {
                                     }
                                     height={100}
                                     width={67}
+                                    loading="lazy"
                                     radius="sm"
                                     alt={season.title || ""}
                                     fallbackSrc={`https://placehold.co/92x138?text=${

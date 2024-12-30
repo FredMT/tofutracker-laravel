@@ -369,4 +369,51 @@ class Movie extends Model
 
         return $details;
     }
+
+    public function watchProviders(): Attribute
+    {
+        return Attribute::get(function () {
+            $providers = $this->data['watch/providers']['results'] ?? [];
+
+            return collect($providers)
+                ->filter(function ($countryData) {
+                    return isset($countryData['flatrate']);
+                })
+                ->map(function ($countryData, $countryCode) {
+                    return collect($countryData['flatrate'])->map(function ($provider) use ($countryCode, $countryData) {
+                        return [
+                            'country_code' => $countryCode,
+                            'provider_id' => $provider['provider_id'],
+                            'provider_name' => $provider['provider_name'],
+                            'logo_path' => $provider['logo_path'],
+                            'link' => $countryData['link']
+                        ];
+                    });
+                })
+                ->flatten(1)
+                ->values();
+        });
+    }
+
+    public function getWatchProvidersForCountry(string $countryCode): array
+    {
+        $countryData = $this->data['watch/providers']['results'][$countryCode] ?? null;
+
+        if (!$countryData || !isset($countryData['flatrate'])) {
+            return [];
+        }
+
+        return collect($countryData['flatrate'])
+            ->map(function ($provider) use ($countryCode, $countryData) {
+                return [
+                    'country_code' => $countryCode,
+                    'provider_id' => $provider['provider_id'],
+                    'provider_name' => $provider['provider_name'],
+                    'logo_path' => $provider['logo_path'],
+                    'link' => $countryData['link']
+                ];
+            })
+            ->values()
+            ->all();
+    }
 }

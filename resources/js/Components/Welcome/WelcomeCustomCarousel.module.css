@@ -1,0 +1,28 @@
+.carouselControl {
+    color: light-dark(black, white);
+    background: transparent;
+    box-shadow: none;
+    border-radius: 5px;
+    width: 40px;
+    height: 40px;
+}
+
+.carouselControl svg {
+    width: 20px !important;
+    height: 20px !important;
+}
+
+.carouselControl[data-inactive] {
+    opacity: 0;
+    cursor: default;
+    color: inherit;
+}
+
+.carouselControls {
+    top: -72px;
+    justify-content: flex-end;
+    gap: 10px;
+    background-color: transparent;
+    position: absolute;
+    right: 0;
+}

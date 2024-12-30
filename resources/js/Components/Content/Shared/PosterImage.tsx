@@ -20,6 +20,7 @@ function PosterImage() {
                     height={186}
                     fallbackSrc="https://placehold.co/600x900?text=No+Poster"
                     className={classes.poster}
+                    loading="lazy"
                 />
             </div>
         );
@@ -38,6 +39,7 @@ function PosterImage() {
                     fit="cover"
                     fallbackSrc="https://placehold.co/600x900?text=No+Poster"
                     className={classes.poster}
+                    loading="lazy"
                 />
             </div>
         );
@@ -54,6 +56,7 @@ function PosterImage() {
                 fit="cover"
                 fallbackSrc="https://placehold.co/600x900?text=No+Poster"
                 className={classes.poster}
+                loading="lazy"
             />
         </div>
     );

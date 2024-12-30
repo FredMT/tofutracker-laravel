@@ -100,6 +100,7 @@ export default function UpdateAvatarForm() {
                                     alt="New Avatar"
                                     maw={200}
                                     width={200}
+                                    loading="lazy"
                                     radius="md"
                                 />
                                 <Text size="xs" c="dimmed">
@@ -115,6 +116,7 @@ export default function UpdateAvatarForm() {
                                     width={200}
                                     height={200}
                                     radius="md"
+                                    loading="lazy"
                                 />
                                 <Text size="xs" c="dimmed">
                                     Current Avatar

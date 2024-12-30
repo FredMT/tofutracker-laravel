@@ -10,6 +10,7 @@ use App\Models\TvShow;
 use App\Services\TmdbService;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
+use Carbon\Carbon;
 
 class GetTrendingAction
 {
@@ -99,12 +100,16 @@ class GetTrendingAction
 
         return [
             'title' => $item['title'],
-            'release_date' => $item['release_date'],
+            'release_date' => Carbon::parse($item['release_date'])->format('jS F, Y'),
             'genres' => $this->getGenreNames($item['genre_ids']),
             'overview' => $item['overview'],
             'backdrop_path' => $item['backdrop_path'],
+            'poster_path' => $item['poster_path'],
             'logo_path' => $logoPath,
-            'link' => $item['id']
+            'vote_average' => $item['vote_average'],
+            'popularity' => $item['popularity'],
+            'link' => $item['id'],
+            'type' => 'movie'
         ];
     }
 
@@ -114,12 +119,16 @@ class GetTrendingAction
 
         return [
             'title' => $item['name'],
-            'release_date' => $item['first_air_date'],
+            'release_date' => Carbon::parse($item['first_air_date'])->format('jS F, Y'),
             'genres' => $this->getGenreNames($item['genre_ids']),
             'overview' => $item['overview'],
             'backdrop_path' => $item['backdrop_path'],
+            'poster_path' => $item['poster_path'],
             'logo_path' => $logoPath,
-            'link' => $item['id']
+            'popularity' => $item['popularity'],
+            'vote_average' => $item['vote_average'],
+            'link' => $item['id'],
+            'type' => 'tv'
         ];
     }
 
@@ -129,14 +138,22 @@ class GetTrendingAction
             ? $this->getMovieLogoPath($item['id'])
             : $this->getTvLogoPath($item['id']);
 
+        $releaseDate = $item['media_type'] === 'movie'
+            ? $item['release_date']
+            : $item['first_air_date'];
+
         return [
             'title' => $item['media_type'] === 'movie' ? $item['title'] : $item['name'],
-            'release_date' => $item['media_type'] === 'movie' ? $item['release_date'] : $item['first_air_date'],
+            'release_date' => Carbon::parse($releaseDate)->format('jS F, Y'),
             'genres' => $this->getGenreNames($item['genre_ids']),
             'overview' => $item['overview'],
             'backdrop_path' => $item['backdrop_path'],
+            'poster_path' => $item['poster_path'],
             'logo_path' => $logoPath,
-            'link' => $animeMapId
+            'popularity' => $item['popularity'],
+            'vote_average' => $item['vote_average'],
+            'link' => $animeMapId,
+            'type' => 'anime'
         ];
     }
 

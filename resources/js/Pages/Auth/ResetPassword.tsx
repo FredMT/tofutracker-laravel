@@ -119,6 +119,7 @@ export default function ResetPassword({
                                 src={`https://image.tmdb.org/t/p/original${backdropImage}`}
                                 alt="Reset password background"
                                 className={styles.backgroundImage}
+                                loading="lazy"
                             />
                         </Box>
                     </Group>

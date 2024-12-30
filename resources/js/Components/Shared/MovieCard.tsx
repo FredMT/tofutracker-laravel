@@ -37,6 +37,7 @@ export function MovieCard({
                         src={src}
                         alt={`${title} Poster`}
                         height={210}
+                        loading="lazy"
                         className={classes.posterImage}
                         radius="md"
                         fallbackSrc={`https://placehold.co/172x260?text=${

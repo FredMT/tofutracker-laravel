@@ -14,7 +14,7 @@ class FetchUpdatedAnimeCommand extends Command
     public function handle(AnidbUdpService $udpService): void
     {
         try {
-            $result = $udpService->getUpdatedAnime(2);
+            $result = $udpService->getUpdatedAnime(3);
 
             if (!isset($result['anime_ids']) || empty($result['anime_ids'])) {
                 logger()->info('No anime updates found');

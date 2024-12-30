@@ -132,6 +132,7 @@ function Register({ backdropImage }: { backdropImage: string }) {
                             <Image
                                 src={`https://image.tmdb.org/t/p/original${backdropImage}`}
                                 alt="Register background"
+                                loading="lazy"
                                 className={styles.backgroundImage}
                             />
                         </Box>

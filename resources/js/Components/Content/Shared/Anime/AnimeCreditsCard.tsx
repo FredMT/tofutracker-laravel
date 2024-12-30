@@ -91,6 +91,7 @@ function AnimeCreditsCard({ character, seiyuus }: AnimeCreditsCardProps) {
                             miw={124}
                             w={124}
                             radius={"md"}
+                            loading="lazy"
                             alt={seiyuus[0]?.name}
                             fit="cover"
                             style={{ objectPosition: "top" }}

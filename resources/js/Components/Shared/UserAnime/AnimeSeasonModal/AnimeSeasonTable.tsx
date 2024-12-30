@@ -61,6 +61,7 @@ export default function AnimeSeasonTable({
                                         height={100}
                                         width={67}
                                         radius="sm"
+                                        loading="lazy"
                                         alt={entry.title}
                                         fallbackSrc={`https://placehold.co/92x138?text=${entry.title}`}
                                     />
