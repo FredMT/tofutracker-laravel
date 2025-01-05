@@ -1,20 +1,42 @@
 import ResponsiveContainer from "@/Components/ResponsiveContainer";
-import { Avatar, Box, Image } from "@mantine/core";
+import { Avatar, Image, Alert, Text } from "@mantine/core";
 import classes from "./UserBanner.module.css";
+import { Link, usePage } from "@inertiajs/react";
 
-interface UserBannerProps {
-    bannerUrl?: string;
-    avatarUrl?: string;
+interface UserData {
+    id: number;
+    username: string;
+    name: string;
+    created_at: string;
+    avatar: string;
+    banner: string;
+    mustVerifyEmail?: boolean;
 }
 
-export function UserBanner({
-    bannerUrl = "/banner/profilebanner1.webp",
-    avatarUrl = "/default-avatar.png",
-}: UserBannerProps) {
+function getRandomBanner() {
+    const randomNum = Math.floor(Math.random() * 6);
+    return `/banner/userbanner${randomNum}.webp`;
+}
+
+export function UserBanner() {
+    const { userData } = usePage<{ userData: UserData }>().props;
     return (
         <div className={classes.bannerContainer}>
+            {userData.mustVerifyEmail && (
+                <Alert>
+                    <Text size="sm">
+                        Verify your email to unlock all features. Click{" "}
+                        <Link href="/verify-email">
+                            <Text span c="blue">
+                                here
+                            </Text>
+                        </Link>{" "}
+                        to resend verification email.
+                    </Text>
+                </Alert>
+            )}
             <Image
-                src={bannerUrl}
+                src={userData.banner || getRandomBanner()}
                 height={320}
                 h={320}
                 loading="lazy"
@@ -25,7 +47,7 @@ export function UserBanner({
                 <ResponsiveContainer>
                     <div className={classes.avatarWrapper}>
                         <Avatar
-                            src={avatarUrl}
+                            src={userData.avatar}
                             size={128}
                             radius="50%"
                             style={{

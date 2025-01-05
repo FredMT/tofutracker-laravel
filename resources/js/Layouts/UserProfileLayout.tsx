@@ -11,6 +11,7 @@ interface UserData {
     created_at: string;
     avatar: string;
     banner: string;
+    mustVerifyEmail?: boolean;
 }
 
 interface UserProfileLayoutProps {
@@ -24,10 +25,7 @@ export default function UserProfileLayout({
     return (
         <>
             <Space h={64} />
-            <UserBanner
-                bannerUrl={`https://tofutracker.fra1.digitaloceanspaces.com/${userData.banner}`}
-                avatarUrl={`https://tofutracker.fra1.digitaloceanspaces.com/${userData.avatar}`}
-            />
+            <UserBanner />
             <Box>
                 <ResponsiveContainer>
                     <Space h={40} hiddenFrom="gtmd" />

@@ -1,11 +1,11 @@
 import ContentEpisodeCard from "@/Components/Content/Episodes/ContentEpisodeCard";
-import { PageProps } from "@/types";
+import { AnimeSeason } from "@/types/animeseason";
 import { usePage } from "@inertiajs/react";
 import { Button, Space, Spoiler, Stack, Tabs, Title } from "@mantine/core";
 import { useState } from "react";
 
 function AnimeContentEpisodes() {
-    const { animeseason } = usePage<PageProps>().props;
+    const { animeseason } = usePage<{ animeseason: AnimeSeason }>().props;
 
     if (!animeseason?.mapped_episodes) return null;
 

@@ -1,4 +1,3 @@
-import { PageProps } from "@/types";
 import { usePage } from "@inertiajs/react";
 import {
     Box,
@@ -13,11 +12,11 @@ import {
 import { useMediaQuery } from "@mantine/hooks";
 import classes from "./AnimeSeasonDetails.module.css";
 import { externalLinkMapping } from "@/utils/externalLinkMapping";
+import { AnimeSeason } from "@/types/animeseason";
+
 function AnimeSeasonDetails() {
     const isMobile = useMediaQuery("(max-width: 900px)");
-
-    const { animeseason } = usePage<PageProps>().props;
-
+    const { animeseason } = usePage<{ animeseason: AnimeSeason }>().props;
     if (!animeseason) return null;
 
     const titles = [

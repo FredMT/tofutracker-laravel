@@ -31,11 +31,11 @@ interface BaseUserLibrary {
     }[];
 }
 
-interface AnimeSeasonUserLibrary {
+export interface AnimeSeasonUserLibrary {
     id: number;
     watch_status: WatchStatus;
     rating: number | null;
-    episodes: Array<{
+    episodes?: {
         id: number;
         user_id: number | null;
         user_anime_id: number;
@@ -43,7 +43,7 @@ interface AnimeSeasonUserLibrary {
         watch_status: WatchStatus;
         rating: number | null;
         is_special: boolean;
-    }>;
+    }[];
 }
 
 interface AnimeUserLibrary {
@@ -92,8 +92,7 @@ export type ContentType =
     | "tv"
     | "tvseason"
     | "animetv"
-    | "animemovie"
-    | "animeseason";
+    | "animemovie";
 
 export type PageProps<
     T extends Record<string, unknown> = Record<string, unknown>
@@ -107,7 +106,6 @@ export type PageProps<
     tvseason?: TvSeason;
     animetv?: Anime;
     animemovie?: Anime;
-    animeseason?: AnimeSeason;
     flash?: FlashMessage;
     ziggy: Config & { location: string };
     user_library: ContentTypeToLibrary<T> | null;
@@ -117,12 +115,6 @@ export type PageProps<
         | { type: "tvseason"; tvseason: TvSeason; links: Links }
         | { type: "animetv"; animetv: Main }
         | { type: "animemovie"; animemovie: Main }
-        | {
-              type: "animeseason";
-              animeseason: AnimeSeason;
-              user_library: AnimeSeasonUserLibrary;
-              links: Links;
-          }
     );
 
 interface BaseContent {

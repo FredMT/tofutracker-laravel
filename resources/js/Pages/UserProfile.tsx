@@ -15,6 +15,7 @@ interface UserData {
     avatar: string;
     banner: string;
     bio: string;
+    mustVerifyEmail?: boolean;
 }
 
 interface PageProps {

@@ -9,16 +9,17 @@ import ResponsiveContainer from "@/Components/ResponsiveContainer";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
 import ContentLayout from "@/Layouts/ContentLayout";
 import AnimeSeasonDetails from "@/Pages/AnimeSeasonDetails";
-import { PageProps } from "@/types";
 import { Head, usePage } from "@inertiajs/react";
 import { Box, Divider, Space, Stack, Title } from "@mantine/core";
 import { useViewportSize } from "@mantine/hooks";
 import SeasonBreadcrumbs from "@/Components/Content/TV/Seasons/SeasonBreadcrumbs";
+import { AnimeSeason } from "@/types/animeseason";
 
 function AnimeSeasonContent() {
+    const { animeseason } = usePage<{ animeseason: AnimeSeason }>().props;
     const { width } = useViewportSize();
-    const { animeseason } = usePage<PageProps>().props;
     if (!animeseason) return null;
+
     return (
         <>
             <Head title={animeseason.title_main} />

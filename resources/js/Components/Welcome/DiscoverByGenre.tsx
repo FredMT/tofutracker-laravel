@@ -19,7 +19,7 @@ import classes from "./WelcomeCustomCarousel.module.css";
 import WelcomeCarouselCard from "./WelcomeCarouselCard";
 
 interface GenreItem {
-    id: number;
+    id: string;
     media_type: string;
     title: string;
     release_date: string;

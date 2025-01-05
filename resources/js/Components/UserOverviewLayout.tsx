@@ -1,5 +1,4 @@
 import { Box, Stack } from "@mantine/core";
-import { PropsWithChildren } from "react";
 
 interface UserOverviewLayoutProps {
     leftSection: React.ReactNode;

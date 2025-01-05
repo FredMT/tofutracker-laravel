@@ -26,7 +26,7 @@ class UserController extends Controller
      * @param string $username
      * @return \Inertia\Response
      */
-    public function show($username)
+    public function show(Request $request, $username)
     {
         $user = User::where('username', $username)
             ->firstOrFail();
@@ -46,19 +46,26 @@ class UserController extends Controller
                 'poster_path' => $poster['path'] ?? null,
                 'poster_from' => $poster['from'] ?? null,
             ];
-        });
+        }); 
+        
+        $isOwnProfile = $request->user() && $request->user()->id === $user->id;
+
+        $userData = [
+            'id' => $user->id,
+            'username' => $user->username,
+            'created_at' => 'Joined ' . $user->created_at->format('F Y'),
+            'avatar' => $user->avatar,
+            'banner' => $user->banner,
+            'bio' => $user->bio,
+        ];
+
+        if ($isOwnProfile) {
+            $userData['mustVerifyEmail'] = !$request->user()->hasVerifiedEmail();
+        }
 
         return Inertia::render('UserProfile', [
-            'userData' => [
-                'id' => $user->id,
-                'username' => $user->username,
-                'created_at' => 'Joined ' . $user->created_at->format('F Y'),
-                'avatar' => $user->avatar,
-                'banner' => $user->banner,
-                'bio' => $user->bio,
-            ],
-            'activities' =>
-            Inertia::merge(fn() => $activities->items()),
+            'userData' => $userData,
+            'activities' => Inertia::merge(fn() => $activities->items()),
             'activities_pagination' => $activities->toArray()
         ]);
     }

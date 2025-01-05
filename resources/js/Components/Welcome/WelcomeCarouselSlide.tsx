@@ -1,15 +1,6 @@
 import BoundedContainer from "@/Components/BoundedContainer";
 import { Link } from "@inertiajs/react";
-import {
-    Badge,
-    Box,
-    Button,
-    Flex,
-    Image,
-    Stack,
-    Text,
-    Title,
-} from "@mantine/core";
+import { Badge, Button, Flex, Image, Stack, Text, Title } from "@mantine/core";
 import classes from "./WelcomeCarouselSlide.module.css";
 import { useMediaQuery } from "@mantine/hooks";
 
@@ -90,6 +81,7 @@ export default function WelcomeCarouselSlide({
                         maw={140}
                         c="white"
                         size="md"
+                        prefetch
                         radius="md"
                         style={{
                             borderColor: "white",

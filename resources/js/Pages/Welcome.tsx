@@ -60,7 +60,7 @@ interface Props {
     >;
 }
 
-function Welcome({ auth, by_genre, watch_providers }: Props) {
+function Welcome() {
     const autoplay = useRef(Autoplay({ delay: 5000 }));
 
     // Sort each type by popularity
@@ -79,33 +79,28 @@ function Welcome({ auth, by_genre, watch_providers }: Props) {
     // Create final slides array starting with most popular TV show
     const finalSlides: MediaItem[] = [sortedTv[0]];
 
-    // Remove the first TV show since we've used it
     sortedTv.shift();
 
-    // Create arrays to track current index for each type
     let movieIndex = 0;
     let tvIndex = 0;
     let animeIndex = 0;
 
-    // Fill remaining slots by rotating through types
+    // Fill remaining slots by rotating through types, adding movie tv and anime if available
     while (
         movieIndex < sortedMovies.length ||
         tvIndex < sortedTv.length ||
         animeIndex < sortedAnime.length
     ) {
-        // Add movie if available
         if (movieIndex < sortedMovies.length) {
             finalSlides.push(sortedMovies[movieIndex]);
             movieIndex++;
         }
 
-        // Add TV show if available
         if (tvIndex < sortedTv.length) {
             finalSlides.push(sortedTv[tvIndex]);
             tvIndex++;
         }
 
-        // Add anime if available
         if (animeIndex < sortedAnime.length) {
             finalSlides.push(sortedAnime[animeIndex]);
             animeIndex++;
