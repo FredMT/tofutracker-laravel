@@ -1,16 +1,24 @@
-import { DesktopRating } from "@/Components/Content/Shared/DesktopRating";
-import { MobileRating } from "@/Components/Content/Shared/MobileRating";
+import {DesktopRating} from "@/Components/Content/Shared/DesktopRating";
+import {MobileRating} from "@/Components/Content/Shared/MobileRating";
 import useForm from "@/hooks/useForm";
-import { AnimeType, PageProps } from "@/types";
-import { usePage } from "@inertiajs/react";
-import { Button } from "@mantine/core";
-import { useDisclosure, useMediaQuery } from "@mantine/hooks";
-import { notifications } from "@mantine/notifications";
-import { Check, CircleAlertIcon, Star } from "lucide-react";
+import {AnimeType, AnimeUserLibrary} from "@/types";
+import {Anime} from "@/types/anime";
+import {usePage} from "@inertiajs/react";
+import {Button} from "@mantine/core";
+import {useDisclosure, useMediaQuery} from "@mantine/hooks";
+import {notifications} from "@mantine/notifications";
+import {Check, CircleAlertIcon, Star} from "lucide-react";
 
 export default function AnimeRateContent() {
-    const { type, animemovie, animeseason, animetv, user_library } =
-        usePage<PageProps<AnimeType>>().props;
+    const {
+        type,
+        data: anime,
+        user_library,
+    } = usePage<{
+        type: AnimeType;
+        data: Anime;
+        user_library: AnimeUserLibrary;
+    }>().props;
 
     const [opened, { open, close }] = useDisclosure(false);
     const isMobile = useMediaQuery("(max-width: 50em)");
@@ -23,12 +31,13 @@ export default function AnimeRateContent() {
         switch (type) {
             case "animemovie":
                 return {
-                    anidb_id: animemovie.anidb_id,
-                    map_id: animemovie.map_id,
+                    anidb_id: anime.anidb_id,
+                    map_id: anime.map_id,
                 };
             case "animetv":
-                return { map_id: animetv.map_id };
-                defaulnt: throw new Error("Invalid anime type");
+                return { map_id: anime.map_id };
+            default:
+                throw new Error("Invalid anime type");
         }
     };
 
@@ -74,16 +83,7 @@ export default function AnimeRateContent() {
             case "animemovie":
                 return "movie";
             case "animetv":
-                return "anime collection";
-        }
-    };
-
-    const getContentTitle = () => {
-        switch (type) {
-            case "animemovie":
-                return animemovie.collection_name;
-            case "animetv":
-                return animetv.collection_name;
+                return "anime";
         }
     };
 
@@ -94,7 +94,7 @@ export default function AnimeRateContent() {
                 close={close}
                 rating={data.rating}
                 setRating={(val) => setData("rating", val)}
-                title={getContentTitle()}
+                title={anime.collection_name}
                 onSubmit={submit}
                 processing={processing}
             />

@@ -3,6 +3,10 @@ import { Config } from "ziggy-js";
 import { WatchStatus } from "./enums";
 import { AnimeSeason } from "@/types/animeseason";
 
+export interface Auth {
+    user: User | null;
+}
+
 export interface User {
     id: number;
     username: string;
@@ -55,13 +59,13 @@ interface AnimeUserLibrary {
         rating: number | null;
         watch_status: WatchStatus;
     };
-    anime: Array<{
+    anime: {
         id: number;
         anidb_id: number | null;
         is_movie: boolean;
         rating: number | null;
         watch_status: WatchStatus;
-    }>;
+    }[];
 }
 
 type UserLibrary = BaseUserLibrary | AnimeUserLibrary;
@@ -86,13 +90,6 @@ export interface Links {
         is_current: boolean;
     }>;
 }
-
-export type ContentType =
-    | "movie"
-    | "tv"
-    | "tvseason"
-    | "animetv"
-    | "animemovie";
 
 export type PageProps<
     T extends Record<string, unknown> = Record<string, unknown>
@@ -141,21 +138,21 @@ interface BaseContent {
     first_air_date?: string;
 }
 
-interface TvSeason extends BaseContent {
+export type TvSeason = BaseContent & {
     season_number: number;
     air_date: string;
     episodes: Episode[];
     show_id: number;
-}
+};
 
-export interface Movie extends BaseContent {
+export type Movie = BaseContent & {
     release_date: string;
     runtime: string;
     details: MovieDetails;
-}
+};
 
 // TV-specific content
-export interface TvShow extends BaseContent {
+export type TvShow = BaseContent & {
     first_air_date: string;
     last_air_date: string;
     details: TvDetails;
@@ -166,7 +163,7 @@ export interface TvShow extends BaseContent {
     type: string;
     number_of_episodes: number;
     number_of_seasons: number;
-}
+};
 
 interface Genre {
     id: number;
@@ -304,6 +301,14 @@ interface AnimePerson extends BasePerson {
     characters?: string; // For crew members
 }
 
-export type AnimeType = {
-    type: "animemovie" | "animetv";
-};
+export type ContentType =
+    | "movie"
+    | "tv"
+    | "tvseason"
+    | "animetv"
+    | "animemovie"
+    | "animeseason";
+export type AnimeType = "animemovie" | "animetv" | "animeseason";
+export type RegularType = "movie" | "tv" | "tvseason";
+export type AnimeContentDataType = Anime | AnimeSeason;
+export type RegularContentDataType = Movie | TvShow | Tvseason;

@@ -58,8 +58,8 @@ class TvSeasonController extends Controller
             $links = $this->generateNavigationLinks($tvId, (int)$seasonNumber);
 
 
-            return Inertia::render('Content', [
-                'tvseason' => $seasonData,
+            return Inertia::render('TVSeason', [
+                'data' => $seasonData,
                 'user_library' => $userLibrary,
                 'type' => 'tvseason',
                 'links' => $links

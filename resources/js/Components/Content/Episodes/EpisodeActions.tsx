@@ -2,7 +2,7 @@ import { Button, Paper } from "@mantine/core";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { useForm, usePage } from "@inertiajs/react";
 import { notifications } from "@mantine/notifications";
-import { PageProps } from "@/types";
+import { BaseUserLibrary, PageProps, TvSeason } from "@/types";
 import { useState } from "react";
 
 interface EpisodeActionsProps {
@@ -17,7 +17,10 @@ interface FormErrors {
 }
 
 export default function EpisodeActions({ episodal_id }: EpisodeActionsProps) {
-    const { tvseason, user_library } = usePage<PageProps>().props;
+    const { tvseason, user_library } = usePage<{
+        tvseason: TvSeason;
+        user_library: BaseUserLibrary;
+    }>().props;
     const [isHovered, setIsHovered] = useState(false);
 
     const form = useForm<{

@@ -1,4 +1,4 @@
-import { PageProps } from "@/types";
+import {ContentType, PageProps} from "@/types";
 import { usePage } from "@inertiajs/react";
 import MovieActions from "./components/MovieActions";
 import TvShowActions from "./components/TvShowActions";
@@ -8,7 +8,7 @@ import AnimeTvActions from "@/Components/ContentActions/components/AnimeTvAction
 import AnimeSeasonActions from "@/Components/ContentActions/components/AnimeSeasonActions";
 
 function ContentActions() {
-    const { type } = usePage<PageProps>().props;
+    const { type } = usePage<{type: ContentType}>().props;
 
     switch (type) {
         case "movie":

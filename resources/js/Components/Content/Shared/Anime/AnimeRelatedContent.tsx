@@ -4,6 +4,7 @@ import { usePage } from "@inertiajs/react";
 import { PageProps } from "@/types";
 import AnimeRelatedContentCard from "@/Components/Content/Shared/Anime/AnimeRelatedContentCard";
 import { CustomCarousel } from "@/Components/Shared/CustomCarousel";
+import {AnimeSeason} from "@/types/animeseason";
 
 interface AnimeRelatedContentProps {
     containerWidth: number;
@@ -14,15 +15,15 @@ export default function AnimeRelatedContent({
     containerWidth,
     slideSize = "0%",
 }: AnimeRelatedContentProps) {
-    const { animeseason } = usePage<PageProps>().props;
+    const { data } = usePage<{ data: AnimeSeason }>().props;
 
-    if (!animeseason) return null;
+    if (!data) return null;
 
     // Filter out invalid entries
-    const validRelatedAnime = animeseason.related_anime.filter(
+    const validRelatedAnime = data.related_anime.filter(
         (anime) => anime.id != null && anime.map_id != null
     );
-    const validSimilarAnime = animeseason.similar_anime.filter(
+    const validSimilarAnime = data.similar_anime.filter(
         (anime) => anime.id != null && anime.map_id != null
     );
 

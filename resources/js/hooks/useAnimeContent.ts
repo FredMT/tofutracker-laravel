@@ -12,7 +12,6 @@ interface AnimeContentReturn {
 export function useAnimeContent(): AnimeContentReturn | null {
     const { type, animetv, animemovie } = usePage<PageProps>().props;
 
-    // Guard for non-anime content types
     if (type !== "animetv" && type !== "animemovie") {
         return null;
     }

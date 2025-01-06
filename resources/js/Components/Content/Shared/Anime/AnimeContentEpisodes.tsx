@@ -5,11 +5,11 @@ import { Button, Space, Spoiler, Stack, Tabs, Title } from "@mantine/core";
 import { useState } from "react";
 
 function AnimeContentEpisodes() {
-    const { animeseason } = usePage<{ animeseason: AnimeSeason }>().props;
+    const { data } = usePage<{ data: AnimeSeason }>().props;
 
-    if (!animeseason?.mapped_episodes) return null;
+    if (!data?.mapped_episodes) return null;
 
-    const { mainEpisodes, specialEpisodes } = animeseason.mapped_episodes;
+    const { mainEpisodes, specialEpisodes } = data.mapped_episodes;
 
     const filteredMainEpisodes = Object.fromEntries(
         Object.entries(mainEpisodes).filter(

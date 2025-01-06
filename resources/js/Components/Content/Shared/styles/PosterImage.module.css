@@ -1,0 +1,31 @@
+.posterWrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.poster {
+    width: 124px;
+    height: 184px;
+    border-radius: var(--mantine-radius-md);
+
+    @media (min-width: 640px) {
+        min-width: 182px;
+        height: 273px;
+    }
+
+    @media (min-width: 768px) {
+        min-width: 224px;
+        min-height: 336px;
+    }
+
+    @media (min-width: 1024px) {
+        min-width: 221px;
+        min-height: 331px;
+    }
+
+    @media (min-width: 1280px) {
+        min-width: 270px;
+        min-height: 405px;
+    }
+}

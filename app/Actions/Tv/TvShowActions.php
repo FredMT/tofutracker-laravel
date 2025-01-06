@@ -75,12 +75,9 @@ class TvShowActions
         return $season;
     }
 
-    public function errorResponse(\Exception $e): JsonResponse
+    public function errorResponse(\Exception $e)
     {
-        return response()->json([
-            'message' => 'Failed to retrieve TV season',
-            'error' => $e->getMessage(),
-        ], 500);
+        abort(500, "Failed to retrieve TV season");
     }
 
 

@@ -1,11 +1,12 @@
 import { useContent } from "@/hooks/useContent";
-import { useForm } from "@inertiajs/react";
+import {useForm, usePage} from "@inertiajs/react";
 import { Button, Group, Modal, useModalsStack } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { Check, CircleAlertIcon, MinusCircle } from "lucide-react";
+import {TvSeason} from "@/types";
 
 function RemoveSeasonFromLibrary() {
-    const { content, type } = useContent();
+    const { data: content } = usePage<{data: TvSeason}>().props;
     if (!content) return null;
     const stack = useModalsStack(["confirm-delete"]);
 

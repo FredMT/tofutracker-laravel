@@ -1,15 +1,20 @@
 import { useContent } from "@/hooks/useContent";
-import { AnimeType, PageProps } from "@/types";
+import {AnimeType, AnimeUserLibrary, PageProps} from "@/types";
 import { WatchStatus } from "@/types/enums";
 import { useForm, usePage } from "@inertiajs/react";
 import { Select } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { Check, CircleAlertIcon } from "lucide-react";
 import { useEffect } from "react";
+import {Anime} from "@/types/anime";
 
+type AnimeMovieWatchStatus = {
+    user_library: AnimeUserLibrary;
+    data: Anime;
+}
 export default function AnimeMovieWatchStatus() {
-    const { user_library, animemovie } = usePage<PageProps<AnimeType>>().props;
-    if (!animemovie) return null;
+    const { user_library, data: content } = usePage<AnimeMovieWatchStatus>().props;
+    if (!content) return null;
 
     const statusOptions = Object.values(WatchStatus).map((status) => ({
         value: status,
@@ -18,8 +23,8 @@ export default function AnimeMovieWatchStatus() {
     }));
 
     const { data, patch, setData, processing } = useForm({
-        map_id: animemovie.map_id,
-        anidb_id: animemovie.anidb_id,
+        map_id: content.map_id,
+        anidb_id: content.anidb_id,
         watch_status:
             (user_library?.collection.watch_status as WatchStatus) ?? null,
     });

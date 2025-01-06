@@ -33,8 +33,8 @@ class MovieController extends Controller
         }
 
         if (Cache::has($cacheKey)) {
-            return Inertia::render('Content', [
-                'movie' => Cache::get($cacheKey),
+            return Inertia::render('Movie', [
+                'data' => Cache::get($cacheKey),
                 'type' => 'movie',
                 'user_library' => $userLibraryData
             ]);
@@ -47,8 +47,8 @@ class MovieController extends Controller
             }
 
 
-            return Inertia::render('Content', [
-                'movie' => $existingMovie->filteredData,
+            return Inertia::render('Movie', [
+                'data' => $existingMovie->filteredData,
                 'type' => 'movie',
                 'user_library' => $userLibraryData
 
@@ -60,8 +60,8 @@ class MovieController extends Controller
         Cache::put($cacheKey, $movie->filteredData, now()->addHours(6));
 
 
-        return Inertia::render('Content', [
-            'movie' => Cache::get($cacheKey),
+        return Inertia::render('Movie', [
+            'data' => Cache::get($cacheKey),
             'type' => 'movie',
             'user_library' => $userLibraryData
 

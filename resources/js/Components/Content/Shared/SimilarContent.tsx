@@ -1,9 +1,9 @@
-import { useContent } from "@/hooks/useContent";
-import { Similar } from "@/types";
-import { Carousel } from "@mantine/carousel";
-import { Stack, Title } from "@mantine/core";
+import {RegularContentDataType, Similar} from "@/types";
+import {Carousel} from "@mantine/carousel";
+import {Stack, Title} from "@mantine/core";
 import SimilarContentCard from "./SimilarContentCard";
-import { CustomCarousel } from "@/Components/Shared/CustomCarousel";
+import {CustomCarousel} from "@/Components/Shared/CustomCarousel";
+import {usePage} from "@inertiajs/react";
 
 interface SimilarContentProps {
     containerWidth: number;
@@ -14,9 +14,7 @@ export default function SimilarContent({
     containerWidth,
     slideSize = "0%",
 }: SimilarContentProps) {
-    const { content, type } = useContent();
-    if (!content || type === "tvseason") return null;
-
+    const {data} = usePage<{data: RegularContentDataType}>().props;
     return (
         <Stack>
             <Title order={3}>Similar</Title>
@@ -26,7 +24,7 @@ export default function SimilarContent({
                 height={300}
                 slidesToScroll={3}
             >
-                {content.similar.map((similar: Similar) => (
+                {data.similar.map((similar: Similar) => (
                     <Carousel.Slide key={similar.id}>
                         <SimilarContentCard content={similar} />
                     </Carousel.Slide>

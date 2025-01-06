@@ -1,6 +1,6 @@
 import { useContent } from "@/hooks/useContent";
 import useForm from "@/hooks/useForm";
-import { PageProps } from "@/types";
+import {BaseUserLibrary, PageProps, RegularContentDataType, RegularType, UserLibrary} from "@/types";
 import { usePage } from "@inertiajs/react";
 import { Button } from "@mantine/core";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
@@ -10,9 +10,8 @@ import { DesktopRating } from "../../../Content/Shared/DesktopRating";
 import { MobileRating } from "../../../Content/Shared/MobileRating";
 
 export function RateContent() {
-    const { user_library } = usePage<PageProps>().props;
-    const { content, type } = useContent();
-    if (!content) return null;
+    const { user_library } = usePage<{user_library: BaseUserLibrary}>().props;
+    const {type, data: content} = usePage<{type: RegularType, data: RegularContentDataType}>().props
     const [opened, { open, close }] = useDisclosure(false);
     const isMobile = useMediaQuery("(max-width: 50em)");
 

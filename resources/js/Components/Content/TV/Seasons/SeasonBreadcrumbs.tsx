@@ -13,10 +13,9 @@ import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import classes from "./SeasonBreadcrumbs.module.css";
 
 export default function SeasonBreadcrumbs() {
-    const { links, type } = usePage<PageProps & { links: Links }>().props;
-    const contentType = type as ContentType;
+    const { links, type } = usePage<{type: ContentType, links: Links }>().props;
 
-    if (!links || (contentType !== "tvseason" && contentType !== "animeseason"))
+    if (!links || (type !== "tvseason" && type !== "animeseason"))
         return null;
 
     const currentSeasonIndex = links.seasons.findIndex(
@@ -34,7 +33,7 @@ export default function SeasonBreadcrumbs() {
         const seasonIndex =
             links.seasons.findIndex((s) => s.url === season.url) + 1;
         if (isDropdown) {
-            if (contentType === "animeseason") {
+            if (type === "animeseason") {
                 const truncatedName =
                     season.name.length > 50
                         ? `${season.name.slice(0, 50)}...`
@@ -49,7 +48,7 @@ export default function SeasonBreadcrumbs() {
     const items = [
         <Link href={links.show.url} key="show" prefetch>
             <Text className={classes.seasonBreadcrumbs}>
-                {links.show.name ?? contentType === "animeseason"
+                {links.show.name ?? type === "animeseason"
                     ? "Anime"
                     : "TV Show"}
             </Text>

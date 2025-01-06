@@ -1,18 +1,18 @@
 import { useContent } from "@/hooks/useContent";
-import { PageProps } from "@/types";
+import {PageProps, TvSeason} from "@/types";
 import { useForm, usePage } from "@inertiajs/react";
 import { Button } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { Check, CircleAlertIcon, PlusCircle } from "lucide-react";
 
 function AddSeasonToLibrary() {
-    const { tvseason } = usePage<PageProps>().props;
+    const { data: content } = usePage<{data: TvSeason}>().props;
 
-    if (!tvseason) return null;
+    if (!content) return null;
 
     const { post, processing } = useForm({
-        show_id: tvseason.show_id,
-        season_id: tvseason.id,
+        show_id: content.show_id,
+        season_id: content.id,
     });
 
     const handleAdd = () => {

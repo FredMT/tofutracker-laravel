@@ -89,7 +89,7 @@ class AnimeController extends Controller
 
             return Inertia::render('AnimeContent', [
                 'type' => $type,
-                $type => [
+                'data' => [
                     'tmdbData' => json_decode($tmdbData->getContent(), true),
                     'anidbData' => $anidbData,
                     'collection_name' => $collectionName,
@@ -390,7 +390,6 @@ class AnimeController extends Controller
                         'id' => $userAnime->id,
                         'watch_status' => $userAnime->watch_status,
                         'rating' => $userAnime->rating,
-                        'type' => 'animeseason',
                         'episodes' => $userAnime->episodes->map(function ($episode) {
                             return [
                                 'id' => $episode->id,
@@ -412,7 +411,7 @@ class AnimeController extends Controller
             return Inertia::render(
                 'AnimeSeasonContent',
                 [
-                    'animeseason' => $anime,
+                    'data' => $anime,
                     'user_library' => $userLibrary,
                     'type' => 'animeseason',
                     'links' => $links

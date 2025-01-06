@@ -19,14 +19,14 @@ import classes from "./WelcomeCustomCarousel.module.css";
 import WelcomeCarouselCard from "./WelcomeCarouselCard";
 
 interface GenreItem {
-    id: string;
+    id: string | number;
     media_type: string;
     title: string;
     release_date: string;
     vote_average: number;
     popularity: number;
     poster_path: string;
-    backdrop_path: string;
+    backdrop_path: string | null;
 }
 
 interface GenreData {

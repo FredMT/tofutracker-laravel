@@ -1,17 +1,18 @@
 import { useAnimeContent } from "@/hooks/useAnimeContent";
-import { useForm } from "@inertiajs/react";
+import {useForm, usePage} from "@inertiajs/react";
 import { Button } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { Check, CircleAlertIcon, PlusCircle } from "lucide-react";
+import {AnimeType, ContentType} from "@/types";
+import {Anime} from "@/types/anime";
 
 export default function AddAnimeTvToLibrary() {
-    const animeContent = useAnimeContent();
-    if (!animeContent || animeContent.type !== "animetv") return null;
+    const {type, data} = usePage<{type: AnimeType, data: Anime}>().props
 
-    const { content } = animeContent;
+    if (type !== "animetv") return null;
 
     const { post, processing } = useForm({
-        map_id: content.map_id,
+        map_id: data.map_id,
     });
 
     function handleAdd() {

@@ -28,8 +28,8 @@ class TvController extends Controller
             ])->first();
         }
 
-        return Inertia::render('Content', [
-            'tv' => $tvShowData,
+        return Inertia::render('TV', [
+            'data' => $tvShowData,
             'user_library' => $userLibrary,
             'type' => 'tv'
         ]);

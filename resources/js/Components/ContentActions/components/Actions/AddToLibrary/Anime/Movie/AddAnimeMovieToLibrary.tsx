@@ -1,14 +1,13 @@
 import { useAnimeContent } from "@/hooks/useAnimeContent";
-import { useForm } from "@inertiajs/react";
+import {useForm, usePage} from "@inertiajs/react";
 import { Button } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { Check, CircleAlertIcon, PlusCircle } from "lucide-react";
+import {Anime} from "@/types/anime";
 
 function AddAnimeMovieToLibrary() {
-    const animeContent = useAnimeContent();
-    if (!animeContent || animeContent.type !== "animemovie") return null;
-
-    const { content } = animeContent;
+    const { data: content } = usePage<{data: Anime}>().props
+    if (!content) return null;
 
     const { post, processing } = useForm({
         anidb_id: content.anidb_id,

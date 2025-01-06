@@ -1,6 +1,6 @@
 import { Carousel } from "@mantine/carousel";
 import { Stack, Title } from "@mantine/core";
-import { PageProps } from "@/types";
+import {PageProps, TvShow} from "@/types";
 import { usePage } from "@inertiajs/react";
 import SeasonCard from "./SeasonCard";
 import { CustomCarousel } from "@/Components/Shared/CustomCarousel";
@@ -14,8 +14,9 @@ export default function RegularSeasons({
     containerWidth,
     slideSize = "0%",
 }: SeasonsProps) {
-    const { tv } = usePage<PageProps>().props;
-    if (!tv) return null;
+
+    const {data} = usePage<{data: TvShow}>().props;
+    console.log(data);
 
     return (
         <Stack>
@@ -26,7 +27,7 @@ export default function RegularSeasons({
                 height={250}
                 slidesToScroll={3}
             >
-                {tv.seasons.map((season) => (
+                {data.seasons.map((season) => (
                     <Carousel.Slide key={season.id}>
                         <SeasonCard season={season} />
                     </Carousel.Slide>

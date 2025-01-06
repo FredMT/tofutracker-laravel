@@ -24,7 +24,13 @@ createInertiaApp({
         ),
     setup({ el, App, props }) {
         if (import.meta.env.SSR) {
-            hydrateRoot(el, <App {...props} />);
+            hydrateRoot(
+                el,
+                <MantineProvider theme={theme} defaultColorScheme="dark">
+                    <Notifications />
+                    <App {...props} />
+                </MantineProvider>
+            );
             return;
         }
 
@@ -36,6 +42,6 @@ createInertiaApp({
         );
     },
     progress: {
-        color: "#4B5563",
+        color: "#b485e5",
     },
 });

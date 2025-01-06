@@ -1,5 +1,5 @@
 import { useAnimeContent } from "@/hooks/useAnimeContent";
-import { AnimeRecommendation } from "@/types/anime";
+import {Anime, AnimeRecommendation} from "@/types/anime";
 import { Carousel } from "@mantine/carousel";
 import { Stack, Title } from "@mantine/core";
 import AnimeRecommendedContentCard from "@/Components/Content/Shared/Anime/AnimeRecommendedContentCard";
@@ -15,9 +15,7 @@ export default function AnimeRecommendedContent({
     containerWidth,
     slideSize = "0%",
 }: AnimeRecommendedContentProps) {
-    const animeContent = useAnimeContent();
-    if (!animeContent) return null;
-    const { tmdbData } = animeContent;
+    const {data} = usePage<{data: Anime}>().props
     const currentMapId = usePage().url.split("/").pop();
 
     return (
@@ -29,7 +27,7 @@ export default function AnimeRecommendedContent({
                 height={300}
                 slidesToScroll={3}
             >
-                {tmdbData.recommendations
+                {data.tmdbData.data.recommendations
                     .filter((rec) => rec.map_id !== +currentMapId!)
                     .map((recommendation: AnimeRecommendation) => (
                         <Carousel.Slide key={recommendation.map_id}>

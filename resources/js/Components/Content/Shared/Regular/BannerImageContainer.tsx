@@ -1,52 +1,47 @@
-import { useContent } from "@/hooks/useContent";
 import { useAnimeContent } from "@/hooks/useAnimeContent";
 import { BannerImage } from "@/Components/Content/Shared/Regular/BannerImage";
 import { usePage } from "@inertiajs/react";
-import { PageProps } from "@/types";
+import { AnimeSeason } from "@/types/animeseason";
+import { Anime } from "@/types/anime";
+import { AnimeContentDataType, AnimeType } from "@/types";
+
+function isAnimeSeason(data: Anime | AnimeSeason): data is AnimeSeason {
+    return "title_main" in data;
+}
+
+function isAnime(data: Anime | AnimeSeason): data is Anime {
+    return "tmdbData" in data;
+}
 
 export function BannerImageContainer() {
-    const { content: regularContent, type } = useContent();
-    const animeContent = useAnimeContent();
-    const { animeseason } = usePage<PageProps>().props;
+    const { data, type } = usePage<{
+        data: Anime | AnimeSeason;
+        type: AnimeType;
+    }>().props;
 
-    if (type === "animeseason" && animeseason) {
+    if (type === "animeseason" && isAnimeSeason(data)) {
         return (
             <BannerImage
-                title={animeseason.title_main}
-                backdrop_path={animeseason.backdrop_path}
-                logo_path={animeseason.logo_path}
-                genres={[]} // Add genres if available in animeseason
+                title={data.title_main}
+                backdrop_path={data.backdrop_path}
+                logo_path={data.logo_path}
+                genres={[]}
                 height={540}
             />
         );
     }
 
-    if (type === "animetv" || type === "animemovie") {
-        // Handle anime content
-        if (!animeContent) return null;
-        const { tmdbData } = animeContent;
-
+    if ((type === "animetv" || type === "animemovie") && isAnime(data)) {
         return (
             <BannerImage
-                title={tmdbData.title}
-                backdrop_path={tmdbData.backdrop_path}
-                logo_path={tmdbData.logo_path}
-                genres={tmdbData.genres}
+                title={data.tmdbData.data.title}
+                backdrop_path={data.tmdbData.data.backdrop_path}
+                logo_path={data.tmdbData.data.logo_path}
+                genres={data.tmdbData.data.genres}
                 height={540}
             />
         );
     }
 
-    // Handle regular content
-    if (!regularContent) return null;
-
-    return (
-        <BannerImage
-            title={regularContent.title}
-            backdrop_path={regularContent.backdrop_path}
-            logo_path={regularContent.logo_path}
-            genres={regularContent.genres}
-            height={540}
-        />
-    );
+    return null;
 }

@@ -6,7 +6,7 @@ import { useMediaQuery } from "@mantine/hooks";
 
 interface MediaItem {
     title: string;
-    backdrop_path: string;
+    backdrop_path: string |  null;
     popularity: number;
     logo_path: string | null;
     genres: string[];

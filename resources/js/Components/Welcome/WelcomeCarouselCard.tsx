@@ -4,7 +4,7 @@ import classes from "./WelcomeCarouselSlide.module.css";
 import { Link } from "@inertiajs/react";
 
 interface WelcomeCarouselCardProps {
-    id: number;
+    id: string | number;
     title: string;
     posterPath: string;
     type: string;

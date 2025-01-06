@@ -1,15 +1,18 @@
-import { useContent } from "@/hooks/useContent";
-import { PageProps } from "@/types";
-import { WatchStatus } from "@/types/enums";
-import { useForm, usePage } from "@inertiajs/react";
-import { Select } from "@mantine/core";
-import { notifications } from "@mantine/notifications";
-import { Check, CircleAlertIcon } from "lucide-react";
-import { useEffect } from "react";
+import {useContent} from "@/hooks/useContent";
+import {BaseUserLibrary, PageProps, RegularContentDataType, RegularType} from "@/types";
+import {WatchStatus} from "@/types/enums";
+import {useForm, usePage} from "@inertiajs/react";
+import {Select} from "@mantine/core";
+import {notifications} from "@mantine/notifications";
+import {Check, CircleAlertIcon} from "lucide-react";
+import {useEffect} from "react";
+
+type WatchStatusSelectProps = {
+    type: RegularType; data: RegularContentDataType; user_library: BaseUserLibrary
+}
 
 export function WatchStatusSelect() {
-    const { user_library } = usePage<PageProps>().props;
-    const { content, type } = useContent();
+    const {type, data: content, user_library} = usePage<WatchStatusSelectProps>().props
     if (!content) return null;
 
     const statusOptions = Object.values(WatchStatus).map((status) => ({
@@ -18,7 +21,7 @@ export function WatchStatusSelect() {
         disabled: status === user_library?.watch_status,
     }));
 
-    const { data, patch, setData, processing } = useForm({
+    const {data, patch, setData, processing} = useForm({
         watch_status: (user_library?.watch_status as WatchStatus) ?? null,
     });
 
@@ -37,13 +40,13 @@ export function WatchStatusSelect() {
             const route_name = `${type}.library.update-status`;
             const route_params =
                 type === "movie"
-                    ? { movie_id: content.id }
+                    ? {movie_id: content.id}
                     : type === "tvseason"
-                    ? {
-                          show_id: content.show_id,
-                          season_id: content.id,
-                      }
-                    : {};
+                        ? {
+                            show_id: content.show_id,
+                            season_id: content.id,
+                        }
+                        : {};
 
             patch(route(route_name, route_params), {
                 preserveScroll: true,
@@ -53,14 +56,14 @@ export function WatchStatusSelect() {
                             color: "teal",
                             title: "Success",
                             message: res.props.flash.message,
-                            icon: <Check size={18} />,
+                            icon: <Check size={18}/>,
                             autoClose: 3000,
                         });
                     }
                     if (!res.props.flash.success) {
                         notifications.show({
                             color: "red",
-                            icon: <CircleAlertIcon size={18} />,
+                            icon: <CircleAlertIcon size={18}/>,
                             title: "Error",
                             message:
                                 res.props.flash.message || "An error occurred",
@@ -71,7 +74,7 @@ export function WatchStatusSelect() {
                 onError: (res: any) => {
                     notifications.show({
                         color: "red",
-                        icon: <CircleAlertIcon size={18} />,
+                        icon: <CircleAlertIcon size={18}/>,
                         title: "Error",
                         message: res.props.flash.message || "An error occurred",
                         autoClose: 3000,

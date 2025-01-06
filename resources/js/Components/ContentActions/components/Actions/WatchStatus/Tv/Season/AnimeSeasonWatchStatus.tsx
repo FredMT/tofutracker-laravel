@@ -6,22 +6,26 @@ import { Select } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { Check, CircleAlertIcon } from "lucide-react";
 import { useEffect } from "react";
+import {AnimeSeason} from "@/types/animeseason";
 
+type AnimeSeasonWatchStatus = {
+    data: AnimeSeason;
+    user_library: AnimeSeasonUserLibrary;
+    type: AnimeType;
+}
 export default function AnimeSeasonWatchStatus() {
-    const { user_library, animeseason } = usePage<PageProps>().props;
-    if (!animeseason) return null;
+    const { user_library, data: content, type } = usePage<AnimeSeasonWatchStatus>().props;
+    if (!content || type !== "animeseason" ) return null;
 
     const statusOptions = Object.values(WatchStatus).map((status) => ({
         value: status,
         label: status,
-        disabled:
-            (user_library as AnimeSeasonUserLibrary | null)?.watch_status ===
-            status,
+        disabled: user_library?.watch_status === status,
     }));
 
     const { data, patch, setData, processing } = useForm({
-        anidb_id: animeseason.id,
-        map_id: animeseason.map_id,
+        anidb_id: content.id,
+        map_id: content.map_id,
         watch_status:
             (user_library as AnimeSeasonUserLibrary | null)?.watch_status ??
             null,

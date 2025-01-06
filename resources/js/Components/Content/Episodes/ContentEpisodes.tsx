@@ -1,17 +1,15 @@
 import ContentEpisodeCard from "@/Components/Content/Episodes/ContentEpisodeCard";
-import { useContent } from "@/hooks/useContent";
 import { TvSeason } from "@/types";
 import { Divider, Stack, Title } from "@mantine/core";
+import {usePage} from "@inertiajs/react";
 
 function ContentEpisodes() {
-    const { content, type } = useContent();
-    if (!content || type !== "tvseason") return null;
-    const season = content as TvSeason;
+    const {data} = usePage<{data: TvSeason}>().props
     return (
         <Stack mb={24}>
             <Divider my={16} />
             <Title order={3}>Episodes</Title>
-            {season.episodes.map((episode) => (
+            {data.episodes.map((episode) => (
                 <ContentEpisodeCard
                     episode={episode}
                     key={episode.id}

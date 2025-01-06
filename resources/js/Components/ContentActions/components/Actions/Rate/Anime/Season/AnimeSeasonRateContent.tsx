@@ -9,20 +9,22 @@ import { AnimeSeason } from "@/types/animeseason";
 import { MobileRating } from "@/Components/Content/Shared/MobileRating";
 import { DesktopRating } from "@/Components/Content/Shared/DesktopRating";
 
+type AnimeSeasonRateContentProps = {
+    data: AnimeSeason;
+    user_library: AnimeSeasonUserLibrary;
+}
 export default function AnimeSeasonRateContent() {
-    const { animeseason, user_library } = usePage<
-        PageProps & { type: "animeseason" }
-    >().props;
+    const { data: content, user_library } = usePage<AnimeSeasonRateContentProps>().props;
 
-    if (!animeseason) return null;
+    if (!content) return null;
 
     const [opened, { open, close }] = useDisclosure(false);
     const isMobile = useMediaQuery("(max-width: 50em)");
 
     const { data, setData, post, processing } = useForm({
-        anidb_id: (animeseason as AnimeSeason).id,
-        map_id: (animeseason as AnimeSeason).map_id,
-        rating: (user_library as AnimeSeasonUserLibrary)?.rating ?? 0,
+        anidb_id: content.id,
+        map_id: content.map_id,
+        rating: (user_library)?.rating ?? 0,
     });
 
     const submit = () => {
@@ -69,7 +71,7 @@ export default function AnimeSeasonRateContent() {
                 close={close}
                 rating={data.rating}
                 setRating={(val) => setData("rating", val)}
-                title={(animeseason as AnimeSeason).title_main}
+                title={content.title_main}
                 onSubmit={submit}
                 processing={processing}
             />

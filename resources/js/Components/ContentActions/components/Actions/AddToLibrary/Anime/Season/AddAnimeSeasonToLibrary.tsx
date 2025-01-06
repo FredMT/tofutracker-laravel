@@ -3,15 +3,16 @@ import { useForm, usePage } from "@inertiajs/react";
 import { Button } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { Check, CircleAlertIcon, PlusCircle } from "lucide-react";
+import {AnimeSeason} from "@/types/animeseason";
 
 export default function AddAnimeSeasonToLibrary() {
-    const { animeseason } = usePage<PageProps>().props;
+    const { data: content } = usePage<{data: AnimeSeason}>().props;
 
-    if (!animeseason) return null;
+    if (!content) return null;
 
     const { post, processing } = useForm({
-        map_id: animeseason.map_id,
-        anidb_id: animeseason.id,
+        map_id: content.map_id,
+        anidb_id: content.id,
     });
 
     function handleAdd() {

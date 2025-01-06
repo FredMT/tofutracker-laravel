@@ -1,19 +1,19 @@
 import { useContent } from "@/hooks/useContent";
-import { useForm } from "@inertiajs/react";
+import {useForm, usePage} from "@inertiajs/react";
 import { Button } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { Check, CircleAlertIcon, PlusCircle } from "lucide-react";
+import {ContentType, Movie} from "@/types";
 
 function AddToLibrary() {
-    const { content, type } = useContent();
-    if (!content) return null;
+    const {type, data} = usePage<{type: "movie", data: Movie}>().props
 
     const { post, processing } = useForm({
-        movie_id: content.id,
+        movie_id: data.id,
     });
 
     const handleAdd = () => {
-        post(route(`${type}.library.store`, { movie_id: content.id }), {
+        post(route(`${type}.library.store`, { movie_id: data.id }), {
             preserveScroll: true,
             onSuccess: (res: any) => {
                 if (res.props.flash.success) {
@@ -30,7 +30,7 @@ function AddToLibrary() {
                         color: "red",
                         title: "Error",
                         icon: <CircleAlertIcon size={18} />,
-                        message: `An error occurred while trying to add ${content.title} to library`,
+                        message: `An error occurred while trying to add ${data.title} to library`,
                         autoClose: 3000,
                     });
                 }
@@ -40,7 +40,7 @@ function AddToLibrary() {
                     color: "red",
                     title: "Error",
                     icon: <CircleAlertIcon size={18} />,
-                    message: `An error occurred while trying to add ${content.title} to library`,
+                    message: `An error occurred while trying to add ${data.title} to library`,
                     autoClose: 3000,
                 });
             },

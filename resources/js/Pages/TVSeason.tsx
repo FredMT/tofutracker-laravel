@@ -1,37 +1,25 @@
-import { BannerImageContainer } from "@/Components/Content/Shared/Regular/BannerImageContainer";
+import {BannerImageContainer} from "@/Components/Content/Shared/Regular/BannerImageContainer";
 import ContentActions from "@/Components/ContentActions/ContentActions";
-import { ContentCredits } from "@/Components/Content/Shared/Regular/ContentCredits";
-import ContentDetails from "@/Components/Content/Shared/Regular/ContentDetails";
-import { ContentSummary } from "@/Components/Content/Shared/Regular/ContentSummary";
-import PosterImage from "@/Components/Content/Shared/PosterImage";
+import {RegularContentSummary} from "@/Components/Content/Shared/Regular/RegularContentSummary";
 import ResponsiveContainer from "@/Components/ResponsiveContainer";
 import SimilarContent from "@/Components/Content/Shared/SimilarContent";
-import { useContent } from "@/hooks/useContent";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
 import ContentLayout from "@/Layouts/ContentLayout";
-import { PageProps } from "@/types";
-import { Head } from "@inertiajs/react";
-import {
-    Box,
-    Divider,
-    Space,
-    Spoiler,
-    Stack,
-    Text,
-    Title,
-} from "@mantine/core";
-import { useViewportSize } from "@mantine/hooks";
+import {TvSeason} from "@/types";
+import {Head, usePage} from "@inertiajs/react";
+import {Box, Divider, Space, Spoiler, Stack, Text, Title,} from "@mantine/core";
+import {useViewportSize} from "@mantine/hooks";
 import ContentEpisodes from "@/Components/Content/Episodes/ContentEpisodes";
-import Seasons from "@/Components/Content/TV/Seasons/Seasons";
 import SeasonBreadcrumbs from "@/Components/Content/TV/Seasons/SeasonBreadcrumbs";
+import {RegularContentCredits} from "@/Components/Content/Shared/Regular/RegularContentCredits";
+import RegularPosterImage from "@/Components/Content/Shared/Regular/RegularPosterImage";
 
-function Content(props: PageProps) {
+function TVSeason() {
     const { width } = useViewportSize();
-    const { content, type } = useContent();
-    if (!content) return null;
+    const {data} = usePage<{data: TvSeason}>().props
     return (
         <>
-            <Head title={content.title} />
+            <Head title={data.title} />
             <BannerImageContainer />
             <ResponsiveContainer>
                 <Box hiddenFrom="sm" mt={12}>
@@ -41,28 +29,20 @@ function Content(props: PageProps) {
                 <ContentLayout
                     left={
                         <Stack gap={24} align="center">
-                            <PosterImage />
+                            <RegularPosterImage />
                             <Box hiddenFrom="sm">
                                 <Title order={2} ta="center">
-                                    {content.title} ({content.year})
+                                    {data.title} ({data.year})
                                 </Title>
                                 <Space h={8} />
-
-                                {content.tagline && (
-                                    <Text ta={"center"}>{content.tagline}</Text>
+                                {data.tagline && (
+                                    <Text ta={"center"}>{data.tagline}</Text>
                                 )}
                                 <Space h={16} />
-                                <ContentSummary />
+                                <RegularContentSummary />
                             </Box>
                             <ContentActions />
                             <Box hiddenFrom="sm">
-                                {type !== "tvseason" && (
-                                    <>
-                                        <ContentDetails />
-                                        <Divider my={16} />
-                                    </>
-                                )}
-
                                 <Stack mt={16}>
                                     <Title order={3}>Overview</Title>
                                     <Spoiler
@@ -71,25 +51,15 @@ function Content(props: PageProps) {
                                         hideLabel="Hide"
                                     >
                                         <Text>
-                                            {content.overview ??
+                                            {data.overview ??
                                                 "No overview available"}
                                         </Text>
                                     </Spoiler>
                                 </Stack>
                                 <Space h={24} />
-                                <ContentCredits containerWidth={width * 0.95} />
+                                <RegularContentCredits containerWidth={width * 0.95} />
                                 <ContentEpisodes />
-
                                 <Divider my={16} />
-                                {type === "tv" && (
-                                    <>
-                                        <Seasons
-                                            containerWidth={width * 0.95}
-                                        />
-                                        <Divider my={16} />
-                                    </>
-                                )}
-                                <SimilarContent containerWidth={width * 0.95} />
                             </Box>
                         </Stack>
                     }
@@ -98,17 +68,11 @@ function Content(props: PageProps) {
                             <Stack gap={8}>
                                 <SeasonBreadcrumbs />
                                 <Title order={2}>
-                                    {content.title} ({content.year})
+                                    {data.title} ({data.year})
                                 </Title>
-                                <Text>{content.tagline}</Text>
-                                <ContentSummary />
+                                <Text>{data.tagline}</Text>
+                                <RegularContentSummary />
                             </Stack>
-                            {type !== "tvseason" && (
-                                <>
-                                    <ContentDetails />
-                                    <Divider my={16} />
-                                </>
-                            )}
                             <Stack mt={16}>
                                 <Title order={3}>Overview</Title>
                                 <Spoiler
@@ -117,24 +81,15 @@ function Content(props: PageProps) {
                                     hideLabel="Hide"
                                 >
                                     <Text>
-                                        {content.overview ??
+                                        {data.overview ??
                                             "No overview available"}
                                     </Text>
                                 </Spoiler>
                             </Stack>
                             <Space h={24} />
-                            <ContentCredits containerWidth={width * 0.67} />
+                            <RegularContentCredits containerWidth={width * 0.67} />
                             <ContentEpisodes />
                             <Divider my={16} />
-                            {type === "tv" && (
-                                <>
-                                    <Seasons containerWidth={width * 0.67} />
-                                    <Divider my={16} />
-                                </>
-                            )}
-                            {type !== "tvseason" && (
-                                <SimilarContent containerWidth={width * 0.67} />
-                            )}
                         </Box>
                     }
                 />
@@ -142,8 +97,8 @@ function Content(props: PageProps) {
         </>
     );
 }
-Content.layout = (page: any) => (
+TVSeason.layout = (page: any) => (
     <AuthenticatedLayout>{page}</AuthenticatedLayout>
 );
 
-export default Content;
+export default TVSeason;

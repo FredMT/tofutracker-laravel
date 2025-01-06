@@ -1,5 +1,5 @@
 import { useContent } from "@/hooks/useContent";
-import { PageProps } from "@/types";
+import {BaseUserLibrary, PageProps, TvShow} from "@/types";
 import { WatchStatus } from "@/types/enums";
 import { useForm, usePage } from "@inertiajs/react";
 import { Select } from "@mantine/core";
@@ -8,9 +8,7 @@ import { Check, CircleAlertIcon } from "lucide-react";
 import { useEffect } from "react";
 
 function TvShowWatchStatus() {
-    const { user_library } = usePage<PageProps>().props;
-    const { content } = useContent();
-    if (!content) return null;
+    const {data: content, user_library} = usePage<{ data: TvShow, user_library: BaseUserLibrary  }>().props
 
     const statusOptions = Object.values(WatchStatus).map((status) => ({
         value: status,

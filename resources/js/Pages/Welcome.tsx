@@ -13,7 +13,7 @@ import ResponsiveContainer from "@/Components/ResponsiveContainer";
 
 interface MediaItem {
     title: string;
-    backdrop_path: string;
+    backdrop_path: string | null;
     popularity: number;
     logo_path: string | null;
     genres: string[];
@@ -30,14 +30,14 @@ interface Props {
         {
             genre_name: string;
             items: Array<{
-                id: number;
+                id: string | number;
                 media_type: string;
                 title: string;
                 release_date: string;
                 vote_average: number;
                 popularity: number;
                 poster_path: string;
-                backdrop_path: string;
+                backdrop_path: string | null;
             }>;
         }
     >;
@@ -54,7 +54,7 @@ interface Props {
                 vote_average: number;
                 popularity: number;
                 poster_path: string;
-                backdrop_path: string;
+                backdrop_path: string | null;
             }>;
         }
     >;
@@ -106,6 +106,7 @@ function Welcome() {
             animeIndex++;
         }
     }
+
 
     return (
         <>

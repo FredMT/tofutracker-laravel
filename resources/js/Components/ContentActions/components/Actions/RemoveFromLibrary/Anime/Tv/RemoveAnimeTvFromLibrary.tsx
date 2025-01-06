@@ -1,11 +1,12 @@
 import { useContent } from "@/hooks/useContent";
-import { useForm } from "@inertiajs/react";
+import {useForm, usePage} from "@inertiajs/react";
 import { Button, Group, Modal, useModalsStack } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { Check, CircleAlertIcon, Trash2 } from "lucide-react";
+import {Anime} from "@/types/anime";
 
 export default function RemoveAnimeTvFromLibrary() {
-    const { content } = useContent();
+    const { data: content } = usePage<{data: Anime}>().props
     if (!content) return null;
     const stack = useModalsStack(["confirm-delete"]);
 

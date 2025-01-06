@@ -12,18 +12,18 @@ import {
 import { useMediaQuery } from "@mantine/hooks";
 import classes from "./AnimeSeasonDetails.module.css";
 import { externalLinkMapping } from "@/utils/externalLinkMapping";
-import { AnimeSeason } from "@/types/animeseason";
+import {AnimeSeason} from "@/types/animeseason";
 
 function AnimeSeasonDetails() {
     const isMobile = useMediaQuery("(max-width: 900px)");
-    const { animeseason } = usePage<{ animeseason: AnimeSeason }>().props;
-    if (!animeseason) return null;
+    const { data } = usePage<{ data: AnimeSeason }>().props;
+    if (!data) return null;
 
     const titles = [
-        { label: "English", value: animeseason.title_en },
-        { label: "Japanese", value: animeseason.title_ja },
-        { label: "Korean", value: animeseason.title_ko },
-        { label: "Chinese", value: animeseason.title_zh },
+        { label: "English", value: data.title_en },
+        { label: "Japanese", value: data.title_ja },
+        { label: "Korean", value: data.title_ko },
+        { label: "Chinese", value: data.title_zh },
     ].filter((title) => title.value);
 
     return (
@@ -51,22 +51,22 @@ function AnimeSeasonDetails() {
                                 <Text size="sm" c="dimmed">
                                     Type
                                 </Text>
-                                <Text>{animeseason.type}</Text>
+                                <Text>{data.type}</Text>
                             </Box>
 
                             <Box>
                                 <Text size="sm" c="dimmed">
                                     Episodes
                                 </Text>
-                                <Text>{animeseason.episode_count}</Text>
+                                <Text>{data.episode_count}</Text>
                             </Box>
                             <Box>
                                 <Text size="sm" c="dimmed">
                                     Aired
                                 </Text>
                                 <Text>
-                                    {animeseason.startdate} to{" "}
-                                    {animeseason.enddate}
+                                    {data.startdate} to{" "}
+                                    {data.enddate}
                                 </Text>
                             </Box>
 
@@ -75,7 +75,7 @@ function AnimeSeasonDetails() {
                                     Number of Votes
                                 </Text>
                                 <Text>
-                                    {animeseason.rating_count.toLocaleString()}
+                                    {data.rating_count.toLocaleString()}
                                 </Text>
                             </Box>
 
@@ -85,10 +85,10 @@ function AnimeSeasonDetails() {
                                 </Text>
                                 <Text
                                     component="a"
-                                    href={animeseason.homepage}
+                                    href={data.homepage}
                                     target="_blank"
                                 >
-                                    {animeseason.homepage}
+                                    {data.homepage}
                                 </Text>
                             </Box>
                         </SimpleGrid>
@@ -134,7 +134,7 @@ function AnimeSeasonDetails() {
                             type="container"
                         >
                             {Object.entries(
-                                animeseason.creators.reduce((acc, creator) => {
+                                data.creators.reduce((acc, creator) => {
                                     if (!acc[creator.role]) {
                                         acc[creator.role] = [];
                                     }
@@ -170,7 +170,7 @@ function AnimeSeasonDetails() {
                             spacing={{ base: "sm", sm: "lg" }}
                             verticalSpacing={{ base: "sm", sm: "lg" }}
                         >
-                            {animeseason.external_links
+                            {data.external_links
                                 .filter(
                                     (link) =>
                                         ![

@@ -1,20 +1,20 @@
 import { useContent } from "@/hooks/useContent";
-import { useForm } from "@inertiajs/react";
+import {useForm, usePage} from "@inertiajs/react";
 import { Button, Group, Modal, useModalsStack } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { Check, CircleAlertIcon, MinusCircle } from "lucide-react";
+import {Movie} from "@/types";
 
 function RemoveFromLibrary() {
-    const { content, type } = useContent();
-    if (!content) return null;
+    const {type, data} = usePage<{type: "movie", data: Movie}>().props
     const stack = useModalsStack(["confirm-delete"]);
 
     const { delete: remove, processing } = useForm({
-        movie_id: content.id,
+        movie_id: data.id,
     });
 
     function handleRemove() {
-        remove(route(`${type}.library.destroy`, { movie_id: content.id }), {
+        remove(route(`${type}.library.destroy`, { movie_id: data.id }), {
             preserveScroll: true,
             onSuccess: (res: any) => {
                 stack.closeAll();
@@ -22,7 +22,7 @@ function RemoveFromLibrary() {
                     notifications.show({
                         color: "teal",
                         title: "Success",
-                        message: `${content?.title} removed from library`,
+                        message: `${data?.title} removed from library`,
                         icon: <Check size={18} />,
                         autoClose: 3000,
                     });
@@ -33,7 +33,7 @@ function RemoveFromLibrary() {
                         title: "Error",
                         message:
                             res.props.flash?.message ||
-                            `Failed to remove ${content?.title} from library`,
+                            `Failed to remove ${data?.title} from library`,
                         icon: <CircleAlertIcon size={18} />,
                         autoClose: 3000,
                     });
@@ -45,7 +45,7 @@ function RemoveFromLibrary() {
                     title: "Error",
                     message:
                         res.props.flash?.message ||
-                        `An error occurred while removing ${content?.title} from library`,
+                        `An error occurred while removing ${data?.title} from library`,
                     icon: <CircleAlertIcon size={18} />,
                     autoClose: 3000,
                 });
@@ -58,7 +58,7 @@ function RemoveFromLibrary() {
             <Modal.Stack>
                 <Modal
                     {...stack.register("confirm-delete")}
-                    title={`Remove ${content.title}?`}
+                    title={`Remove ${data.title}?`}
                     centered
                 >
                     Are you sure you want to remove this item from your library?

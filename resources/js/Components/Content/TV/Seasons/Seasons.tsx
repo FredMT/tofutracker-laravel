@@ -2,6 +2,8 @@ import { useAnimeContent } from "@/hooks/useAnimeContent";
 import { usePage } from "@inertiajs/react";
 import AnimeSeasons from "./AnimeSeasons";
 import RegularSeasons from "./RegularSeasons";
+import {AnimeContentDataType, ContentType} from "@/types";
+import {Anime} from "@/types/anime";
 
 interface SeasonsProps {
     containerWidth: number;
@@ -12,9 +14,8 @@ export default function Seasons({
     containerWidth,
     slideSize = "0%",
 }: SeasonsProps) {
-    const animeContent = useAnimeContent();
 
-    const type = usePage().props.type;
+    const {type} = usePage<{type: ContentType}>().props;
 
     if (type === "tv") {
         return (
@@ -26,14 +27,6 @@ export default function Seasons({
     }
 
     if (type === "animetv") {
-        if (!animeContent) return null;
-        const hasRelatedContent =
-            animeContent.anidbData.other_related_ids.length > 0;
-        const hasPrequelSequels =
-            Object.keys(animeContent.anidbData.prequel_sequel_chains).length >
-            0;
-
-        if (hasRelatedContent || hasPrequelSequels) {
             return (
                 <AnimeSeasons
                     containerWidth={containerWidth}
@@ -41,7 +34,4 @@ export default function Seasons({
                 />
             );
         }
-    }
-
-    return null;
 }

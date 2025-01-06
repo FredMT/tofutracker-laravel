@@ -1,11 +1,12 @@
 import { useContent } from "@/hooks/useContent";
-import { useForm } from "@inertiajs/react";
+import {useForm, usePage} from "@inertiajs/react";
 import { Button } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { Check, CircleAlertIcon, PlusCircle } from "lucide-react";
+import {TvShow} from "@/types";
 
 function AddShowToLibrary() {
-    const { content } = useContent();
+    const {data: content} = usePage<{ data: TvShow }>().props
     if (!content) return null;
 
     const { post, processing } = useForm({
