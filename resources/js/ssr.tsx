@@ -1,9 +1,20 @@
+import "../css/app.css";
+import "../css/preflight.css";
+import "./bootstrap";
+import "@mantine/core/styles.css";
+import "@mantine/carousel/styles.css";
+import "@mantine/notifications/styles.css";
+import "@mantine/dates/styles.css";
+import "@mantine/dropzone/styles.css";
 import { createInertiaApp } from "@inertiajs/react";
 import createServer from "@inertiajs/react/server";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import ReactDOMServer from "react-dom/server";
 import { RouteName } from "ziggy-js";
 import { route } from "../../vendor/tightenco/ziggy/src/js";
+import { MantineProvider } from "@mantine/core";
+import theme from "./styles/theme";
+import { Notifications } from "@mantine/notifications";
 
 const appName = import.meta.env.VITE_APP_NAME || "Laravel";
 
@@ -29,7 +40,12 @@ createServer((page) =>
                 });
             /* eslint-enable */
 
-            return <App {...props} />;
+            return (
+                <MantineProvider theme={theme} defaultColorScheme="dark">
+                    <Notifications />
+                    <App {...props} />
+                </MantineProvider>
+            );
         },
     })
 );
