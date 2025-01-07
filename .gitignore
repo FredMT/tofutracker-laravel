@@ -24,3 +24,4 @@ yarn-error.log
 /.zed
 *.rdb
 *.DS_Store
+api.php
