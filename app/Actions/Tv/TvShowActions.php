@@ -61,7 +61,7 @@ class TvShowActions
             ->first();
 
         if (!$season) {
-            return $this->createTvSeason($tvShow, $seasonNumber);
+            return $this->createTvSeason($tvShow, (int) $seasonNumber);
         }
 
         // Check if season needs update
