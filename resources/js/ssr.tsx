@@ -10,8 +10,8 @@ import { createInertiaApp } from "@inertiajs/react";
 import createServer from "@inertiajs/react/server";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import ReactDOMServer from "react-dom/server";
-import { RouteName } from "ziggy-js";
-import { route } from "../../vendor/tightenco/ziggy/src/js";
+import { route, type RouteName } from 'ziggy-js';
+import { Ziggy as ziggy } from '@/ziggy';
 import { MantineProvider } from "@mantine/core";
 import theme from "./styles/theme";
 import { Notifications } from "@mantine/notifications";
@@ -29,23 +29,19 @@ createServer((page) =>
                 import.meta.glob("./Pages/**/*.tsx")
             ),
         setup: ({ App, props }) => {
-            /* eslint-disable */
             // @ts-expect-error
             global.route<RouteName> = (name, params, absolute) =>
+                // @ts-expect-error
                 route(name, params as any, absolute, {
+                    ...ziggy,
                     // @ts-expect-error
-                    ...page.props.ziggy,
-                    // @ts-expect-error
-                    location: new URL(page.props.ziggy.location),
+                    location: new URL(page.props.ziggy.location)
                 });
-            /* eslint-enable */
 
-            return (
-                <MantineProvider theme={theme} defaultColorScheme="dark">
-                    <Notifications />
-                    <App {...props} />
-                </MantineProvider>
-            );
-        },
+            return <MantineProvider theme={theme} defaultColorScheme="dark">
+                <Notifications />
+                <App {...props} />
+            </MantineProvider>;
+        }
     })
 );

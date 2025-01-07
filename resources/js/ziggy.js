@@ -1,4 +1,4 @@
-export const Ziggy = {
+const Ziggy = {
     url: "http://localhost",
     port: null,
     defaults: {},
