@@ -1,8 +1,5 @@
-import { useContent } from "@/hooks/useContent";
-import { useAnimeContent } from "@/hooks/useAnimeContent";
-import { BannerImage } from "@/Components/Content/Shared/Regular/BannerImage";
-import { usePage } from "@inertiajs/react";
-import { AnimeSeason } from "@/types/animeseason";
+import {BannerImage} from "@/Components/Content/Shared/Regular/BannerImage";
+import {usePage} from "@inertiajs/react";
 import {RegularContentDataType} from "@/types";
 
 export function RegularBannerImageContainer() {

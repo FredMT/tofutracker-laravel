@@ -1,5 +1,5 @@
 import AnimeRecommendedContent from "@/Components/Content/Shared/Anime/AnimeRecommendedContent";
-import {BannerImageContainer} from "@/Components/Content/Shared/Regular/BannerImageContainer";
+import {AnimeBannerImageContainer} from "@/Components/Content/Shared/Anime/AnimeBannerImageContainer";
 import ContentActions from "@/Components/ContentActions/ContentActions";
 import ResponsiveContainer from "@/Components/ResponsiveContainer";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
@@ -19,7 +19,7 @@ function AnimeContent() {
     return (
         <>
             <Head title={data.collection_name} />
-            <BannerImageContainer />
+            <AnimeBannerImageContainer />
             <ResponsiveContainer>
                 <Space h={24} />
                 <ContentLayout

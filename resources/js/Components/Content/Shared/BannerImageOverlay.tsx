@@ -1,6 +1,6 @@
 import { Genre } from "@/types";
 import { Badge, Flex, Group, Image, Paper } from "@mantine/core";
-import classes from "./BannerImage.module.css";
+import classes from "./styles/BannerImage.module.css";
 
 interface BannerImageProps {
     logo_path: string;

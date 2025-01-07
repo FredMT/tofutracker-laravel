@@ -1,6 +1,6 @@
 import AnimeContentEpisodes from "@/Components/Content/Shared/Anime/AnimeContentEpisodes";
 import AnimeRelatedContent from "@/Components/Content/Shared/Anime/AnimeRelatedContent";
-import {BannerImageContainer} from "@/Components/Content/Shared/Regular/BannerImageContainer";
+import {AnimeBannerImageContainer} from "@/Components/Content/Shared/Anime/AnimeBannerImageContainer";
 import ContentActions from "@/Components/ContentActions/ContentActions";
 import ResponsiveContainer from "@/Components/ResponsiveContainer";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
@@ -21,7 +21,7 @@ function AnimeSeasonContent() {
     return (
         <>
             <Head title={data.title_main} />
-            <BannerImageContainer />
+            <AnimeBannerImageContainer />
             <ResponsiveContainer>
                 <Box hiddenFrom="sm" mt={12}>
                     <SeasonBreadcrumbs />

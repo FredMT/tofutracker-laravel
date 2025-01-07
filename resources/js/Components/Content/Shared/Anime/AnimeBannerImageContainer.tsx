@@ -1,25 +1,18 @@
-import { useAnimeContent } from "@/hooks/useAnimeContent";
 import { BannerImage } from "@/Components/Content/Shared/Regular/BannerImage";
 import { usePage } from "@inertiajs/react";
 import { AnimeSeason } from "@/types/animeseason";
 import { Anime } from "@/types/anime";
-import { AnimeContentDataType, AnimeType } from "@/types";
+import { AnimeType } from "@/types";
 
-function isAnimeSeason(data: Anime | AnimeSeason): data is AnimeSeason {
-    return "title_main" in data;
-}
-
-function isAnime(data: Anime | AnimeSeason): data is Anime {
-    return "tmdbData" in data;
-}
-
-export function BannerImageContainer() {
-    const { data, type } = usePage<{
-        data: Anime | AnimeSeason;
+export function AnimeBannerImageContainer() {
+    const { type } = usePage<{
         type: AnimeType;
     }>().props;
 
-    if (type === "animeseason" && isAnimeSeason(data)) {
+    let data = usePage<{ data: Anime | AnimeSeason }>().props.data;
+
+    if (type === "animeseason") {
+        data = data as AnimeSeason;
         return (
             <BannerImage
                 title={data.title_main}
@@ -31,7 +24,8 @@ export function BannerImageContainer() {
         );
     }
 
-    if ((type === "animetv" || type === "animemovie") && isAnime(data)) {
+    if (type === "animetv" || type === "animemovie") {
+        data = data as Anime;
         return (
             <BannerImage
                 title={data.tmdbData.data.title}

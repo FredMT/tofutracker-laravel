@@ -8,15 +8,15 @@ import {
     Tooltip,
 } from "@mantine/core";
 import { Link, usePage } from "@inertiajs/react";
-import { PageProps, Links, ContentType } from "@/types";
+import { Links, ContentType } from "@/types";
 import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import classes from "./SeasonBreadcrumbs.module.css";
 
 export default function SeasonBreadcrumbs() {
-    const { links, type } = usePage<{type: ContentType, links: Links }>().props;
+    const { links, type } = usePage<{ type: ContentType; links: Links }>()
+        .props;
 
-    if (!links || (type !== "tvseason" && type !== "animeseason"))
-        return null;
+    if (!links || (type !== "tvseason" && type !== "animeseason")) return null;
 
     const currentSeasonIndex = links.seasons.findIndex(
         (season) => season.is_current
@@ -30,27 +30,24 @@ export default function SeasonBreadcrumbs() {
     const currentSeason = links.seasons[currentSeasonIndex];
 
     const getSeasonName = (season: Links["seasons"][0], isDropdown = false) => {
-        const seasonIndex =
-            links.seasons.findIndex((s) => s.url === season.url) + 1;
         if (isDropdown) {
             if (type === "animeseason") {
                 const truncatedName =
                     season.name.length > 50
                         ? `${season.name.slice(0, 50)}...`
                         : season.name;
-                return `Season ${seasonIndex} - ${truncatedName}`;
+                return `Season ${season.season_number} - ${truncatedName}`;
             }
             return season.name;
         }
-        return `Season ${seasonIndex}`;
+        return `Season ${season.season_number}`;
     };
 
     const items = [
         <Link href={links.show.url} key="show" prefetch>
             <Text className={classes.seasonBreadcrumbs}>
-                {links.show.name ?? type === "animeseason"
-                    ? "Anime"
-                    : "TV Show"}
+                {links.show.name ??
+                    (type === "animeseason" ? "Anime" : "TV Show")}
             </Text>
         </Link>,
         links.seasons.length > 1 ? (

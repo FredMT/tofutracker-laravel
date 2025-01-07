@@ -1,4 +1,4 @@
-import { BannerImageOverlay } from "@/Components/Content/Shared/Regular/BannerImageOverlay";
+import { BannerImageOverlay } from "@/Components/Content/Shared/BannerImageOverlay";
 import { Genre } from "@/types";
 import { Flex, Image } from "@mantine/core";
 
