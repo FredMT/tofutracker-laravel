@@ -1,10 +1,6 @@
 import { Title } from "@mantine/core";
 
-export default function ErrorPage({
-    status,
-}: {
-    status: 403 | 404 | 500 | 503;
-}) {
+export default function Error({ status }: { status: 403 | 404 | 500 | 503 }) {
     const title = {
         503: "503: Service Unavailable",
         500: "500: Server Error",
