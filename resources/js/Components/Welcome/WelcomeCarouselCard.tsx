@@ -6,7 +6,7 @@ import { Link } from "@inertiajs/react";
 interface WelcomeCarouselCardProps {
     id: string | number;
     title: string;
-    posterPath: string;
+    posterPath: string | null;
     type: string;
     vote_average: number;
 }

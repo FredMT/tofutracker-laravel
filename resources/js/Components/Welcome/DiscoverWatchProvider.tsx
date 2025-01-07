@@ -12,8 +12,8 @@ interface WatchProviderItem {
     release_date: string;
     vote_average: number;
     popularity: number;
-    poster_path: string;
-    backdrop_path: string;
+    poster_path: string | null;
+    backdrop_path: string | null;
 }
 
 interface WatchProviderData {

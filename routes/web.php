@@ -1,9 +1,13 @@
 <?php
 
+use App\Actions\Trending\GetTrendingAction;
+use App\Actions\Trending\GetTrendingGenresAndWatchProvidersAction;
 use App\Http\Controllers\AnimeController;
-use App\Http\Controllers\AnimeMappingController;
+use App\Http\Controllers\JsonSearchController;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\QuickSearchController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TvController;
 use App\Http\Controllers\TvSeasonController;
@@ -17,16 +21,15 @@ use App\Http\Controllers\UserTvEpisodeController;
 use App\Http\Controllers\UserTvSeasonController;
 use App\Http\Controllers\UserTvShowController;
 use App\Http\Middleware\CheckAnimeMapping;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Illuminate\Http\Request;
-use App\Http\Controllers\SearchController;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\JsonSearchController;
-use App\Http\Controllers\QuickSearchController;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', []);
+    return Inertia::render('Welcome', [
+        'genresandwatchproviders' => app(GetTrendingGenresAndWatchProvidersAction::class)->execute(),
+        'data' => app(GetTrendingAction::class)->execute(),
+    ]);
 });
 
 Route::get('/me', function () {
