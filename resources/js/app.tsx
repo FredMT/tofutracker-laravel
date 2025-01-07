@@ -12,8 +12,6 @@ import { createRoot, hydrateRoot } from "react-dom/client";
 import { MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import theme from "@/styles/theme";
-import { route, type RouteName } from 'ziggy-js';
-import { Ziggy as ziggy } from '@/ziggy';
 
 const appName = import.meta.env.VITE_APP_NAME || "Laravel";
 
@@ -35,15 +33,6 @@ createInertiaApp({
             );
             return;
         }
-
-        // @ts-expect-error
-        global.route<RouteName> = (name, params, absolute) =>
-            // @ts-expect-error
-            route(name, params as any, absolute, {
-                ...ziggy,
-                // @ts-expect-error
-                location: new URL(page.props.ziggy.location)
-            });
 
         createRoot(el).render(
             <MantineProvider theme={theme} defaultColorScheme="dark">
