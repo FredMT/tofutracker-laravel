@@ -16,7 +16,7 @@ export default function UserDropdown() {
                         >
                             <Group>
                                 <Avatar
-                                    src={`https:/images.tofutracker.com/${user.avatar}`}
+                                    src={`https://images.tofutracker.com/${user.avatar}`}
                                     alt="Avatar"
                                     size="sm"
                                 />
