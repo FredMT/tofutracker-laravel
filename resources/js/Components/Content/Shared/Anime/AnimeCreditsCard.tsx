@@ -58,7 +58,6 @@ function AnimeCreditsCard({ character, seiyuus }: AnimeCreditsCardProps) {
                             draggable={false}
                             classNames={{
                                 control: classes.carouselControl,
-                                controls: classes.carouselControls,
                             }}
                         >
                             {seiyuus.map((seiyuu) => (
