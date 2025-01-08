@@ -25,43 +25,6 @@ interface MediaItem {
     type: string;
 }
 
-interface Props {
-    auth: any;
-    by_genre: Record<
-        string,
-        {
-            genre_name: string;
-            items: Array<{
-                id: string | number;
-                media_type: string;
-                title: string;
-                release_date: string;
-                vote_average: number;
-                popularity: number;
-                poster_path: string;
-                backdrop_path: string | null;
-            }>;
-        }
-    >;
-    watch_providers: Record<
-        string,
-        {
-            provider_name: string;
-            provider_logo: string;
-            items: Array<{
-                id: number;
-                media_type: string;
-                title: string;
-                release_date: string;
-                vote_average: number;
-                popularity: number;
-                poster_path: string;
-                backdrop_path: string | null;
-            }>;
-        }
-    >;
-}
-
 function Welcome() {
     const { data, genresandwatchproviders } = usePage<{
         data: TrendingContent;
