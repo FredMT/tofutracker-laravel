@@ -36,7 +36,10 @@ export function UserBanner() {
                 </Alert>
             )}
             <Image
-                src={`https:/images.tofutracker.com/${userData.banner}` || getRandomBanner()}
+                src={
+                    `https://images.tofutracker.com/${userData.banner}` ||
+                    getRandomBanner()
+                }
                 height={320}
                 h={320}
                 loading="lazy"
@@ -47,7 +50,7 @@ export function UserBanner() {
                 <ResponsiveContainer>
                     <div className={classes.avatarWrapper}>
                         <Avatar
-                            src={`https:/images.tofutracker.com/${userData.avatar}`}
+                            src={`https://images.tofutracker.com/${userData.avatar}`}
                             size={128}
                             radius="50%"
                             style={{
