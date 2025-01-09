@@ -20,11 +20,11 @@ class TvShowActions
 
     public function fetchTvShow(string $id): array
     {
-        return Cache::remember("tv.{$id}", now()->addMinutes(15), function () use ($id) {
+       return Cache::remember("tv.{$id}", now()->addMinutes(15), function () use ($id) {
 
             $tvShow = $this->getShowAndQueueUpdateIfNeeded($id);
             return $tvShow->filteredData;
-        });
+       });
     }
 
     /**
@@ -33,6 +33,7 @@ class TvShowActions
     public function getShowAndQueueUpdateIfNeeded(string $tvId): TvShow
     {
         $tvShow = TvShow::find($tvId);
+        
 
         $showData = $this->tmdbService->getTv($tvId);
 
@@ -40,12 +41,13 @@ class TvShowActions
             return $this->createTvShow($showData);
         }
 
+
+
         // Use the already fetched show data to check etag
         if ($tvShow->etag !== $showData['etag']) {
             // Queue show update with already fetched data
             UpdateTvShow::dispatch($tvShow, $showData)
-                ->afterCommit()
-                ->onQueue('updates');
+                ->afterCommit();
         }
 
         return $tvShow;
@@ -221,6 +223,8 @@ class TvShowActions
 
                 $data = $response;
             }
+
+
 
             // Extract and remove episodes data to prevent duplication
             $seasonData = $data['data'];

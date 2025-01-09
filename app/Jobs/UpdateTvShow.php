@@ -21,6 +21,7 @@ class UpdateTvShow implements ShouldQueue
 
     public function handle(TvShowActions $actions): void
     {
+
         $actions->updateTvShow($this->show, $this->data);
     }
 }

@@ -24,6 +24,16 @@ class GetTrendingGenresAndWatchProvidersAction
         private TmdbService $tmdbService
     ) {}
 
+    public function store(): void
+    {
+        $trendingIds = $this->getTrendingIds();
+        $withAnime = $this->processAnimeMapping($trendingIds);
+        $withProviders = $this->appendWatchProviders($withAnime);
+        $organizedData = $this->organizeResults($withProviders);
+
+        Cache::put('trending_organized', $organizedData, now()->addDay());
+    }
+
     public function execute(): array
     {
         return Cache::remember('trending_organized', now()->addDay(), function () {
@@ -33,6 +43,7 @@ class GetTrendingGenresAndWatchProvidersAction
             return $this->organizeResults($withProviders);
         });
     }
+
 
     private function getTrendingIds(): array
     {

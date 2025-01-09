@@ -8,13 +8,14 @@ use Illuminate\Console\Command;
 
 class FetchUpdatedAnimeCommand extends Command
 {
-    protected $signature = 'anime:fetch-updates';
+    protected $signature = 'anime:fetch-updates {--days=3 : Number of days to look back for updates}';
     protected $description = 'Fetch and process updated anime from AniDB';
 
     public function handle(AnidbUdpService $udpService): void
     {
         try {
-            $result = $udpService->getUpdatedAnime(3);
+            $days = $this->option('days');
+            $result = $udpService->getUpdatedAnime($days);
 
             if (!isset($result['anime_ids']) || empty($result['anime_ids'])) {
                 logger()->info('No anime updates found');
