@@ -244,7 +244,7 @@ class TvShowActions
                     'id' => $episode['id'],
                     'show_id' => $tvSeason->show_id,
                     'season_id' => $tvSeason->id,
-                    'data' => $episode,
+                    'data' => json_encode($episode),
                     'created_at' => now(),
                     'updated_at' => now()
                 ])->all();
