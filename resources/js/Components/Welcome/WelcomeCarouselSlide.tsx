@@ -6,8 +6,7 @@ import { useMediaQuery } from "@mantine/hooks";
 
 interface MediaItem {
     title: string;
-    backdrop_path: string |  null;
-    popularity: number;
+    backdrop_path: string | null;
     logo_path: string | null;
     genres: string[];
     overview: string;
@@ -19,7 +18,6 @@ interface MediaItem {
 export default function WelcomeCarouselSlide({
     title,
     backdrop_path,
-    popularity,
     logo_path,
     genres,
     overview,
@@ -32,12 +30,12 @@ export default function WelcomeCarouselSlide({
 
     return (
         <div className={classes.slideContainer}>
-            <div className={classes.image}>
+            <div>
                 <Image
                     src={`https://image.tmdb.org/t/p/original${backdrop_path}`}
-                    height={750}
-                    mih={750}
-                    mah={750}
+                    height={540}
+                    mih={540}
+                    mah={540}
                     alt={title}
                     fit="cover"
                     loading="lazy"
@@ -64,7 +62,7 @@ export default function WelcomeCarouselSlide({
                     </Link>
                 )}
                 <Stack gap="xs" mt={8}>
-                    <Flex gap={mobile ? 2 : "xs"} wrap="wrap" maw={500}>
+                    <Flex gap={2} wrap="wrap" maw={500}>
                         {allBadges.map((item, index) => (
                             <Badge key={index} bg="black">
                                 {item}

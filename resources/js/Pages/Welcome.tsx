@@ -7,7 +7,6 @@ import { Carousel } from "@mantine/carousel";
 import { Space } from "@mantine/core";
 import Autoplay from "embla-carousel-autoplay";
 import { useRef } from "react";
-import classes from "./Welcome.module.css";
 import DiscoverByGenre from "@/Components/Welcome/DiscoverByGenre";
 import ResponsiveContainer from "@/Components/ResponsiveContainer";
 import { TrendingContent } from "@/types/trending";
@@ -79,25 +78,27 @@ function Welcome() {
     return (
         <>
             <Head title="Welcome" />
-            <Carousel
-                height={750}
-                mih={750}
-                mah={750}
-                plugins={[autoplay.current]}
-                onMouseEnter={autoplay.current.stop}
-                onMouseLeave={autoplay.current.reset}
-                loop
-                classNames={{
-                    control: classes.carouselControl,
-                    controls: classes.carouselControls,
-                }}
-            >
-                {finalSlides.map((item, index) => (
-                    <Carousel.Slide key={`${item.type}-${item.link}-${index}`}>
-                        <WelcomeCarouselSlide {...item} />
-                    </Carousel.Slide>
-                ))}
-            </Carousel>
+            <div style={{ position: "relative" }}>
+                <Carousel
+                    height={540}
+                    mih={540}
+                    mah={540}
+                    plugins={[autoplay.current]}
+                    onMouseEnter={autoplay.current.stop}
+                    onMouseLeave={autoplay.current.reset}
+                    loop
+                    withControls={false}
+                    style={{ position: "relative", zIndex: 1 }}
+                >
+                    {finalSlides.map((item, index) => (
+                        <Carousel.Slide
+                            key={`${item.type}-${item.link}-${index}`}
+                        >
+                            <WelcomeCarouselSlide {...item} />
+                        </Carousel.Slide>
+                    ))}
+                </Carousel>
+            </div>
             <Space h="xl" />
             <TrendingSection />
             <Space h="xl" />

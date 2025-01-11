@@ -1,0 +1,36 @@
+.cardWrapper {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.cardWrapper:hover .overlayText {
+    transform: translateY(0);
+}
+
+.cardWrapper:hover .cardOverlay {
+    opacity: 1;
+}
+
+.cardOverlay {
+    position: absolute;
+    max-width: 200px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 1rem;
+}
+
+.overlayText {
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+    color: white;
+    padding: 10px;
+}

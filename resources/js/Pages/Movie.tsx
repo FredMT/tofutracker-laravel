@@ -81,7 +81,6 @@ function Movie() {
                             </Stack>
 
                             <ContentDetails/>
-                            <Divider my={16}/>
 
                             <Stack mt={16}>
                                 <Title order={3}>Overview</Title>
