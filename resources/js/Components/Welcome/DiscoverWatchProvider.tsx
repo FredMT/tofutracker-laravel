@@ -7,6 +7,7 @@ import { WelcomeProviderCarousel } from "./WelcomeProviderCarousel";
 
 interface WatchProviderItem {
     id: number;
+    anime_id?: number;
     media_type: string;
     title: string;
     release_date: string;
@@ -66,12 +67,13 @@ function DiscoverWatchProvider({
                         slideSize="200px"
                         onProviderChange={onProviderChange}
                     >
-                        {data.items.map((item) => (
+                        {data.items.map((item: WatchProviderItem) => (
                             <Carousel.Slide
                                 key={`${item.media_type}-${item.id}`}
                             >
                                 <WelcomeCarouselCard
                                     id={item.id}
+                                    anime_id={item.anime_id}
                                     title={item.title}
                                     posterPath={item.poster_path}
                                     type={item.media_type}

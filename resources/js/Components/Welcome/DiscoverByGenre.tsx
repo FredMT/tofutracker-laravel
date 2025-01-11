@@ -20,6 +20,7 @@ import WelcomeCarouselCard from "./WelcomeCarouselCard";
 
 interface GenreItem {
     id: string | number;
+    anime_id?: number;
     media_type: string;
     title: string;
     release_date: string;
@@ -155,10 +156,11 @@ export function DiscoverByGenre({
                     className={className}
                     slideGap={slideGap}
                 >
-                    {activeGenre.items.map((item) => (
+                    {activeGenre.items.map((item: GenreItem) => (
                         <Carousel.Slide key={`${item.media_type}-${item.id}`}>
                             <WelcomeCarouselCard
                                 id={item.id}
+                                anime_id={item.anime_id}
                                 title={item.title}
                                 posterPath={item.poster_path}
                                 type={item.media_type}

@@ -49,27 +49,6 @@ const getProviderLogo = (providerId: string): string => {
     }
 };
 
-const getProviderName = (providerId: string): string => {
-    switch (providerId) {
-        case "8":
-            return "Netflix";
-        case "1899":
-            return "HBO Max";
-        case "9":
-            return "Prime Video";
-        case "283":
-            return "Crunchyroll";
-        case "337":
-            return "Disney+";
-        case "350":
-            return "Apple TV+";
-        case "531":
-            return "Paramount+";
-        default:
-            return "";
-    }
-};
-
 export function WelcomeProviderCarousel({
     children,
     containerWidth = "100%",

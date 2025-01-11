@@ -9,6 +9,7 @@ interface WelcomeCarouselCardProps {
     posterPath: string | null;
     type: string;
     vote_average: number;
+    anime_id?: number;
 }
 function getContentType(type: string) {
     switch (type) {
@@ -25,11 +26,13 @@ function getContentType(type: string) {
 
 function WelcomeCarouselCard({
     id,
+    anime_id,
     title,
     posterPath,
     type,
     vote_average,
 }: WelcomeCarouselCardProps) {
+    console.log(id, anime_id);
     return (
         <Card
             w={200}
@@ -39,7 +42,7 @@ function WelcomeCarouselCard({
             withBorder={false}
             component={Link}
             prefetch
-            href={`/${type}/${id}`}
+            href={`/${type}/${anime_id ? anime_id : id}`}
             shadow="none"
         >
             <Card.Section className={classes.cardWrapper}>
