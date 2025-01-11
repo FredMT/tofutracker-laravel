@@ -2,6 +2,7 @@
 
 namespace App\Actions\Trending;
 
+use App\Jobs\UpdateTrendingGenresAndWatchProvidersJob;
 use App\Models\AnimeMap;
 use App\Models\Movie;
 use App\Models\TvShow;
@@ -36,11 +37,9 @@ class GetTrendingGenresAndWatchProvidersAction
 
     public function execute(): array
     {
-        return Cache::remember('trending_organized', now()->addDay(), function () {
-            $trendingIds = $this->getTrendingIds();
-            $withAnime = $this->processAnimeMapping($trendingIds);
-            $withProviders = $this->appendWatchProviders($withAnime);
-            return $this->organizeResults($withProviders);
+        return Cache::flexible('trending_organized', [60 * 60 * 23, 60 * 60 * 24], function () {
+            UpdateTrendingGenresAndWatchProvidersJob::dispatch();
+            return Cache::get('trending_organized');
         });
     }
 
