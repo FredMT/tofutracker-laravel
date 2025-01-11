@@ -37,7 +37,7 @@ export function WelcomeCustomCarousel({
     slideGap = 0,
     className,
     title,
-    titleOrder = 1,
+    titleOrder = 2,
 }: WelcomeCustomCarouselProps) {
     const isMobile = useMediaQuery("(max-width: 500px)");
 

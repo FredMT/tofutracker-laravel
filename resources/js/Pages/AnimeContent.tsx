@@ -1,16 +1,24 @@
 import AnimeRecommendedContent from "@/Components/Content/Shared/Anime/AnimeRecommendedContent";
-import {AnimeBannerImageContainer} from "@/Components/Content/Shared/Anime/AnimeBannerImageContainer";
+import { AnimeBannerImageContainer } from "@/Components/Content/Shared/Anime/AnimeBannerImageContainer";
 import ContentActions from "@/Components/ContentActions/ContentActions";
 import ResponsiveContainer from "@/Components/ResponsiveContainer";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
 import ContentLayout from "@/Layouts/ContentLayout";
-import {Head, usePage} from "@inertiajs/react";
-import {Box, Divider, Space, Spoiler, Stack, Text, Title,} from "@mantine/core";
-import {useViewportSize} from "@mantine/hooks";
+import { Head, usePage } from "@inertiajs/react";
+import {
+    Box,
+    Divider,
+    Space,
+    Spoiler,
+    Stack,
+    Text,
+    Title,
+} from "@mantine/core";
+import { useViewportSize } from "@mantine/hooks";
 import Seasons from "@/Components/Content/TV/Seasons/Seasons";
-import {AnimeContentCredits} from "@/Components/Content/Shared/Anime/AnimeContentCredits";
-import {Anime} from "@/types/anime";
-import {AnimeContentSummary} from "@/Components/Content/Shared/Regular/AnimeContentSummary";
+import { AnimeContentCredits } from "@/Components/Content/Shared/Anime/AnimeContentCredits";
+import { Anime } from "@/types/anime";
+import { AnimeContentSummary } from "@/Components/Content/Shared/Regular/AnimeContentSummary";
 import AnimePosterImage from "@/Components/Content/Shared/Anime/AnimePosterImage";
 
 function AnimeContent() {
@@ -77,7 +85,7 @@ function AnimeContent() {
                                 {data.tmdbData.data.tagline && (
                                     <Text>{data.tmdbData.data.tagline}</Text>
                                 )}
-                                <Divider my={16} />
+
                                 <AnimeContentSummary />
                             </Stack>
                             <Stack mt={16}>

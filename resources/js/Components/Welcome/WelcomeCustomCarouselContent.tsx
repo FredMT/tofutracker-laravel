@@ -50,7 +50,7 @@ export function WelcomeCustomCarouselContent({
     align = "start",
     slideGap = 0,
     className,
-    titleOrder = 1,
+    titleOrder = 2,
     movies,
     tvShows,
     anime,
