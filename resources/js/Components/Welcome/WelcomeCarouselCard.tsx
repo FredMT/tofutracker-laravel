@@ -1,6 +1,6 @@
 import { Card, Group, Image, Stack, Text, Title } from "@mantine/core";
 import { Star } from "lucide-react";
-import classes from "./WelcomeCarouselSlide.module.css";
+import classes from "./WelcomeCarouselCard.module.css";
 import { Link } from "@inertiajs/react";
 
 interface WelcomeCarouselCardProps {
