@@ -23,6 +23,7 @@ class MovieController extends Controller
 
         $cacheKey = "movie.{$id}";
         $userLibraryData = null;
+        $userLists = null;
 
         // Get user library data if authenticated
         if ($request->user()) {
@@ -30,13 +31,28 @@ class MovieController extends Controller
                 'user_id' => $request->user()->id,
                 'movie_id' => $id
             ])->first();
+
+
+            $userLists = $request->user()
+                ->customLists()
+                ->select('id', 'title')
+                ->withExists(['items as has_item' => function ($query) use ($id) {
+                    $query->where('listable_type', Movie::class)
+                          ->where('listable_id', $id);
+                }])
+                ->get();
+
+            if ($userLists->isEmpty()) {
+                $userLists = null;
+            }
         }
 
         if (Cache::has($cacheKey)) {
             return Inertia::render('Movie', [
                 'data' => Cache::get($cacheKey),
                 'type' => 'movie',
-                'user_library' => $userLibraryData
+                'user_library' => $userLibraryData,
+                'user_lists' => $userLists,
             ]);
         }
 

@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Http\Request;
 
 class AnimeController extends Controller
 {
@@ -36,7 +37,7 @@ class AnimeController extends Controller
     }
 
 
-    public function show($accessId)
+    public function show(Request $request, $accessId): Response
     {
         try {
             $animeMap = AnimeMap::where('id', $accessId)->firstOrFail();
@@ -55,6 +56,7 @@ class AnimeController extends Controller
 
             // Get user's anime library entry if it exists
             $userLibrary = null;
+            $userLists = null;
             if (Auth::check()) {
                 $userAnimeCollection = UserAnimeCollection::where('map_id', $accessId)
                     ->whereHas('userLibrary', function ($query) {
@@ -85,6 +87,20 @@ class AnimeController extends Controller
                         })->toArray()
                     ];
                 }
+
+                $userLists = $request->user()
+                ->customLists()
+                ->select('id', 'title')
+                ->withExists(['items as has_item' => function ($query) use ($accessId) {
+                    $query->where('listable_type', AnimeMap::class)
+                          ->where('listable_id', $accessId);
+                }])
+                ->get();
+
+            if ($userLists->isEmpty()) {
+                $userLists = null;
+            }
+                
             }
 
             return Inertia::render('AnimeContent', [
@@ -96,7 +112,8 @@ class AnimeController extends Controller
                     'map_id' => $firstChainEntry ? $firstChainEntry['map_id'] : $accessId,
                     'anidb_id' => $firstChainEntry ? $firstChainEntry['id'] : null,
                 ],
-                'user_library' => $userLibrary
+                'user_library' => $userLibrary,
+                'user_lists' => $userLists,
             ]);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             abort(400, "Could not find this anime");
@@ -111,7 +128,7 @@ class AnimeController extends Controller
     }
 
 
-    public function showSeason($accessId, $seasonId): Response
+    public function showSeason(Request $request, $accessId, $seasonId): Response
     {
         try {
             if (!$this->verifySeasonRelationship($accessId, $seasonId)) {
@@ -373,6 +390,7 @@ class AnimeController extends Controller
             $anime['videos'] = $videos;
 
             $userLibrary = null;
+            $userLists = null;
 
             if (Auth::check()) {
                 $userAnime = UserAnime::with('episodes')
@@ -403,6 +421,15 @@ class AnimeController extends Controller
                         })->toArray()
                     ];
                 }
+
+                $userLists = $request->user()
+                    ->customLists()
+                    ->select('id', 'title')
+                    ->withExists(['items as has_item' => function ($query) use ($seasonId) {
+                        $query->where('listable_type', AnidbAnime::class)
+                            ->where('listable_id', $seasonId);
+                    }])
+                    ->get();
             }
 
             // Generate navigation links
@@ -413,6 +440,7 @@ class AnimeController extends Controller
                 [
                     'data' => $anime,
                     'user_library' => $userLibrary,
+                    'user_lists' => $userLists,
                     'type' => 'animeseason',
                     'links' => $links
                 ]

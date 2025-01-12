@@ -1,15 +1,24 @@
-import { usePage, router } from "@inertiajs/react";
+import { usePage, router, Link } from "@inertiajs/react";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { useState } from "react";
-import { UserLists } from "@/Components/ContentActions/components/Actions/AddToList/types";
-import MobileAddToList from "@/Components/ContentActions/components/Actions/AddToList/components/MobileAddToList";
-import DesktopAddToList from "@/Components/ContentActions/components/Actions/AddToList/components/DesktopAddToList";
+import { UserLists } from "@/Components/ContentActions/components/Actions/ManageCustomList/types";
+import MobileAddToList from "@/Components/ContentActions/components/Actions/ManageCustomList/components/MobileAddToList";
+import DesktopAddToList from "@/Components/ContentActions/components/Actions/ManageCustomList/components/DesktopAddToList";
+import { Button } from "@mantine/core";
+import { Auth } from "@/types";
 
-export default function AddToList() {
+export default function ManageCustomList() {
     const { user_lists: lists, auth } = usePage<{
         user_lists: UserLists;
-        auth: { user: { username: string } };
+        auth: Auth;
     }>().props;
+
+    if (!auth.user)
+        return (
+            <Button component={Link} href={route("login")} variant="outline">
+                Add to List
+            </Button>
+        );
 
     const isMobile = useMediaQuery("(max-width: 640px)");
     const [opened, { open, close }] = useDisclosure(false);
@@ -21,15 +30,6 @@ export default function AddToList() {
         list.title.toLowerCase().includes(search.toLowerCase())
     );
 
-    const handleAddToList = (listId: number) => {
-        // TODO: Implement add to list functionality
-        console.log("Add to list:", listId);
-    };
-
-    const handleGoToList = (listId: number) => {
-        router.visit(`/lists/${listId}`);
-    };
-
     const sharedProps = {
         opened,
         createOpened,
@@ -40,8 +40,6 @@ export default function AddToList() {
         search,
         setSearch,
         filteredLists,
-        handleAddToList,
-        handleGoToList,
     };
 
     if (isMobile) {

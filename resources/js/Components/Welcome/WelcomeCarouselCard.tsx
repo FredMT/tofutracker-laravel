@@ -32,7 +32,6 @@ function WelcomeCarouselCard({
     type,
     vote_average,
 }: WelcomeCarouselCardProps) {
-    console.log(id, anime_id);
     return (
         <Card
             w={200}

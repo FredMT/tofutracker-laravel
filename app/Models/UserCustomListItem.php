@@ -13,6 +13,9 @@ class UserCustomListItem extends Model
 
     protected $fillable = [
         'sort_order',
+        'custom_list_id',
+        'listable_type',
+        'listable_id',
     ];
 
     protected $casts = [

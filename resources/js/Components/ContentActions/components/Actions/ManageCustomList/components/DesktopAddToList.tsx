@@ -1,7 +1,7 @@
 import { Button, Modal } from "@mantine/core";
-import { CreateForm } from "@/Components/ContentActions/components/Actions/AddToList/components/CreateForm";
-import { ListContent } from "@/Components/ContentActions/components/Actions/AddToList/components/ListContent";
-import { UserList } from "@/Components/ContentActions/components/Actions/AddToList/types";
+import { CreateForm } from "@/Components/ContentActions/components/Actions/ManageCustomList/components/CreateForm";
+import { ListContent } from "@/Components/ContentActions/components/Actions/ManageCustomList/components/ListContent";
+import { UserList } from "@/Components/ContentActions/components/Actions/ManageCustomList/types";
 
 type DesktopAddToListProps = {
     opened: boolean;
@@ -13,8 +13,6 @@ type DesktopAddToListProps = {
     search: string;
     setSearch: (value: string) => void;
     filteredLists: UserList[];
-    handleAddToList: (id: number) => void;
-    handleGoToList: (id: number) => void;
 };
 
 export default function DesktopAddToList({
@@ -27,8 +25,6 @@ export default function DesktopAddToList({
     search,
     setSearch,
     filteredLists,
-    handleAddToList,
-    handleGoToList,
 }: DesktopAddToListProps) {
     return (
         <>
@@ -47,8 +43,6 @@ export default function DesktopAddToList({
                     search={search}
                     setSearch={setSearch}
                     filteredLists={filteredLists}
-                    handleAddToList={handleAddToList}
-                    handleGoToList={handleGoToList}
                     openCreate={openCreate}
                 />
             </Modal>

@@ -1,7 +1,7 @@
 import { Button, Drawer } from "@mantine/core";
-import { CreateForm } from "@/Components/ContentActions/components/Actions/AddToList/components/CreateForm";
-import { ListContent } from "@/Components/ContentActions/components/Actions/AddToList/components/ListContent";
-import { UserList } from "@/Components/ContentActions/components/Actions/AddToList/types";
+import { CreateForm } from "@/Components/ContentActions/components/Actions/ManageCustomList/components/CreateForm";
+import { ListContent } from "@/Components/ContentActions/components/Actions/ManageCustomList/components/ListContent";
+import { UserList } from "@/Components/ContentActions/components/Actions/ManageCustomList/types";
 
 type MobileAddToListProps = {
     opened: boolean;
@@ -13,8 +13,6 @@ type MobileAddToListProps = {
     search: string;
     setSearch: (value: string) => void;
     filteredLists: UserList[];
-    handleAddToList: (id: number) => void;
-    handleGoToList: (id: number) => void;
 };
 
 export default function MobileAddToList({
@@ -27,8 +25,6 @@ export default function MobileAddToList({
     search,
     setSearch,
     filteredLists,
-    handleAddToList,
-    handleGoToList,
 }: MobileAddToListProps) {
     return (
         <>
@@ -48,8 +44,6 @@ export default function MobileAddToList({
                         search={search}
                         setSearch={setSearch}
                         filteredLists={filteredLists}
-                        handleAddToList={handleAddToList}
-                        handleGoToList={handleGoToList}
                         openCreate={openCreate}
                     />
                 </Drawer>

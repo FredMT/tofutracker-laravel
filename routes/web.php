@@ -32,7 +32,7 @@ Route::get('/', function () {
         'genresandwatchproviders' => app(GetTrendingGenresAndWatchProvidersAction::class)->execute(),
         'data' => app(GetTrendingAction::class)->execute(),
     ]);
-});
+})->name('welcome');
 
 Route::get('/me', function () {
     if (!Auth::check()) {
@@ -113,17 +113,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('anime.episode.destroy');
 
 
-    Route::post('/user/{username}/lists', [UserCustomListController::class, 'store'])
+    Route::post('/user/lists', [UserCustomListController::class, 'store'])
      ->name('user.lists.store');
-    Route::patch('/user/{username}/lists/{list}', [UserCustomListController::class, 'update'])
+    Route::patch('/user/lists/{list}', [UserCustomListController::class, 'update'])
      ->name('user.lists.update');
-    Route::delete('/user/{username}/lists/{list}', [UserCustomListController::class, 'destroy'])
+    Route::delete('/user/lists/{list}', [UserCustomListController::class, 'destroy'])
      ->name('user.lists.destroy');
 
-    // Custom List Item Routes
-    Route::post('/user/{username}/lists/{list}/items', [UserCustomListItemController::class, 'store'])
+    Route::post('/user/lists/items/store', [UserCustomListItemController::class, 'store'])
         ->name('user.lists.items.store');
-    Route::delete('/user/{username}/lists/{list}/items', [UserCustomListItemController::class, 'destroy'])
+    Route::delete('/user/lists/items/destroy', [UserCustomListItemController::class, 'destroy'])
         ->name('user.lists.items.destroy');
 });
 

@@ -15,8 +15,6 @@ export type ListContentProps = {
     search: string;
     setSearch: (value: string) => void;
     filteredLists: UserList[];
-    handleAddToList: (id: number) => void;
-    handleGoToList: (id: number) => void;
     openCreate: () => void;
 };
 

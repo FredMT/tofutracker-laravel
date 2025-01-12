@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Tv\TvShowActions;
+use App\Models\TvSeason;
 use App\Models\TvShow;
 use App\Models\UserTvEpisode;
 use App\Models\UserTvSeason;
 use App\Services\TmdbService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
@@ -22,7 +24,7 @@ class TvSeasonController extends Controller
     /**
      * Store or retrieve a TV season with async updates and user library data
      */
-    public function show(string $tvId, string $seasonNumber): Response
+    public function show(Request $request, string $tvId, string $seasonNumber): Response
     {
         try {
             $cacheKey = "tv_season_{$tvId}_{$seasonNumber}";
@@ -33,9 +35,10 @@ class TvSeasonController extends Controller
 
                 return $season->filteredData;
             });
+            $seasonId = $seasonData['id'];
 
-            // Get user's library data if authenticated
             $userLibrary = null;
+            $userLists = null;
             if (Auth::check()) {
                 $userSeason = UserTvSeason::where([
                     'user_id' => Auth::id(),
@@ -52,15 +55,27 @@ class TvSeasonController extends Controller
                         'episodes' => $userSeason->episodes
                     ];
                 }
+
+                 $userLists = $request->user()
+                ->customLists()
+                ->select('id', 'title')
+                ->withExists(['items as has_item' => function ($query) use ($seasonId) {
+                    $query->where('listable_type', TvSeason::class)
+                          ->where('listable_id', $seasonId);
+                }])
+                ->get();
+
+            if ($userLists->isEmpty()) {
+                $userLists = null;
+            }
             }
 
-            // Generate navigation links
             $links = $this->generateNavigationLinks($tvId, (int)$seasonNumber);
-
 
             return Inertia::render('TVSeason', [
                 'data' => $seasonData,
                 'user_library' => $userLibrary,
+                'user_lists' => $userLists,
                 'type' => 'tvseason',
                 'links' => $links
             ]);

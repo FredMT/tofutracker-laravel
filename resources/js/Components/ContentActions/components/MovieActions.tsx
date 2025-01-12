@@ -5,6 +5,7 @@ import { RateContent } from "@/Components/ContentActions/components/Rating/RateC
 import { PageProps } from "@/types";
 import { usePage } from "@inertiajs/react";
 import { Stack } from "@mantine/core";
+import ManageCustomList from "./Actions/ManageCustomList/ManageCustomList";
 
 type MoviePageProps = PageProps<{ type: "movie" }>;
 
@@ -20,6 +21,7 @@ export default function MovieActions() {
             {hasLibraryEntry ? <RemoveFromLibrary /> : <AddToLibrary />}
             <RateContent />
             {auth.user && <WatchStatusSelect />}
+            <ManageCustomList />
         </Stack>
     );
 }

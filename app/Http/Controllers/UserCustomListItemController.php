@@ -43,18 +43,22 @@ class UserCustomListItemController extends Controller
         };
     }
 
-    public function store(Request $request, string $username, UserCustomList $list)
-    {
-
-        Gate::authorize('manage-custom-list', $list);
-
-
-        $validated = $request->validate([
-            'item_id' => 'required|integer',
-            'item_type' => 'required|string|in:movie,tv,tvseason,tvepisode,animemovie,animetv,animeseason,animeepisode',
-        ]);
-
+    public function store(Request $request)
+    {   
         try {
+            $list = UserCustomList::findOrFail($request->list_id);
+
+            if (!$list) {
+                return back()->with('error', 'List not found');
+            }
+
+            Gate::authorize('manage-custom-list-item', $list);
+
+            $validated = $request->validate([
+                'item_id' => 'required|integer',
+                'item_type' => 'required|string|in:movie,tv,tvseason,tvepisode,animemovie,animetv,animeseason,animeepisode',
+            ]);
+            
             $model = $this->getListableModel($validated['item_type'], $validated['item_id']);
 
             if (!$model) {
@@ -72,45 +76,50 @@ class UserCustomListItemController extends Controller
                 return back()->with('error', 'Item already exists in list');
             }
 
+            $maxSortOrder = $list->items()->max('sort_order') ?? 0;
+
             $list->items()->create([
+                'custom_list_id' => $request->list_id,
                 'listable_type' => $listableType,
                 'listable_id' => $validated['item_id'],
+                'sort_order' => $maxSortOrder + 1
             ]);
 
-            return back()->with('success', 'Item added to list successfully');
+            return back()->with(['success' => true, 'message' => 'Item added to list successfully']);
         } catch (\Exception $e) {
             logger()->error($e->getMessage());
             \Sentry\captureException($e);
-            return back()->with('error', 'Failed to add item to list');
+            return back()->with(['success' => false, 'message' => 'Failed to add item to list']);
         }
     }
 
-    public function destroy(Request $request, string $username, UserCustomList $list)
+    public function destroy(Request $request)
     {
-        // Check if user can manage the list
-        Gate::authorize('manage-custom-list', $list);
 
-        // Validate request
         $validated = $request->validate([
+            'list_id' => 'required|integer|exists:user_custom_lists,id',
             'item_id' => 'required|integer',
             'item_type' => 'required|string|in:movie,tv,tvseason,tvepisode,animemovie,animetv,animeseason,animeepisode',
         ]);
 
+        $list = UserCustomList::findOrFail($validated['list_id']);
+
+        Gate::authorize('manage-custom-list-item', $list);
+
         try {
-            // Get the listable type
+
             $listableType = $this->getListableType($validated['item_type']);
 
-            // Remove item from list
             $list->items()
                 ->where('listable_type', $listableType)
                 ->where('listable_id', $validated['item_id'])
                 ->delete();
 
-            return back()->with('success', 'Item removed from list successfully');
+            return back()->with(['success' => true,'message' => 'Item removed from list successfully']);
         } catch (\Exception $e) {
             logger()->error($e->getMessage());
             \Sentry\captureException($e);
-            return back()->with('error', 'Failed to remove item from list');
+            return back()->with(['success' => false, 'message' => 'Failed to remove item from list']);
         }
     }
 } 

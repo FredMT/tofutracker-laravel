@@ -163,6 +163,16 @@ class AppServiceProvider extends ServiceProvider
                 : Response::deny('You do not own this list.');
         });
 
+        Gate::define('manage-custom-list-item', function (User $user, ?UserCustomList $list = null) {
+            if (!$list) {
+                return Response::deny('List not found.');
+            }
+
+            return $user->id === $list->user_id
+                ? Response::allow()
+                : Response::deny('You do not own this list.');
+        });
+
         Gate::define('view-custom-list', function (?User $user, UserCustomList $list) {
             if ($list->is_public) {
                 return Response::allow();
