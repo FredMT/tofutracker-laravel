@@ -21,6 +21,7 @@ use App\Http\Controllers\UserMovieController;
 use App\Http\Controllers\UserTvEpisodeController;
 use App\Http\Controllers\UserTvSeasonController;
 use App\Http\Controllers\UserTvShowController;
+use App\Http\Controllers\UserCustomListItemController;
 use App\Http\Middleware\CheckAnimeMapping;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -118,6 +119,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
      ->name('user.lists.update');
     Route::delete('/user/{username}/lists/{list}', [UserCustomListController::class, 'destroy'])
      ->name('user.lists.destroy');
+
+    // Custom List Item Routes
+    Route::post('/user/{username}/lists/{list}/items', [UserCustomListItemController::class, 'store'])
+        ->name('user.lists.items.store');
+    Route::delete('/user/{username}/lists/{list}/items', [UserCustomListItemController::class, 'destroy'])
+        ->name('user.lists.items.destroy');
 });
 
 Route::get('/movie/{id}', [MovieController::class, 'show'])
