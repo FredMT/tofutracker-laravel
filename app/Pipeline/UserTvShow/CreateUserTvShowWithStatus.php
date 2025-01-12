@@ -12,7 +12,7 @@ class CreateUserTvShowWithStatus
         $userShow = UserTvShow::create([
             'user_id' => $payload['user']->id,
             'show_id' => $payload['tv_show']->id,
-            'user_library_id' => $payload['library']->id,
+            'user_library_id' => $payload['user_library']->id,
             'watch_status' => $payload['validated']['watch_status'],
         ]);
 

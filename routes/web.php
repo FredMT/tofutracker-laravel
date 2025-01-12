@@ -16,6 +16,7 @@ use App\Http\Controllers\UserAnimeMovieController;
 use App\Http\Controllers\UserAnimeSeasonController;
 use App\Http\Controllers\UserAnimeTvController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserCustomListController;
 use App\Http\Controllers\UserMovieController;
 use App\Http\Controllers\UserTvEpisodeController;
 use App\Http\Controllers\UserTvSeasonController;
@@ -45,6 +46,10 @@ Route::get('/user/{username}/tv', [UserController::class, 'showTv'])
     ->name('user.tv');
 Route::get('/user/{username}/anime', [UserController::class, 'showAnime'])
     ->name('user.anime');
+Route::get('/user/{username}/lists', [UserCustomListController::class, 'index'])
+    ->name('user.lists.index');
+Route::get('/user/{username}/lists/{list}', [UserCustomListController::class, 'show'])
+    ->name('user.lists.show');
 Route::get('/user/{username}', [UserController::class, 'show'])->name('user.profile');
 
 Route::middleware('auth')->group(function () {
@@ -54,6 +59,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/settings/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
     Route::post('/settings/banner', [ProfileController::class, 'updateBanner'])->name('profile.banner');
     Route::patch('/settings/bio', [ProfileController::class, 'updateBio'])->name('profile.bio');
+
+   
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -103,6 +110,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/anime/episode/library', [UserAnimeEpisodeController::class, 'store'])->name('anime.episode.store');
     Route::delete('/anime/episode/library', [UserAnimeEpisodeController::class, 'destroy'])
         ->name('anime.episode.destroy');
+
+
+    Route::post('/user/{username}/lists', [UserCustomListController::class, 'store'])
+     ->name('user.lists.store');
+    Route::patch('/user/{username}/lists/{list}', [UserCustomListController::class, 'update'])
+     ->name('user.lists.update');
+    Route::delete('/user/{username}/lists/{list}', [UserCustomListController::class, 'destroy'])
+     ->name('user.lists.destroy');
 });
 
 Route::get('/movie/{id}', [MovieController::class, 'show'])

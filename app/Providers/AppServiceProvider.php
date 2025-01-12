@@ -15,6 +15,7 @@ use App\Models\UserAnime;
 use App\Models\UserAnimeCollection;
 use App\Models\UserAnimeEpisode;
 use App\Models\UserMovie;
+use App\Models\UserCustomList;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -151,6 +152,24 @@ class AppServiceProvider extends ServiceProvider
 
         Gate::define('delete-anime-episode', function (User $user, UserAnimeEpisode $episode) {
             return $user->id === $episode->userAnime->collection->userLibrary->user_id;
+        });
+
+        Gate::define('manage-custom-list', function (User $user, ?UserCustomList $list = null) {
+            if (!$list && $user->hasVerifiedEmail()) {
+                return Response::allow();
+            }
+            return $user->id === $list->user_id
+                ? Response::allow()
+                : Response::deny('You do not own this list.');
+        });
+
+        Gate::define('view-custom-list', function (?User $user, UserCustomList $list) {
+            if ($list->is_public) {
+                return Response::allow();
+            }
+            return $user && $user->id === $list->user_id
+                ? Response::allow()
+                : Response::deny('This list is private.');
         });
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Models\AnidbAnime;
 use Closure;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;

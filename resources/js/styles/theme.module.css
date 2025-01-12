@@ -7,6 +7,10 @@
     background-color: transparent !important;
     border-color: light-dark(#121212, #2e2e2e) !important;
 }
+[class*="mantine-Textarea-input"] {
+    background-color: transparent !important;
+    border-color: light-dark(#121212, #2e2e2e) !important;
+}
 [class*="mantine-PasswordInput-input"] {
     background-color: transparent !important;
     border-color: light-dark(#121212, #2e2e2e) !important;

@@ -8,7 +8,6 @@ use App\Models\TvEpisode;
 use App\Models\TvShow;
 use App\Models\TvSeason;
 use App\Services\TmdbService;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
 
 class TvShowActions

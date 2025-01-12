@@ -14,6 +14,7 @@ use App\Pipeline\UserTvShow\CreateUserTvShowWithStatus;
 use App\Pipeline\UserTvShow\EnsureShowExists;
 use App\Actions\Tv\Plays\DeleteUserTvShowPlayAction;
 use App\Actions\Tv\Plays\CreateUserTvShowPlayAction;
+use App\Pipeline\UserMovie\EnsureUserLibrary;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -259,10 +260,10 @@ class UserTvShowController extends Controller
                 // For other statuses, just create the show
                 return Pipeline::send([
                     'user' => $request->user(),
-                    'library' => $request->user()->library,
                     'validated' => $validated,
                 ])
                     ->through([
+                        EnsureUserLibrary::class,
                         EnsureShowExists::class,
                         CreateUserTvShowWithStatus::class,
                     ])
@@ -279,7 +280,8 @@ class UserTvShowController extends Controller
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to update show watch status: ' . $e->getMessage());
+            logger()->error('Failed to update show watch status: ' . $e->getTraceAsString());
+
             return back()->with([
                 'success' => false,
                 'message' => "An error occurred while updating show watch status",
