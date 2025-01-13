@@ -3,9 +3,8 @@
 namespace App\Actions\Tv\Plays;
 
 use App\Actions\Activity\CreateUserActivityAction;
-use App\Models\UserTvSeason;
 use App\Models\UserTvPlay;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\UserTvSeason;
 
 class CreateUserTvSeasonPlayAction
 {
@@ -21,7 +20,7 @@ class CreateUserTvSeasonPlayAction
             'user_tv_season_id' => $season->id,
             'playable_id' => $season->id,
             'playable_type' => get_class($season),
-            'watched_at' => $watchedAt ?? now()
+            'watched_at' => $watchedAt ?? now(),
         ]);
 
         // Record activity

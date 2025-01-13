@@ -41,7 +41,6 @@ function UserAnime({
     return (
         <>
             <Head title={`${userData.username}'s Anime`} />
-            <Divider my={16} />
             <Group>
                 <FilterButtonGroup contentType="anime" />
             </Group>

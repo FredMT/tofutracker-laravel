@@ -22,7 +22,7 @@ export function UserProfileInfo({ username, createdAt }: UserProfileInfoProps) {
                     {createdAt}
                 </Text>
             </Stack>
-            <ScrollArea.Autosize
+            <ScrollArea
                 type="always"
                 scrollHideDelay={500}
                 offsetScrollbars
@@ -75,8 +75,20 @@ export function UserProfileInfo({ username, createdAt }: UserProfileInfoProps) {
                     >
                         Anime List
                     </Button>
+                    <Button
+                        bg={`${
+                            component === "UserCustomList"
+                                ? "violet.9"
+                                : "#222222"
+                        }`}
+                        bd={0}
+                        component={Link}
+                        href={`/user/${username}/lists`}
+                    >
+                        Custom List
+                    </Button>
                 </Flex>
-            </ScrollArea.Autosize>
+            </ScrollArea>
         </Flex>
     );
 }

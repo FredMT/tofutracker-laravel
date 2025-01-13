@@ -2,22 +2,22 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class AnidbSeiyuu extends Model
 {
     use HasFactory;
 
     protected $table = 'anidb_seiyuus';
-    protected $hidden = ['created_at', 'updated_at'];
 
+    protected $hidden = ['created_at', 'updated_at'];
 
     protected $fillable = [
         'seiyuu_id',
         'name',
-        'picture'
+        'picture',
     ];
 
     public function characters(): BelongsToMany

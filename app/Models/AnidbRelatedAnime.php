@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class AnidbRelatedAnime extends Model
@@ -12,14 +12,14 @@ class AnidbRelatedAnime extends Model
     use HasFactory;
 
     protected $table = 'anidb_related_anime';
-    protected $hidden = ['id', 'anime_id', 'created_at', 'updated_at'];
 
+    protected $hidden = ['id', 'anime_id', 'created_at', 'updated_at'];
 
     protected $fillable = [
         'anime_id',
         'related_anime_id',
         'name',
-        'relation_type'
+        'relation_type',
     ];
 
     public function anime(): BelongsTo

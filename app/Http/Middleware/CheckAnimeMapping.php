@@ -4,7 +4,6 @@ namespace App\Http\Middleware;
 
 use App\Models\AnidbAnime;
 use Closure;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
@@ -23,6 +22,7 @@ class CheckAnimeMapping
 
         $mapping = cache()->remember("anime_mapping_{$id}", now()->addWeek(), function () use ($id) {
             $response = Http::get("https://arm.haglund.dev/api/v2/themoviedb?id={$id}");
+
             return $response->json();
         });
 
@@ -30,11 +30,10 @@ class CheckAnimeMapping
             return $next($request);
         }
 
-        $firstAnidb = Arr::first($mapping, fn($value) => is_numeric($value['anidb'] ?? null));
+        $firstAnidb = Arr::first($mapping, fn ($value) => is_numeric($value['anidb'] ?? null));
         $anidbId = $firstAnidb['anidb'] ?? null;
 
-
-        if (!$anidbId) {
+        if (! $anidbId) {
             return $next($request);
         }
 

@@ -1,19 +1,17 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
     public function up(): void
     {
         // Create the enum types in PostgreSQL
-        DB::statement("DROP TYPE IF EXISTS media_type_enum");
+        DB::statement('DROP TYPE IF EXISTS media_type_enum');
         DB::statement("CREATE TYPE media_type_enum AS ENUM ('movie', 'tv', 'anime')");
 
-        DB::statement("DROP TYPE IF EXISTS watch_status_enum");
+        DB::statement('DROP TYPE IF EXISTS watch_status_enum');
         DB::statement("CREATE TYPE watch_status_enum AS ENUM ('COMPLETED', 'PLANNING', 'REWATCHING', 'WATCHING', 'ONHOLD', 'DROPPED')");
 
         // Modify the columns to use the new enum types
@@ -28,7 +26,7 @@ return new class extends Migration
         DB::statement('ALTER TABLE user_library ALTER COLUMN status TYPE varchar(255) USING status::varchar');
 
         // Drop the enum types
-        DB::statement("DROP TYPE IF EXISTS media_type_enum");
-        DB::statement("DROP TYPE IF EXISTS watch_status_enum");
+        DB::statement('DROP TYPE IF EXISTS media_type_enum');
+        DB::statement('DROP TYPE IF EXISTS watch_status_enum');
     }
 };

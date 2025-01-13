@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Actions\Tv\TvShowActions;
 use App\Models\TvSeason;
 use App\Models\TvShow;
-use App\Models\UserTvEpisode;
 use App\Models\UserTvSeason;
 use App\Services\TmdbService;
 use Illuminate\Http\Request;
@@ -52,36 +51,37 @@ class TvSeasonController extends Controller
                         'id' => $userSeason->id,
                         'watch_status' => $userSeason->watch_status?->value,
                         'rating' => $userSeason->rating,
-                        'episodes' => $userSeason->episodes
+                        'episodes' => $userSeason->episodes,
                     ];
                 }
 
-                 $userLists = $request->user()
-                ->customLists()
-                ->select('id', 'title')
-                ->withExists(['items as has_item' => function ($query) use ($seasonId) {
-                    $query->where('listable_type', TvSeason::class)
-                          ->where('listable_id', $seasonId);
-                }])
-                ->get();
+                $userLists = $request->user()
+                    ->customLists()
+                    ->select('id', 'title')
+                    ->withExists(['items as has_item' => function ($query) use ($seasonId) {
+                        $query->where('listable_type', TvSeason::class)
+                            ->where('listable_id', $seasonId);
+                    }])
+                    ->get();
 
-            if ($userLists->isEmpty()) {
-                $userLists = null;
-            }
+                if ($userLists->isEmpty()) {
+                    $userLists = null;
+                }
             }
 
-            $links = $this->generateNavigationLinks($tvId, (int)$seasonNumber);
+            $links = $this->generateNavigationLinks($tvId, (int) $seasonNumber);
 
             return Inertia::render('TVSeason', [
                 'data' => $seasonData,
                 'user_library' => $userLibrary,
                 'user_lists' => $userLists,
                 'type' => 'tvseason',
-                'links' => $links
+                'links' => $links,
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to retrieve TV season: ' . $e->getMessage());
+            logger()->error('Failed to retrieve TV season: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
+
             return $this->tvShowActions->errorResponse($e);
         }
     }
@@ -96,7 +96,7 @@ class TvSeasonController extends Controller
         return [
             'show' => [
                 'url' => url("/tv/{$tvId}"),
-                'name' => $tvShow->title
+                'name' => $tvShow->title,
             ],
             'seasons' => $tvShow->seasons
                 ->sortBy('season_number')
@@ -105,11 +105,11 @@ class TvSeasonController extends Controller
                         'url' => url("/tv/{$tvId}/season/{$season->season_number}"),
                         'name' => $season->title,
                         'season_number' => $season->season_number,
-                        'is_current' => $season->season_number === $seasonNumber
+                        'is_current' => $season->season_number === $seasonNumber,
                     ];
                 })
                 ->values()
-                ->all()
+                ->all(),
         ];
     }
 }

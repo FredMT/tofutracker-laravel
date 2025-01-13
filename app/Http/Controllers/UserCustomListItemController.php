@@ -44,11 +44,11 @@ class UserCustomListItemController extends Controller
     }
 
     public function store(Request $request)
-    {   
+    {
         try {
             $list = UserCustomList::findOrFail($request->list_id);
 
-            if (!$list) {
+            if (! $list) {
                 return back()->with('error', 'List not found');
             }
 
@@ -58,10 +58,10 @@ class UserCustomListItemController extends Controller
                 'item_id' => 'required|integer',
                 'item_type' => 'required|string|in:movie,tv,tvseason,tvepisode,animemovie,animetv,animeseason,animeepisode',
             ]);
-            
+
             $model = $this->getListableModel($validated['item_type'], $validated['item_id']);
 
-            if (!$model) {
+            if (! $model) {
                 return back()->with('error', 'Item not found');
             }
 
@@ -82,13 +82,14 @@ class UserCustomListItemController extends Controller
                 'custom_list_id' => $request->list_id,
                 'listable_type' => $listableType,
                 'listable_id' => $validated['item_id'],
-                'sort_order' => $maxSortOrder + 1
+                'sort_order' => $maxSortOrder + 1,
             ]);
 
             return back()->with(['success' => true, 'message' => 'Item added to list successfully']);
         } catch (\Exception $e) {
             logger()->error($e->getMessage());
             \Sentry\captureException($e);
+
             return back()->with(['success' => false, 'message' => 'Failed to add item to list']);
         }
     }
@@ -115,11 +116,12 @@ class UserCustomListItemController extends Controller
                 ->where('listable_id', $validated['item_id'])
                 ->delete();
 
-            return back()->with(['success' => true,'message' => 'Item removed from list successfully']);
+            return back()->with(['success' => true, 'message' => 'Item removed from list successfully']);
         } catch (\Exception $e) {
             logger()->error($e->getMessage());
             \Sentry\captureException($e);
+
             return back()->with(['success' => false, 'message' => 'Failed to remove item from list']);
         }
     }
-} 
+}

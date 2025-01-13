@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Anime\Plays\DeleteUserAnimeCollectionPlayAction;
 use App\Enums\MediaType;
 use App\Enums\WatchStatus;
 use App\Models\UserAnimeCollection;
 use App\Models\UserLibrary;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
-use App\Actions\Anime\Plays\DeleteUserAnimeCollectionPlayAction;
 
 class UserAnimeTvController extends Controller
 {
@@ -44,24 +43,22 @@ class UserAnimeTvController extends Controller
 
                 return back()->with([
                     'success' => true,
-                    'message' => "Anime TV show added to your library",
+                    'message' => 'Anime TV show added to your library',
                 ]);
             });
         } catch (\Exception $e) {
-            logger()->error('Failed to add anime TV show to library: ' . $e->getMessage());
+            logger()->error('Failed to add anime TV show to library: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
+
             return back()->with([
                 'success' => false,
-                'message' => "An error occurred while adding anime TV show to library",
+                'message' => 'An error occurred while adding anime TV show to library',
             ]);
         }
     }
 
     /**
      * Remove an anime TV show from the user's library.
-     *
-     * @param Request $request
-     * @return RedirectResponse
      */
     public function destroy(Request $request): RedirectResponse
     {
@@ -79,7 +76,7 @@ class UserAnimeTvController extends Controller
                     })
                     ->first();
 
-                if (!$collection) {
+                if (! $collection) {
                     return back()->with([
                         'success' => false,
                         'message' => 'Anime collection not found in your library.',
@@ -107,8 +104,9 @@ class UserAnimeTvController extends Controller
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to remove anime from library: ' . $e->getMessage());
+            logger()->error('Failed to remove anime from library: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
+
             return back()->with([
                 'success' => false,
                 'message' => 'An error occurred while removing anime from library.',
@@ -118,9 +116,6 @@ class UserAnimeTvController extends Controller
 
     /**
      * Rate an anime TV show in the user's library.
-     *
-     * @param Request $request
-     * @return RedirectResponse
      */
     public function rate(Request $request): RedirectResponse
     {
@@ -139,7 +134,7 @@ class UserAnimeTvController extends Controller
                     ->first();
 
                 // If no collection exists, create new one with rating
-                if (!$collection) {
+                if (! $collection) {
                     if (Gate::denies('rate-anime-collection', null)) {
                         throw new AuthorizationException('You are not authorized to rate this anime.');
                     }
@@ -158,7 +153,7 @@ class UserAnimeTvController extends Controller
 
                     return back()->with([
                         'success' => true,
-                        'message' => "Anime TV show added to your library with rating",
+                        'message' => 'Anime TV show added to your library with rating',
                     ]);
                 }
 
@@ -180,8 +175,9 @@ class UserAnimeTvController extends Controller
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to rate anime: ' . $e->getMessage());
+            logger()->error('Failed to rate anime: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
+
             return back()->with([
                 'success' => false,
                 'message' => 'An error occurred while rating anime.',
@@ -191,9 +187,6 @@ class UserAnimeTvController extends Controller
 
     /**
      * Update watch status for an anime TV show.
-     *
-     * @param Request $request
-     * @return RedirectResponse
      */
     public function watch_status(Request $request): RedirectResponse
     {
@@ -212,7 +205,7 @@ class UserAnimeTvController extends Controller
                     ->first();
 
                 // If no collection exists, create new one with watch status
-                if (!$collection) {
+                if (! $collection) {
                     if (Gate::denies('update-anime-collection-status', null)) {
                         throw new AuthorizationException('You are not authorized to create this anime collection.');
                     }
@@ -230,7 +223,7 @@ class UserAnimeTvController extends Controller
 
                     return back()->with([
                         'success' => true,
-                        'message' => "Anime TV show added to your library with watch status",
+                        'message' => 'Anime TV show added to your library with watch status',
                     ]);
                 }
 
@@ -251,8 +244,9 @@ class UserAnimeTvController extends Controller
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to update anime watch status: ' . $e->getMessage());
+            logger()->error('Failed to update anime watch status: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
+
             return back()->with([
                 'success' => false,
                 'message' => 'An error occurred while updating anime watch status.',

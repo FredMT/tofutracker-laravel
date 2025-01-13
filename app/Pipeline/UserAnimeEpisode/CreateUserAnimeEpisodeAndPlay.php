@@ -23,7 +23,7 @@ class CreateUserAnimeEpisodeAndPlay
             'user_anime_id' => $payload['user_anime']->id,
             'episode_id' => $payload['validated']['tvdb_episode_id'],
             'watch_status' => WatchStatus::COMPLETED->value,
-            'is_special' => false
+            'is_special' => false,
         ]);
 
         // Create play record for episode

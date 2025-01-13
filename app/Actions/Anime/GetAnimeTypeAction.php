@@ -2,8 +2,8 @@
 
 namespace App\Actions\Anime;
 
-use App\Models\AnimeMap;
 use App\Models\AnidbAnime;
+use App\Models\AnimeMap;
 use Illuminate\Support\Arr;
 
 class GetAnimeTypeAction

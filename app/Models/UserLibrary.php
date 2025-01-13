@@ -11,11 +11,11 @@ class UserLibrary extends Model
 {
     protected $fillable = [
         'user_id',
-        'type'
+        'type',
     ];
 
     protected $casts = [
-        'type' => MediaType::class
+        'type' => MediaType::class,
     ];
 
     public function user(): BelongsTo

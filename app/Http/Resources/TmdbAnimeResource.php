@@ -2,10 +2,10 @@
 
 namespace App\Http\Resources;
 
-use App\Models\AnimeMappingExternalId;
 use App\Models\AnimeChainEntry;
-use App\Models\AnimeRelatedEntry;
+use App\Models\AnimeMappingExternalId;
 use App\Models\AnimePrequelSequelChain;
+use App\Models\AnimeRelatedEntry;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -38,7 +38,7 @@ class TmdbAnimeResource extends JsonResource
                 'recommendations' => $this->transformRecommendations(),
                 'videos' => $this->when(
                     isset($this->resource['videos']),
-                    fn() => $this->resource['videos']['results'] ?? []
+                    fn () => $this->resource['videos']['results'] ?? []
                 ),
             ],
         ];
@@ -46,7 +46,7 @@ class TmdbAnimeResource extends JsonResource
 
     private function transformRecommendations(): array
     {
-        if (!isset($this->resource['recommendations']['results'])) {
+        if (! isset($this->resource['recommendations']['results'])) {
             return [];
         }
 
@@ -55,8 +55,7 @@ class TmdbAnimeResource extends JsonResource
                 // Find the AniDB ID from TMDB ID
                 $mappingExternalId = AnimeMappingExternalId::where('themoviedb_id', $recommendation['id'])->first();
 
-
-                if (!$mappingExternalId) {
+                if (! $mappingExternalId) {
                     return null;
                 }
 
@@ -88,7 +87,7 @@ class TmdbAnimeResource extends JsonResource
             'map_id' => $mapId,
             'poster_path' => $recommendation['poster_path'],
             'vote_average' => $recommendation['vote_average'],
-            'collection_name' => $this->type === 'movie' ? $recommendation['title'] : $recommendation['name']
+            'collection_name' => $this->type === 'movie' ? $recommendation['title'] : $recommendation['name'],
         ];
     }
 
@@ -97,7 +96,7 @@ class TmdbAnimeResource extends JsonResource
      */
     private function extractLogoPath(): ?string
     {
-        if (!isset($this->resource['images']['logos'])) {
+        if (! isset($this->resource['images']['logos'])) {
             return null;
         }
 
@@ -114,11 +113,13 @@ class TmdbAnimeResource extends JsonResource
         if ($this->type === 'movie') {
             $usCertification = collect($this->resource['release_dates']['results'])
                 ->firstWhere('iso_3166_1', 'US');
+
             return $usCertification['release_dates'][0]['certification'] ?? null;
         }
 
         $usRating = collect($this->resource['content_ratings']['results'])
             ->firstWhere('iso_3166_1', 'US');
+
         return $usRating['rating'] ?? null;
     }
 }

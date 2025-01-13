@@ -53,7 +53,6 @@ function UserTv({ userData, filters, shows, messages }: Props) {
     return (
         <>
             <Head title={`${userData.username}'s Shows`} />
-            <Divider my={16} />
             <Group>
                 <FilterButtonGroup contentType="anime" />
             </Group>

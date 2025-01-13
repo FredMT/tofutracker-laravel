@@ -7,9 +7,7 @@ use Illuminate\Console\Command;
 
 class UpdateTrendingGenresAndWatchProvidersCommand extends Command
 {
-
     protected $signature = 'trendingGenresAndWatchProviders:update';
-
 
     protected $description = 'Update trending genres and watch providers data';
 
@@ -19,4 +17,4 @@ class UpdateTrendingGenresAndWatchProvidersCommand extends Command
         UpdateTrendingGenresAndWatchProvidersJob::dispatch();
         $this->info('Job has been dispatched successfully.');
     }
-} 
+}

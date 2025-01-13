@@ -5,8 +5,6 @@ namespace App\Pipeline\UserAnimeEpisode;
 use App\Enums\WatchStatus;
 use App\Models\UserAnime;
 use Closure;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Support\Facades\Gate;
 
 class CreateUserAnimeEpisodeAnime
 {
@@ -19,7 +17,7 @@ class CreateUserAnimeEpisodeAnime
             ],
             [
                 'is_movie' => false,
-                'watch_status' => WatchStatus::WATCHING->value
+                'watch_status' => WatchStatus::WATCHING->value,
             ]
         );
 

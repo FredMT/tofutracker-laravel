@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\File;
 use App\Models\AnidbAnime;
 use App\Models\AnidbSeiyuu;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 
 class AnidbService
 {
@@ -26,8 +26,9 @@ class AnidbService
         '43' => 'imdb',
         '44' => 'tmdb',
         '45' => 'funimation',
-        '48' => 'primevideo'
+        '48' => 'primevideo',
     ];
+
     /**
      * Get anime data from local JSON file by ID
      */
@@ -35,8 +36,9 @@ class AnidbService
     {
         try {
             $path = storage_path('app/anidb/anime.json');
-            if (!File::exists($path)) {
-                logger()->error('AniDB JSON file not found at: ' . $path);
+            if (! File::exists($path)) {
+                logger()->error('AniDB JSON file not found at: '.$path);
+
                 return null;
             }
             $jsonContent = File::get($path);
@@ -44,12 +46,15 @@ class AnidbService
             if (isset($animeData['_id']['$oid'])) {
                 return $animeData;
             }
+
             return null;
         } catch (\Exception $e) {
-            logger()->error('Error reading AniDB JSON file: ' . $e->getMessage());
+            logger()->error('Error reading AniDB JSON file: '.$e->getMessage());
+
             return null;
         }
     }
+
     /**
      * Parse anime data to match database schema
      */
@@ -57,12 +62,12 @@ class AnidbService
     {
         try {
             $anime = $rawData ?? null;
-            if (!$anime) {
+            if (! $anime) {
                 throw new \Exception('Invalid anime data structure');
             }
 
             $animeId = $anime['attrs']['id'];
-            if (!$animeId) {
+            if (! $animeId) {
                 throw new \Exception('Missing anime ID');
             }
 
@@ -75,9 +80,9 @@ class AnidbService
 
             return [
                 'anime' => [
-                    'id' => (int)$animeId,
+                    'id' => (int) $animeId,
                     'type' => $anime['type'][0] ?? null,
-                    'episode_count' => (int)($anime['episodecount'][0] ?? 0),
+                    'episode_count' => (int) ($anime['episodecount'][0] ?? 0),
                     'startdate' => $anime['startdate'][0] ?? null,
                     'enddate' => $anime['enddate'][0] ?? null,
                     'title_main' => $this->findMainTitle($titles),
@@ -87,8 +92,8 @@ class AnidbService
                     'title_zh' => $this->findTitle($titles, 'zh-Hans', 'official'),
                     'homepage' => $anime['url'][0] ?? null,
                     'description' => $anime['description'][0] ?? null,
-                    'rating' => (float)$rating,
-                    'rating_count' => (int)$ratingCount,
+                    'rating' => (float) $rating,
+                    'rating_count' => (int) $ratingCount,
                     'picture' => $anime['picture'][0] ?? null,
                 ],
                 'characters' => $this->parseCharacters($anime['characters'][0]['character'] ?? []),
@@ -96,16 +101,17 @@ class AnidbService
                 'related_anime' => $this->parseRelatedAnime($anime['relatedanime'][0]['anime'] ?? []),
                 'similar_anime' => $this->parseSimilarAnime($anime['similaranime'][0]['anime'] ?? []),
                 'creators' => $this->parseCreators($anime['creators'][0]['name'] ?? []),
-                'external_links' => $this->parseExternalLinks($anime['resources'][0]['resource'] ?? [])
+                'external_links' => $this->parseExternalLinks($anime['resources'][0]['resource'] ?? []),
             ];
         } catch (\Exception $e) {
             logger()->error('Error parsing anime data', [
                 'error' => $e->getMessage(),
-                'anime_id' => $anime['attrs']['id'] ?? 'unknown'
+                'anime_id' => $anime['attrs']['id'] ?? 'unknown',
             ]);
             throw $e;
         }
     }
+
     private function findMainTitle(array $titles): ?string
     {
         if (empty($titles)) {
@@ -117,8 +123,10 @@ class AnidbService
                 return $title['name'] ?? null;
             }
         }
+
         return null;
     }
+
     private function findTitle(array $titles, string $lang, string $type): ?string
     {
         if (empty($titles)) {
@@ -134,6 +142,7 @@ class AnidbService
                 return $title['name'] ?? null;
             }
         }
+
         return null;
     }
 
@@ -147,8 +156,8 @@ class AnidbService
                 'gender' => $character['gender'][0] ?? null,
                 'description' => $character['description'][0] ?? null,
                 'picture' => $character['picture'][0] ?? null,
-                'rating' => (float)($character['rating'][0]['name'] ?? 0),
-                'rating_votes' => (int)($character['rating'][0]['attrs']['votes'] ?? 0),
+                'rating' => (float) ($character['rating'][0]['name'] ?? 0),
+                'rating_votes' => (int) ($character['rating'][0]['attrs']['votes'] ?? 0),
                 'seiyuus' => array_map(function ($seiyuu) {
                     return [
                         'seiyuu_id' => $seiyuu['attrs']['id'] ?? null,
@@ -173,23 +182,25 @@ class AnidbService
                 '6' => 'O',
                 default => ''
             };
+
             return [
                 'episode_id' => $episode['attrs']['id'] ?? null,
                 'episode_number' => $episode['epno'][0]['name'] ?? null,
                 'type' => $type,
                 'prefix' => $prefix,
-                'length' => (int)($episode['length'][0] ?? 0),
+                'length' => (int) ($episode['length'][0] ?? 0),
                 'airdate' => $episode['airdate'][0] ?? null,
                 'title_en' => $this->findEpisodeTitle($episode['title'] ?? [], 'en'),
                 'title_ja' => $this->findEpisodeTitle($episode['title'] ?? [], 'ja'),
                 'summary' => $episode['summary'][0] ?? null,
                 'rating' => $episode['rating'][0]['name'] ?? null,
-                'rating_votes' => (int)($episode['rating'][0]['attrs']['votes'] ?? 0),
+                'rating_votes' => (int) ($episode['rating'][0]['attrs']['votes'] ?? 0),
                 'resource_type' => $episode['resources'][0]['resource'][0]['attrs']['type'] ?? null,
                 'resource_identifier' => $episode['resources'][0]['resource'][0]['externalentity'][0]['identifier'][0] ?? null,
             ];
         }, $episodes);
     }
+
     private function findEpisodeTitle(array $titles, string $lang): ?string
     {
         foreach ($titles as $title) {
@@ -197,8 +208,10 @@ class AnidbService
                 return $title['name'];
             }
         }
+
         return null;
     }
+
     private function parseRelatedAnime(array $related): array
     {
         return array_map(function ($anime) {
@@ -209,6 +222,7 @@ class AnidbService
             ];
         }, $related);
     }
+
     private function parseSimilarAnime(array $similar): array
     {
         return array_map(function ($anime) {
@@ -218,6 +232,7 @@ class AnidbService
             ];
         }, $similar);
     }
+
     private function parseCreators(array $creators): array
     {
         return array_map(function ($creator) {
@@ -228,13 +243,14 @@ class AnidbService
             ];
         }, $creators);
     }
+
     private function parseExternalLinks(array $resources): array
     {
         $links = [];
         foreach ($resources as $resource) {
             $type = $resource['attrs']['type'] ?? null;
             // Only process known external ID types
-            if (!isset(self::EXTERNAL_ID_TYPES[$type])) {
+            if (! isset(self::EXTERNAL_ID_TYPES[$type])) {
                 continue;
             }
             // Handle multiple identifiers for the same type
@@ -248,6 +264,7 @@ class AnidbService
                 }
             }
         }
+
         return $links;
     }
 
@@ -299,9 +316,8 @@ class AnidbService
                 // Before sync - log the IDs being synced
                 logger()->info('Syncing seiyuus for character', [
                     'character_id' => $character->character_id,
-                    'seiyuu_ids_to_sync' => $seiyuuIds
+                    'seiyuu_ids_to_sync' => $seiyuuIds,
                 ]);
-
 
                 $syncResult = $character->seiyuus()->sync($seiyuuIds);
 
@@ -310,13 +326,14 @@ class AnidbService
                     'character_id' => $character->character_id,
                     'attached' => $syncResult['attached'],
                     'detached' => $syncResult['detached'],
-                    'updated' => $syncResult['updated']
+                    'updated' => $syncResult['updated'],
                 ]);
             } catch (\Exception $e) {
                 logger()->error('Error processing character', [
                     'character_id' => $characterData['character_id'] ?? 'unknown',
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
+
                 continue;
             }
         }
@@ -334,8 +351,9 @@ class AnidbService
                 logger()->error('Error processing episode', [
                     'episode_id' => $episodeData['episode_id'] ?? 'unknown',
                     'anime_id' => $anime->id,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
+
                 continue;
             }
         }
@@ -353,8 +371,9 @@ class AnidbService
                 logger()->error('Error processing related anime', [
                     'related_anime_id' => $relatedData['related_anime_id'] ?? 'unknown',
                     'anime_id' => $anime->id,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
+
                 continue;
             }
         }
@@ -372,8 +391,9 @@ class AnidbService
                 logger()->error('Error processing similar anime', [
                     'similar_anime_id' => $similarData['similar_anime_id'] ?? 'unknown',
                     'anime_id' => $anime->id,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
+
                 continue;
             }
         }
@@ -391,8 +411,9 @@ class AnidbService
                 logger()->error('Error processing creator', [
                     'creator_id' => $creatorData['creator_id'] ?? 'unknown',
                     'anime_id' => $anime->id,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
+
                 continue;
             }
         }
@@ -405,7 +426,7 @@ class AnidbService
                 $anime->externalLinks()->updateOrCreate(
                     [
                         'type' => $linkData['type'],
-                        'identifier' => $linkData['identifier']
+                        'identifier' => $linkData['identifier'],
                     ],
                     $linkData
                 );
@@ -413,8 +434,9 @@ class AnidbService
                 logger()->error('Error processing external link', [
                     'type' => $linkData['type'] ?? 'unknown',
                     'anime_id' => $anime->id,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
+
                 continue;
             }
         }

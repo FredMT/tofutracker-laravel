@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Actions\Anime\Plays\DeleteUserAnimePlayAction;
 use App\Models\UserAnimeEpisode;
-use App\Models\UserAnimePlay;
 use App\Pipeline\UserAnimeEpisode\CreateUserAnimeEpisodeAndPlay;
 use App\Pipeline\UserAnimeEpisode\CreateUserAnimeEpisodeAnime;
 use App\Pipeline\UserAnimeEpisode\CreateUserAnimeEpisodeCollection;
@@ -13,7 +12,6 @@ use App\Pipeline\UserAnimeEpisode\UpdateUserAnimeEpisodeStatus;
 use App\Pipeline\UserAnimeSeason\UpdateUserAnimeCollectionWatchStatus;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Benchmark;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Pipeline;
@@ -29,9 +27,6 @@ class UserAnimeEpisodeController extends Controller
 
     /**
      * Store or destroy an anime episode in the user's library.
-     *
-     * @param Request $request
-     * @return RedirectResponse
      */
     public function store(Request $request): RedirectResponse
     {
@@ -68,12 +63,12 @@ class UserAnimeEpisodeController extends Controller
                         CreateUserAnimeEpisodeAnime::class,
                         CreateUserAnimeEpisodeAndPlay::class,
                         UpdateUserAnimeEpisodeStatus::class,
-                        UpdateUserAnimeCollectionWatchStatus::class
+                        UpdateUserAnimeCollectionWatchStatus::class,
                     ])
                     ->then(function () {
                         return back()->with([
                             'success' => true,
-                            'message' => "Anime episode added to your library",
+                            'message' => 'Anime episode added to your library',
                         ]);
                     });
             });
@@ -83,8 +78,9 @@ class UserAnimeEpisodeController extends Controller
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to add anime episode to library: ' . $e->getMessage());
+            logger()->error('Failed to add anime episode to library: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
+
             return back()->with([
                 'success' => false,
                 'message' => 'An error occurred while adding anime episode to library.',
@@ -94,9 +90,6 @@ class UserAnimeEpisodeController extends Controller
 
     /**
      * Delete an anime episode and its related play records from the user's library.
-     *
-     * @param Request $request
-     * @return RedirectResponse
      */
     public function destroy(Request $request): RedirectResponse
     {
@@ -113,7 +106,7 @@ class UserAnimeEpisodeController extends Controller
                     })
                     ->firstOrFail();
 
-                if (!$episode) {
+                if (! $episode) {
                     return back()->with([
                         'success' => false,
                         'message' => 'Episode not found in library.',
@@ -135,15 +128,17 @@ class UserAnimeEpisodeController extends Controller
                 ]);
             });
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            logger()->error('Failed to remove anime episode from library model not found: ' . $e->getMessage());
+            logger()->error('Failed to remove anime episode from library model not found: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
+
             return back()->with([
                 'success' => false,
                 'message' => 'Episode not found in your library.',
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to remove anime episode from library: ' . $e->getMessage());
+            logger()->error('Failed to remove anime episode from library: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
+
             return back()->with([
                 'success' => false,
                 'message' => 'An error occurred while removing anime episode from library.',

@@ -2,20 +2,20 @@
 
 namespace App\Providers;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
-use App\Models\UserLibrary;
-use App\Models\UserTvShow;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Vite;
-use Illuminate\Support\ServiceProvider;
-use App\Models\UserTvSeason;
-use Illuminate\Auth\Access\Response;
 use App\Models\UserAnime;
 use App\Models\UserAnimeCollection;
 use App\Models\UserAnimeEpisode;
-use App\Models\UserMovie;
 use App\Models\UserCustomList;
+use App\Models\UserLibrary;
+use App\Models\UserMovie;
+use App\Models\UserTvSeason;
+use App\Models\UserTvShow;
+use Illuminate\Auth\Access\Response;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Vite;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -36,9 +36,10 @@ class AppServiceProvider extends ServiceProvider
         Model::preventLazyLoading();
 
         Gate::define('rate-movie', function (User $user, ?UserMovie $userMovie = null) {
-            if (!$userMovie) {
+            if (! $userMovie) {
                 return Response::allow();
             }
+
             return $user->id === $userMovie->user_id
                 ? Response::allow()
                 : Response::deny('You do not own this movie.');
@@ -51,18 +52,20 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Gate::define('rate-tv-show', function (User $user, ?UserTvShow $userShow = null) {
-            if (!$userShow) {
+            if (! $userShow) {
                 return Response::allow();
             }
+
             return $user->id === $userShow->user_id
                 ? Response::allow()
                 : Response::deny('You do not own this TV show.');
         });
 
         Gate::define('update-tv-show-status', function (User $user, ?UserTvShow $userShow = null) {
-            if (!$userShow) {
+            if (! $userShow) {
                 return Response::allow();
             }
+
             return $user->id === $userShow->user_id
                 ? Response::allow()
                 : Response::deny('You do not own this TV show.');
@@ -76,7 +79,7 @@ class AppServiceProvider extends ServiceProvider
 
         Gate::define('update-season-watch-status', function (User $user, ?UserTvSeason $userSeason = null) {
             // If season doesn't exist yet, allow creating
-            if (!$userSeason) {
+            if (! $userSeason) {
                 return Response::allow();
             }
 
@@ -87,7 +90,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Gate::define('delete-anime', function ($user, ?UserAnime $userAnime = null) {
-            if (!$userAnime) {
+            if (! $userAnime) {
                 return Response::deny('Anime not found in your library.');
             }
 
@@ -97,54 +100,60 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Gate::define('rate-anime', function (User $user, ?UserAnime $userAnime = null) {
-            if (!$userAnime) {
+            if (! $userAnime) {
                 return Response::allow();
             }
+
             return $userAnime->collection->userLibrary->user_id === $user->id
                 ? Response::allow()
                 : Response::deny('You do not own this anime.');
         });
 
         Gate::define('update-anime', function (User $user, ?UserAnime $userAnime = null) {
-            if (!$userAnime) {
+            if (! $userAnime) {
                 return Response::allow();
             }
+
             return $userAnime->collection->userLibrary->user_id === $user->id
                 ? Response::allow()
                 : Response::deny('You do not own this anime.');
         });
 
         Gate::define('delete-anime-collection', function (User $user, ?UserAnimeCollection $collection = null) {
-            if (!$collection) {
+            if (! $collection) {
                 return Response::deny('Collection not found in your library.');
             }
+
             return $collection->userLibrary->user_id === $user->id
                 ? Response::allow()
                 : Response::deny('You do not own this collection.');
         });
 
         Gate::define('rate-anime-collection', function (User $user, ?UserAnimeCollection $collection = null) {
-            if (!$collection) {
+            if (! $collection) {
                 return Response::allow();
             }
+
             return $collection->userLibrary->user_id === $user->id
                 ? Response::allow()
                 : Response::deny('You do not own this collection.');
         });
 
         Gate::define('update-anime-collection-status', function (User $user, ?UserAnimeCollection $collection = null) {
-            if (!$collection) {
+            if (! $collection) {
                 return Response::allow();
             }
+
             return $collection->userLibrary->user_id === $user->id
                 ? Response::allow()
                 : Response::deny('You do not own this collection.');
         });
 
         Gate::define('delete-anime-season', function (User $user, ?UserAnime $season = null) {
-            if (!$season) {
+            if (! $season) {
                 return Response::deny('Season not found in your library.');
             }
+
             return $season->collection->userLibrary->user_id === $user->id
                 ? Response::allow()
                 : Response::deny('You do not own this season.');
@@ -155,16 +164,17 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Gate::define('manage-custom-list', function (User $user, ?UserCustomList $list = null) {
-            if (!$list && $user->hasVerifiedEmail()) {
+            if (! $list && $user->hasVerifiedEmail()) {
                 return Response::allow();
             }
+
             return $user->id === $list->user_id
                 ? Response::allow()
                 : Response::deny('You do not own this list.');
         });
 
         Gate::define('manage-custom-list-item', function (User $user, ?UserCustomList $list = null) {
-            if (!$list) {
+            if (! $list) {
                 return Response::deny('List not found.');
             }
 
@@ -177,6 +187,7 @@ class AppServiceProvider extends ServiceProvider
             if ($list->is_public) {
                 return Response::allow();
             }
+
             return $user && $user->id === $list->user_id
                 ? Response::allow()
                 : Response::deny('This list is private.');

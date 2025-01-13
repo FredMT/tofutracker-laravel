@@ -15,15 +15,15 @@ class ValidateEpisodeRelations
             'show_id' => $payload['validated']['show_id'],
         ])->first();
 
-        if (!$episode) {
+        if (! $episode) {
             return back()->with([
                 'success' => false,
-                'message' => "Invalid episode, season, or show combination",
+                'message' => 'Invalid episode, season, or show combination',
             ]);
         }
 
         $payload['episode'] = $episode;
-        $payload['episode_title'] = $episode->data['name'] ?? 'Episode ' . $episode->data['episode_number'];
+        $payload['episode_title'] = $episode->data['name'] ?? 'Episode '.$episode->data['episode_number'];
 
         return $next($payload);
     }

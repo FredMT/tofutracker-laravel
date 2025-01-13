@@ -3,7 +3,6 @@
 namespace App\Actions\Activity\Handlers;
 
 use App\Models\UserActivity;
-use App\Models\UserMovie;
 use Illuminate\Database\Eloquent\Model;
 
 class MovieActivityHandler implements ActivityHandlerInterface
@@ -16,14 +15,14 @@ class MovieActivityHandler implements ActivityHandlerInterface
     public function __construct()
     {
         $this->handlers = [
-            new MoviePlayActivityHandler(),
+            new MoviePlayActivityHandler,
             // Add more movie-specific handlers here as needed
         ];
     }
 
     public function canHandle(Model $subject): bool
     {
-        return collect($this->handlers)->contains(fn($handler) => $handler->canHandle($subject));
+        return collect($this->handlers)->contains(fn ($handler) => $handler->canHandle($subject));
     }
 
     public function createActivity(int $userId, string $activityType, Model $subject, ?array $metadata = null): UserActivity
@@ -42,6 +41,7 @@ class MovieActivityHandler implements ActivityHandlerInterface
         foreach ($this->handlers as $handler) {
             if ($handler->canHandle($subject)) {
                 $handler->deleteActivity($subject);
+
                 return;
             }
         }

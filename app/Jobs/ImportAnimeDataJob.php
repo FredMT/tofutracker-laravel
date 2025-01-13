@@ -13,14 +13,17 @@ use JsonStreamingParser\Parser;
 class ImportAnimeDataJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
     /**
      * The number of times the job may be attempted.
      */
     public $tries = 3;
+
     /**
      * The number of seconds the job can run before timing out.
      */
     public $timeout = 3600; // 1 hour
+
     /**
      * Execute the job.
      */
@@ -36,7 +39,7 @@ class ImportAnimeDataJob implements ShouldQueue
             logger()->info('Anime data import completed successfully');
         } catch (\Exception $e) {
             fclose($stream);
-            logger()->error('Error importing anime data: ' . $e->getMessage());
+            logger()->error('Error importing anime data: '.$e->getMessage());
             throw $e;
         }
     }

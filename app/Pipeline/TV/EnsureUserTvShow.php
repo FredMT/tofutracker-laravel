@@ -2,7 +2,6 @@
 
 namespace App\Pipeline\TV;
 
-use App\Enums\WatchStatus;
 use App\Models\UserTvShow;
 use Closure;
 

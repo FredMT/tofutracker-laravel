@@ -15,6 +15,7 @@ class UpdateTvdbAnimeSeasonJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $season;
+
     public $completeData;
 
     public function __construct(TvdbAnimeSeason $season, $completeData)
@@ -27,7 +28,7 @@ class UpdateTvdbAnimeSeasonJob implements ShouldQueue
     {
         logger()->info('Starting update of TVDB anime season', [
             'season_id' => $this->season->id,
-            'slug' => $this->season->slug
+            'slug' => $this->season->slug,
         ]);
 
         $this->season->update([
@@ -41,20 +42,20 @@ class UpdateTvdbAnimeSeasonJob implements ShouldQueue
 
         logger()->info('Updated TVDB anime season metadata', [
             'season_id' => $this->season->id,
-            'new_last_updated' => $this->completeData->data->lastUpdated
+            'new_last_updated' => $this->completeData->data->lastUpdated,
         ]);
 
         $updateAction = app(TVDBUpdateTvdbAnimeEpisodesAction::class);
 
         logger()->info('Starting episode updates via action', [
             'season_id' => $this->season->id,
-            'episode_count' => count($this->completeData->data->episodes)
+            'episode_count' => count($this->completeData->data->episodes),
         ]);
 
         $updateAction->execute($this->season, $this->completeData->data->episodes);
 
         logger()->info('Completed update of TVDB anime season and episodes', [
-            'season_id' => $this->season->id
+            'season_id' => $this->season->id,
         ]);
     }
 }

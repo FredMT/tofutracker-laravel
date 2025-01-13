@@ -21,7 +21,6 @@ class CreateUserAnimeSeasonCollection
             ]
         );
 
-
         $payload['collection'] = $collection;
 
         return $next($payload);

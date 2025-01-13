@@ -23,9 +23,9 @@ class CreateUserActivityAction
         // Register default handlers if none provided
         if (empty($handlers)) {
             $this->handlers = [
-                new AnimeActivityHandler(),
-                new MovieActivityHandler(),
-                new TvActivityHandler(),
+                new AnimeActivityHandler,
+                new MovieActivityHandler,
+                new TvActivityHandler,
                 // Add more handlers here as needed
             ];
         }
@@ -60,6 +60,7 @@ class CreateUserActivityAction
         foreach ($this->handlers as $handler) {
             if ($handler->canHandle($subject)) {
                 $handler->deleteActivity($subject);
+
                 return;
             }
         }

@@ -6,12 +6,12 @@ use App\Jobs\ProcessAnimeMapping;
 use App\Models\AnimeMappingExternalId;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\LazyCollection;
 
 class FetchAnimeExternalIds extends Command
 {
     protected $signature = 'anime:fetch-external-ids';
+
     protected $description = 'Fetch and store anime external IDs from GitHub';
 
     public function handle(): int
@@ -22,7 +22,7 @@ class FetchAnimeExternalIds extends Command
             // Fetch JSON data
             $response = Http::get('https://raw.githubusercontent.com/Fribb/anime-lists/refs/heads/master/anime-list-full.json');
 
-            if (!$response->successful()) {
+            if (! $response->successful()) {
                 throw new \Exception('Failed to fetch data from GitHub');
             }
 
@@ -36,13 +36,15 @@ class FetchAnimeExternalIds extends Command
                 ->chunk(1000)
                 ->each(function ($chunk) {
                     ProcessAnimeMapping::dispatch($chunk->all());
-                    $this->info('Dispatched job for ' . $chunk->count() . ' records');
+                    $this->info('Dispatched job for '.$chunk->count().' records');
                 });
 
-            $this->info('Successfully queued ' . count($animeList) . ' anime mappings for processing.');
+            $this->info('Successfully queued '.count($animeList).' anime mappings for processing.');
+
             return Command::SUCCESS;
         } catch (\Exception $e) {
-            $this->error('Error: ' . $e->getMessage());
+            $this->error('Error: '.$e->getMessage());
+
             return Command::FAILURE;
         }
     }

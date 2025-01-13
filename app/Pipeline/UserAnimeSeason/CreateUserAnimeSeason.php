@@ -18,7 +18,7 @@ class CreateUserAnimeSeason
             [
                 'is_movie' => false,
                 'watch_status' => WatchStatus::WATCHING,
-                'rating' => $payload['validated']['rating'] ?? null
+                'rating' => $payload['validated']['rating'] ?? null,
             ]
         );
 

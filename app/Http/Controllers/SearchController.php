@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\AnidbAnime;
 use App\Models\AnimeMappingExternalId;
 use App\Services\TmdbService;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
@@ -16,8 +15,11 @@ use Inertia\Response;
 class SearchController extends Controller
 {
     private TmdbService $tmdbService;
+
     private const CACHE_KEY = 'tmdb_categorizations';
+
     private const MAX_PAGES = 5;
+
     private const ALLOWED_FIELDS = [
         'id',
         'overview',
@@ -27,7 +29,7 @@ class SearchController extends Controller
         'title',
         'vote_average',
         'genres',
-        'map_id'
+        'map_id',
     ];
 
     public function __construct(TmdbService $tmdbService)
@@ -38,7 +40,7 @@ class SearchController extends Controller
     public function search(Request $request): Response
     {
         // If no query parameter, return with null results
-        if (!$request->has('q') || empty($request->query('q'))) {
+        if (! $request->has('q') || empty($request->query('q'))) {
             return Inertia::render('Search', [
                 'search_results' => null,
                 'query' => '',
@@ -55,22 +57,24 @@ class SearchController extends Controller
             return Inertia::render('Search', [
                 'search_results' => null,
                 'query' => $request->query('q'),
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ]);
         }
 
         try {
             $query = $request->query('q');
             $results = $this->fetchAllResults($query);
+
             return Inertia::render('Search', [
                 'search_results' => $results,
                 'query' => $query,
             ]);
         } catch (\Exception $e) {
-            logger()->error('Search error: ' . $e->getMessage());
+            logger()->error('Search error: '.$e->getMessage());
+
             return back()->with([
                 'success' => false,
-                'message' => 'An error occurred while processing your search'
+                'message' => 'An error occurred while processing your search',
             ]);
         }
     }
@@ -96,7 +100,7 @@ class SearchController extends Controller
 
             // Merge results, ensuring unique anime by map_id
             foreach ($categorizedPage['anime'] as $animeResult) {
-                if (!isset($seenMapIds[$animeResult['map_id']])) {
+                if (! isset($seenMapIds[$animeResult['map_id']])) {
                     $seenMapIds[$animeResult['map_id']] = true;
                     $allResults['anime'][] = $this->transformResult($animeResult);
                 }
@@ -126,9 +130,9 @@ class SearchController extends Controller
         if (isset($result['genre_ids'])) {
             $genreMap = Config::get('genres');
             $result['genres'] = array_map(
-                fn($id) => [
+                fn ($id) => [
                     'id' => $id,
-                    'name' => $genreMap[$id] ?? 'Unknown'
+                    'name' => $genreMap[$id] ?? 'Unknown',
                 ],
                 $result['genre_ids']
             );
@@ -136,7 +140,7 @@ class SearchController extends Controller
         }
 
         // Normalize title field
-        if (isset($result['name']) && !isset($result['title'])) {
+        if (isset($result['name']) && ! isset($result['title'])) {
             $result['title'] = $result['name'];
             unset($result['name']);
         }
@@ -157,20 +161,20 @@ class SearchController extends Controller
             return [
                 'movies' => [],
                 'tv' => [],
-                'anime' => []
+                'anime' => [],
             ];
         }
 
         $results = collect($searchResults['results'])
-            ->filter(fn($item) => $item['media_type'] !== 'person');
+            ->filter(fn ($item) => $item['media_type'] !== 'person');
 
         $tmdbIds = $results->pluck('id')->all();
 
         $categorizations = Cache::get(self::CACHE_KEY, []);
 
-        $uncachedIds = array_values(array_filter($tmdbIds, fn($id) => !isset($categorizations[$id])));
+        $uncachedIds = array_values(array_filter($tmdbIds, fn ($id) => ! isset($categorizations[$id])));
 
-        if (!empty($uncachedIds)) {
+        if (! empty($uncachedIds)) {
             $animeMappings = AnimeMappingExternalId::whereIn('themoviedb_id', $uncachedIds)
                 ->whereNotNull('anidb_id')
                 ->get()
@@ -187,8 +191,9 @@ class SearchController extends Controller
                     if ($anidbAnime && ($mapId = $anidbAnime->map())) {
                         $categorizations[$tmdbId] = [
                             'type' => 'anime',
-                            'map_id' => $mapId
+                            'map_id' => $mapId,
                         ];
+
                         continue;
                     }
                     $categorizations[$tmdbId] = ['type' => 'other'];
@@ -196,7 +201,7 @@ class SearchController extends Controller
             }
 
             foreach ($uncachedIds as $tmdbId) {
-                if (!isset($categorizations[$tmdbId])) {
+                if (! isset($categorizations[$tmdbId])) {
                     $categorizations[$tmdbId] = ['type' => 'other'];
                 }
             }
@@ -207,7 +212,7 @@ class SearchController extends Controller
         $categorizedResults = [
             'movies' => [],
             'tv' => [],
-            'anime' => []
+            'anime' => [],
         ];
 
         foreach ($results as $result) {

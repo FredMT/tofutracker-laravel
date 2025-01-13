@@ -2,27 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Pipeline\TV\EnsureUserTvLibrary;
-use App\Pipeline\TV\EnsureUserTvShow;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Pipeline;
-use App\Pipeline\UserTvSeason\ValidateSeasonRelations;
-use App\Pipeline\UserTvSeason\CreateUserTvSeason;
-use App\Pipeline\UserTvSeason\CreateUserTvSeasonPlay;
-use App\Pipeline\UserTvSeason\CreateUserTvEpisodes;
-use App\Pipeline\UserTvSeason\UpdateWatchStatus;
-use App\Pipeline\Shared\UpdateShowStatus;
-use App\Models\UserTvSeason;
-use App\Models\UserTvShow;
-use App\Models\UserLibrary;
+use App\Actions\Tv\Plays\DeleteUserTvSeasonPlayAction;
 use App\Enums\MediaType;
 use App\Enums\WatchStatus;
-use App\Actions\Tv\Plays\DeleteUserTvSeasonPlayAction;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Gate;
+use App\Models\UserLibrary;
+use App\Models\UserTvSeason;
+use App\Models\UserTvShow;
+use App\Pipeline\Shared\UpdateShowStatus;
+use App\Pipeline\TV\EnsureUserTvLibrary;
+use App\Pipeline\TV\EnsureUserTvShow;
+use App\Pipeline\UserTvSeason\CreateUserTvSeason;
 use App\Pipeline\UserTvSeason\InitializeShowStatus;
+use App\Pipeline\UserTvSeason\UpdateWatchStatus;
+use App\Pipeline\UserTvSeason\ValidateSeasonRelations;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Pipeline;
+use Illuminate\Validation\Rule;
 
 class UserTvSeasonController extends Controller
 {
@@ -59,10 +57,11 @@ class UserTvSeasonController extends Controller
                     });
             });
         } catch (\Exception $e) {
-            logger()->error('Failed to add season to library: ' . $e->getMessage());
+            logger()->error('Failed to add season to library: '.$e->getMessage());
+
             return back()->with([
                 'success' => false,
-                'message' => "An error occurred while adding season to library",
+                'message' => 'An error occurred while adding season to library',
             ]);
         }
     }
@@ -92,24 +91,25 @@ class UserTvSeasonController extends Controller
 
                 return back()->with([
                     'success' => true,
-                    'message' => "Season removed from your library",
+                    'message' => 'Season removed from your library',
                 ]);
             });
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return back()->with([
                 'success' => false,
-                'message' => "Season not found in your library",
+                'message' => 'Season not found in your library',
             ]);
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             return back()->with([
                 'success' => false,
-                'message' => "You are not authorized to remove this season",
+                'message' => 'You are not authorized to remove this season',
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to remove season from library: ' . $e->getMessage());
+            logger()->error('Failed to remove season from library: '.$e->getMessage());
+
             return back()->with([
                 'success' => false,
-                'message' => "An error occurred while removing season from library",
+                'message' => 'An error occurred while removing season from library',
             ]);
         }
     }
@@ -147,7 +147,7 @@ class UserTvSeasonController extends Controller
 
                     return back()->with([
                         'success' => true,
-                        'message' => "Season rating updated successfully",
+                        'message' => 'Season rating updated successfully',
                     ]);
                 }
 
@@ -180,19 +180,20 @@ class UserTvSeasonController extends Controller
 
                 return back()->with([
                     'success' => true,
-                    'message' => "Season added to library with rating",
+                    'message' => 'Season added to library with rating',
                 ]);
             });
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             return back()->with([
                 'success' => false,
-                'message' => "You are not authorized to update this season",
+                'message' => 'You are not authorized to update this season',
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to update season rating: ' . $e->getMessage());
+            logger()->error('Failed to update season rating: '.$e->getMessage());
+
             return back()->with([
                 'success' => false,
-                'message' => "An error occurred while updating season rating",
+                'message' => 'An error occurred while updating season rating',
             ]);
         }
     }
@@ -215,8 +216,8 @@ class UserTvSeasonController extends Controller
                 ])->first();
 
                 // Check gate authorization
-                if (!Gate::allows('update-season-watch-status', $userSeason)) {
-                    throw new \Illuminate\Auth\Access\AuthorizationException();
+                if (! Gate::allows('update-season-watch-status', $userSeason)) {
+                    throw new \Illuminate\Auth\Access\AuthorizationException;
                 }
 
                 // Check if trying to update to the same status
@@ -242,6 +243,7 @@ class UserTvSeasonController extends Controller
                     ])
                     ->then(function ($payload) {
                         $status = $payload['validated']['watch_status'];
+
                         return back()->with([
                             'success' => true,
                             'message' => "Season marked as $status",
@@ -251,13 +253,14 @@ class UserTvSeasonController extends Controller
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             return back()->with([
                 'success' => false,
-                'message' => "You are not authorized to update this season",
+                'message' => 'You are not authorized to update this season',
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to update season watch status: ' . $e->getMessage());
+            logger()->error('Failed to update season watch status: '.$e->getMessage());
+
             return back()->with([
                 'success' => false,
-                'message' => "An error occurred while updating season watch status",
+                'message' => 'An error occurred while updating season watch status',
             ]);
         }
     }

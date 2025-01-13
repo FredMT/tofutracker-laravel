@@ -5,7 +5,6 @@ namespace App\Actions\Anime\Plays;
 use App\Actions\Activity\CreateUserActivityAction;
 use App\Models\UserActivity;
 use App\Models\UserAnimeCollection;
-use App\Models\UserAnimePlay;
 
 class DeleteUserAnimeCollectionPlayAction
 {

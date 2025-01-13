@@ -9,7 +9,7 @@ class AnimeRelatedEntry extends Model
 {
     protected $fillable = [
         'map_id',
-        'anime_id'
+        'anime_id',
     ];
 
     public function map(): BelongsTo

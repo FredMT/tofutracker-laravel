@@ -20,11 +20,11 @@ class CreateUserAnimePlayAction
         $play = UserAnimePlay::create([
             'playable_id' => $playable->id,
             'playable_type' => $playable::class,
-            'watched_at' => $watchedAt ?? now()
+            'watched_at' => $watchedAt ?? now(),
         ]);
 
         // Load necessary relationships for activity recording
-        if ($playable instanceof UserAnimeEpisode && !$playable->relationLoaded('userAnime')) {
+        if ($playable instanceof UserAnimeEpisode && ! $playable->relationLoaded('userAnime')) {
             $playable->load(['userAnime.user']);
         }
 
@@ -40,7 +40,7 @@ class CreateUserAnimePlayAction
                     'anidb_id' => $playable->userAnime->anidb_id,
                     'map_id' => $anime?->map(),
                     'user_anime_episode_ids' => [$playable->id],
-                    'count' => 1
+                    'count' => 1,
                 ]
             );
         } elseif ($playable instanceof UserAnime) {
@@ -53,7 +53,7 @@ class CreateUserAnimePlayAction
                     'user_anime_id' => $playable->id,
                     'anidb_id' => $playable->anidb_id,
                     'map_id' => $anime?->map(),
-                    'is_movie' => $playable->is_movie
+                    'is_movie' => $playable->is_movie,
                 ]
             );
         }

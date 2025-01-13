@@ -3,10 +3,10 @@
 namespace App\Collections;
 
 use App\Enums\WatchStatus;
+use Carbon\Carbon;
+use DateTime;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Str;
-use DateTime;
-use Carbon\Carbon;
 
 class UserTvShowCollection extends Collection
 {
@@ -25,13 +25,13 @@ class UserTvShowCollection extends Collection
                 ->pluck('id')
                 ->toArray();
 
-            return !empty(array_intersect($genreIds, $showGenres));
+            return ! empty(array_intersect($genreIds, $showGenres));
         });
     }
 
     public function filterByStatus(?string $status): self
     {
-        if (empty($status) || !WatchStatus::tryFrom($status)) {
+        if (empty($status) || ! WatchStatus::tryFrom($status)) {
             return $this;
         }
 
@@ -68,6 +68,7 @@ class UserTvShowCollection extends Collection
         if ($from->format('Y-m-d') === $to->format('Y-m-d')) {
             return $this->filter(function ($userTvShow) use ($from) {
                 $createdAt = new DateTime($userTvShow->created_at);
+
                 return $createdAt->format('Y-m-d') === $from->format('Y-m-d');
             });
         }
@@ -75,6 +76,7 @@ class UserTvShowCollection extends Collection
         // Filter for date range
         return $this->filter(function ($userTvShow) use ($from, $to) {
             $createdAt = new DateTime($userTvShow->created_at);
+
             return $createdAt >= $from && $createdAt <= $to;
         });
     }
@@ -99,11 +101,11 @@ class UserTvShowCollection extends Collection
                 : null;
 
             // Load the seasons relationship if it hasn't been loaded
-            if (!$userTvShow->relationLoaded('seasons')) {
+            if (! $userTvShow->relationLoaded('seasons')) {
                 $userTvShow->load([
                     'seasons' => function ($query) {
                         $query->with(['season', 'episodes.episode']);
-                    }
+                    },
                 ]);
             }
 

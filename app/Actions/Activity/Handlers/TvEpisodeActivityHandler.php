@@ -2,8 +2,8 @@
 
 namespace App\Actions\Activity\Handlers;
 
-use App\Models\TvShow;
 use App\Models\TvSeason;
+use App\Models\TvShow;
 use App\Models\UserActivity;
 use App\Models\UserTvEpisode;
 use Illuminate\Database\Eloquent\Model;
@@ -17,7 +17,7 @@ class TvEpisodeActivityHandler implements TvActivityInterface
 
     public function createActivity(int $userId, string $activityType, Model $subject, ?array $metadata = null): UserActivity
     {
-        if (!$this->canHandle($subject)) {
+        if (! $this->canHandle($subject)) {
             throw new \InvalidArgumentException('This handler only supports UserTvEpisode models');
         }
 
@@ -45,7 +45,7 @@ class TvEpisodeActivityHandler implements TvActivityInterface
             $recentActivity->update([
                 'metadata' => $metadata,
                 'description' => $this->generateDescription($show, $season, $metadata['count']),
-                'occurred_at' => now()
+                'occurred_at' => now(),
             ]);
 
             return $recentActivity;
@@ -62,7 +62,7 @@ class TvEpisodeActivityHandler implements TvActivityInterface
             'season_id' => $subject->season_id,
             'episode_id' => $subject->episode_id,
             'user_tv_episode_ids' => $episodeIds,
-            'count' => $count
+            'count' => $count,
         ]);
 
         return UserActivity::create([
@@ -78,7 +78,7 @@ class TvEpisodeActivityHandler implements TvActivityInterface
 
     public function deleteActivity(Model $subject): void
     {
-        if (!$this->canHandle($subject)) {
+        if (! $this->canHandle($subject)) {
             throw new \InvalidArgumentException('This handler only supports UserTvEpisode models');
         }
 
@@ -91,7 +91,7 @@ class TvEpisodeActivityHandler implements TvActivityInterface
                 $metadata['user_tv_episode_ids'] = array_values(
                     array_filter(
                         $metadata['user_tv_episode_ids'] ?? [],
-                        fn($id) => $id !== $subject->id
+                        fn ($id) => $id !== $subject->id
                     )
                 );
 
@@ -105,7 +105,7 @@ class TvEpisodeActivityHandler implements TvActivityInterface
 
                     $activity->update([
                         'metadata' => $metadata,
-                        'description' => $this->generateDescription($show, $season, $metadata['count'])
+                        'description' => $this->generateDescription($show, $season, $metadata['count']),
                     ]);
                 }
             });
@@ -113,18 +113,19 @@ class TvEpisodeActivityHandler implements TvActivityInterface
 
     private function generateDescription(?TvShow $show, ?TvSeason $season, int $count): string
     {
-        if (!$show) {
+        if (! $show) {
             return 'Watched TV episode';
         }
 
         $seasonTitle = $season?->title ? " {$season->title}" : '';
-        $episodeText = $count === 1 ? "1 episode" : "{$count} episodes";
+        $episodeText = $count === 1 ? '1 episode' : "{$count} episodes";
+
         return "Watched {$episodeText} of {$show->title}{$seasonTitle}";
     }
 
     public function getTvShowTitle(Model $subject): ?string
     {
-        if (!$this->canHandle($subject)) {
+        if (! $this->canHandle($subject)) {
             return null;
         }
 
@@ -133,7 +134,7 @@ class TvEpisodeActivityHandler implements TvActivityInterface
 
     public function getTvShowId(Model $subject): ?int
     {
-        if (!$this->canHandle($subject)) {
+        if (! $this->canHandle($subject)) {
             return null;
         }
 

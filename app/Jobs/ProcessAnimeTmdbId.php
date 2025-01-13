@@ -25,7 +25,7 @@ class ProcessAnimeTmdbId implements ShouldQueue
         } catch (\Exception $e) {
             Log::warning('Failed to process TMDB ID for map', [
                 'map_id' => $this->mapId,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }

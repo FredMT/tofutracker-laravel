@@ -3,19 +3,20 @@
 namespace App\Services;
 
 use App\Models\AnimeMappingExternalId;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 
 class TmdbService
 {
     private PendingRequest $client;
+
     private string $baseUrl = 'https://api.themoviedb.org/3';
 
     public function __construct()
     {
         $this->client = Http::withHeaders([
-            'Authorization' => 'Bearer ' . config('services.tmdb.token'),
+            'Authorization' => 'Bearer '.config('services.tmdb.token'),
             'Accept' => 'application/json',
         ])->baseUrl($this->baseUrl);
     }
@@ -32,15 +33,15 @@ class TmdbService
                 return [
                     'title' => $movieData['title'],
                     'poster_path' => $movieData['poster_path'],
-                    'genres' => collect($movieData['genres'])->map(fn($genre) => [
+                    'genres' => collect($movieData['genres'])->map(fn ($genre) => [
                         'id' => $genre['id'],
-                        'name' => $genre['name']
+                        'name' => $genre['name'],
                     ]),
-                    'release_date' => substr($movieData['release_date'], 0, 4)
+                    'release_date' => substr($movieData['release_date'], 0, 4),
                 ];
             });
         } catch (\Exception $e) {
-            logger()->error("TMDB API error: " . $e->getMessage());
+            logger()->error('TMDB API error: '.$e->getMessage());
             throw $e;
         }
     }
@@ -57,19 +58,18 @@ class TmdbService
                 return [
                     'title' => $tvData['name'],
                     'poster_path' => $tvData['poster_path'],
-                    'genres' => collect($tvData['genres'])->map(fn($genre) => [
+                    'genres' => collect($tvData['genres'])->map(fn ($genre) => [
                         'id' => $genre['id'],
-                        'name' => $genre['name']
+                        'name' => $genre['name'],
                     ]),
-                    'release_date' => substr($tvData['first_air_date'], 0, 4)
+                    'release_date' => substr($tvData['first_air_date'], 0, 4),
                 ];
             });
         } catch (\Exception $e) {
-            logger()->error("TMDB API error: " . $e->getMessage());
+            logger()->error('TMDB API error: '.$e->getMessage());
             throw $e;
         }
     }
-
 
     public function getMovie(string $id): array
     {
@@ -78,15 +78,15 @@ class TmdbService
                 ->get("{$this->baseUrl}/movie/{$id}", [
                     'append_to_response' => 'credits,external_ids,images,keywords,release_dates,similar,videos,translations,watch/providers,recommendations',
                     'include_image_language' => 'en,null',
-                    'include_video_language' => 'en'
+                    'include_video_language' => 'en',
                 ]);
 
             return [
                 'data' => $response->json(),
-                'etag' => $response->header('etag')
+                'etag' => $response->header('etag'),
             ];
         } catch (\Exception $e) {
-            logger()->error("TMDB API error: " . $e->getMessage());
+            logger()->error('TMDB API error: '.$e->getMessage());
             throw $e;
         }
     }
@@ -98,7 +98,7 @@ class TmdbService
                 ->get("{$this->baseUrl}/movie/{$id}", [
                     'append_to_response' => 'images,recommendations,videos,release_dates',
                     'include_image_language' => 'en,null',
-                    'include_video_language' => 'en'
+                    'include_video_language' => 'en',
                 ]);
 
             $data = $response->json();
@@ -118,10 +118,10 @@ class TmdbService
 
             return [
                 'data' => $data,
-                'etag' => $response->header('etag')
+                'etag' => $response->header('etag'),
             ];
         } catch (\Exception $e) {
-            logger()->error("TMDB API error: " . $e->getMessage());
+            logger()->error('TMDB API error: '.$e->getMessage());
             throw $e;
         }
     }
@@ -134,20 +134,18 @@ class TmdbService
                 ->get("{$this->baseUrl}/tv/{$id}", [
                     'append_to_response' => 'aggregate_credits,external_ids,images,keywords,content_ratings,similar,videos,translations,watch/providers,recommendations',
                     'include_image_language' => 'en,null',
-                    'include_video_language' => 'en'
+                    'include_video_language' => 'en',
                 ]);
 
             return [
                 'data' => $response->json(),
-                'etag' => $response->header('etag')
+                'etag' => $response->header('etag'),
             ];
         } catch (\Exception $e) {
-            logger()->error("TMDB API error: " . $e->getMessage());
+            logger()->error('TMDB API error: '.$e->getMessage());
             throw $e;
         }
     }
-
-
 
     public function getTvAnime(string $id): array
     {
@@ -156,7 +154,7 @@ class TmdbService
                 ->get("{$this->baseUrl}/tv/{$id}", [
                     'append_to_response' => 'images,recommendations,videos,content_ratings',
                     'include_image_language' => 'en,null',
-                    'include_video_language' => 'en'
+                    'include_video_language' => 'en',
                 ]);
 
             $data = $response->json();
@@ -168,7 +166,7 @@ class TmdbService
                 $data['logo_path'] = $highestVotedLogo['file_path'] ?? null;
             } catch (\Exception $e) {
                 logger()->warning("Failed to extract logo path for TV show ID: {$id}", [
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
                 $data['logo_path'] = null;
             }
@@ -181,7 +179,7 @@ class TmdbService
                 $data['certification'] = $usRating['rating'] ?? null;
             } catch (\Exception $e) {
                 logger()->warning("Failed to extract content rating for TV show ID: {$id}", [
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
                 $data['content_rating'] = null;
             }
@@ -194,17 +192,17 @@ class TmdbService
                 unset($data['name']);
             } catch (\Exception $e) {
                 logger()->warning("Failed to set title for TV show ID: {$id}", [
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
                 $data['title'] = null;
             }
 
             return [
                 'data' => $data,
-                'etag' => $response->header('etag')
+                'etag' => $response->header('etag'),
             ];
         } catch (\Exception $e) {
-            logger()->error("TMDB API error: " . $e->getMessage());
+            logger()->error('TMDB API error: '.$e->getMessage());
             throw $e;
         }
     }
@@ -215,15 +213,15 @@ class TmdbService
         try {
             $response = $this->client->get("/tv/{$tvShowId}/season/{$seasonNumber}", [
                 'language' => 'en-US',
-                'append_to_response' => 'credits,external_ids,images,videos'
+                'append_to_response' => 'credits,external_ids,images,videos',
             ]);
 
             return [
                 'data' => $response->json(),
-                'etag' => $response->header('etag')
+                'etag' => $response->header('etag'),
             ];
         } catch (\Exception $e) {
-            logger()->error("TMDB API error: " . $e->getMessage());
+            logger()->error('TMDB API error: '.$e->getMessage());
             throw $e;
         }
     }
@@ -260,10 +258,10 @@ class TmdbService
         try {
             $response = $this->client->get('/trending/all/day', [
                 'language' => 'en-US',
-                'page' => $page
+                'page' => $page,
             ]);
 
-            if (!$response->successful()) {
+            if (! $response->successful()) {
                 throw new \Exception('TMDB trending request failed');
             }
 
@@ -271,13 +269,13 @@ class TmdbService
 
             // Filter out items with media_type "person"
             $data['results'] = collect($data['results'])
-                ->filter(fn($item) => $item['media_type'] !== 'person')
+                ->filter(fn ($item) => $item['media_type'] !== 'person')
                 ->values()
                 ->all();
 
             return $data;
         } catch (\Exception $e) {
-            logger()->error("TMDB Trending API error: " . $e->getMessage());
+            logger()->error('TMDB Trending API error: '.$e->getMessage());
             throw $e;
         }
     }
@@ -303,7 +301,7 @@ class TmdbService
                 ->whereNotNull('themoviedb_id')
                 ->first();
 
-            if (!$externalId) {
+            if (! $externalId) {
                 return null;
             }
 
@@ -311,10 +309,10 @@ class TmdbService
 
             $response = $this->client
                 ->get("/{$endpoint}/{$externalId->themoviedb_id}/images", [
-                    'include_image_language' => 'en,null'
+                    'include_image_language' => 'en,null',
                 ]);
 
-            if (!$response->successful()) {
+            if (! $response->successful()) {
                 return null;
             }
 
@@ -330,10 +328,11 @@ class TmdbService
 
             return [
                 'backdrop_path' => $backdrop['file_path'] ?? null,
-                'logo_path' => $logo['file_path'] ?? null
+                'logo_path' => $logo['file_path'] ?? null,
             ];
         } catch (\Exception $e) {
-            logger()->error("Error getting TMDB ID for AniDB ID {$anidbId}: " . $e->getMessage());
+            logger()->error("Error getting TMDB ID for AniDB ID {$anidbId}: ".$e->getMessage());
+
             return null;
         }
     }
@@ -345,16 +344,16 @@ class TmdbService
                 'query' => $query,
                 'include_adult' => false,
                 'language' => 'en-US',
-                'page' => $page
+                'page' => $page,
             ]);
 
-            if (!$response->successful()) {
+            if (! $response->successful()) {
                 throw new \Exception('TMDB search request failed');
             }
 
             return $response->json();
         } catch (\Exception $e) {
-            logger()->error("TMDB Search API error: " . $e->getMessage());
+            logger()->error('TMDB Search API error: '.$e->getMessage());
             throw $e;
         }
     }

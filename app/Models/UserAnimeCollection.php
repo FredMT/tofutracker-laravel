@@ -7,7 +7,6 @@ use App\Enums\WatchStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class UserAnimeCollection extends Model
 {
@@ -15,7 +14,7 @@ class UserAnimeCollection extends Model
         'user_library_id',
         'map_id',
         'rating',
-        'watch_status'
+        'watch_status',
     ];
 
     protected $casts = [

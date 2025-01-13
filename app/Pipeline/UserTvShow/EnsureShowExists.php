@@ -12,7 +12,7 @@ class EnsureShowExists
     {
         $show = TvShow::find($payload['validated']['show_id']);
 
-        if (!$show) {
+        if (! $show) {
             throw new ModelNotFoundException('TV show not found.');
         }
 

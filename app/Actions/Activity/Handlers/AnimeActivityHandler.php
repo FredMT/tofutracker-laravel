@@ -3,7 +3,6 @@
 namespace App\Actions\Activity\Handlers;
 
 use App\Models\UserActivity;
-use App\Models\UserAnimeEpisode;
 use Illuminate\Database\Eloquent\Model;
 
 class AnimeActivityHandler implements ActivityHandlerInterface
@@ -16,15 +15,15 @@ class AnimeActivityHandler implements ActivityHandlerInterface
     public function __construct()
     {
         $this->handlers = [
-            new AnimeEpisodeActivityHandler(),
-            new AnimePlayActivityHandler(),
+            new AnimeEpisodeActivityHandler,
+            new AnimePlayActivityHandler,
             // Add more anime-specific handlers here as needed
         ];
     }
 
     public function canHandle(Model $subject): bool
     {
-        return collect($this->handlers)->contains(fn($handler) => $handler->canHandle($subject));
+        return collect($this->handlers)->contains(fn ($handler) => $handler->canHandle($subject));
     }
 
     public function createActivity(int $userId, string $activityType, Model $subject, ?array $metadata = null): UserActivity
@@ -43,6 +42,7 @@ class AnimeActivityHandler implements ActivityHandlerInterface
         foreach ($this->handlers as $handler) {
             if ($handler->canHandle($subject)) {
                 $handler->deleteActivity($subject);
+
                 return;
             }
         }

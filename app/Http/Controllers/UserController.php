@@ -2,28 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Models\UserMovie;
-use App\Models\UserTvShow;
-use App\Models\UserAnimeCollection;
-use Illuminate\Http\Request;
-use Inertia\Inertia;
-use App\Enums\WatchStatus;
-use DateTime;
-use App\Actions\UserController\Tv\ValidateShowFilters;
-use App\Actions\UserController\Tv\GetUserTvGenres;
+use App\Actions\UserController\Anime\GenerateAnimeMessages;
+use App\Actions\UserController\Anime\ValidateAnimeFilters;
 use App\Actions\UserController\Tv\GenerateShowMessages;
 use App\Actions\UserController\Tv\GetUserData;
-use App\Actions\UserController\Anime\ValidateAnimeFilters;
-use App\Actions\UserController\Anime\GenerateAnimeMessages;
+use App\Actions\UserController\Tv\GetUserTvGenres;
+use App\Actions\UserController\Tv\ValidateShowFilters;
+use App\Enums\WatchStatus;
+use App\Models\User;
+use App\Models\UserAnimeCollection;
+use App\Models\UserMovie;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Inertia\Inertia;
 
 class UserController extends Controller
 {
     /**
      * Display the user's profile.
      *
-     * @param string $username
+     * @param  string  $username
      * @return \Inertia\Response
      */
     public function show(Request $request, $username)
@@ -39,6 +37,7 @@ class UserController extends Controller
         // Transform the activities to only include the fields we need
         $activities->through(function ($activity) {
             $poster = $activity->getPoster();
+
             return [
                 'id' => $activity->id,
                 'description' => $activity->description,
@@ -46,27 +45,27 @@ class UserController extends Controller
                 'poster_path' => $poster['path'] ?? null,
                 'poster_from' => $poster['from'] ?? null,
             ];
-        }); 
-        
+        });
+
         $isOwnProfile = $request->user() && $request->user()->id === $user->id;
 
         $userData = [
             'id' => $user->id,
             'username' => $user->username,
-            'created_at' => 'Joined ' . $user->created_at->format('F Y'),
+            'created_at' => 'Joined '.$user->created_at->format('F Y'),
             'avatar' => $user->avatar,
             'banner' => $user->banner,
             'bio' => $user->bio,
         ];
 
         if ($isOwnProfile) {
-            $userData['mustVerifyEmail'] = !$request->user()->hasVerifiedEmail();
+            $userData['mustVerifyEmail'] = ! $request->user()->hasVerifiedEmail();
         }
 
         return Inertia::render('UserProfile', [
             'userData' => $userData,
-            'activities' => Inertia::merge(fn() => $activities->items()),
-            'activities_pagination' => $activities->toArray()
+            'activities' => Inertia::merge(fn () => $activities->items()),
+            'activities_pagination' => $activities->toArray(),
         ]);
     }
 
@@ -114,7 +113,7 @@ class UserController extends Controller
             'userData' => [
                 'id' => $user->id,
                 'username' => $user->username,
-                'created_at' => 'Joined ' . $user->created_at->format('F Y'),
+                'created_at' => 'Joined '.$user->created_at->format('F Y'),
                 'avatar' => $user->avatar,
                 'banner' => $user->banner,
             ],
@@ -132,10 +131,10 @@ class UserController extends Controller
 
         if ($request->filled('title')) {
             $searchTerms = array_filter(explode(' ', trim($request->title)));
-            if (!empty($searchTerms)) {
+            if (! empty($searchTerms)) {
                 $query->whereHas('movie', function ($query) use ($searchTerms) {
                     foreach ($searchTerms as $term) {
-                        $query->where('data->title', 'ilike', '%' . $term . '%');
+                        $query->where('data->title', 'ilike', '%'.$term.'%');
                     }
                 });
             }
@@ -144,13 +143,13 @@ class UserController extends Controller
         if ($request->filled(['from_date', 'to_date'])) {
             $query->whereBetween('created_at', [
                 new \DateTime($request->from_date),
-                new \DateTime($request->to_date)
+                new \DateTime($request->to_date),
             ]);
         }
 
         if ($request->filled('genres')) {
             $genreIds = collect(explode(',', $request->genres))
-                ->map(fn($genreId) => (int) $genreId)
+                ->map(fn ($genreId) => (int) $genreId)
                 ->toArray();
 
             $query->whereHas('movie', function ($query) use ($genreIds) {
@@ -158,7 +157,7 @@ class UserController extends Controller
                     foreach ($genreIds as $genreId) {
                         // For PostgreSQL JSONB, we need to search within the array of genres
                         $query->whereRaw('data->\'genres\' @> ?', [
-                            json_encode([['id' => $genreId]])
+                            json_encode([['id' => $genreId]]),
                         ]);
                     }
                 });
@@ -173,10 +172,9 @@ class UserController extends Controller
             'title' => $request->title,
             'from_date' => $request->from_date,
             'to_date' => $request->to_date,
-            'genres' => $request->genres
+            'genres' => $request->genres,
         ];
     }
-
 
     public function showTv(string $username, Request $request)
     {
@@ -184,12 +182,14 @@ class UserController extends Controller
 
         $userData = app(GetUserData::class)->handle($user);
 
-        if (!$userData) return abort(404);
+        if (! $userData) {
+            return abort(404);
+        }
 
         $errors = app(ValidateShowFilters::class)->handle($request);
 
         // If there are any validation errors, return early with empty arrays
-        if (!empty($errors)) {
+        if (! empty($errors)) {
             return Inertia::render('UserTv', [
                 'success' => false,
                 'messages' => [],
@@ -197,7 +197,7 @@ class UserController extends Controller
                 'shows' => [],
                 'genres' => [],
                 'filters' => $this->getFilters($request),
-                'userData' => $userData
+                'userData' => $userData,
             ]);
         }
 
@@ -207,7 +207,7 @@ class UserController extends Controller
             ->with([
                 'show',
                 'seasons.season.episodes',
-                'seasons.episodes.episode'
+                'seasons.episodes.episode',
             ])
             ->orderBy('created_at', 'desc')
             ->get()
@@ -233,12 +233,14 @@ class UserController extends Controller
 
         $userData = app(GetUserData::class)->handle($user);
 
-        if (!$userData) return abort(404);
+        if (! $userData) {
+            return abort(404);
+        }
 
         $errors = app(ValidateAnimeFilters::class)->handle($request);
 
         // If there are any validation errors, return early with empty arrays
-        if (!empty($errors)) {
+        if (! empty($errors)) {
             return Inertia::render('UserAnime', [
                 'success' => false,
                 'messages' => [],
@@ -246,7 +248,7 @@ class UserController extends Controller
                 'collections' => [],
                 'genres' => [],
                 'filters' => $this->getFilters($request),
-                'userData' => $userData
+                'userData' => $userData,
             ]);
         }
 
@@ -261,7 +263,7 @@ class UserController extends Controller
                 'userLibrary',
                 'animeMap.chains' => function ($query) {
                     $query->withCount('entries');
-                }
+                },
             ])
             ->whereHas('userLibrary', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
@@ -284,7 +286,8 @@ class UserController extends Controller
                             ? $tmdbService->getMovieBasic($collection->animeMap->most_common_tmdb_id)
                             : $tmdbService->getTvBasic($collection->animeMap->most_common_tmdb_id);
                     } catch (\Exception $e) {
-                        logger()->error("Failed to fetch TMDB data: " . $e->getMessage());
+                        logger()->error('Failed to fetch TMDB data: '.$e->getMessage());
+
                         return null;
                     }
                 });
@@ -322,12 +325,14 @@ class UserController extends Controller
 
         $userData = app(GetUserData::class)->handle($user);
 
-        if (!$userData) return abort(404);
+        if (! $userData) {
+            return abort(404);
+        }
 
         $errors = app(ValidateAnimeFilters::class)->handle($request);
 
         // If there are any validation errors, return early with empty arrays
-        if (!empty($errors)) {
+        if (! empty($errors)) {
             return Inertia::render('UserAnime', [
                 'success' => false,
                 'messages' => [],
@@ -335,7 +340,7 @@ class UserController extends Controller
                 'collections' => [],
                 'genres' => [],
                 'filters' => $this->getFilters($request),
-                'userData' => $userData
+                'userData' => $userData,
             ]);
         }
 
@@ -346,7 +351,7 @@ class UserController extends Controller
                 'anime.episodes',
                 'animeMap.chains.entries.anime',
                 'animeMap.relatedEntries.anime',
-                'userLibrary'
+                'userLibrary',
             ])
             ->whereHas('userLibrary', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
@@ -368,7 +373,7 @@ class UserController extends Controller
                         $userGenres = $userGenres->concat($data['genres']);
                     }
                 } catch (\Exception $e) {
-                    logger()->error("Failed to fetch TMDB data: " . $e->getMessage());
+                    logger()->error('Failed to fetch TMDB data: '.$e->getMessage());
                 }
             }
         });

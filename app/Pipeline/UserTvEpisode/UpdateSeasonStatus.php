@@ -6,7 +6,6 @@ use App\Actions\Tv\Plays\CreateUserTvSeasonPlayAction;
 use App\Enums\WatchStatus;
 use App\Models\TvEpisode;
 use App\Models\UserTvEpisode;
-use App\Models\UserTvPlay;
 use App\Models\UserTvSeason;
 use Closure;
 

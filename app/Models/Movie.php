@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Model;
 
 class Movie extends Model
 {
@@ -14,7 +14,7 @@ class Movie extends Model
 
     protected $casts = [
         'data' => 'array',
-        'updated_at' => 'datetime'
+        'updated_at' => 'datetime',
     ];
 
     public function poster(): Attribute
@@ -28,6 +28,7 @@ class Movie extends Model
     {
         return Attribute::get(function () {
             $budget = $this->data['budget'] ?? null;
+
             return $budget > 0 ? $budget : null;
         });
     }
@@ -36,6 +37,7 @@ class Movie extends Model
     {
         return Attribute::get(function () {
             $revenue = $this->data['revenue'] ?? null;
+
             return $revenue > 0 ? $revenue : null;
         });
     }
@@ -44,6 +46,7 @@ class Movie extends Model
     {
         return Attribute::get(function () {
             $runtime = $this->data['runtime'] ?? null;
+
             return $runtime > 0 ? $runtime : null;
         });
     }
@@ -61,7 +64,7 @@ class Movie extends Model
             return collect($this->data['genres'] ?? [])->map(function ($genre) {
                 return [
                     'id' => $genre['id'],
-                    'name' => $genre['name']
+                    'name' => $genre['name'],
                 ];
             })->values();
         });
@@ -73,7 +76,7 @@ class Movie extends Model
             return collect($this->data['keywords']['keywords'] ?? [])->map(function ($keyword) {
                 return [
                     'id' => $keyword['id'],
-                    'name' => $keyword['name']
+                    'name' => $keyword['name'],
                 ];
             })->values();
         });
@@ -87,7 +90,7 @@ class Movie extends Model
                     'id' => $company['id'],
                     'name' => $company['name'],
                     'logo_path' => $company['logo_path'],
-                    'origin_country' => $company['origin_country']
+                    'origin_country' => $company['origin_country'],
                 ];
             })->values();
         });
@@ -99,7 +102,7 @@ class Movie extends Model
             return collect($this->data['production_countries'] ?? [])->map(function ($country) {
                 return [
                     'name' => $country['name'],
-                    'iso_3166_1' => $country['iso_3166_1']
+                    'iso_3166_1' => $country['iso_3166_1'],
                 ];
             })->values();
         });
@@ -111,7 +114,6 @@ class Movie extends Model
             return $this->data['title'] ?? null;
         });
     }
-
 
     public function logos(): Attribute
     {
@@ -200,7 +202,7 @@ class Movie extends Model
                 'Writer',
                 'Novel',
                 'Screenplay',
-                'Producer'
+                'Producer',
             ];
 
             $crewCollection = collect($this->data['credits']['crew'] ?? []);
@@ -213,7 +215,7 @@ class Movie extends Model
 
             $additionalCrew = $crewCollection
                 ->filter(function ($crew) use ($importantJobs) {
-                    return !in_array($crew['job'], $importantJobs);
+                    return ! in_array($crew['job'], $importantJobs);
                 })
                 ->sortByDesc('popularity')
                 ->take(50);
@@ -222,6 +224,7 @@ class Movie extends Model
                 ->groupBy('id')
                 ->map(function ($groupedCrew) {
                     $firstCrew = $groupedCrew->first();
+
                     return [
                         'id' => $firstCrew['id'],
                         'name' => $firstCrew['name'],
@@ -242,14 +245,14 @@ class Movie extends Model
         $usReleases = collect($releaseDates)
             ->firstWhere('iso_3166_1', 'US');
 
-        if (!$usReleases) {
+        if (! $usReleases) {
             return null;
         }
 
         // Get first non-empty certification
         $certification = collect($usReleases['release_dates'] ?? [])
-            ->map(fn($date) => $date['certification'] ?? '')
-            ->filter(fn($cert) => !empty($cert))
+            ->map(fn ($date) => $date['certification'] ?? '')
+            ->filter(fn ($cert) => ! empty($cert))
             ->first();
 
         return $certification ?: null;
@@ -261,10 +264,10 @@ class Movie extends Model
 
         return collect($similarMovies)
             ->filter(function ($movie) {
-                return !empty($movie['poster_path']) &&
-                    !empty($movie['vote_average']) &&
-                    !empty($movie['title']) &&
-                    !empty($movie['release_date']);
+                return ! empty($movie['poster_path']) &&
+                    ! empty($movie['vote_average']) &&
+                    ! empty($movie['title']) &&
+                    ! empty($movie['release_date']);
             })
             ->map(function ($movie) {
                 return [
@@ -272,7 +275,7 @@ class Movie extends Model
                     'title' => $movie['title'],
                     'poster_path' => $movie['poster_path'],
                     'vote_average' => $movie['vote_average'],
-                    'release_date' => $movie['release_date']
+                    'release_date' => $movie['release_date'],
                 ];
             })
             ->values()
@@ -292,11 +295,10 @@ class Movie extends Model
             // Convert zero values to null for numeric fields
             $numericFields = ['budget', 'revenue', 'runtime', 'vote_average'];
             foreach ($numericFields as $field) {
-                if (isset($data[$field]) && (int)$data[$field] === 0) {
+                if (isset($data[$field]) && (int) $data[$field] === 0) {
                     $data[$field] = null;
                 }
             }
-
 
             return [
                 'id' => $data['id'],
@@ -333,7 +335,7 @@ class Movie extends Model
                     'crew' => $this->crew,
                 ],
                 'certification' => $this->getUSCertification(),
-                'similar' => $this->getSimilarMovies()
+                'similar' => $this->getSimilarMovies(),
             ];
         });
     }
@@ -343,26 +345,26 @@ class Movie extends Model
         $details = [];
 
         foreach (['budget', 'revenue'] as $field) {
-            if (isset($this->data[$field]) && (int)$this->data[$field] > 0) {
+            if (isset($this->data[$field]) && (int) $this->data[$field] > 0) {
                 $details[$field] = $this->data[$field];
             }
         }
 
         $crewByJob = collect($this->data['credits']['crew'] ?? [])
-            ->filter(fn($crew) => in_array($crew['job'], [
+            ->filter(fn ($crew) => in_array($crew['job'], [
                 'Director',
                 'Original Story',
                 'Writer',
                 'Novel',
                 'Screenplay',
-                'Producer'
+                'Producer',
             ]))
             ->groupBy('job');
 
         foreach ($crewByJob as $job => $members) {
             $key = match ($job) {
                 'Original Story' => 'original_stories',
-                default => strtolower($job) . 's'
+                default => strtolower($job).'s'
             };
             $details[$key] = $members->pluck('name')->implode(', ');
         }
@@ -386,7 +388,7 @@ class Movie extends Model
                             'provider_id' => $provider['provider_id'],
                             'provider_name' => $provider['provider_name'],
                             'logo_path' => $provider['logo_path'],
-                            'link' => $countryData['link']
+                            'link' => $countryData['link'],
                         ];
                     });
                 })
@@ -399,7 +401,7 @@ class Movie extends Model
     {
         $countryData = $this->data['watch/providers']['results'][$countryCode] ?? null;
 
-        if (!$countryData || !isset($countryData['flatrate'])) {
+        if (! $countryData || ! isset($countryData['flatrate'])) {
             return [];
         }
 
@@ -410,7 +412,7 @@ class Movie extends Model
                     'provider_id' => $provider['provider_id'],
                     'provider_name' => $provider['provider_name'],
                     'logo_path' => $provider['logo_path'],
-                    'link' => $countryData['link']
+                    'link' => $countryData['link'],
                 ];
             })
             ->values()

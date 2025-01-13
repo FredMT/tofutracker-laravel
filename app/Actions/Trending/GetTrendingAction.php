@@ -8,16 +8,20 @@ use App\Models\AnimeMap;
 use App\Models\Movie;
 use App\Models\TvShow;
 use App\Services\TmdbService;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
-use Carbon\Carbon;
 
 class GetTrendingAction
 {
     private array $movies = [];
+
     private array $tvShows = [];
+
     private array $anime = [];
+
     private array $genreMap;
+
     private array $ignoredIds;
 
     public function __construct(
@@ -54,7 +58,7 @@ class GetTrendingAction
                     $this->processItem($item, $animeMapIds);
                 }
 
-                if (!isset($trendingData['results']) || empty($trendingData['results'])) {
+                if (! isset($trendingData['results']) || empty($trendingData['results'])) {
                     break;
                 }
             }
@@ -62,7 +66,7 @@ class GetTrendingAction
             return [
                 'movies' => array_slice($this->movies, 0, 10),
                 'tv_shows' => array_slice($this->tvShows, 0, 10),
-                'anime' => array_slice($this->anime, 0, 10)
+                'anime' => array_slice($this->anime, 0, 10),
             ];
         });
     }
@@ -83,6 +87,7 @@ class GetTrendingAction
             if (count($this->anime) < 10) {
                 $this->anime[] = $this->formatAnimeItem($item, $animeMapIds[$tmdbId]);
             }
+
             return;
         }
 
@@ -109,7 +114,7 @@ class GetTrendingAction
             'vote_average' => $item['vote_average'],
             'popularity' => $item['popularity'],
             'link' => $item['id'],
-            'type' => 'movie'
+            'type' => 'movie',
         ];
     }
 
@@ -128,7 +133,7 @@ class GetTrendingAction
             'popularity' => $item['popularity'],
             'vote_average' => $item['vote_average'],
             'link' => $item['id'],
-            'type' => 'tv'
+            'type' => 'tv',
         ];
     }
 
@@ -153,14 +158,14 @@ class GetTrendingAction
             'popularity' => $item['popularity'],
             'vote_average' => $item['vote_average'],
             'link' => $animeMapId,
-            'type' => 'anime'
+            'type' => 'anime',
         ];
     }
 
     private function getGenreNames(array $genreIds): array
     {
         return array_map(
-            fn($id) => $this->genreMap[$id] ?? null,
+            fn ($id) => $this->genreMap[$id] ?? null,
             $genreIds
         );
     }
@@ -169,7 +174,7 @@ class GetTrendingAction
     {
         $movie = Movie::find($movieId);
 
-        if (!$movie) {
+        if (! $movie) {
             Bus::dispatchSync(new UpdateOrCreateMovieData($movieId));
             $movie = Movie::find($movieId);
         }
@@ -181,7 +186,7 @@ class GetTrendingAction
     {
         $show = TvShow::find($tvId);
 
-        if (!$show) {
+        if (! $show) {
             $show = $this->tvShowActions->getShowAndQueueUpdateIfNeeded($tvId);
         }
 

@@ -20,7 +20,7 @@ class PasswordResetLinkController extends Controller
     {
         return Inertia::render('Auth/ForgotPassword', [
             'status' => session('status'),
-            'backdropImage' => app(TmdbService::class)->getRandomTrendingBackdropImage()
+            'backdropImage' => app(TmdbService::class)->getRandomTrendingBackdropImage(),
 
         ]);
     }

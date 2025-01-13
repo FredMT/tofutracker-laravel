@@ -14,12 +14,12 @@ class UserMovie extends Model
         'movie_id',
         'user_library_id',
         'watch_status',
-        'rating'
+        'rating',
     ];
 
     protected $casts = [
         'watch_status' => WatchStatus::class,
-        'rating' => 'float'
+        'rating' => 'float',
     ];
 
     public function user(): BelongsTo

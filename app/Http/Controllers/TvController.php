@@ -9,7 +9,6 @@ use App\Services\TmdbService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Support\Facades\DB;
 
 class TvController extends Controller
 {
@@ -24,7 +23,7 @@ class TvController extends Controller
 
         $userLibrary = null;
         $userLists = null;
-        
+
         if ($request->user()) {
             $userLibrary = UserTvShow::where([
                 'user_id' => $request->user()->id,
@@ -36,7 +35,7 @@ class TvController extends Controller
                 ->select('id', 'title')
                 ->withExists(['items as has_item' => function ($query) use ($id) {
                     $query->where('listable_type', TvShow::class)
-                          ->where('listable_id', $id);
+                        ->where('listable_id', $id);
                 }])
                 ->get();
 
@@ -49,7 +48,7 @@ class TvController extends Controller
             'data' => $tvShowData,
             'user_library' => $userLibrary,
             'user_lists' => $userLists,
-            'type' => 'tv'
+            'type' => 'tv',
         ]);
     }
 }

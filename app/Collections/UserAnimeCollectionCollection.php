@@ -3,16 +3,14 @@
 namespace App\Collections;
 
 use App\Enums\WatchStatus;
-use App\Models\AnimeChainEntry;
 use App\Models\AnimeEpisodeMapping;
 use App\Models\UserAnimeEpisode;
-use App\Services\TmdbService;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Str;
-use DateTime;
 use Carbon\Carbon;
+use DateTime;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class UserAnimeCollectionCollection extends Collection
 {
@@ -22,6 +20,7 @@ class UserAnimeCollectionCollection extends Collection
     {
         $animeMap = $userAnimeCollection->animeMap;
         $cacheKey = "tmdb_data_{$animeMap->tmdb_type}_{$animeMap->most_common_tmdb_id}";
+
         return Cache::get($cacheKey);
     }
 
@@ -72,16 +71,16 @@ class UserAnimeCollectionCollection extends Collection
             $anidbId = $userAnimeToAnidb[$stat->user_anime_id];
             $this->episodeStatsCache[$stat->user_anime_id] = [
                 'total_episodes' => $totalEpisodes[$anidbId] ?? 0,
-                'watched_episodes' => $stat->watched
+                'watched_episodes' => $stat->watched,
             ];
         });
 
         // Add entries for animes with no watched episodes
         $userAnimes->each(function ($userAnime) use ($totalEpisodes) {
-            if (!isset($this->episodeStatsCache[$userAnime->id])) {
+            if (! isset($this->episodeStatsCache[$userAnime->id])) {
                 $this->episodeStatsCache[$userAnime->id] = [
                     'total_episodes' => $totalEpisodes[$userAnime->anidb_id] ?? 0,
-                    'watched_episodes' => 0
+                    'watched_episodes' => 0,
                 ];
             }
         });
@@ -91,7 +90,7 @@ class UserAnimeCollectionCollection extends Collection
     {
         return $this->episodeStatsCache[$userAnime->id] ?? [
             'total_episodes' => 0,
-            'watched_episodes' => 0
+            'watched_episodes' => 0,
         ];
     }
 
@@ -126,7 +125,7 @@ class UserAnimeCollectionCollection extends Collection
             'added_at' => $userAnime->created_at->format('j F, Y'),
             'total_episodes' => $animeEpisodeStats['total_episodes'],
             'watched_episodes' => $animeEpisodeStats['watched_episodes'],
-            'sequence_order' => $entry->sequence_order ?? 0
+            'sequence_order' => $entry->sequence_order ?? 0,
         ];
     }
 
@@ -142,7 +141,7 @@ class UserAnimeCollectionCollection extends Collection
 
         return $this->filter(function ($userAnimeCollection) use ($genreIds) {
             $tmdbData = $this->getTmdbData($userAnimeCollection);
-            if (!$tmdbData) {
+            if (! $tmdbData) {
                 return false;
             }
 
@@ -150,13 +149,13 @@ class UserAnimeCollectionCollection extends Collection
                 ->pluck('id')
                 ->toArray();
 
-            return !empty(array_intersect($genreIds, $itemGenres));
+            return ! empty(array_intersect($genreIds, $itemGenres));
         });
     }
 
     public function filterByStatus(?string $status): self
     {
-        if (empty($status) || !WatchStatus::tryFrom($status)) {
+        if (empty($status) || ! WatchStatus::tryFrom($status)) {
             return $this;
         }
 
@@ -173,7 +172,7 @@ class UserAnimeCollectionCollection extends Collection
 
         return $this->filter(function ($userAnimeCollection) use ($searchTerms) {
             $tmdbData = $this->getTmdbData($userAnimeCollection);
-            if (!$tmdbData) {
+            if (! $tmdbData) {
                 return false;
             }
 
@@ -198,6 +197,7 @@ class UserAnimeCollectionCollection extends Collection
         if ($from->format('Y-m-d') === $to->format('Y-m-d')) {
             return $this->filter(function ($userAnimeCollection) use ($from) {
                 $createdAt = new DateTime($userAnimeCollection->created_at);
+
                 return $createdAt->format('Y-m-d') === $from->format('Y-m-d');
             });
         }
@@ -205,6 +205,7 @@ class UserAnimeCollectionCollection extends Collection
         // Filter for date range
         return $this->filter(function ($userAnimeCollection) use ($from, $to) {
             $createdAt = new DateTime($userAnimeCollection->created_at);
+
             return $createdAt >= $from && $createdAt <= $to;
         });
     }
@@ -232,11 +233,11 @@ class UserAnimeCollectionCollection extends Collection
             'animeMap.relatedEntries.anime',
             'animeMap.chains' => function ($query) {
                 $query->withCount('entries');
-            }
+            },
         ]);
 
         return $this->map(function ($userAnimeCollection) {
-            if (!$userAnimeCollection->relationLoaded('animeMap')) {
+            if (! $userAnimeCollection->relationLoaded('animeMap')) {
                 throw new \RuntimeException('AnimeMap relationship not loaded. Lazy loading is disabled.');
             }
 
@@ -258,13 +259,13 @@ class UserAnimeCollectionCollection extends Collection
             // Process chain entries once
             if ($userAnimeCollection->animeMap) {
                 $userAnimeCollection->animeMap->chains->each(function ($chain) use ($userAnimeCollection, &$movies, &$chainSeasons) {
-                    if (!$chain->relationLoaded('entries')) {
+                    if (! $chain->relationLoaded('entries')) {
                         throw new \RuntimeException('Chain entries relationship not loaded. Lazy loading is disabled.');
                     }
 
                     $entries = $chain->entries
                         ->map(function ($entry) use ($userAnimeCollection, &$movies) {
-                            if (!$entry->relationLoaded('anime')) {
+                            if (! $entry->relationLoaded('anime')) {
                                 throw new \RuntimeException('Chain entry anime relationship not loaded. Lazy loading is disabled.');
                             }
 
@@ -272,7 +273,7 @@ class UserAnimeCollectionCollection extends Collection
                                 ->where('anidb_id', $entry->anime_id)
                                 ->first();
 
-                            if (!$userAnime) {
+                            if (! $userAnime) {
                                 return null;
                             }
 
@@ -281,6 +282,7 @@ class UserAnimeCollectionCollection extends Collection
 
                             if ($this->isStandaloneMovie($userAnimeCollection, $userAnime)) {
                                 $movies->push($formattedEntry);
+
                                 return null;
                             }
 
@@ -295,7 +297,7 @@ class UserAnimeCollectionCollection extends Collection
                             'name' => $chain->name,
                             'importance_order' => $chain->importance_order,
                             'entries' => $entries,
-                            'type' => 'chain'
+                            'type' => 'chain',
                         ]);
                     }
                 });
@@ -308,7 +310,7 @@ class UserAnimeCollectionCollection extends Collection
                     $relatedEntries = $userAnimeCollection->animeMap->relatedEntries
                         ->whereNotIn('anime_id', $chainAnimeIds)
                         ->map(function ($entry) use ($userAnimeCollection, &$movies) {
-                            if (!$entry->relationLoaded('anime')) {
+                            if (! $entry->relationLoaded('anime')) {
                                 throw new \RuntimeException('Related entry anime relationship not loaded. Lazy loading is disabled.');
                             }
 
@@ -316,7 +318,7 @@ class UserAnimeCollectionCollection extends Collection
                                 ->where('anidb_id', $entry->anime_id)
                                 ->first();
 
-                            if (!$userAnime) {
+                            if (! $userAnime) {
                                 return null;
                             }
 
@@ -325,6 +327,7 @@ class UserAnimeCollectionCollection extends Collection
 
                             if ($this->isStandaloneMovie($userAnimeCollection, $userAnime)) {
                                 $movies->push($formattedEntry);
+
                                 return null;
                             }
 
@@ -339,7 +342,7 @@ class UserAnimeCollectionCollection extends Collection
                             'name' => 'Related Entries',
                             'importance_order' => 9999,
                             'entries' => $relatedEntries,
-                            'type' => 'related'
+                            'type' => 'related',
                         ]);
                     }
                 }
@@ -379,7 +382,7 @@ class UserAnimeCollectionCollection extends Collection
                     'genres' => collect($tmdbData['genres'] ?? [])->map(function ($genre) {
                         return [
                             'id' => $genre['id'],
-                            'name' => $genre['name']
+                            'name' => $genre['name'],
                         ];
                     })->values()->all(),
                     'seasons' => $seasons,

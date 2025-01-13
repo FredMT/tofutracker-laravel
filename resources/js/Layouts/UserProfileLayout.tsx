@@ -1,7 +1,7 @@
 import ResponsiveContainer from "@/Components/ResponsiveContainer";
 import UserBanner from "@/Components/UserProfile/UserBanner";
 import UserProfileInfo from "@/Components/UserProfile/UserProfileInfo";
-import { Box, Space } from "@mantine/core";
+import { Box, Divider, Space } from "@mantine/core";
 import { PropsWithChildren } from "react";
 
 interface UserData {
@@ -34,6 +34,7 @@ export default function UserProfileLayout({
                         username={userData.username}
                         createdAt={userData.created_at}
                     />
+                    <Divider my={16} />
                     {children}
                 </ResponsiveContainer>
             </Box>

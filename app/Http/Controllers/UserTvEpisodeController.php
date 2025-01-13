@@ -2,21 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Tv\Plays\DeleteUserTvPlayAction;
+use App\Models\UserTvEpisode;
+use App\Pipeline\Shared\UpdateShowStatus;
+use App\Pipeline\TV\EnsureUserTvLibrary;
+use App\Pipeline\TV\EnsureUserTvShow;
+use App\Pipeline\UserTvEpisode\CreateUserTvEpisode;
+use App\Pipeline\UserTvEpisode\CreateUserTvEpisodePlay;
+use App\Pipeline\UserTvEpisode\EnsureTvShowExists;
+use App\Pipeline\UserTvEpisode\EnsureUserTvSeason;
+use App\Pipeline\UserTvEpisode\UpdateSeasonStatus;
+use App\Pipeline\UserTvEpisode\ValidateEpisodeRelations;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Pipeline;
-use App\Pipeline\TV\EnsureUserTvLibrary;
-use App\Pipeline\TV\EnsureUserTvShow;
-use App\Pipeline\Shared\UpdateShowStatus;
-use App\Pipeline\UserTvEpisode\ValidateEpisodeRelations;
-use App\Pipeline\UserTvEpisode\EnsureTvShowExists;
-use App\Pipeline\UserTvEpisode\EnsureUserTvSeason;
-use App\Pipeline\UserTvEpisode\CreateUserTvEpisode;
-use App\Pipeline\UserTvEpisode\CreateUserTvEpisodePlay;
-use App\Pipeline\UserTvEpisode\UpdateSeasonStatus;
-use App\Models\UserTvEpisode;
-use App\Actions\Tv\Plays\DeleteUserTvPlayAction;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class UserTvEpisodeController extends Controller
 {
@@ -59,11 +59,12 @@ class UserTvEpisodeController extends Controller
                     });
             });
         } catch (\Exception $e) {
-            logger()->error('Failed to add episode to library: ' . $e->getMessage());
+            logger()->error('Failed to add episode to library: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
+
             return back()->with([
                 'success' => false,
-                'message' => "An error occurred while adding episode to library",
+                'message' => 'An error occurred while adding episode to library',
             ]);
         }
     }
@@ -95,24 +96,25 @@ class UserTvEpisodeController extends Controller
 
                 return back()->with([
                     'success' => true,
-                    'message' => "Episode removed from your library",
+                    'message' => 'Episode removed from your library',
                 ]);
             });
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return back()->with([
                 'success' => false,
-                'message' => "Episode not found in your library",
+                'message' => 'Episode not found in your library',
             ]);
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             return back()->with([
                 'success' => false,
-                'message' => "You are not authorized to remove this episode",
+                'message' => 'You are not authorized to remove this episode',
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to remove episode from library: ' . $e->getMessage());
+            logger()->error('Failed to remove episode from library: '.$e->getMessage());
+
             return back()->with([
                 'success' => false,
-                'message' => "An error occurred while removing episode from library",
+                'message' => 'An error occurred while removing episode from library',
             ]);
         }
     }

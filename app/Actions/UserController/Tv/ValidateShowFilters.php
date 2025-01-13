@@ -12,8 +12,8 @@ class ValidateShowFilters
     {
         $errors = [];
 
-        if ($request->filled('status') && !WatchStatus::tryFrom($request->status)) {
-            $errors['status'] = 'Invalid watch status. Valid statuses are: ' . implode(', ', array_column(WatchStatus::cases(), 'value'));
+        if ($request->filled('status') && ! WatchStatus::tryFrom($request->status)) {
+            $errors['status'] = 'Invalid watch status. Valid statuses are: '.implode(', ', array_column(WatchStatus::cases(), 'value'));
         }
 
         if ($request->filled('genres')) {
@@ -26,10 +26,10 @@ class ValidateShowFilters
 
             if ($genreIds->isNotEmpty()) {
                 $validGenres = config('genres');
-                $invalidGenres = $genreIds->filter(fn($id) => !isset($validGenres[$id]));
+                $invalidGenres = $genreIds->filter(fn ($id) => ! isset($validGenres[$id]));
 
                 if ($invalidGenres->isNotEmpty()) {
-                    $errors['genres'] = 'Invalid genre IDs: ' . $invalidGenres->implode(', ');
+                    $errors['genres'] = 'Invalid genre IDs: '.$invalidGenres->implode(', ');
                 }
             } else {
                 $errors['genres'] = 'Genre IDs must be numeric values';

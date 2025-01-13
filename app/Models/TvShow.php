@@ -3,20 +3,20 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Model;
 
 class TvShow extends Model
 {
-
     protected $table = 'tv_shows';
+
     protected $fillable = ['id', 'data', 'etag'];
 
     public $incrementing = false;
 
     protected $casts = [
         'data' => 'array',
-        'updated_at' => 'datetime'
+        'updated_at' => 'datetime',
     ];
 
     public function title(): Attribute
@@ -49,7 +49,7 @@ class TvShow extends Model
             return collect($this->data['genres'] ?? [])->map(function ($genre) {
                 return [
                     'id' => $genre['id'],
-                    'name' => $genre['name']
+                    'name' => $genre['name'],
                 ];
             })->values();
         });
@@ -123,6 +123,7 @@ class TvShow extends Model
                 ->take(50)
                 ->map(function ($cast) {
                     $role = collect($cast['roles'] ?? [])->first();
+
                     return [
                         'id' => $cast['id'],
                         'name' => $cast['name'],
@@ -146,7 +147,7 @@ class TvShow extends Model
                 'Screenplay',
                 'Producer',
                 'Executive Producer',
-                'Showrunner'
+                'Showrunner',
             ];
 
             $crewCollection = collect($this->data['aggregate_credits']['crew'] ?? []);
@@ -161,7 +162,7 @@ class TvShow extends Model
 
             $additionalCrew = $crewCollection
                 ->filter(function ($crew) use ($importantJobs) {
-                    return !collect($crew['jobs'] ?? [])->contains(function ($job) use ($importantJobs) {
+                    return ! collect($crew['jobs'] ?? [])->contains(function ($job) use ($importantJobs) {
                         return in_array($job['job'], $importantJobs);
                     });
                 })
@@ -172,6 +173,7 @@ class TvShow extends Model
                 ->groupBy('id')
                 ->map(function ($groupedCrew) {
                     $firstCrew = $groupedCrew->first();
+
                     return [
                         'id' => $firstCrew['id'],
                         'name' => $firstCrew['name'],
@@ -205,10 +207,10 @@ class TvShow extends Model
 
         return collect($similarShows)
             ->filter(function ($show) {
-                return !empty($show['poster_path']) &&
-                    !empty($show['vote_average']) &&
-                    !empty($show['name']) &&
-                    !empty($show['first_air_date']);
+                return ! empty($show['poster_path']) &&
+                    ! empty($show['vote_average']) &&
+                    ! empty($show['name']) &&
+                    ! empty($show['first_air_date']);
             })
             ->map(function ($show) {
                 return [
@@ -216,7 +218,7 @@ class TvShow extends Model
                     'title' => $show['name'],
                     'poster_path' => $show['poster_path'],
                     'vote_average' => $show['vote_average'],
-                    'release_date' => $show['first_air_date']
+                    'release_date' => $show['first_air_date'],
                 ];
             })
             ->values()
@@ -237,7 +239,7 @@ class TvShow extends Model
             // Convert zero values to null for numeric fields
             $numericFields = ['vote_average', 'number_of_episodes', 'number_of_seasons'];
             foreach ($numericFields as $field) {
-                if (isset($data[$field]) && (int)$data[$field] === 0) {
+                if (isset($data[$field]) && (int) $data[$field] === 0) {
                     $data[$field] = null;
                 }
             }
@@ -313,26 +315,26 @@ class TvShow extends Model
         }
 
         // Add creators
-        if (!empty($this->data['created_by'])) {
+        if (! empty($this->data['created_by'])) {
             $details['creators'] = collect($this->data['created_by'])
                 ->pluck('name')
                 ->implode(', ');
         }
 
         // Add status
-        if (!empty($this->data['status'])) {
+        if (! empty($this->data['status'])) {
             $details['status'] = $this->data['status'];
         }
 
         // Add production companies
-        if (!empty($this->data['production_companies'])) {
+        if (! empty($this->data['production_companies'])) {
             $details['production_companies'] = collect($this->data['production_companies'])
                 ->pluck('name')
                 ->implode(', ');
         }
 
         // Add networks
-        if (!empty($this->data['networks'])) {
+        if (! empty($this->data['networks'])) {
             $details['networks'] = collect($this->data['networks'])
                 ->pluck('name')
                 ->implode(', ');
@@ -341,12 +343,11 @@ class TvShow extends Model
         return $details;
     }
 
-
     private function getNetwork(): ?array
     {
         $network = collect($this->data['networks'] ?? [])->first();
 
-        if (!$network) {
+        if (! $network) {
             return null;
         }
 
@@ -374,7 +375,7 @@ class TvShow extends Model
                             'provider_id' => $provider['provider_id'],
                             'provider_name' => $provider['provider_name'],
                             'logo_path' => $provider['logo_path'],
-                            'link' => $countryData['link']
+                            'link' => $countryData['link'],
                         ];
                     });
                 })
@@ -387,7 +388,7 @@ class TvShow extends Model
     {
         $countryData = $this->data['watch/providers']['results'][$countryCode] ?? null;
 
-        if (!$countryData || !isset($countryData['flatrate'])) {
+        if (! $countryData || ! isset($countryData['flatrate'])) {
             return [];
         }
 
@@ -398,7 +399,7 @@ class TvShow extends Model
                     'provider_id' => $provider['provider_id'],
                     'provider_name' => $provider['provider_name'],
                     'logo_path' => $provider['logo_path'],
-                    'link' => $countryData['link']
+                    'link' => $countryData['link'],
                 ];
             })
             ->values()

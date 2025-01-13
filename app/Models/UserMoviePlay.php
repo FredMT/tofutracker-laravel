@@ -11,11 +11,11 @@ class UserMoviePlay extends Model
         'user_movie_id',
         'user_id',
         'movie_id',
-        'watched_at'
+        'watched_at',
     ];
 
     protected $casts = [
-        'watched_at' => 'datetime'
+        'watched_at' => 'datetime',
     ];
 
     public function user(): BelongsTo

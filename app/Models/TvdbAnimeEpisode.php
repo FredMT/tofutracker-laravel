@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class TvdbAnimeEpisode extends Model
 {
     protected $table = 'tvdb_anime_episodes';
+
     public $timestamps = false;
+
     public $incrementing = false;
 
     protected $fillable = [

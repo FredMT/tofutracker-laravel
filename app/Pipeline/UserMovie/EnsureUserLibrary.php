@@ -2,8 +2,8 @@
 
 namespace App\Pipeline\UserMovie;
 
-use App\Models\UserLibrary;
 use App\Enums\MediaType;
+use App\Models\UserLibrary;
 use Closure;
 
 class EnsureUserLibrary

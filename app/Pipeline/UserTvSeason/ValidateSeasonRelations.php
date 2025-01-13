@@ -15,10 +15,10 @@ class ValidateSeasonRelations
             'show_id' => $payload['validated']['show_id'],
         ])->first();
 
-        if (!$season) {
+        if (! $season) {
             return back()->with([
                 'success' => false,
-                'message' => "Invalid season or show combination",
+                'message' => 'Invalid season or show combination',
             ]);
         }
 
@@ -26,7 +26,7 @@ class ValidateSeasonRelations
 
         $payload['season'] = $season;
         $payload['tv_show'] = $show;
-        $payload['season_title'] = $season->data['name'] ?? 'Season ' . $season->season_number;
+        $payload['season_title'] = $season->data['name'] ?? 'Season '.$season->season_number;
         $payload['show_title'] = $show->data['name'] ?? 'Unknown Show';
 
         return $next($payload);

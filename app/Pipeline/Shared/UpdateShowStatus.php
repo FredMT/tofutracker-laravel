@@ -5,7 +5,6 @@ namespace App\Pipeline\Shared;
 use App\Actions\Tv\Plays\CreateUserTvShowPlayAction;
 use App\Enums\WatchStatus;
 use App\Models\TvSeason;
-use App\Models\UserTvPlay;
 use App\Models\UserTvSeason;
 use App\Models\UserTvShow;
 use Closure;

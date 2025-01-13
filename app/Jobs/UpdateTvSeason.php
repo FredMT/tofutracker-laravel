@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Models\TvSeason;
 use App\Actions\Tv\TvShowActions;
+use App\Models\TvSeason;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -24,7 +24,7 @@ class UpdateTvSeason implements ShouldQueue
         try {
             $actions->updateTvSeason($this->season, $this->data);
         } catch (\Exception $e) {
-            logger()->error('Failed to update TV season: ' . $e->getMessage());
+            logger()->error('Failed to update TV season: '.$e->getMessage());
         }
     }
 }

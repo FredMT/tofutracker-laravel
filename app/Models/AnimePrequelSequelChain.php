@@ -10,7 +10,7 @@ class AnimePrequelSequelChain extends Model
     protected $fillable = [
         'map_id',
         'name',
-        'importance_order'
+        'importance_order',
     ];
 
     public function entries(): HasMany

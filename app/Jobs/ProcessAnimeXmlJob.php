@@ -40,8 +40,8 @@ class ProcessAnimeXmlJob implements ShouldQueue
                     $url = "http://api.anidb.net:9001/httpapi?request=anime&client={$client}&clientver=1&protover=1&aid={$this->animeId}";
 
                     $response = Http::get($url);
-                    if (!$response->successful()) {
-                        throw new \Exception("Failed to fetch anime XML: " . $response->status());
+                    if (! $response->successful()) {
+                        throw new \Exception('Failed to fetch anime XML: '.$response->status());
                     }
 
                     // Clean XML content
@@ -61,7 +61,7 @@ class ProcessAnimeXmlJob implements ShouldQueue
             3 // Every 3 seconds
         );
 
-        if (!$executed) {
+        if (! $executed) {
             $this->release(3);
         }
     }

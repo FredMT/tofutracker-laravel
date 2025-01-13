@@ -3,14 +3,12 @@
 namespace App\Jobs;
 
 use App\Exceptions\Tvdb\TvdbSyncException;
+use App\Services\TvdbService;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Models\TvdbAnimeSeason;
-use App\Services\TvdbService;
 
 class SyncTvdbAnimeData implements ShouldQueue
 {
@@ -20,8 +18,6 @@ class SyncTvdbAnimeData implements ShouldQueue
 
     /**
      * Create a new job instance.
-     *
-     * @param  int  $tvdbId
      */
     public function __construct(int $tvdbId)
     {
@@ -36,10 +32,10 @@ class SyncTvdbAnimeData implements ShouldQueue
         try {
             $tvdbService->syncTvdbAnimeData($this->tvdbId);
         } catch (TvdbSyncException $e) {
-            logger()->error('Error syncing TVDB anime data: ' . $e->getMessage());
+            logger()->error('Error syncing TVDB anime data: '.$e->getMessage());
         } catch (\Exception $e) {
             $this->fail($e);
-            logger()->error('Error syncing TVDB anime data: ' . $e->getMessage());
+            logger()->error('Error syncing TVDB anime data: '.$e->getMessage());
         }
     }
 }

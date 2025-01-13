@@ -2,8 +2,8 @@
 
 namespace App\Actions\TVDB;
 
-use App\Models\TvdbAnimeSeason;
 use App\Jobs\UpdateTvdbAnimeEpisodesJob;
+use App\Models\TvdbAnimeSeason;
 
 class UpdateTvdbAnimeEpisodesAction
 {

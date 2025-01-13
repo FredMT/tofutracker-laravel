@@ -23,6 +23,10 @@ class UserCustomList extends Model
         'is_public' => 'boolean',
     ];
 
+    protected $hidden = [
+        'user_id',
+    ];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

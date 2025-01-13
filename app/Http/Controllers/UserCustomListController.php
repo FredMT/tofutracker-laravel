@@ -7,38 +7,35 @@ use App\Models\UserCustomList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class UserCustomListController extends Controller
 {
-    public function index(string $username)
+    public function index(Request $request, string $username): Response
     {
-        $user = User::where('username', $username)->firstOrFail();
+        $user = User::where('username', $username)
+            ->firstOrFail();
+        $isOwnProfile = $request->user() && $request->user()->id === $user->id;
 
-        $lists = $user->customLists()
-            ->withCount('items')
-            ->latest()
-            ->paginate(20);
+        $userLists = null;
 
-        return Inertia::render('User/Lists/Index', [
-            'lists' => $lists,
-            'user' => $user
-        ]);
-    }
+        $userData = [
+            'id' => $user->id,
+            'username' => $user->username,
+            'created_at' => 'Joined '.$user->created_at->format('F Y'),
+            'avatar' => $user->avatar,
+            'banner' => $user->banner,
+            'bio' => $user->bio,
+        ];
 
-    public function show(string $username, UserCustomList $list)
-    {
-        Gate::authorize('view-custom-list', $list);
-
-        $user = User::where('username', $username)->firstOrFail();
-
-        if ($list->user_id !== $user->id) {
-            abort(404);
+        if ($isOwnProfile) {
+            $userData['mustVerifyEmail'] = ! $request->user()->hasVerifiedEmail();
+            $userLists = $user->customLists()->orderByDesc('created_at')->get();
+        } else {
+            $userLists = $user->customLists()->where('is_public', true)->orderByDesc('created_at')->get();
         }
 
-        return Inertia::render('User/Lists/Show', [
-            'list' => $list->load('items.listable'),
-            'user' => $user
-        ]);
+        return Inertia::render('UserCustomLists', ['userData' => $userData, 'userLists' => $userLists]);
     }
 
     public function store(Request $request)
@@ -54,10 +51,12 @@ class UserCustomListController extends Controller
                 'is_public' => 'boolean',
             ]);
             $request->user()->customLists()->create($validated);
+
             return back()->with(['success' => true, 'message' => 'List created successfully.']);
         } catch (\Exception $e) {
             logger()->error($e->getMessage());
             \Sentry\captureException($e);
+
             return back()->with(['success' => false, 'message' => 'Failed to create list.']);
         }
     }

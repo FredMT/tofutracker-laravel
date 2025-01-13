@@ -2,19 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Tv\Plays\CreateUserTvShowPlayAction;
+use App\Actions\Tv\Plays\DeleteUserTvShowPlayAction;
 use App\Enums\WatchStatus;
 use App\Models\UserTvShow;
 use App\Pipeline\TV\EnsureUserTvLibrary;
+use App\Pipeline\UserMovie\EnsureUserLibrary;
 use App\Pipeline\UserTvEpisode\EnsureTvShowExists;
+use App\Pipeline\UserTvShow\CompleteShow;
 use App\Pipeline\UserTvShow\CreateUserTvShow;
 use App\Pipeline\UserTvShow\CreateUserTvShowForRating;
-use App\Pipeline\UserTvShow\CompleteShow;
-use App\Pipeline\UserTvShow\UpdateShowWatchStatus;
 use App\Pipeline\UserTvShow\CreateUserTvShowWithStatus;
 use App\Pipeline\UserTvShow\EnsureShowExists;
-use App\Actions\Tv\Plays\DeleteUserTvShowPlayAction;
-use App\Actions\Tv\Plays\CreateUserTvShowPlayAction;
-use App\Pipeline\UserMovie\EnsureUserLibrary;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -53,10 +52,11 @@ class UserTvShowController extends Controller
                     });
             });
         } catch (\Exception $e) {
-            logger()->error('Failed to add show to library: ' . $e->getMessage());
+            logger()->error('Failed to add show to library: '.$e->getMessage());
+
             return back()->with([
                 'success' => false,
-                'message' => "An error occurred while adding show to library",
+                'message' => 'An error occurred while adding show to library',
             ]);
         }
     }
@@ -86,13 +86,13 @@ class UserTvShowController extends Controller
 
                 return back()->with([
                     'success' => true,
-                    'message' => "Show removed from your library",
+                    'message' => 'Show removed from your library',
                 ]);
             });
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return back()->with([
                 'success' => false,
-                'message' => "Show not found in your library",
+                'message' => 'Show not found in your library',
             ]);
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             return back()->with([
@@ -100,10 +100,11 @@ class UserTvShowController extends Controller
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to remove show from library: ' . $e->getMessage());
+            logger()->error('Failed to remove show from library: '.$e->getMessage());
+
             return back()->with([
                 'success' => false,
-                'message' => "An error occurred while removing show from library",
+                'message' => 'An error occurred while removing show from library',
             ]);
         }
     }
@@ -135,7 +136,7 @@ class UserTvShowController extends Controller
                     ]);
                 }
 
-                if (!$userShow) {
+                if (! $userShow) {
                     // If show doesn't exist, create new entries
                     return Pipeline::send([
                         'user' => $request->user(),
@@ -146,7 +147,7 @@ class UserTvShowController extends Controller
                             EnsureUserTvLibrary::class,
                             CreateUserTvShowForRating::class,
                         ])
-                        ->then(function ($payload) use ($validated) {
+                        ->then(function ($payload) {
                             return back()->with([
                                 'success' => true,
                                 'message' => "Show '{$payload['show_title']}' rated successfully",
@@ -159,7 +160,7 @@ class UserTvShowController extends Controller
 
                 return back()->with([
                     'success' => true,
-                    'message' => "Show rating updated successfully",
+                    'message' => 'Show rating updated successfully',
                 ]);
             });
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
@@ -168,10 +169,11 @@ class UserTvShowController extends Controller
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to rate show: ' . $e->getMessage());
+            logger()->error('Failed to rate show: '.$e->getMessage());
+
             return back()->with([
                 'success' => false,
-                'message' => "An error occurred while rating show",
+                'message' => 'An error occurred while rating show',
             ]);
         }
     }
@@ -216,7 +218,7 @@ class UserTvShowController extends Controller
 
                         return back()->with([
                             'success' => true,
-                            'message' => "Show marked as completed",
+                            'message' => 'Show marked as completed',
                         ]);
                     }
 
@@ -225,7 +227,7 @@ class UserTvShowController extends Controller
 
                     return back()->with([
                         'success' => true,
-                        'message' => "Show watch status updated",
+                        'message' => 'Show watch status updated',
                     ]);
                 }
 
@@ -280,11 +282,11 @@ class UserTvShowController extends Controller
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to update show watch status: ' . $e->getTraceAsString());
+            logger()->error('Failed to update show watch status: '.$e->getTraceAsString());
 
             return back()->with([
                 'success' => false,
-                'message' => "An error occurred while updating show watch status",
+                'message' => 'An error occurred while updating show watch status',
             ]);
         }
     }

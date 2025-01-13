@@ -2,11 +2,11 @@
 
 namespace App\Pipeline\UserMovie\Rate;
 
-use App\Models\UserMovie;
-use App\Models\UserLibrary;
-use App\Models\UserMoviePlay;
-use App\Enums\WatchStatus;
 use App\Enums\MediaType;
+use App\Enums\WatchStatus;
+use App\Models\UserLibrary;
+use App\Models\UserMovie;
+use App\Models\UserMoviePlay;
 use Closure;
 use Illuminate\Support\Facades\Gate;
 
@@ -24,13 +24,13 @@ class UpdateOrCreateUserMovie
             if (Gate::denies('rate-movie', $userMovie)) {
                 return back()->with([
                     'success' => false,
-                    'message' => "You are not authorized to rate this movie",
+                    'message' => 'You are not authorized to rate this movie',
                 ]);
             }
 
             // If movie exists, just update the rating
             $userMovie->update([
-                'rating' => $payload['validated']['rating']
+                'rating' => $payload['validated']['rating'],
             ]);
         } else {
             // Ensure user has a movie library

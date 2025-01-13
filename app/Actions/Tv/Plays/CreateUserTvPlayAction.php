@@ -5,7 +5,6 @@ namespace App\Actions\Tv\Plays;
 use App\Actions\Activity\CreateUserActivityAction;
 use App\Models\UserTvEpisode;
 use App\Models\UserTvPlay;
-use Illuminate\Database\Eloquent\Model;
 
 class CreateUserTvPlayAction
 {
@@ -16,7 +15,7 @@ class CreateUserTvPlayAction
     public function execute(UserTvEpisode $episode, ?\DateTime $watchedAt = null): UserTvPlay
     {
         // Ensure relationships are loaded
-        if (!$episode->relationLoaded('userTvSeason')) {
+        if (! $episode->relationLoaded('userTvSeason')) {
             $episode->load(['userTvSeason']);
         }
 
@@ -27,7 +26,7 @@ class CreateUserTvPlayAction
             'user_tv_episode_id' => $episode->id,
             'playable_id' => $episode->id,
             'playable_type' => get_class($episode),
-            'watched_at' => $watchedAt ?? now()
+            'watched_at' => $watchedAt ?? now(),
         ]);
 
         // Record activity

@@ -13,7 +13,7 @@ class GetMostCommonTmdbId
     public function execute($mapId)
     {
         return Cache::remember(
-            'most_common_tmdb_id_' . $mapId,
+            'most_common_tmdb_id_'.$mapId,
             now()->addMonth(),
             function () use ($mapId) {
                 // Try to fetch the AnimeMap record with the most_common_tmdb_id
@@ -22,7 +22,7 @@ class GetMostCommonTmdbId
                 if ($animeMap && $animeMap->most_common_tmdb_id) {
                     return [
                         'most_common_tmdb_id' => $animeMap->most_common_tmdb_id,
-                        'tmdb_type' => $animeMap->tmdb_type
+                        'tmdb_type' => $animeMap->tmdb_type,
                     ];
                 }
 
@@ -33,7 +33,7 @@ class GetMostCommonTmdbId
                 );
 
                 $types = AnidbAnime::whereIn('id', $allIds)->pluck('type')->toArray();
-                $isMovie = collect($types)->every(fn($type) => $type === 'Movie');
+                $isMovie = collect($types)->every(fn ($type) => $type === 'Movie');
                 $type = $isMovie ? 'movie' : 'tv';
 
                 $tmdbIds = AnimeMappingExternalId::whereIn('anidb_id', $allIds)
@@ -65,7 +65,7 @@ class GetMostCommonTmdbId
 
                 return [
                     'most_common_tmdb_id' => $mostCommonTmdbId,
-                    'tmdb_type' => $type
+                    'tmdb_type' => $type,
                 ];
             }
         );

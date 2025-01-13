@@ -4,13 +4,12 @@ namespace App\Policies;
 
 use App\Models\User;
 use App\Models\UserTvSeason;
-use Illuminate\Auth\Access\Response;
 
 class UserTvSeasonPolicy
 {
     public function watch_status(User $user, ?UserTvSeason $userSeason = null): bool
     {
-        if (!$userSeason) {
+        if (! $userSeason) {
             return true;
         }
 

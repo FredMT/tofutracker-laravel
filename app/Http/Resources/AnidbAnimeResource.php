@@ -22,7 +22,7 @@ class AnidbAnimeResource extends JsonResource
                 $month >= 7 && $month <= 9 => 'Summer',
                 default => 'Fall'
             };
-            $season .= ' ' . $startDate->year;
+            $season .= ' '.$startDate->year;
         }
 
         return [
@@ -32,7 +32,7 @@ class AnidbAnimeResource extends JsonResource
             'season' => $season,
             'title' => $this->title_main,
             'rating' => $this->rating == 0.00 ? null : $this->rating,
-            'picture' => "https://anidb.net/images/main/{$this->picture}"
+            'picture' => "https://anidb.net/images/main/{$this->picture}",
         ];
     }
 }

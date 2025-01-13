@@ -18,7 +18,7 @@ class UpdateUserAnimeMovieWithWatchStatus
             })
             ->first();
 
-        if (!$collection) {
+        if (! $collection) {
             return $next($payload);
         }
 
@@ -26,7 +26,7 @@ class UpdateUserAnimeMovieWithWatchStatus
             ->where('anidb_id', $payload['validated']['anidb_id'])
             ->first();
 
-        if (!$userAnime) {
+        if (! $userAnime) {
             return $next($payload);
         }
 

@@ -3,24 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Anime\Plays\DeleteUserAnimePlayAction;
+use App\Enums\WatchStatus;
+use App\Models\UserAnime;
 use App\Pipeline\UserAnime\EnsureUserAnimeLibrary;
-use App\Pipeline\UserAnimeSeason\CreateUserAnimeSeasonCollection;
 use App\Pipeline\UserAnimeSeason\CreateUserAnimeSeason;
+use App\Pipeline\UserAnimeSeason\CreateUserAnimeSeasonCollection;
+use App\Pipeline\UserAnimeSeason\CreateUserAnimeSeasonEpisodes;
+use App\Pipeline\UserAnimeSeason\CreateUserAnimeSeasonWatchStatusCollection;
+use App\Pipeline\UserAnimeSeason\UpdateUserAnimeCollectionWatchStatus;
+use App\Pipeline\UserAnimeSeason\UpdateUserAnimeSeasonWatchStatus;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Pipeline;
-use Illuminate\Auth\Access\AuthorizationException;
-use App\Models\UserAnime;
 use Illuminate\Support\Facades\Gate;
-use App\Enums\WatchStatus;
+use Illuminate\Support\Facades\Pipeline;
 use Illuminate\Validation\Rule;
-use App\Pipeline\UserAnimeSeason\CreateUserAnimeSeasonWatchStatusCollection;
-use App\Pipeline\UserAnimeSeason\UpdateUserAnimeSeasonWatchStatus;
-use App\Pipeline\UserAnimeSeason\CreateUserAnimeSeasonEpisodes;
-use App\Pipeline\UserAnimeSeason\UpdateUserAnimeCollectionWatchStatus;
-use App\Models\UserAnimePlay;
-use App\Models\UserAnimeCollection;
 
 class UserAnimeSeasonController extends Controller
 {
@@ -33,9 +31,6 @@ class UserAnimeSeasonController extends Controller
 
     /**
      * Store a new anime season in the user's library.
-     *
-     * @param Request $request
-     * @return RedirectResponse
      */
     public function store(Request $request): RedirectResponse
     {
@@ -43,7 +38,6 @@ class UserAnimeSeasonController extends Controller
             'map_id' => ['required', 'integer', 'exists:anime_maps,id'],
             'anidb_id' => ['required', 'integer', 'exists:anidb_anime,id'],
         ]);
-
 
         try {
             return DB::transaction(function () use ($validated, $request): RedirectResponse {
@@ -55,30 +49,28 @@ class UserAnimeSeasonController extends Controller
                         EnsureUserAnimeLibrary::class,
                         CreateUserAnimeSeasonCollection::class,
                         CreateUserAnimeSeason::class,
-                        UpdateUserAnimeCollectionWatchStatus::class
+                        UpdateUserAnimeCollectionWatchStatus::class,
                     ])
                     ->then(function () {
                         return back()->with([
                             'success' => true,
-                            'message' => "Anime season added to your library",
+                            'message' => 'Anime season added to your library',
                         ]);
                     });
             });
         } catch (\Exception $e) {
-            logger()->error('Failed to add anime season to library: ' . $e->getMessage());
+            logger()->error('Failed to add anime season to library: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
+
             return back()->with([
                 'success' => false,
-                'message' => "An error occurred while adding anime season to library",
+                'message' => 'An error occurred while adding anime season to library',
             ]);
         }
     }
 
     /**
      * Remove an anime season from the user's library.
-     *
-     * @param Request $request
-     * @return RedirectResponse
      */
     public function destroy(Request $request): RedirectResponse
     {
@@ -95,7 +87,7 @@ class UserAnimeSeasonController extends Controller
                     })
                     ->first();
 
-                if (!$season) {
+                if (! $season) {
                     return back()->with([
                         'success' => false,
                         'message' => 'Anime season not found in your library.',
@@ -126,8 +118,9 @@ class UserAnimeSeasonController extends Controller
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to remove anime season from library: ' . $e->getMessage());
+            logger()->error('Failed to remove anime season from library: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
+
             return back()->with([
                 'success' => false,
                 'message' => 'An error occurred while removing anime season from library.',
@@ -137,9 +130,6 @@ class UserAnimeSeasonController extends Controller
 
     /**
      * Rate an anime season in the user's library.
-     *
-     * @param Request $request
-     * @return RedirectResponse
      */
     public function rate(Request $request): RedirectResponse
     {
@@ -159,7 +149,7 @@ class UserAnimeSeasonController extends Controller
                     ->first();
 
                 // If no season exists, create new one with rating
-                if (!$season) {
+                if (! $season) {
                     if (Gate::denies('rate-anime', null)) {
                         throw new AuthorizationException('You are not authorized to rate this anime season.');
                     }
@@ -176,7 +166,7 @@ class UserAnimeSeasonController extends Controller
                         ->then(function () {
                             return back()->with([
                                 'success' => true,
-                                'message' => "Anime season added to your library with rating",
+                                'message' => 'Anime season added to your library with rating',
                             ]);
                         });
                 }
@@ -199,8 +189,9 @@ class UserAnimeSeasonController extends Controller
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to rate anime season: ' . $e->getMessage());
+            logger()->error('Failed to rate anime season: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
+
             return back()->with([
                 'success' => false,
                 'message' => 'An error occurred while rating anime season.',
@@ -210,9 +201,6 @@ class UserAnimeSeasonController extends Controller
 
     /**
      * Update watch status for an anime season.
-     *
-     * @param Request $request
-     * @return RedirectResponse
      */
     public function watch_status(Request $request): RedirectResponse
     {
@@ -268,8 +256,9 @@ class UserAnimeSeasonController extends Controller
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to update anime season watch status: ' . $e->getMessage());
+            logger()->error('Failed to update anime season watch status: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
+
             return back()->with([
                 'success' => false,
                 'message' => 'An error occurred while updating anime season watch status.',

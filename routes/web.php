@@ -3,12 +3,10 @@
 use App\Actions\Trending\GetTrendingAction;
 use App\Actions\Trending\GetTrendingGenresAndWatchProvidersAction;
 use App\Http\Controllers\AnimeController;
-use App\Http\Controllers\JsonSearchController;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuickSearchController;
 use App\Http\Controllers\SearchController;
-use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TvController;
 use App\Http\Controllers\TvSeasonController;
 use App\Http\Controllers\UserAnimeEpisodeController;
@@ -17,11 +15,11 @@ use App\Http\Controllers\UserAnimeSeasonController;
 use App\Http\Controllers\UserAnimeTvController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserCustomListController;
+use App\Http\Controllers\UserCustomListItemController;
 use App\Http\Controllers\UserMovieController;
 use App\Http\Controllers\UserTvEpisodeController;
 use App\Http\Controllers\UserTvSeasonController;
 use App\Http\Controllers\UserTvShowController;
-use App\Http\Controllers\UserCustomListItemController;
 use App\Http\Middleware\CheckAnimeMapping;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -35,9 +33,10 @@ Route::get('/', function () {
 })->name('welcome');
 
 Route::get('/me', function () {
-    if (!Auth::check()) {
+    if (! Auth::check()) {
         return redirect()->route('login');
     }
+
     return redirect()->route('user.profile', ['username' => Auth::user()->username]);
 })->name('me');
 
@@ -61,7 +60,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/settings/banner', [ProfileController::class, 'updateBanner'])->name('profile.banner');
     Route::patch('/settings/bio', [ProfileController::class, 'updateBio'])->name('profile.bio');
 
-   
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -78,7 +76,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('tv.episode.store');
     Route::delete('/tv/episode/{episode_id}', [UserTvEpisodeController::class, 'destroy'])
         ->name('tv.episode.destroy');
-
 
     Route::post('/tv/season/library', [UserTvSeasonController::class, 'store'])->name('tv.season.library.store');
     Route::delete('/tv/season/library', [UserTvSeasonController::class, 'destroy'])->name('tv.season.library.destroy');
@@ -112,13 +109,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/anime/episode/library', [UserAnimeEpisodeController::class, 'destroy'])
         ->name('anime.episode.destroy');
 
-
     Route::post('/user/lists', [UserCustomListController::class, 'store'])
-     ->name('user.lists.store');
+        ->name('user.lists.store');
     Route::patch('/user/lists/{list}', [UserCustomListController::class, 'update'])
-     ->name('user.lists.update');
+        ->name('user.lists.update');
     Route::delete('/user/lists/{list}', [UserCustomListController::class, 'destroy'])
-     ->name('user.lists.destroy');
+        ->name('user.lists.destroy');
 
     Route::post('/user/lists/items/store', [UserCustomListItemController::class, 'store'])
         ->name('user.lists.items.store');
@@ -130,7 +126,6 @@ Route::get('/movie/{id}', [MovieController::class, 'show'])
     ->where('id', '[0-9]+')
     ->middleware(CheckAnimeMapping::class)
     ->name('movie.show');
-
 
 Route::get('/tv/{id}', [TvController::class, 'show'])
     ->where('id', '[0-9]+')
@@ -147,6 +142,4 @@ Route::get('/anime/{id}/season/{seasonId}', [AnimeController::class, 'showSeason
 Route::get('/search', [SearchController::class, 'search'])->name('search');
 Route::get('/quicksearch', QuickSearchController::class)->name('quicksearch');
 
-
-
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

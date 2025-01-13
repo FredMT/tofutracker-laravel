@@ -33,7 +33,7 @@ class SyncAnimeEpisodeMappings implements ShouldQueue
         $season = TvdbAnimeSeason::where('id', $this->tvdbId)
             ->where('status_keep_updated', true)
             ->first();
-        if (!$season) {
+        if (! $season) {
             logger()->info(`Skipping episode mapping sync - status_keep_updated of {$this->tvdbId} is false or season not found`);
             $this->fail(new TvdbSyncException('Season not found', 0, null));
         }
@@ -41,7 +41,6 @@ class SyncAnimeEpisodeMappings implements ShouldQueue
         logger()->info(`Starting sync of anime episode mappings for {$this->anidbId} and {$this->tvdbId}`);
 
         $records = $this->prepareRecords();
-
 
         if (empty($records)) {
             $this->fail();
@@ -96,6 +95,7 @@ class SyncAnimeEpisodeMappings implements ShouldQueue
                 'updated_at' => $now,
             ];
         }
+
         return $records;
     }
 }

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Validator;
 class QuickSearchController extends Controller
 {
     private TmdbService $tmdbService;
+
     private const MAX_RESULTS = 5;
 
     public function __construct(TmdbService $tmdbService)
@@ -21,7 +22,7 @@ class QuickSearchController extends Controller
 
     public function __invoke(Request $request): JsonResponse
     {
-        if (!$request->has('q') || empty($request->query('q'))) {
+        if (! $request->has('q') || empty($request->query('q'))) {
             return response()->json([
                 'results' => [],
             ]);
@@ -36,7 +37,7 @@ class QuickSearchController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'results' => [],
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -56,7 +57,7 @@ class QuickSearchController extends Controller
 
             // Filter out person results and limit to MAX_RESULTS
             $results = collect($searchResults['results'])
-                ->filter(fn($item) => $item['media_type'] !== 'person')
+                ->filter(fn ($item) => $item['media_type'] !== 'person')
                 ->take(self::MAX_RESULTS)
                 ->map(function ($item) use ($genreMap, $animeMappings) {
                     $animeMapping = $animeMappings->get($item['id']);
@@ -74,19 +75,19 @@ class QuickSearchController extends Controller
                         'poster_path' => $item['poster_path'],
                         'genres' => isset($item['genre_ids'])
                             ? array_values(array_filter(
-                                array_map(fn($id) => $genreMap[$id] ?? null, $item['genre_ids'])
+                                array_map(fn ($id) => $genreMap[$id] ?? null, $item['genre_ids'])
                             ))
                             : [],
                     ];
                 });
 
             return response()->json([
-                'results' => $results
+                'results' => $results,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'results' => [],
-                'error' => 'An error occurred while processing your search'
+                'error' => 'An error occurred while processing your search',
             ], 500);
         }
     }
