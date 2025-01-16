@@ -1,10 +1,10 @@
-import {Button, Paper} from "@mantine/core";
-import {CheckCircle2, XCircle} from "lucide-react";
-import {useForm, usePage} from "@inertiajs/react";
-import {notifications} from "@mantine/notifications";
-import {AnimeSeasonUserLibrary} from "@/types";
-import {useState} from "react";
-import {AnimeSeason} from "@/types/animeseason";
+import { Button, Paper } from "@mantine/core";
+import { CheckCircle2, XCircle } from "lucide-react";
+import { useForm, usePage } from "@inertiajs/react";
+import { notifications } from "@mantine/notifications";
+import { AnimeSeasonUserLibrary } from "@/types";
+import { useState } from "react";
+import { AnimeSeason } from "@/types/animeseason";
 
 interface AnimeEpisodeActionsProps {
     episodal_id: number;
@@ -20,17 +20,17 @@ interface FormErrors {
 export default function AnimeEpisodeActions({
     episodal_id,
 }: AnimeEpisodeActionsProps) {
-    const { animeseason, user_library } = usePage<{
-        animeseason: AnimeSeason;
+    const { data, user_library } = usePage<{
+        data: AnimeSeason;
         user_library: AnimeSeasonUserLibrary;
     }>().props;
     const [isHovered, setIsHovered] = useState(false);
-    if (!animeseason) return null;
+    if (!data) return null;
 
     const form = useForm({
         tvdb_episode_id: episodal_id,
-        anidb_id: animeseason.id,
-        map_id: animeseason.map_id,
+        anidb_id: data.id,
+        map_id: data.map_id,
     });
 
     const isEpisodeWatched = user_library?.episodes?.some(
