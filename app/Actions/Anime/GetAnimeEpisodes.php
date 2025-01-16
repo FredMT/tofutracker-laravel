@@ -22,7 +22,6 @@ class GetAnimeEpisodes
     public function execute(int $anidbid): array
     {
         try {
-            // First try to get episodes from XML mapping
             $animeRecord = $this->getAnimeRecord($anidbid);
             $anime = $this->fetchAnimeFromXml($anidbid);
             $tvdbId = $this->validateTvdbId($anime, $anidbid);
@@ -98,8 +97,6 @@ class GetAnimeEpisodes
 
     private function enhanceWithEpisodeData(array $mapping, int $tvdbId): array
     {
-        $cacheKey = "anime_mapping_{$tvdbId}_";
-
         $tvdbService = app(TvdbService::class);
         $episodes = $tvdbService->getEpisodes($tvdbId);
 
