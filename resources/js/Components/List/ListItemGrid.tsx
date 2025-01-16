@@ -1,5 +1,5 @@
-import {Flex} from "@mantine/core";
-import {ListItem} from "@/types/listPage";
+import { Flex } from "@mantine/core";
+import { ListItem } from "@/types/listPage";
 import {
     closestCenter,
     defaultDropAnimationSideEffects,
@@ -12,10 +12,15 @@ import {
     useSensor,
     useSensors,
 } from "@dnd-kit/core";
-import {arrayMove, rectSortingStrategy, SortableContext, sortableKeyboardCoordinates,} from "@dnd-kit/sortable";
-import {useState} from "react";
-import {ListItemCard} from "@/Components/List/ListItemCard";
-import {SortableListItem} from "@/Components/List/SortableListItem";
+import {
+    arrayMove,
+    rectSortingStrategy,
+    SortableContext,
+    sortableKeyboardCoordinates,
+} from "@dnd-kit/sortable";
+import { useState } from "react";
+import { ListItemCard } from "@/Components/List/ListItemCard";
+import { SortableListItem } from "@/Components/List/SortableListItem";
 
 interface ListItemGridProps {
     items: ListItem[];
