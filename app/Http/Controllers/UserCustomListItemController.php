@@ -85,6 +85,8 @@ class UserCustomListItemController extends Controller
                 'sort_order' => $maxSortOrder + 1,
             ]);
 
+            $list->touch();
+
             return back()->with(['success' => true, 'message' => 'Item added to list successfully']);
         } catch (\Exception $e) {
             logger()->error($e->getMessage());
@@ -96,7 +98,6 @@ class UserCustomListItemController extends Controller
 
     public function destroy(Request $request)
     {
-
         $validated = $request->validate([
             'list_id' => 'required|integer|exists:user_custom_lists,id',
             'item_id' => 'required|integer',
@@ -108,13 +109,14 @@ class UserCustomListItemController extends Controller
         Gate::authorize('manage-custom-list-item', $list);
 
         try {
-
             $listableType = $this->getListableType($validated['item_type']);
 
             $list->items()
                 ->where('listable_type', $listableType)
                 ->where('listable_id', $validated['item_id'])
                 ->delete();
+
+            $list->touch();
 
             return back()->with(['success' => true, 'message' => 'Item removed from list successfully']);
         } catch (\Exception $e) {

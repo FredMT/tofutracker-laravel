@@ -1,9 +1,8 @@
-import { useContent } from "@/hooks/useContent";
-import {PageProps, TvSeason} from "@/types";
-import { useForm, usePage } from "@inertiajs/react";
-import { Button } from "@mantine/core";
-import { notifications } from "@mantine/notifications";
-import { Check, CircleAlertIcon, PlusCircle } from "lucide-react";
+import {TvSeason} from "@/types";
+import {useForm, usePage} from "@inertiajs/react";
+import {Button} from "@mantine/core";
+import {notifications} from "@mantine/notifications";
+import {Check, CircleAlertIcon, PlusCircle} from "lucide-react";
 
 function AddSeasonToLibrary() {
     const { data: content } = usePage<{data: TvSeason}>().props;

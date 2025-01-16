@@ -1,6 +1,6 @@
-import { AnimeEntry } from "@/types/userAnime";
-import { Link } from "@inertiajs/react";
-import { Badge, Image, Table, Text, Title } from "@mantine/core";
+import {AnimeEntry} from "@/types/userAnime";
+import {Link} from "@inertiajs/react";
+import {Badge, Image, Table, Text, Title} from "@mantine/core";
 
 interface AnimeSeasonTableProps {
     entries: AnimeEntry[];

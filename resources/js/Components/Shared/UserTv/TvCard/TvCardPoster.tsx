@@ -1,6 +1,6 @@
-import { UserTvShow } from "@/types/userTv";
-import { Link } from "@inertiajs/react";
-import { Badge, Card, Image, Tooltip } from "@mantine/core";
+import {UserTvShow} from "@/types/userTv";
+import {Link} from "@inertiajs/react";
+import {Badge, Card, Image, Tooltip} from "@mantine/core";
 import classes from "./TvCard.module.css";
 
 interface TvCardPosterProps {

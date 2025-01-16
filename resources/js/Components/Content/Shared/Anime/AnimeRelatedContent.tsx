@@ -1,9 +1,8 @@
-import { Carousel } from "@mantine/carousel";
-import { Stack, Tabs, Title } from "@mantine/core";
-import { usePage } from "@inertiajs/react";
-import { PageProps } from "@/types";
+import {Carousel} from "@mantine/carousel";
+import {Stack, Tabs, Title} from "@mantine/core";
+import {usePage} from "@inertiajs/react";
 import AnimeRelatedContentCard from "@/Components/Content/Shared/Anime/AnimeRelatedContentCard";
-import { CustomCarousel } from "@/Components/Shared/CustomCarousel";
+import {CustomCarousel} from "@/Components/Shared/CustomCarousel";
 import {AnimeSeason} from "@/types/animeseason";
 
 interface AnimeRelatedContentProps {

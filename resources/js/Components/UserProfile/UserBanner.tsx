@@ -1,7 +1,7 @@
 import ResponsiveContainer from "@/Components/ResponsiveContainer";
-import { Avatar, Image, Alert, Text } from "@mantine/core";
+import {Alert, Avatar, Image, Text} from "@mantine/core";
 import classes from "./UserBanner.module.css";
-import { Link, usePage } from "@inertiajs/react";
+import {Link, usePage} from "@inertiajs/react";
 
 interface UserData {
     id: number;
@@ -43,7 +43,7 @@ export function UserBanner() {
                 height={320}
                 h={320}
                 loading="lazy"
-                alt="Profile Banner"
+                alt="Profile ListBanner"
                 fit="cover"
             />
             <div className={classes.avatarOverlay}>

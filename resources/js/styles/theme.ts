@@ -1,14 +1,8 @@
-import { Carousel } from "@mantine/carousel";
-import {
-    Card,
-    Container,
-    createTheme,
-    rem,
-    Select,
-    virtualColor,
-} from "@mantine/core";
-import { DatePickerInput } from "@mantine/dates";
+import {Carousel} from "@mantine/carousel";
+import {Card, Container, createTheme, rem, Select, virtualColor,} from "@mantine/core";
+import {DatePickerInput} from "@mantine/dates";
 import "./theme.module.css";
+
 const CONTAINER_SIZES: Record<string, string> = {
     xxs: rem("200px"),
     xs: rem("350px"),
@@ -28,6 +22,7 @@ const theme = createTheme({
         gtmd: "53.75em",
         smmdlg: "56em",
         smlg: "56.25em",
+        mdlg: "62.5em",
         lg: "64em",
         xl: "80em",
     },

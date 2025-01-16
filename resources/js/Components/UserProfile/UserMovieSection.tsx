@@ -1,8 +1,8 @@
 import MovieCard from "@/Components/Shared/MovieCard";
-import { useFilterStore } from "@/stores/filterStore";
-import { PageProps } from "@/types/userMovies";
-import { router, usePage } from "@inertiajs/react";
-import { Flex, Group, Pagination, Text } from "@mantine/core";
+import {useFilterStore} from "@/stores/filterStore";
+import {PageProps} from "@/types/userMovies";
+import {router, usePage} from "@inertiajs/react";
+import {Flex, Group, Pagination, Text} from "@mantine/core";
 
 export function UserMovieSection() {
     const filterStore = useFilterStore();

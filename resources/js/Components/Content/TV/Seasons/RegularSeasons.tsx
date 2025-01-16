@@ -1,9 +1,9 @@
-import { Carousel } from "@mantine/carousel";
-import { Stack, Title } from "@mantine/core";
-import { PageProps, TvShow } from "@/types";
-import { usePage } from "@inertiajs/react";
+import {Carousel} from "@mantine/carousel";
+import {Stack, Title} from "@mantine/core";
+import {TvShow} from "@/types";
+import {usePage} from "@inertiajs/react";
 import SeasonCard from "./SeasonCard";
-import { CustomCarousel } from "@/Components/Shared/CustomCarousel";
+import {CustomCarousel} from "@/Components/Shared/CustomCarousel";
 
 interface SeasonsProps {
     containerWidth: number;

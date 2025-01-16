@@ -24,6 +24,13 @@ class Movie extends Model
         });
     }
 
+    public function voteAverage(): Attribute
+    {
+        return Attribute::get(function () {
+            return number_format($this->data['vote_average'], 2, '.', '');
+        });
+    }
+
     public function budget(): Attribute
     {
         return Attribute::get(function () {
@@ -39,6 +46,15 @@ class Movie extends Model
             $revenue = $this->data['revenue'] ?? null;
 
             return $revenue > 0 ? $revenue : null;
+        });
+    }
+
+    public function year(): Attribute
+    {
+        return Attribute::get(function () {
+            return isset($this->data['release_date'])
+                ? Carbon::parse($this->data['release_date'])->year
+                : null;
         });
     }
 
@@ -144,17 +160,18 @@ class Movie extends Model
     public function backdrops(): Attribute
     {
         return Attribute::get(function () {
-            return collect($this->data['images']['backdrops'] ?? [])->map(function ($backdrop) {
-                return [
-                    'file_path' => $backdrop['file_path'] ?? null,
-                    'width' => $backdrop['width'] ?? null,
-                    'height' => $backdrop['height'] ?? null,
-                    'aspect_ratio' => $backdrop['aspect_ratio'] ?? null,
-                    'language' => $backdrop['iso_639_1'] ?? null,
-                    'vote_average' => $backdrop['vote_average'] ?? null,
-                    'vote_count' => $backdrop['vote_count'] ?? null,
-                ];
-            })->values();
+            return collect($this->data['images']['backdrops'] ?? [])
+                ->sortByDesc('vote_average')
+                ->take(10)
+                ->map(function ($backdrop) {
+                    return [
+                        'file_path' => $backdrop['file_path'],
+                        'vote_average' => $backdrop['vote_average'],
+                        'width' => $backdrop['width'],
+                        'height' => $backdrop['height'],
+                    ];
+                })
+                ->values();
         });
     }
 

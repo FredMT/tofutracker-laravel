@@ -1,10 +1,10 @@
-import { Button, Paper } from "@mantine/core";
-import { CheckCircle2, XCircle } from "lucide-react";
-import { useForm, usePage } from "@inertiajs/react";
-import { notifications } from "@mantine/notifications";
-import { AnimeSeasonUserLibrary } from "@/types";
-import { useState } from "react";
-import { AnimeSeason } from "@/types/animeseason";
+import {Button, Paper} from "@mantine/core";
+import {CheckCircle2, XCircle} from "lucide-react";
+import {useForm, usePage} from "@inertiajs/react";
+import {notifications} from "@mantine/notifications";
+import {AnimeSeasonUserLibrary} from "@/types";
+import {useState} from "react";
+import {AnimeSeason} from "@/types/animeseason";
 
 interface AnimeEpisodeActionsProps {
     episodal_id: number;

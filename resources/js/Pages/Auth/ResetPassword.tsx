@@ -1,16 +1,6 @@
-import { Head, useForm } from "@inertiajs/react";
-import {
-    Button,
-    Container,
-    Group,
-    Image,
-    PasswordInput,
-    TextInput,
-    Title,
-    Box,
-    Stack,
-} from "@mantine/core";
-import { FormEventHandler } from "react";
+import {Head, useForm} from "@inertiajs/react";
+import {Box, Button, Container, Group, Image, PasswordInput, Stack, TextInput, Title,} from "@mantine/core";
+import {FormEventHandler} from "react";
 import styles from "./Login.module.css";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
 

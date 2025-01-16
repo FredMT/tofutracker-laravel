@@ -1,5 +1,5 @@
 import ThemeButton from "@/Components/ThemeButton";
-import { Space } from "@mantine/core";
+import {Space} from "@mantine/core";
 
 interface MobileMenuButtonProps {
     showingNavigationDropdown: boolean;

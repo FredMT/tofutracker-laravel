@@ -1,15 +1,7 @@
-import {
-    Anchor,
-    Box,
-    Breadcrumbs,
-    Group,
-    Menu,
-    Text,
-    Tooltip,
-} from "@mantine/core";
-import { Link, usePage } from "@inertiajs/react";
-import { Links, ContentType } from "@/types";
-import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
+import {Box, Breadcrumbs, Group, Menu, Text, Tooltip,} from "@mantine/core";
+import {Link, usePage} from "@inertiajs/react";
+import {ContentType, Links} from "@/types";
+import {ChevronDown, ChevronLeft, ChevronRight} from "lucide-react";
 import classes from "./SeasonBreadcrumbs.module.css";
 
 export default function SeasonBreadcrumbs() {

@@ -1,5 +1,5 @@
-import { useFilterStore } from "@/stores/filterStore";
-import { DatePickerInput } from "@mantine/dates";
+import {useFilterStore} from "@/stores/filterStore";
+import {DatePickerInput} from "@mantine/dates";
 
 interface DateRangeFilterProps {
     placeholder?: string;

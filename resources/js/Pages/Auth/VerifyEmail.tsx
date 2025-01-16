@@ -1,16 +1,6 @@
-import { Head, Link, useForm } from "@inertiajs/react";
-import {
-    Anchor,
-    Button,
-    Container,
-    Group,
-    Image,
-    Stack,
-    Text,
-    Box,
-    Alert,
-} from "@mantine/core";
-import { FormEventHandler } from "react";
+import {Head, Link, useForm} from "@inertiajs/react";
+import {Alert, Anchor, Box, Button, Container, Group, Image, Stack, Text,} from "@mantine/core";
+import {FormEventHandler} from "react";
 import styles from "./VerifyEmail.module.css";
 
 export default function VerifyEmail({

@@ -3,6 +3,7 @@
 use App\Actions\Trending\GetTrendingAction;
 use App\Actions\Trending\GetTrendingGenresAndWatchProvidersAction;
 use App\Http\Controllers\AnimeController;
+use App\Http\Controllers\ListController;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuickSearchController;
@@ -60,6 +61,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/settings/banner', [ProfileController::class, 'updateBanner'])->name('profile.banner');
     Route::patch('/settings/bio', [ProfileController::class, 'updateBio'])->name('profile.bio');
 
+    Route::post('/list/{list}/banner', [ListController::class, 'updateBanner'])->name('list.banner.update');
+    Route::post('/list/{list}/banner/tmdb', [ListController::class, 'updateBannerFromTmdb'])->name('list.banner.tmdb.update');
+    Route::delete('/list/{list}/banner', [ListController::class, 'removeBanner'])->name('list.banner.remove');
+    Route::get('/list/{list}/backdrops', [ListController::class, 'getListItemBackdrops'])->name('list.backdrops');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -141,5 +146,9 @@ Route::get('/anime/{id}/season/{seasonId}', [AnimeController::class, 'showSeason
 
 Route::get('/search', [SearchController::class, 'search'])->name('search');
 Route::get('/quicksearch', QuickSearchController::class)->name('quicksearch');
+
+Route::get('/list/{list}', [ListController::class, 'show'])->name('list.show');
+
+Route::post('/list/{list}/order', [ListController::class, 'updateOrder'])->name('list.updateOrder');
 
 require __DIR__.'/auth.php';

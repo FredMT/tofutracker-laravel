@@ -1,7 +1,9 @@
-import { Button, Modal } from "@mantine/core";
-import { CreateForm } from "@/Components/ContentActions/components/Actions/ManageCustomList/components/CreateForm";
-import { ListContent } from "@/Components/ContentActions/components/Actions/ManageCustomList/components/ListContent";
-import { UserList } from "@/Components/ContentActions/components/Actions/ManageCustomList/types";
+import {Button, Modal} from "@mantine/core";
+import {
+    CreateListForm
+} from "@/Components/ContentActions/components/Actions/ManageCustomList/components/CreateListForm";
+import {ListContent} from "@/Components/ContentActions/components/Actions/ManageCustomList/components/ListContent";
+import {UserList} from "@/Components/ContentActions/components/Actions/ManageCustomList/types";
 
 type DesktopAddToListProps = {
     opened: boolean;
@@ -54,7 +56,7 @@ export default function DesktopAddToList({
                 size="md"
                 centered
             >
-                <CreateForm closeCreate={closeCreate} />
+                <CreateListForm closeCreate={closeCreate} />
             </Modal>
         </>
     );

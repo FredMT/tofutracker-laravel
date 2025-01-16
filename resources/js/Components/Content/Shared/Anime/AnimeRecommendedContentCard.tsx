@@ -1,6 +1,6 @@
-import { AnimeRecommendation } from "@/types/anime";
-import { Link } from "@inertiajs/react";
-import { Badge, Box, Card, Image, Text, Tooltip } from "@mantine/core";
+import {AnimeRecommendation} from "@/types/anime";
+import {Link} from "@inertiajs/react";
+import {Badge, Box, Card, Image, Text, Tooltip} from "@mantine/core";
 
 interface AnimeRecommendedContentCardProps {
     content: AnimeRecommendation;

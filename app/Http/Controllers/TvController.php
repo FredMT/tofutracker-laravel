@@ -33,6 +33,7 @@ class TvController extends Controller
             $userLists = $request->user()
                 ->customLists()
                 ->select('id', 'title')
+                ->orderBy('title', 'ASC')
                 ->withExists(['items as has_item' => function ($query) use ($id) {
                     $query->where('listable_type', TvShow::class)
                         ->where('listable_id', $id);

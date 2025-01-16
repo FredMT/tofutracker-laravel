@@ -1,5 +1,4 @@
-import {useContent} from "@/hooks/useContent";
-import {BaseUserLibrary, PageProps, RegularContentDataType, RegularType} from "@/types";
+import {BaseUserLibrary, RegularContentDataType, RegularType} from "@/types";
 import {WatchStatus} from "@/types/enums";
 import {useForm, usePage} from "@inertiajs/react";
 import {Select} from "@mantine/core";

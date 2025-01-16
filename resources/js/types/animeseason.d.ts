@@ -1,5 +1,5 @@
-import { Episode } from "@/types";
-import { BaseCharacter } from "@/types/anime";
+import {Episode} from "@/types";
+import {BaseCharacter} from "@/types/anime";
 
 export interface AnimeSeason {
     id: number;

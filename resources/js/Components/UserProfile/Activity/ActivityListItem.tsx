@@ -1,4 +1,4 @@
-import { Card, Group, Image, Stack, Text } from "@mantine/core";
+import {Card, Group, Image, Stack, Text} from "@mantine/core";
 
 interface Activity {
     id: number;

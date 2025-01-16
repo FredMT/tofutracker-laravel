@@ -1,7 +1,7 @@
-import { AnimeEntry } from "@/types/userAnime";
-import { Link } from "@inertiajs/react";
-import { Badge, Group, Stack, Table, Title } from "@mantine/core";
-import { ExternalLink } from "lucide-react";
+import {AnimeEntry} from "@/types/userAnime";
+import {Link} from "@inertiajs/react";
+import {Badge, Group, Stack, Table, Title} from "@mantine/core";
+import {ExternalLink} from "lucide-react";
 
 interface AnimeSeasonVerticalTableProps {
     entries: AnimeEntry[];

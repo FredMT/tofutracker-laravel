@@ -1,11 +1,11 @@
-import { ApplyFiltersButton } from "@/Components/UserProfile/Filter/ApplyFiltersButton";
-import { ClearFilters } from "@/Components/UserProfile/Filter/ClearFilters";
-import { DateRangeFilter } from "@/Components/UserProfile/Filter/DateRangeFilter";
-import { FilterWatchStatusSelect } from "@/Components/UserProfile/Filter/FilterWatchStatusSelect";
-import { GenreFilter } from "@/Components/UserProfile/Filter/GenreFilter";
-import { useFilterStore } from "@/stores/filterStore";
-import { Stack, Title } from "@mantine/core";
-import { useMemo } from "react";
+import {ApplyFiltersButton} from "@/Components/UserProfile/Filter/ApplyFiltersButton";
+import {ClearFilters} from "@/Components/UserProfile/Filter/ClearFilters";
+import {DateRangeFilter} from "@/Components/UserProfile/Filter/DateRangeFilter";
+import {FilterWatchStatusSelect} from "@/Components/UserProfile/Filter/FilterWatchStatusSelect";
+import {GenreFilter} from "@/Components/UserProfile/Filter/GenreFilter";
+import {useFilterStore} from "@/stores/filterStore";
+import {Stack, Title} from "@mantine/core";
+import {useMemo} from "react";
 
 function FilterDesktop() {
     const { status, fromDate, toDate, genres, title } = useFilterStore();

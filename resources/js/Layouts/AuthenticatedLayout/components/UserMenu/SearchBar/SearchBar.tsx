@@ -1,15 +1,8 @@
-import { useRef, useState, useEffect } from "react";
-import {
-    Combobox,
-    Loader,
-    TextInput,
-    useCombobox,
-    Text,
-    Group,
-} from "@mantine/core";
-import { Search, ArrowRight, Rocket, SearchCheck } from "lucide-react";
-import { Link, usePage } from "@inertiajs/react";
-import { useDebouncedValue } from "@mantine/hooks";
+import {useEffect, useRef, useState} from "react";
+import {Combobox, Group, Loader, Text, TextInput, useCombobox,} from "@mantine/core";
+import {ArrowRight, Rocket, Search, SearchCheck} from "lucide-react";
+import {Link, usePage} from "@inertiajs/react";
+import {useDebouncedValue} from "@mantine/hooks";
 import styles from "./SearchBar.module.css";
 import SearchResultItem from "./SearchResultItem";
 

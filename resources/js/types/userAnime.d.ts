@@ -1,5 +1,5 @@
-import { PageProps } from "@inertiajs/core";
-import { WatchStatus } from "./enums";
+import {PageProps} from "@inertiajs/core";
+import {WatchStatus} from "./enums";
 
 interface Genre {
     id: number;

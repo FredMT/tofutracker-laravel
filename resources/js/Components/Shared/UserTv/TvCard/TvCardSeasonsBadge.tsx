@@ -1,6 +1,6 @@
-import { UserTvShow } from "@/types/userTv";
-import { Badge, Card, Group, Space, Text } from "@mantine/core";
-import { ExternalLink } from "lucide-react";
+import {UserTvShow} from "@/types/userTv";
+import {Badge, Card, Group, Space, Text} from "@mantine/core";
+import {ExternalLink} from "lucide-react";
 import classes from "./TvCard.module.css";
 
 interface TvCardSeasonsBadgeProps {

@@ -1,7 +1,9 @@
-import { Button, Drawer } from "@mantine/core";
-import { CreateForm } from "@/Components/ContentActions/components/Actions/ManageCustomList/components/CreateForm";
-import { ListContent } from "@/Components/ContentActions/components/Actions/ManageCustomList/components/ListContent";
-import { UserList } from "@/Components/ContentActions/components/Actions/ManageCustomList/types";
+import {Button, Drawer} from "@mantine/core";
+import {
+    CreateListForm
+} from "@/Components/ContentActions/components/Actions/ManageCustomList/components/CreateListForm";
+import {ListContent} from "@/Components/ContentActions/components/Actions/ManageCustomList/components/ListContent";
+import {UserList} from "@/Components/ContentActions/components/Actions/ManageCustomList/types";
 
 type MobileAddToListProps = {
     opened: boolean;
@@ -54,7 +56,7 @@ export default function MobileAddToList({
                     title="Create New List"
                     position="bottom"
                 >
-                    <CreateForm closeCreate={closeCreate} />
+                    <CreateListForm closeCreate={closeCreate} />
                 </Drawer>
             </Drawer.Stack>
         </>

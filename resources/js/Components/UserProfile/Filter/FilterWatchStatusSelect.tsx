@@ -1,6 +1,6 @@
-import { useFilterStore } from "@/stores/filterStore";
-import { WatchStatusDisplay } from "@/types/enums";
-import { Select } from "@mantine/core";
+import {useFilterStore} from "@/stores/filterStore";
+import {WatchStatusDisplay} from "@/types/enums";
+import {Select} from "@mantine/core";
 
 export function FilterWatchStatusSelect() {
     const { status, setStatus } = useFilterStore();

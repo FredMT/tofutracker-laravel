@@ -1,7 +1,7 @@
-import { useContent } from "@/hooks/useContent";
-import { Recommended } from "@/types";
-import { Carousel } from "@mantine/carousel";
-import { Container, Stack, Title } from "@mantine/core";
+import {useContent} from "@/hooks/useContent";
+import {Recommended} from "@/types";
+import {Carousel} from "@mantine/carousel";
+import {Container, Stack, Title} from "@mantine/core";
 import classes from "./RecommendedContent.module.css";
 import RecommendedContentCard from "./RecommendedContentCard";
 

@@ -61,6 +61,20 @@ class AnidbAnime extends Model
         return $this->hasMany(AnidbCharacter::class, 'anime_id');
     }
 
+    public function year(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->startdate?->year;
+        });
+    }
+
+    public function rating(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->getRawOriginal('rating');
+        });
+    }
+
     public function episodes(): HasMany
     {
         return $this->hasMany(AnidbEpisode::class, 'anime_id');

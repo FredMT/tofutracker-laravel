@@ -1,15 +1,8 @@
-import { useForm, usePage } from "@inertiajs/react";
-import { FormEventHandler, useRef } from "react";
-import {
-    Alert,
-    Button,
-    PasswordInput,
-    Stack,
-    Text,
-    Title,
-} from "@mantine/core";
-import { notifications } from "@mantine/notifications";
-import { Check } from "lucide-react";
+import {useForm} from "@inertiajs/react";
+import {FormEventHandler, useRef} from "react";
+import {Button, PasswordInput, Stack, Text, Title,} from "@mantine/core";
+import {notifications} from "@mantine/notifications";
+import {Check} from "lucide-react";
 
 export default function UpdatePasswordForm({
     className = "",

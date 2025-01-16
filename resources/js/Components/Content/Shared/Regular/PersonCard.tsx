@@ -1,5 +1,5 @@
-import { AnimePerson, TmdbPerson } from "@/types";
-import { Card, Image, Stack, Text, Tooltip } from "@mantine/core";
+import {AnimePerson, TmdbPerson} from "@/types";
+import {Card, Image, Stack, Text, Tooltip} from "@mantine/core";
 
 interface PersonCardProps {
     person: TmdbPerson | AnimePerson;

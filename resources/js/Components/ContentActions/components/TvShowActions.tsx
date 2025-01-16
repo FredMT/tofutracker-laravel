@@ -1,9 +1,9 @@
-import { PageProps } from "@/types";
-import { usePage } from "@inertiajs/react";
-import { Button, Stack } from "@mantine/core";
+import {PageProps} from "@/types";
+import {usePage} from "@inertiajs/react";
+import {Stack} from "@mantine/core";
 import AddShowToLibrary from "./Actions/AddToLibrary/Tv/AddShowToLibrary";
 import RemoveShowFromLibrary from "./Actions/RemoveFromLibrary/Tv/RemoveShowFromLibrary";
-import { RateContent } from "./Rating/RateContent";
+import {RateContent} from "./Rating/RateContent";
 import TvShowWatchStatus from "@/Components/ContentActions/components/Actions/WatchStatus/Tv/TvShowWatchStatus";
 import ManageCustomList from "@/Components/ContentActions/components/Actions/ManageCustomList/ManageCustomList";
 

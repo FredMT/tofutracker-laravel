@@ -1,14 +1,6 @@
-import { useForm } from "@inertiajs/react";
-import { FormEventHandler, useRef, useState } from "react";
-import {
-    Button,
-    Modal,
-    PasswordInput,
-    Stack,
-    Text,
-    Title,
-    Group,
-} from "@mantine/core";
+import {useForm} from "@inertiajs/react";
+import {FormEventHandler, useRef, useState} from "react";
+import {Button, Group, Modal, PasswordInput, Stack, Text, Title,} from "@mantine/core";
 
 export default function DeleteUserForm({
     className = "",

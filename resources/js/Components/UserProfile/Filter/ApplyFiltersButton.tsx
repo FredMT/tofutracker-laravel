@@ -1,8 +1,8 @@
-import { useFilterStore } from "@/stores/filterStore";
-import { PageProps } from "@/types/userMovies";
-import { applyFilters } from "@/utils/Filters/applyFilters";
-import { usePage } from "@inertiajs/react";
-import { Button } from "@mantine/core";
+import {useFilterStore} from "@/stores/filterStore";
+import {PageProps} from "@/types/userMovies";
+import {applyFilters} from "@/utils/Filters/applyFilters";
+import {usePage} from "@inertiajs/react";
+import {Button} from "@mantine/core";
 
 interface ApplyFiltersButtonProps {
     onApply?: () => void;

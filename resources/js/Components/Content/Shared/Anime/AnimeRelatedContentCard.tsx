@@ -1,6 +1,6 @@
-import { RelatedAnime, SimilarAnime } from "@/types/animeseason";
-import { Link } from "@inertiajs/react";
-import { Badge, Box, Card, Image, Stack, Text, Tooltip } from "@mantine/core";
+import {RelatedAnime, SimilarAnime} from "@/types/animeseason";
+import {Link} from "@inertiajs/react";
+import {Badge, Box, Card, Image, Text, Tooltip} from "@mantine/core";
 
 interface AnimeRelatedContentCardProps {
     content: RelatedAnime | SimilarAnime;

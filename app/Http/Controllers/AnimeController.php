@@ -93,6 +93,7 @@ class AnimeController extends Controller
                 $userLists = $request->user()
                     ->customLists()
                     ->select('id', 'title')
+                    ->orderBy('title', 'ASC')
                     ->withExists(['items as has_item' => function ($query) use ($accessId) {
                         $query->where('listable_type', AnimeMap::class)
                             ->where('listable_id', $accessId);
@@ -427,6 +428,7 @@ class AnimeController extends Controller
                 $userLists = $request->user()
                     ->customLists()
                     ->select('id', 'title')
+                    ->orderBy('title', 'ASC')
                     ->withExists(['items as has_item' => function ($query) use ($seasonId) {
                         $query->where('listable_type', AnidbAnime::class)
                             ->where('listable_id', $seasonId);

@@ -1,7 +1,7 @@
-import { MediaItem } from "@/types/search";
+import {MediaItem} from "@/types/search";
 import SearchResult from "./SearchResult";
-import { SimpleGrid, Stack } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
+import {SimpleGrid, Stack} from "@mantine/core";
+import {useMediaQuery} from "@mantine/hooks";
 
 interface SearchResultsListProps {
     items: MediaItem[];

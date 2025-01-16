@@ -58,6 +58,7 @@ class TvSeasonController extends Controller
                 $userLists = $request->user()
                     ->customLists()
                     ->select('id', 'title')
+                    ->orderBy('title', 'ASC')
                     ->withExists(['items as has_item' => function ($query) use ($seasonId) {
                         $query->where('listable_type', TvSeason::class)
                             ->where('listable_id', $seasonId);

@@ -1,20 +1,8 @@
-import { AnimeCollection } from "@/types/userAnime";
-import { Link } from "@inertiajs/react";
-import {
-    Badge,
-    Button,
-    Card,
-    Group,
-    Image,
-    Modal,
-    Space,
-    Stack,
-    Text,
-    Title,
-    Tooltip,
-} from "@mantine/core";
-import { ExternalLink } from "lucide-react";
-import { useState } from "react";
+import {AnimeCollection} from "@/types/userAnime";
+import {Link} from "@inertiajs/react";
+import {Badge, Button, Card, Group, Image, Modal, Space, Stack, Text, Tooltip,} from "@mantine/core";
+import {ExternalLink} from "lucide-react";
+import {useState} from "react";
 import classes from "./AnimeCard.module.css";
 import AnimeSeasonModal from "@/Components/Shared/UserAnime/AnimeSeasonModal";
 

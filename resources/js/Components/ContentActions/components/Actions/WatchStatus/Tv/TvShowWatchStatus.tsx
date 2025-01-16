@@ -1,11 +1,10 @@
-import { useContent } from "@/hooks/useContent";
-import {BaseUserLibrary, PageProps, TvShow} from "@/types";
-import { WatchStatus } from "@/types/enums";
-import { useForm, usePage } from "@inertiajs/react";
-import { Select } from "@mantine/core";
-import { notifications } from "@mantine/notifications";
-import { Check, CircleAlertIcon } from "lucide-react";
-import { useEffect } from "react";
+import {BaseUserLibrary, TvShow} from "@/types";
+import {WatchStatus} from "@/types/enums";
+import {useForm, usePage} from "@inertiajs/react";
+import {Select} from "@mantine/core";
+import {notifications} from "@mantine/notifications";
+import {Check, CircleAlertIcon} from "lucide-react";
+import {useEffect} from "react";
 
 function TvShowWatchStatus() {
     const {data: content, user_library} = usePage<{ data: TvShow, user_library: BaseUserLibrary  }>().props

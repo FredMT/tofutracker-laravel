@@ -1,16 +1,10 @@
-import { ActionIcon } from "@mantine/core";
-import { Plus } from "lucide-react";
+import {ActionIcon} from "@mantine/core";
+import {Plus} from "lucide-react";
 import React from "react";
-import { UserList } from "../../types";
-import {
-    AnimeContentDataType,
-    ContentType,
-    FlashMessage,
-    RegularContentDataType,
-    TvShow,
-} from "@/types";
-import { usePage, useForm } from "@inertiajs/react";
-import { notifications } from "@mantine/notifications";
+import {UserList} from "../../types";
+import {AnimeContentDataType, ContentType, FlashMessage, RegularContentDataType,} from "@/types";
+import {useForm, usePage} from "@inertiajs/react";
+import {notifications} from "@mantine/notifications";
 
 type AddToListProps = {
     list: UserList;

@@ -1,19 +1,7 @@
-import { Carousel } from "@mantine/carousel";
-import {
-    Container,
-    ContainerProps,
-    Title,
-    Stack,
-    Space,
-    Group,
-    Modal,
-    Flex,
-    Card,
-    Text,
-    Drawer,
-} from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
-import { ChevronDown } from "lucide-react";
+import {Carousel} from "@mantine/carousel";
+import {Card, Container, ContainerProps, Drawer, Flex, Group, Modal, Space, Stack, Text, Title,} from "@mantine/core";
+import {useMediaQuery} from "@mantine/hooks";
+import {ChevronDown} from "lucide-react";
 import React from "react";
 import classes from "./WelcomeCustomCarousel.module.css";
 import WelcomeCarouselCard from "./WelcomeCarouselCard";

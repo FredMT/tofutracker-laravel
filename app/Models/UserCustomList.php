@@ -15,12 +15,14 @@ class UserCustomList extends Model
         'title',
         'description',
         'banner_image',
+        'banner_type',
         'private_note',
         'is_public',
     ];
 
     protected $casts = [
         'is_public' => 'boolean',
+        'banner_type' => 'string',
     ];
 
     protected $hidden = [

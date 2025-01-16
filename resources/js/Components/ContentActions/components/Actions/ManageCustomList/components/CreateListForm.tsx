@@ -1,19 +1,11 @@
-import {
-    Button,
-    Group,
-    Stack,
-    TextInput,
-    Textarea,
-    Switch,
-} from "@mantine/core";
-import { useForm } from "@inertiajs/react";
-import { usePage } from "@inertiajs/react";
+import {Button, Group, Stack, Switch, Textarea, TextInput,} from "@mantine/core";
+import {useForm, usePage} from "@inertiajs/react";
 
 type Props = {
     closeCreate: () => void;
 };
 
-export function CreateForm({ closeCreate }: Props) {
+export function CreateListForm({ closeCreate }: Props) {
     const { auth } = usePage<{ auth: { user: { username: string } } }>().props;
 
     const form = useForm({

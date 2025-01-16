@@ -2,6 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AnidbAnime;
+use App\Models\AnimeMap;
+use App\Models\Movie;
+use App\Models\TvSeason;
+use App\Models\TvShow;
 use App\Models\User;
 use App\Models\UserCustomList;
 use Illuminate\Http\Request;
@@ -17,7 +22,84 @@ class UserCustomListController extends Controller
             ->firstOrFail();
         $isOwnProfile = $request->user() && $request->user()->id === $user->id;
 
-        $userLists = null;
+        $userLists = $user->customLists()
+            ->when(! $isOwnProfile, function ($query) {
+                return $query->where('is_public', true);
+            })
+            ->withCount('items')
+            ->with([
+                'items:id,listable_type,listable_id,custom_list_id,sort_order',
+                'items.listable',
+            ])
+            ->orderByDesc('created_at');
+
+        if (! $isOwnProfile) {
+            $userLists->select(['id', 'title', 'description', 'banner_image', 'created_at', 'updated_at']);
+        }
+
+        $userLists = $userLists->get()->map(function ($list) use ($request) {
+            $items = $list->items;
+
+            $topItems = $items->sortBy('sort_order')->take(5)->map(function ($item) {
+                $poster = null;
+                $posterType = 'tmdb';
+
+                switch ($item->listable_type) {
+                    case Movie::class:
+                    case TvShow::class:
+                    case TvSeason::class:
+                        $poster = $item->listable?->poster;
+                        break;
+
+                    case AnimeMap::class:
+                        if ($item->listable) {
+                            $tmdbId = $item->listable->most_common_tmdb_id;
+                            $tmdbType = $item->listable->tmdb_type;
+
+                            if ($tmdbType === 'movie') {
+                                $poster = Movie::find($tmdbId)?->poster;
+                            } elseif ($tmdbType === 'tv') {
+                                $poster = TvShow::find($tmdbId)?->poster;
+                            }
+                        }
+                        break;
+
+                    case AnidbAnime::class:
+                        $poster = $item->listable?->picture;
+                        $posterType = 'anidb';
+                        break;
+                }
+
+                return [
+                    'poster_path' => $poster,
+                    'poster_type' => $posterType,
+                ];
+            })->filter(fn ($item) => ! is_null($item['poster_path']))->values();
+
+            $movieCount = $items->filter(fn ($item) => $item->listable_type === Movie::class)->count();
+            $tvCount = $items->filter(fn ($item) => in_array($item->listable_type, [TvShow::class, TvSeason::class])
+            )->count();
+            $animeCount = $items->filter(fn ($item) => in_array($item->listable_type, [AnimeMap::class, AnidbAnime::class])
+            )->count();
+
+            return [
+                'id' => $list->id,
+                'title' => $list->title,
+                'description' => $list->description,
+                'banner_image' => $list->banner_image,
+                'is_public' => $list->is_public,
+                'private_note' => $request->user() && $request->user()->id === $list->user_id ? $list->private_note : null,
+                'created_at' => $list->created_at,
+                'updated_at' => $list->updated_at,
+                'counts' => [
+                    'total' => $list->items_count ?? $items->count(),
+                    'movies' => $movieCount,
+                    'tv' => $tvCount,
+                    'anime' => $animeCount,
+                ],
+                'posters' => $topItems,
+            ];
+        });
 
         $userData = [
             'id' => $user->id,
@@ -30,12 +112,12 @@ class UserCustomListController extends Controller
 
         if ($isOwnProfile) {
             $userData['mustVerifyEmail'] = ! $request->user()->hasVerifiedEmail();
-            $userLists = $user->customLists()->orderByDesc('created_at')->get();
-        } else {
-            $userLists = $user->customLists()->where('is_public', true)->orderByDesc('created_at')->get();
         }
 
-        return Inertia::render('UserCustomLists', ['userData' => $userData, 'userLists' => $userLists]);
+        return Inertia::render('UserCustomLists', [
+            'userData' => $userData,
+            'userLists' => $userLists->count() ? $userLists : null,
+        ]);
     }
 
     public function store(Request $request)

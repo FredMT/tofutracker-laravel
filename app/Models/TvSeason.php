@@ -28,6 +28,22 @@ class TvSeason extends Model
         });
     }
 
+    public function year(): Attribute
+    {
+        return Attribute::get(function () {
+            return isset($this->data['air_date'])
+                ? Carbon::parse($this->data['air_date'])->year
+                : null;
+        });
+    }
+
+    public function voteAverage(): Attribute
+    {
+        return Attribute::get(function () {
+            return number_format($this->data['vote_average'], 2, '.', '');
+        });
+    }
+
     public function seasonNumber(): Attribute
     {
         return Attribute::get(fn () => $this->data['season_number'] ?? null);

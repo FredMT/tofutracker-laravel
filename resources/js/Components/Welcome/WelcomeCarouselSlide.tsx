@@ -1,8 +1,8 @@
 import BoundedContainer from "@/Components/BoundedContainer";
-import { Link } from "@inertiajs/react";
-import { Badge, Button, Flex, Image, Stack, Text, Title } from "@mantine/core";
+import {Link} from "@inertiajs/react";
+import {Badge, Button, Flex, Image, Stack, Text, Title} from "@mantine/core";
 import classes from "./WelcomeCarouselSlide.module.css";
-import { useMediaQuery } from "@mantine/hooks";
+import {useMediaQuery} from "@mantine/hooks";
 
 interface MediaItem {
     title: string;

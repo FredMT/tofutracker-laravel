@@ -1,6 +1,6 @@
-import { BannerImageOverlay } from "@/Components/Content/Shared/BannerImageOverlay";
-import { Genre } from "@/types";
-import { Flex, Image } from "@mantine/core";
+import {BannerImageOverlay} from "@/Components/Content/Shared/BannerImageOverlay";
+import {Genre} from "@/types";
+import {Flex, Image} from "@mantine/core";
 
 interface BannerImageProps {
     title: string;

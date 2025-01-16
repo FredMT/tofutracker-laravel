@@ -131,12 +131,10 @@ class ProfileController extends Controller
      */
     public function updateBanner(Request $request): RedirectResponse
     {
-        logger()->info('Request data:', $request->all());
-        logger()->info('Files:', $request->allFiles());
 
         try {
             $validated = $request->validate([
-                'banner' => ['required', 'file', 'image', 'max:6144'], // 3MB max
+                'banner' => ['required', 'file', 'image', 'max:6144'], // 6MB max
             ]);
 
             if (! $request->hasFile('banner')) {
@@ -182,9 +180,9 @@ class ProfileController extends Controller
                 'banner' => $path,
             ]);
 
-            return back()->with('status', 'Banner updated successfully.');
+            return back()->with('status', 'ListBanner updated successfully.');
         } catch (\Exception $e) {
-            logger()->error('Banner upload failed: '.$e->getMessage());
+            logger()->error('ListBanner upload failed: '.$e->getMessage());
 
             return back()->withErrors(['banner' => 'Failed to upload banner. Please try again.']);
         }

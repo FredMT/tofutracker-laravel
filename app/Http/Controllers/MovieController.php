@@ -24,7 +24,6 @@ class MovieController extends Controller
         $userLibraryData = null;
         $userLists = null;
 
-        // Get user library data if authenticated
         if ($request->user()) {
             $userLibraryData = UserMovie::where([
                 'user_id' => $request->user()->id,
@@ -34,6 +33,7 @@ class MovieController extends Controller
             $userLists = $request->user()
                 ->customLists()
                 ->select('id', 'title')
+                ->orderBy('title', 'ASC')
                 ->withExists(['items as has_item' => function ($query) use ($id) {
                     $query->where('listable_type', Movie::class)
                         ->where('listable_id', $id);
@@ -64,6 +64,7 @@ class MovieController extends Controller
                 'data' => $existingMovie->filteredData,
                 'type' => 'movie',
                 'user_library' => $userLibraryData,
+                'user_lists' => $userLists,
 
             ]);
         }
@@ -76,6 +77,7 @@ class MovieController extends Controller
             'data' => Cache::get($cacheKey),
             'type' => 'movie',
             'user_library' => $userLibraryData,
+            'user_lists' => $userLists,
 
         ]);
     }

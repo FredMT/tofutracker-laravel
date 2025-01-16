@@ -1,11 +1,10 @@
-import { useContent } from "@/hooks/useContent";
-import { AnimeSeasonUserLibrary, AnimeType, PageProps } from "@/types";
-import { WatchStatus } from "@/types/enums";
-import { useForm, usePage } from "@inertiajs/react";
-import { Select } from "@mantine/core";
-import { notifications } from "@mantine/notifications";
-import { Check, CircleAlertIcon } from "lucide-react";
-import { useEffect } from "react";
+import {AnimeSeasonUserLibrary, AnimeType} from "@/types";
+import {WatchStatus} from "@/types/enums";
+import {useForm, usePage} from "@inertiajs/react";
+import {Select} from "@mantine/core";
+import {notifications} from "@mantine/notifications";
+import {Check, CircleAlertIcon} from "lucide-react";
+import {useEffect} from "react";
 import {AnimeSeason} from "@/types/animeseason";
 
 type AnimeSeasonWatchStatus = {

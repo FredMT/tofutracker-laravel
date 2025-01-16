@@ -1,4 +1,4 @@
-import { Carousel } from "@mantine/carousel";
+import {Carousel} from "@mantine/carousel";
 import React from "react";
 import WelcomeCarouselCard from "./WelcomeCarouselCard";
 import WelcomeCustomCarousel from "./WelcomeCustomCarousel";

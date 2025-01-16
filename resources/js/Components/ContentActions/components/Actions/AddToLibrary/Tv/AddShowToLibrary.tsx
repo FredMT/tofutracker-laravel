@@ -1,8 +1,7 @@
-import { useContent } from "@/hooks/useContent";
 import {useForm, usePage} from "@inertiajs/react";
-import { Button } from "@mantine/core";
-import { notifications } from "@mantine/notifications";
-import { Check, CircleAlertIcon, PlusCircle } from "lucide-react";
+import {Button} from "@mantine/core";
+import {notifications} from "@mantine/notifications";
+import {Check, CircleAlertIcon, PlusCircle} from "lucide-react";
 import {TvShow} from "@/types";
 
 function AddShowToLibrary() {

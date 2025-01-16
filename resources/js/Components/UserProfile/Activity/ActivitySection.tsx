@@ -1,8 +1,8 @@
-import { router, usePage } from "@inertiajs/react";
-import { Stack, Text, Card } from "@mantine/core";
-import { PageProps as InertiaPageProps } from "@inertiajs/core";
-import { ActivityListItem } from "@/Components/UserProfile/Activity/ActivityListItem";
-import { useIntersection } from "@mantine/hooks";
+import {router, usePage} from "@inertiajs/react";
+import {Card, Stack, Text} from "@mantine/core";
+import {PageProps as InertiaPageProps} from "@inertiajs/core";
+import {ActivityListItem} from "@/Components/UserProfile/Activity/ActivityListItem";
+import {useIntersection} from "@mantine/hooks";
 import React from "react";
 
 interface PaginationLink {
@@ -82,7 +82,7 @@ export default function ActivitySection() {
             {activities_pagination.current_page <
                 activities_pagination.last_page && (
                 <Card
-                    ref={ref} // Add the intersection observer ref here
+                    ref={ref}
                     radius="md"
                     withBorder={false}
                     bg="transparent"

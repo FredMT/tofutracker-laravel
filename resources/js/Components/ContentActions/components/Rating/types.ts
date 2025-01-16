@@ -1,4 +1,4 @@
-import { Movie, TvShow } from "@/types";
+import {Movie, TvShow} from "@/types";
 
 export type Content = Movie | TvShow;
 

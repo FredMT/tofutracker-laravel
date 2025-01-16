@@ -1,9 +1,8 @@
-import { useAnimeContent } from "@/hooks/useAnimeContent";
 import {useForm, usePage} from "@inertiajs/react";
-import { Button } from "@mantine/core";
-import { notifications } from "@mantine/notifications";
-import { Check, CircleAlertIcon, PlusCircle } from "lucide-react";
-import {AnimeType, ContentType} from "@/types";
+import {Button} from "@mantine/core";
+import {notifications} from "@mantine/notifications";
+import {Check, CircleAlertIcon, PlusCircle} from "lucide-react";
+import {AnimeType} from "@/types";
 import {Anime} from "@/types/anime";
 
 export default function AddAnimeTvToLibrary() {

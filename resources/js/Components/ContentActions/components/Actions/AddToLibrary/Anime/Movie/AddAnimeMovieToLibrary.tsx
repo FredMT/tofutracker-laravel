@@ -1,8 +1,7 @@
-import { useAnimeContent } from "@/hooks/useAnimeContent";
 import {useForm, usePage} from "@inertiajs/react";
-import { Button } from "@mantine/core";
-import { notifications } from "@mantine/notifications";
-import { Check, CircleAlertIcon, PlusCircle } from "lucide-react";
+import {Button} from "@mantine/core";
+import {notifications} from "@mantine/notifications";
+import {Check, CircleAlertIcon, PlusCircle} from "lucide-react";
 import {Anime} from "@/types/anime";
 
 function AddAnimeMovieToLibrary() {

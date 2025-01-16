@@ -1,10 +1,9 @@
-import { useAnimeContent } from "@/hooks/useAnimeContent";
 import {Anime, AnimeRecommendation} from "@/types/anime";
-import { Carousel } from "@mantine/carousel";
-import { Stack, Title } from "@mantine/core";
+import {Carousel} from "@mantine/carousel";
+import {Stack, Title} from "@mantine/core";
 import AnimeRecommendedContentCard from "@/Components/Content/Shared/Anime/AnimeRecommendedContentCard";
-import { usePage } from "@inertiajs/react";
-import { CustomCarousel } from "@/Components/Shared/CustomCarousel";
+import {usePage} from "@inertiajs/react";
+import {CustomCarousel} from "@/Components/Shared/CustomCarousel";
 
 interface AnimeRecommendedContentProps {
     containerWidth: number;

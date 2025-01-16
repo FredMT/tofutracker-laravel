@@ -1,10 +1,7 @@
-import { useContent } from "@/hooks/useContent";
-import { useAnimeContent } from "@/hooks/useAnimeContent";
-import {Movie, PageProps, RegularContentDataType, RegularType, TvSeason, TvShow} from "@/types";
-import { getLanguageName } from "@/utils/formatter";
-import { Badge, Box, Group, Paper, Space, Text } from "@mantine/core";
-import { usePage } from "@inertiajs/react";
-import classes from "./ContentSummary.module.css";
+import {Movie, RegularContentDataType, RegularType, TvSeason, TvShow} from "@/types";
+import {getLanguageName} from "@/utils/formatter";
+import {Badge, Group, Paper, Text} from "@mantine/core";
+import {usePage} from "@inertiajs/react";
 
 export function RegularContentSummary() {
 

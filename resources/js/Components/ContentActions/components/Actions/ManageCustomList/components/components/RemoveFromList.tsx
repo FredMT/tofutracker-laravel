@@ -1,15 +1,9 @@
-import {
-    AnimeContentDataType,
-    ContentType,
-    FlashMessage,
-    RegularContentDataType,
-    TvShow,
-} from "@/types";
-import { usePage, useForm } from "@inertiajs/react";
-import { ActionIcon } from "@mantine/core";
-import { Minus } from "lucide-react";
-import { UserList } from "../../types";
-import { notifications } from "@mantine/notifications";
+import {AnimeContentDataType, ContentType, FlashMessage, RegularContentDataType,} from "@/types";
+import {useForm, usePage} from "@inertiajs/react";
+import {ActionIcon} from "@mantine/core";
+import {Minus} from "lucide-react";
+import {UserList} from "../../types";
+import {notifications} from "@mantine/notifications";
 
 type RemoveFromListProps = {
     list: UserList;

@@ -1,7 +1,7 @@
-import { Stack, TextInput, Button } from "@mantine/core";
-import { Plus, Search } from "lucide-react";
-import { ListContentProps } from"@/Components/ContentActions/components/Actions/ManageCustomList/types";
-import { ListItem } from "./components/ListItem";
+import {Button, Stack, TextInput} from "@mantine/core";
+import {Plus, Search} from "lucide-react";
+import {ListContentProps} from "@/Components/ContentActions/components/Actions/ManageCustomList/types";
+import {ListItem} from "./components/ListItem";
 
 export function ListContent({
     search,

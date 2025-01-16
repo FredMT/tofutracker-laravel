@@ -1,5 +1,5 @@
-import { Grid } from "@mantine/core";
-import { ReactNode } from "react";
+import {Grid} from "@mantine/core";
+import {ReactNode} from "react";
 import classes from "./UserMovieLayout.module.css";
 
 interface UserMovieLayoutProps {

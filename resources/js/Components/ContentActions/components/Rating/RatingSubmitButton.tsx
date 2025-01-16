@@ -1,6 +1,6 @@
-import { AnimeUserLibrary, BaseUserLibrary, ContentType } from "@/types";
-import { usePage } from "@inertiajs/react";
-import { Button } from "@mantine/core";
+import {AnimeUserLibrary, BaseUserLibrary, ContentType} from "@/types";
+import {usePage} from "@inertiajs/react";
+import {Button} from "@mantine/core";
 
 interface RatingSubmitButtonProps {
     rating: number;

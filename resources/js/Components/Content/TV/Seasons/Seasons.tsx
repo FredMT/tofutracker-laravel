@@ -1,9 +1,7 @@
-import { useAnimeContent } from "@/hooks/useAnimeContent";
-import { usePage } from "@inertiajs/react";
+import {usePage} from "@inertiajs/react";
 import AnimeSeasons from "./AnimeSeasons";
 import RegularSeasons from "./RegularSeasons";
-import {AnimeContentDataType, ContentType} from "@/types";
-import {Anime} from "@/types/anime";
+import {ContentType} from "@/types";
 
 interface SeasonsProps {
     containerWidth: number;

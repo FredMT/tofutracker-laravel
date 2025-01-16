@@ -1,7 +1,7 @@
-import { Anime } from "@/types/anime";
-import { Config } from "ziggy-js";
-import { WatchStatus } from "./enums";
-import { AnimeSeason } from "@/types/animeseason";
+import {Anime} from "@/types/anime";
+import {Config} from "ziggy-js";
+import {WatchStatus} from "./enums";
+import {AnimeSeason} from "@/types/animeseason";
 
 export interface Auth {
     user: User | null;

@@ -1,11 +1,13 @@
-import { usePage, router, Link } from "@inertiajs/react";
-import { useDisclosure, useMediaQuery } from "@mantine/hooks";
-import { useState } from "react";
-import { UserLists } from "@/Components/ContentActions/components/Actions/ManageCustomList/types";
-import MobileAddToList from "@/Components/ContentActions/components/Actions/ManageCustomList/components/MobileAddToList";
-import DesktopAddToList from "@/Components/ContentActions/components/Actions/ManageCustomList/components/DesktopAddToList";
-import { Button } from "@mantine/core";
-import { Auth } from "@/types";
+import {Link, usePage} from "@inertiajs/react";
+import {useDisclosure, useMediaQuery} from "@mantine/hooks";
+import {useState} from "react";
+import {UserLists} from "@/Components/ContentActions/components/Actions/ManageCustomList/types";
+import MobileAddToList
+    from "@/Components/ContentActions/components/Actions/ManageCustomList/components/MobileAddToList";
+import DesktopAddToList
+    from "@/Components/ContentActions/components/Actions/ManageCustomList/components/DesktopAddToList";
+import {Button} from "@mantine/core";
+import {Auth} from "@/types";
 
 export default function ManageCustomList() {
     const { user_lists: lists, auth } = usePage<{

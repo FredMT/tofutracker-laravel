@@ -1,8 +1,8 @@
 import ContentEpisodeCard from "@/Components/Content/Episodes/ContentEpisodeCard";
-import { AnimeSeason } from "@/types/animeseason";
-import { usePage } from "@inertiajs/react";
-import { Button, Space, Spoiler, Stack, Tabs, Title } from "@mantine/core";
-import { useState } from "react";
+import {AnimeSeason} from "@/types/animeseason";
+import {usePage} from "@inertiajs/react";
+import {Button, Space, Spoiler, Stack, Tabs, Title} from "@mantine/core";
+import {useState} from "react";
 
 function AnimeContentEpisodes() {
     const { data } = usePage<{ data: AnimeSeason }>().props;

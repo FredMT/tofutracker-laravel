@@ -1,6 +1,6 @@
-import { Button, Flex, ScrollArea, Stack, Text, Title } from "@mantine/core";
+import {Button, Flex, ScrollArea, Stack, Text, Title} from "@mantine/core";
 import classes from "./UserProfileInfo.module.css";
-import { Link, usePage } from "@inertiajs/react";
+import {Link, usePage} from "@inertiajs/react";
 
 interface UserProfileInfoProps {
     username: string;
@@ -77,7 +77,7 @@ export function UserProfileInfo({ username, createdAt }: UserProfileInfoProps) {
                     </Button>
                     <Button
                         bg={`${
-                            component === "UserCustomList"
+                            component === "UserCustomLists"
                                 ? "violet.9"
                                 : "#222222"
                         }`}

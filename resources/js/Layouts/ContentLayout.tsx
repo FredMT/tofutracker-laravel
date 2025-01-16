@@ -1,4 +1,4 @@
-import { Flex } from "@mantine/core";
+import {Flex} from "@mantine/core";
 import classes from "./ContentLayout.module.css";
 
 interface Props {
