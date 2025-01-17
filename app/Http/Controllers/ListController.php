@@ -105,8 +105,73 @@ class ListController extends Controller
             ];
         });
 
+        // Calculate stats before converting to array
+        $movieCount = $list->items->where('listable_type', Movie::class)->count();
+        $tvCount = $list->items->whereIn('listable_type', [TvShow::class, TvSeason::class])->count();
+        $animeCount = $list->items->whereIn('listable_type', [AnimeMap::class, AnidbAnime::class])->count();
+
+        $totalRating = 0;
+        $ratedItemCount = 0;
+        $totalRuntime = 0;
+        $processedAnimeIds = [];
+
+        foreach ($list->items as $item) {
+            if ($item->listable && isset($item->listable->voteAverage)) {
+                $totalRating += $item->listable->voteAverage;
+                $ratedItemCount++;
+            }
+
+            // Calculate runtime based on type
+            if ($item->listable) {
+                switch (get_class($item->listable)) {
+                    case Movie::class:
+                        $totalRuntime += $item->listable->runtime ?? 0;
+                        break;
+
+                    case TvShow::class:
+                        $totalRuntime += $item->listable->runtime;
+                        break;
+
+                    case TvSeason::class:
+                        $totalRuntime += $item->listable->runtime;
+                        break;
+
+                    case AnimeMap::class:
+                        $totalRuntime += $item->listable->runtime ?? 0;
+                        $processedAnimeIds[] = $item->listable->id;
+                        break;
+
+                    case AnidbAnime::class:
+                        if (!$item->listable->map() || !in_array($item->listable->map(), $processedAnimeIds)) {
+                            $totalRuntime += $item->listable->runtime ?? 0;
+                        }
+                        break;
+                }
+            }
+        }
+
+        $hours = floor($totalRuntime / 60); 
+$minutes = $totalRuntime % 60;
+
+if ($hours > 0) {
+    $formattedRuntime = "{$hours}h {$minutes}m";
+} else {
+    $formattedRuntime = "{$minutes}m";
+}
+
+        $stats = [
+            'total' => $items->count(),
+            'movies' => $movieCount,
+            'tv' => $tvCount,
+            'anime' => $animeCount,
+            'average_rating' => $ratedItemCount > 0 ? round($totalRating / $ratedItemCount, 2) : null,
+            'total_runtime' => $formattedRuntime,
+        ];
+
+        // Now convert to array and add stats
         $list = $list->toArray();
         $list['items'] = $items;
+        $list['stats'] = $stats;
 
         return Inertia::render('List', [
             'list' => $list,

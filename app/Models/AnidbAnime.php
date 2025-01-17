@@ -56,6 +56,15 @@ class AnidbAnime extends Model
         });
     }
 
+    public function runtime(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->episodes()
+                ->where('type', 1)
+                ->sum('length');
+        });
+    }
+
     public function characters(): HasMany
     {
         return $this->hasMany(AnidbCharacter::class, 'anime_id');
@@ -69,6 +78,13 @@ class AnidbAnime extends Model
     }
 
     public function rating(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->getRawOriginal('rating');
+        });
+    }
+
+    public function voteAverage(): Attribute
     {
         return Attribute::get(function () {
             return $this->getRawOriginal('rating');

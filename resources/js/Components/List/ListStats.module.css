@@ -1,0 +1,30 @@
+.container {
+    position: relative;
+    width: 100%;
+    min-height: 100px;
+    margin-bottom: var(--mantine-spacing-lg);
+    border-radius: var(--mantine-radius-md);
+    overflow: hidden;
+}
+.content {
+    position: relative;
+    width: 100%;
+    min-height: 100px;
+    padding: var(--mantine-spacing-md);
+    background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.8));
+    backdrop-filter: blur(8px);
+}
+
+.stat {
+    min-width: 80px;
+}
+
+@media (max-width: 36em) {
+    .content {
+        padding: var(--mantine-spacing-xs);
+    }
+
+    .stat {
+        min-width: 70px;
+    }
+}

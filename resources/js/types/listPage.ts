@@ -7,6 +7,7 @@ export type ListPage = {
     description: string | null;
     items: ListItem[];
     is_public: boolean;
+    stats: ListStats;
 };
 
 type ListUser = {
@@ -27,4 +28,13 @@ export type ListItem = {
     vote_average: number;
     year: number;
     sort_order: number;
+};
+
+export type ListStats = {
+    anime: number;
+    average_rating: number;
+    movies: number;
+    total: number;
+    tv: number;
+    total_runtime: string;
 };
