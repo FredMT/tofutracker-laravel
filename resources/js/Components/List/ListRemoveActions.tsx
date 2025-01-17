@@ -2,12 +2,12 @@ import { Button, Group } from "@mantine/core";
 import { useListStore } from "@/stores/listStore";
 import { router } from "@inertiajs/react";
 
-interface RemoveActionsProps {
+interface ListRemoveActionsProps {
     listId: number;
     isOwner: boolean;
 }
 
-export function RemoveActions({ listId, isOwner }: RemoveActionsProps) {
+export function ListRemoveActions({ listId, isOwner }: ListRemoveActionsProps) {
     const { isRemoving, hasChanges, removedItems, setIsRemoving } =
         useListStore();
 

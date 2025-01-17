@@ -3,7 +3,7 @@ import { Link } from "@inertiajs/react";
 import { ListItem } from "@/types/listPage";
 import ListItemCardContent from "./ListItemCardContent";
 import { useListStore } from "@/stores/listStore";
-import { RemoveItemButton } from "./RemoveItemButton";
+import { ListRemoveItemButton } from "./ListRemoveItemButton";
 
 interface ListItemCardProps {
     item: ListItem;
@@ -35,7 +35,7 @@ export function ListItemCard({ item, isEditing = false }: ListItemCardProps) {
             style={{ background: "rgba(0, 0, 0, 0)", position: "relative" }}
             shadow="none"
         >
-            {isRemoving && <RemoveItemButton itemId={item.id} />}
+            {isRemoving && <ListRemoveItemButton itemId={item.id} />}
             {item.link && !isEditing && !isRemoving ? (
                 <Link href={item.link} prefetch>
                     {content}

@@ -16,7 +16,7 @@ interface EditListFormProps {
     onClose: () => void;
 }
 
-export function EditListForm({ list, onClose }: EditListFormProps) {
+export function ListEditForm({ list, onClose }: EditListFormProps) {
     const { auth } = usePage<PageProps>().props;
     const form = useForm({
         title: list.title,

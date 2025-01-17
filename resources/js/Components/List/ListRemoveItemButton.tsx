@@ -2,11 +2,11 @@ import { ActionIcon } from "@mantine/core";
 import { XIcon } from "lucide-react";
 import { useListStore } from "@/stores/listStore";
 
-interface RemoveItemButtonProps {
+interface ListRemoveItemButtonProps {
     itemId: number;
 }
 
-export function RemoveItemButton({ itemId }: RemoveItemButtonProps) {
+export function ListRemoveItemButton({ itemId }: ListRemoveItemButtonProps) {
     const { removeItem } = useListStore();
 
     return (

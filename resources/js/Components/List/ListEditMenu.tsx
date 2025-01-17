@@ -11,7 +11,7 @@ import { useListStore } from "@/stores/listStore";
 import { useAddItemsStore } from "@/stores/addItemsStore";
 import { AddItemsModal } from "./AddItems/AddItemsModal";
 import { useDisclosure } from "@mantine/hooks";
-import { DeleteList } from "./DeleteList";
+import { ListDelete } from "./ListDelete";
 import { usePage } from "@inertiajs/react";
 import { PageProps } from "@/types";
 
@@ -74,7 +74,7 @@ export function ListEditMenu({ listId, onOpenEditDetails }: ListEditMenuProps) {
                 </Menu.Dropdown>
             </Menu>
             <AddItemsModal listId={listId} />
-            <DeleteList
+            <ListDelete
                 listId={listId}
                 username={auth.user.username}
                 opened={opened}

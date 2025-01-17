@@ -9,8 +9,8 @@ import { PageProps } from "@/types";
 import { useListStore } from "@/stores/listStore";
 import { useEffect } from "react";
 import { ListActions } from "@/Components/List/ListActions";
-import { RemoveActions } from "@/Components/List/RemoveActions";
-import { EditListModal } from "@/Components/List/EditListModal";
+import { ListRemoveActions } from "@/Components/List/ListRemoveActions";
+import { ListEditModal } from "@/Components/List/ListEditModal";
 import { useDisclosure } from "@mantine/hooks";
 import { ListEditMenu } from "@/Components/List/ListEditMenu";
 import { ListStats } from "@/Components/List/ListStats";
@@ -74,7 +74,7 @@ export default function List({ list }: { list: ListPage }) {
                                 />
                             )}
                             {isRemoving && (
-                                <RemoveActions
+                                <ListRemoveActions
                                     listId={list.id}
                                     isOwner={isOwner}
                                 />
@@ -88,7 +88,7 @@ export default function List({ list }: { list: ListPage }) {
                     />
                 </Stack>
             </BoundedContainer>
-            <EditListModal list={list} opened={opened} onClose={close} />
+            <ListEditModal list={list} opened={opened} onClose={close} />
         </>
     );
 }

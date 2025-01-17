@@ -1,6 +1,6 @@
 import { Drawer, Modal } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
-import { EditListForm } from "./EditListForm";
+import { ListEditForm } from "./ListEditForm";
 import { ListPage } from "@/types/listPage";
 
 interface EditListModalProps {
@@ -9,10 +9,10 @@ interface EditListModalProps {
     onClose: () => void;
 }
 
-export function EditListModal({ list, opened, onClose }: EditListModalProps) {
+export function ListEditModal({ list, opened, onClose }: EditListModalProps) {
     const isMobile = useMediaQuery("(max-width: 48em)");
 
-    const content = <EditListForm list={list} onClose={onClose} />;
+    const content = <ListEditForm list={list} onClose={onClose} />;
 
     if (isMobile) {
         return (

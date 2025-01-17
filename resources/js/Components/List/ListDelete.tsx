@@ -3,19 +3,19 @@ import { useMediaQuery } from "@mantine/hooks";
 import { router } from "@inertiajs/react";
 import { useState } from "react";
 
-interface DeleteListProps {
+interface ListDeleteProps {
     listId: number;
     username: string;
     opened: boolean;
     onClose: () => void;
 }
 
-export function DeleteList({
+export function ListDelete({
     listId,
     username,
     opened,
     onClose,
-}: DeleteListProps) {
+}: ListDeleteProps) {
     const isMobile = useMediaQuery("(max-width: 48em)");
     const [isConfirming, setIsConfirming] = useState(false);
 

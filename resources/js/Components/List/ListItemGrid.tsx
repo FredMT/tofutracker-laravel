@@ -20,7 +20,7 @@ import {
 } from "@dnd-kit/sortable";
 import { useState } from "react";
 import { ListItemCard } from "@/Components/List/ListItemCard";
-import { SortableListItem } from "@/Components/List/SortableListItem";
+import { ListSortableItem } from "@/Components/List/ListSortableItem";
 import { InfoIcon } from "lucide-react";
 
 interface ListItemGridProps {
@@ -132,7 +132,7 @@ export function ListItemGrid({
                             wrap="wrap"
                         >
                             {sortedItems.map((item) => (
-                                <SortableListItem key={item.id} item={item} />
+                                <ListSortableItem key={item.id} item={item} />
                             ))}
                         </Flex>
                     </SortableContext>

@@ -3,11 +3,11 @@ import {CSS} from "@dnd-kit/utilities";
 import {ListItem} from "@/types/listPage";
 import {ListItemCard} from "@/Components/List/ListItemCard";
 
-interface SortableListItemProps {
+interface ListSortableItemProps {
     item: ListItem;
 }
 
-export function SortableListItem({ item }: SortableListItemProps) {
+export function ListSortableItem({ item }: ListSortableItemProps) {
     const {
         attributes,
         listeners,
