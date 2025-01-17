@@ -1,9 +1,9 @@
-import {Image} from "@mantine/core";
-import {useState} from "react";
+import { Image } from "@mantine/core";
+import { useState } from "react";
 import classes from "./ListBanner.module.css";
-import {Auth} from "@/types";
-import {usePage} from "@inertiajs/react";
-import {BannerActions} from "@/Components/List/BannerActions/BannerActions";
+import { Auth } from "@/types";
+import { usePage } from "@inertiajs/react";
+import { BannerActions } from "@/Components/List/BannerActions/BannerActions";
 
 interface BannerProps {
     bannerImage: string | null;

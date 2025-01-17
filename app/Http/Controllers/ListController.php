@@ -105,7 +105,6 @@ class ListController extends Controller
             ];
         });
 
-        // Calculate stats before converting to array
         $movieCount = $list->items->where('listable_type', Movie::class)->count();
         $tvCount = $list->items->whereIn('listable_type', [TvShow::class, TvSeason::class])->count();
         $animeCount = $list->items->whereIn('listable_type', [AnimeMap::class, AnidbAnime::class])->count();
@@ -142,7 +141,7 @@ class ListController extends Controller
                         break;
 
                     case AnidbAnime::class:
-                        if (!$item->listable->map() || !in_array($item->listable->map(), $processedAnimeIds)) {
+                        if (! $item->listable->map() || ! in_array($item->listable->map(), $processedAnimeIds)) {
                             $totalRuntime += $item->listable->runtime ?? 0;
                         }
                         break;
@@ -150,14 +149,14 @@ class ListController extends Controller
             }
         }
 
-        $hours = floor($totalRuntime / 60); 
-$minutes = $totalRuntime % 60;
+        $hours = floor($totalRuntime / 60);
+        $minutes = $totalRuntime % 60;
 
-if ($hours > 0) {
-    $formattedRuntime = "{$hours}h {$minutes}m";
-} else {
-    $formattedRuntime = "{$minutes}m";
-}
+        if ($hours > 0) {
+            $formattedRuntime = "{$hours}h {$minutes}m";
+        } else {
+            $formattedRuntime = "{$minutes}m";
+        }
 
         $stats = [
             'total' => $items->count(),
@@ -168,7 +167,6 @@ if ($hours > 0) {
             'total_runtime' => $formattedRuntime,
         ];
 
-        // Now convert to array and add stats
         $list = $list->toArray();
         $list['items'] = $items;
         $list['stats'] = $stats;
@@ -193,7 +191,6 @@ if ($hours > 0) {
                 return back()->withErrors(['banner' => 'No file was uploaded.']);
             }
 
-            // Clean up any existing custom banners for this list
             try {
                 Storage::disk('spaces')->deleteDirectory("listBanners/{$list->id}");
             } catch (\Exception $e) {
@@ -427,22 +424,23 @@ if ($hours > 0) {
             $cases = [];
             $ids = [];
             foreach ($remainingItems as $index => $id) {
-                $cases[] = "WHEN {$id} THEN " . ($index + 1);
+                $cases[] = "WHEN {$id} THEN ".($index + 1);
                 $ids[] = $id;
             }
 
-            if (!empty($cases)) {
+            if (! empty($cases)) {
 
                 $list->items()
                     ->whereIn('id', $ids)
                     ->update([
-                        'sort_order' => DB::raw("CASE id " . implode(' ', $cases) . " END"),
+                        'sort_order' => DB::raw('CASE id '.implode(' ', $cases).' END'),
                     ]);
             }
 
             return back()->with('status', 'Items removed successfully.');
         } catch (\Exception $e) {
-            logger()->error('List items removal failed: ' . $e->getMessage());
+            logger()->error('List items removal failed: '.$e->getMessage());
+
             return back()->withErrors(['items' => 'Failed to remove items. Please try again.']);
         }
     }

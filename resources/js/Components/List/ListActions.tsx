@@ -8,8 +8,14 @@ interface ListActionsProps {
 }
 
 export function ListActions({ listId, isOwner }: ListActionsProps) {
-    const { isEditing, hasChanges, items, setIsEditing, resetToOriginal } =
-        useListStore();
+    const {
+        isEditing,
+        hasChanges,
+        items,
+        setIsEditing,
+        resetToOriginal,
+        setOriginalItems,
+    } = useListStore();
 
     const handleSave = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -23,6 +29,7 @@ export function ListActions({ listId, isOwner }: ListActionsProps) {
             },
             {
                 onSuccess: () => {
+                    setOriginalItems(items);
                     setIsEditing(false);
                 },
                 preserveScroll: true,

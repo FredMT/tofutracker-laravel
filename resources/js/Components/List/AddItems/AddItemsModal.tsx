@@ -48,6 +48,7 @@ export function AddItemsModal({ listId }: AddItemsModalProps) {
                 onChange={(e) => setQuery(e.currentTarget.value)}
                 leftSection={<Search size={16} />}
                 rightSection={loading && <Loader size="xs" />}
+                mt={8}
             />
             <Stack gap="xs">
                 {error ? (

@@ -17,8 +17,14 @@ import { ListStats } from "@/Components/List/ListStats";
 
 export default function List({ list }: { list: ListPage }) {
     const { auth } = usePage<PageProps>().props;
-    const { setItems, setOriginalItems, isEditing, isRemoving } =
-        useListStore();
+    const {
+        setItems,
+        setOriginalItems,
+        isEditing,
+        isRemoving,
+        items,
+        handleOrderChange,
+    } = useListStore();
     const [opened, { open, close }] = useDisclosure(false);
 
     const isOwner = list.user.id === auth.user?.id;
@@ -53,6 +59,7 @@ export default function List({ list }: { list: ListPage }) {
                                 {list.description}
                             </Title>
                         )}
+                        <ListStats list={list} />
                         <Group justify="flex-end">
                             {isOwner && !isEditing && !isRemoving && (
                                 <ListEditMenu
@@ -74,8 +81,11 @@ export default function List({ list }: { list: ListPage }) {
                             )}
                         </Group>
                     </Stack>
-                    <ListStats list={list} />
-                    <ListItemGrid items={list.items} isEditing={isEditing} />
+                    <ListItemGrid
+                        items={items}
+                        isEditing={isEditing}
+                        onOrderChange={handleOrderChange}
+                    />
                 </Stack>
             </BoundedContainer>
             <EditListModal list={list} opened={opened} onClose={close} />

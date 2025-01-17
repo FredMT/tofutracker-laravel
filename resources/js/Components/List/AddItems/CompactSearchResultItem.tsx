@@ -43,7 +43,9 @@ export function CompactSearchResultItem({
 
     const handleAdd = () => {
         setIsLoading(true);
-        addItemToList(listId, media_type, id, anime_type);
+        addItemToList(listId, media_type, id, anime_type, () => {
+            setIsLoading(false);
+        });
         onItemAdded(id);
     };
 

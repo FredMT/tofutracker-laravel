@@ -1,4 +1,4 @@
-import { BackgroundImage, Divider, Group, Stack, Text } from "@mantine/core";
+import { BackgroundImage, Group, Stack, Text } from "@mantine/core";
 import { ListPage } from "@/types/listPage";
 import classes from "./ListStats.module.css";
 
@@ -28,52 +28,40 @@ export function ListStats({ list }: ListStatsProps) {
                         <Text size="xl" fw={700}>
                             {stats.total}
                         </Text>
-                        <Text size="sm" c="dimmed">
-                            Total Items
-                        </Text>
+                        <Text size="sm">Total Items</Text>
                     </Stack>
 
                     <Stack gap={0} align="center" className={classes.stat}>
                         <Text size="xl" fw={700}>
                             {stats.movies}
                         </Text>
-                        <Text size="sm" c="dimmed">
-                            Movies
-                        </Text>
+                        <Text size="sm">Movies</Text>
                     </Stack>
                     <Stack gap={0} align="center" className={classes.stat}>
                         <Text size="xl" fw={700}>
                             {stats.tv}
                         </Text>
-                        <Text size="sm" c="dimmed">
-                            TV Shows
-                        </Text>
+                        <Text size="sm">TV Shows</Text>
                     </Stack>
                     <Stack gap={0} align="center" className={classes.stat}>
                         <Text size="xl" fw={700}>
                             {stats.anime}
                         </Text>
-                        <Text size="sm" c="dimmed">
-                            Anime
-                        </Text>
+                        <Text size="sm">Anime</Text>
                     </Stack>
 
                     <Stack gap={0} align="center" className={classes.stat}>
                         <Text size="xl" fw={700}>
                             {stats.average_rating ?? "-"}
                         </Text>
-                        <Text size="sm" c="dimmed">
-                            Average Rating
-                        </Text>
+                        <Text size="sm">Average Rating</Text>
                     </Stack>
 
                     <Stack gap={0} align="center" className={classes.stat}>
                         <Text size="xl" fw={700}>
                             {stats.total_runtime}
                         </Text>
-                        <Text size="sm" c="dimmed">
-                            Total Runtime
-                        </Text>
+                        <Text size="sm">Total Runtime</Text>
                     </Stack>
                 </Group>
             </div>

@@ -11,7 +11,8 @@ interface AddItemsStore {
         listId: number,
         itemType: string,
         itemId: number,
-        animeType?: string
+        animeType?: string,
+        onComplete?: () => void
     ) => void;
 }
 
@@ -20,7 +21,7 @@ export const useAddItemsStore = create<AddItemsStore>((set) => ({
     setIsOpen: (isOpen) => set({ isOpen }),
     query: "",
     setQuery: (query) => set({ query }),
-    addItemToList: (listId, itemType, itemId, animeType) => {
+    addItemToList: (listId, itemType, itemId, animeType, onComplete) => {
         router.post(
             route("user.lists.items.store"),
             {
@@ -32,10 +33,11 @@ export const useAddItemsStore = create<AddItemsStore>((set) => ({
                 preserveScroll: true,
                 preserveState: true,
                 onSuccess: () => {
-                    // Keep the modal open to allow adding more items
+                    onComplete?.();
                 },
                 onError: (errors) => {
                     console.error("Failed to add item to list:", errors);
+                    onComplete?.();
                 },
             }
         );

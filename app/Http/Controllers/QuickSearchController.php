@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Anime\GetAnimeTypeAction;
 use App\Models\AnimeMap;
 use App\Services\TmdbService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Validator;
-use App\Actions\Anime\GetAnimeTypeAction;
 
 class QuickSearchController extends Controller
 {
     private TmdbService $tmdbService;
+
     private GetAnimeTypeAction $getAnimeTypeAction;
 
     public function __construct(TmdbService $tmdbService, GetAnimeTypeAction $getAnimeTypeAction)

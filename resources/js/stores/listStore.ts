@@ -42,12 +42,17 @@ export const useListStore = create<ListStore>((set, get) => ({
     },
     handleOrderChange: (newItems) => {
         const { originalItems } = get();
-        const hasOrderChanged = newItems.some((item) => {
+        const updatedItems = newItems.map((item, index) => ({
+            ...item,
+            sort_order: index + 1,
+        }));
+
+        const hasOrderChanged = updatedItems.some((item) => {
             const originalItem = originalItems.find((i) => i.id === item.id);
             return originalItem && originalItem.sort_order !== item.sort_order;
         });
 
-        set({ items: newItems, hasChanges: hasOrderChanged });
+        set({ items: updatedItems, hasChanges: hasOrderChanged });
     },
     removeItem: (itemId) => {
         const { items, removedItems } = get();

@@ -127,7 +127,7 @@ export function ListItemGrid({
                     >
                         <Flex
                             gap="md"
-                            justify="flex-start"
+                            justify="center"
                             align="flex-start"
                             wrap="wrap"
                         >
@@ -152,7 +152,7 @@ export function ListItemGrid({
     }
 
     return (
-        <Flex gap="md" justify="flex-start" align="flex-start" wrap="wrap">
+        <Flex gap="md" justify="center" align="flex-start" wrap="wrap">
             {sortedItems.map((item) => (
                 <ListItemCard key={item.id} item={item} isEditing={isEditing} />
             ))}

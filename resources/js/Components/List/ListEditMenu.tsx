@@ -1,5 +1,12 @@
 import { Button, Menu } from "@mantine/core";
-import { ListOrdered, Plus, Settings2, Trash2, X } from "lucide-react";
+import {
+    ListOrdered,
+    PencilIcon,
+    Plus,
+    Settings2,
+    Trash2,
+    X,
+} from "lucide-react";
 import { useListStore } from "@/stores/listStore";
 import { useAddItemsStore } from "@/stores/addItemsStore";
 import { AddItemsModal } from "./AddItems/AddItemsModal";
@@ -25,7 +32,9 @@ export function ListEditMenu({ listId, onOpenEditDetails }: ListEditMenuProps) {
         <>
             <Menu shadow="md" width={200}>
                 <Menu.Target>
-                    <Button>Edit List</Button>
+                    <Button leftSection={<PencilIcon size={16} />}>
+                        Edit List
+                    </Button>
                 </Menu.Target>
 
                 <Menu.Dropdown>
