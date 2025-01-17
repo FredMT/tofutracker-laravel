@@ -1,8 +1,12 @@
 import { Button, Menu } from "@mantine/core";
-import { ListOrdered, Plus, Settings2, Trash2 } from "lucide-react";
+import { ListOrdered, Plus, Settings2, Trash2, X } from "lucide-react";
 import { useListStore } from "@/stores/listStore";
 import { useAddItemsStore } from "@/stores/addItemsStore";
 import { AddItemsModal } from "./AddItems/AddItemsModal";
+import { useDisclosure } from "@mantine/hooks";
+import { DeleteList } from "./DeleteList";
+import { usePage } from "@inertiajs/react";
+import { PageProps } from "@/types";
 
 interface ListEditMenuProps {
     listId: number;
@@ -10,8 +14,12 @@ interface ListEditMenuProps {
 }
 
 export function ListEditMenu({ listId, onOpenEditDetails }: ListEditMenuProps) {
+    const { auth } = usePage<PageProps>().props;
     const { setIsEditing, setIsRemoving } = useListStore();
     const { setIsOpen } = useAddItemsStore();
+    const [opened, { open, close }] = useDisclosure(false);
+
+    if (!auth.user) return null;
 
     return (
         <>
@@ -46,9 +54,23 @@ export function ListEditMenu({ listId, onOpenEditDetails }: ListEditMenuProps) {
                     >
                         Remove Items
                     </Menu.Item>
+                    <Menu.Divider />
+                    <Menu.Item
+                        leftSection={<X size={14} />}
+                        onClick={open}
+                        color="red"
+                    >
+                        Delete List
+                    </Menu.Item>
                 </Menu.Dropdown>
             </Menu>
             <AddItemsModal listId={listId} />
+            <DeleteList
+                listId={listId}
+                username={auth.user.username}
+                opened={opened}
+                onClose={close}
+            />
         </>
     );
 }

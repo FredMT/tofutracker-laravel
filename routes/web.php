@@ -118,7 +118,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('user.lists.store');
     Route::patch('/user/lists/{list}', [UserCustomListController::class, 'update'])
         ->name('user.lists.update');
-    Route::delete('/user/lists/{list}', [UserCustomListController::class, 'destroy'])
+    Route::delete('/user/lists/{username}/{list}', [UserCustomListController::class, 'destroy'])
         ->name('user.lists.destroy');
 
     Route::post('/user/lists/items/store', [UserCustomListItemController::class, 'store'])
