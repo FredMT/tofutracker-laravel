@@ -28,16 +28,16 @@ export function ListEditMenu({ listId, onOpenEditDetails }: ListEditMenuProps) {
                         Edit Details
                     </Menu.Item>
                     <Menu.Item
-                        leftSection={<ListOrdered size={14} />}
-                        onClick={() => setIsEditing(true)}
-                    >
-                        Edit Order
-                    </Menu.Item>
-                    <Menu.Item
                         leftSection={<Plus size={14} />}
                         onClick={() => setIsOpen(true)}
                     >
                         Add Items
+                    </Menu.Item>
+                    <Menu.Item
+                        leftSection={<ListOrdered size={14} />}
+                        onClick={() => setIsEditing(true)}
+                    >
+                        Edit Order
                     </Menu.Item>
                     <Menu.Item
                         leftSection={<Trash2 size={14} />}
