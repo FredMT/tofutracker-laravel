@@ -125,6 +125,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('user.lists.items.store');
     Route::delete('/user/lists/items/destroy', [UserCustomListItemController::class, 'destroy'])
         ->name('user.lists.items.destroy');
+    Route::post('/list/{list}/remove-items', [ListController::class, 'removeItems'])->name('list.removeItems');
 });
 
 Route::get('/movie/{id}', [MovieController::class, 'show'])

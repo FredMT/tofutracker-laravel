@@ -1,4 +1,4 @@
-import {Badge, Group, Image, Space, Stack, Text} from "@mantine/core";
+import { Badge, Group, Image, Space, Stack, Text } from "@mantine/core";
 
 interface SearchResultItemProps {
     id: number;

@@ -1,23 +1,18 @@
-import {useEffect, useRef, useState} from "react";
-import {Combobox, Group, Loader, Text, TextInput, useCombobox,} from "@mantine/core";
-import {ArrowRight, Rocket, Search, SearchCheck} from "lucide-react";
-import {Link, usePage} from "@inertiajs/react";
-import {useDebouncedValue} from "@mantine/hooks";
+import { useEffect, useRef, useState } from "react";
+import {
+    Combobox,
+    Group,
+    Loader,
+    Text,
+    TextInput,
+    useCombobox,
+} from "@mantine/core";
+import { ArrowRight, Rocket, Search, SearchCheck } from "lucide-react";
+import { Link, usePage } from "@inertiajs/react";
+import { useDebouncedValue } from "@mantine/hooks";
 import styles from "./SearchBar.module.css";
 import SearchResultItem from "./SearchResultItem";
-
-interface SearchResult {
-    id: number;
-    title: string;
-    media_type: string;
-    year: string;
-    poster_path: string | null;
-    genres: string[];
-}
-
-interface SearchResponse {
-    results: { [key: string]: SearchResult };
-}
+import { SearchResponse, SearchResult } from "@/types/quickSearch";
 
 interface SearchBarProps {
     onOpenChange?: (opened: boolean) => void;
@@ -53,9 +48,15 @@ export default function SearchBar({ onOpenChange }: SearchBarProps) {
         setLoading(true);
 
         try {
-            const response = await fetch(route("quicksearch", { q: query }), {
-                signal: abortController.current.signal,
-            });
+            const response = await fetch(
+                route("quicksearch", {
+                    q: query,
+                    max_results: 4,
+                }),
+                {
+                    signal: abortController.current.signal,
+                }
+            );
             const data: SearchResponse = await response.json();
             const resultsArray = Object.values(data.results || {});
             setResults(resultsArray);

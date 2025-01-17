@@ -1,19 +1,30 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
 import { ListPage } from "@/types/listPage";
-import { Head, usePage } from "@inertiajs/react";
+import { Head, Link, usePage } from "@inertiajs/react";
 import { ListBanner } from "@/Components/List/ListBanner";
-import { Stack, Title } from "@mantine/core";
+import { Stack, Title, Group, Grid, Anchor } from "@mantine/core";
 import BoundedContainer from "@/Components/BoundedContainer";
 import { ListItemGrid } from "@/Components/List/ListItemGrid";
 import { PageProps } from "@/types";
 import { useListStore } from "@/stores/listStore";
 import { useEffect } from "react";
 import { ListActions } from "@/Components/List/ListActions";
+import { RemoveActions } from "@/Components/List/RemoveActions";
+import { EditListModal } from "@/Components/List/EditListModal";
+import { useDisclosure } from "@mantine/hooks";
+import { ListEditMenu } from "@/Components/List/ListEditMenu";
 
 export default function List({ list }: { list: ListPage }) {
     const { auth } = usePage<PageProps>().props;
-    const { items, setItems, setOriginalItems, handleOrderChange, isEditing } =
-        useListStore();
+    const {
+        items,
+        setItems,
+        setOriginalItems,
+        handleOrderChange,
+        isEditing,
+        isRemoving,
+    } = useListStore();
+    const [opened, { open, close }] = useDisclosure(false);
 
     const isOwner = auth.user?.id === list.user.id;
 
@@ -34,11 +45,37 @@ export default function List({ list }: { list: ListPage }) {
             <BoundedContainer>
                 <Stack gap="lg">
                     <Stack gap={8}>
-                        <Title order={1}>{list.title}</Title>
+                        <Group align="end">
+                            <Title order={1}>{list.title}</Title>
+                            <Anchor
+                                component={Link}
+                                href={route("user.profile", list.user.username)}
+                                c="dimmed"
+                            >{`Created by ${list.user.username}`}</Anchor>
+                        </Group>
                         <Title order={4} fw={300}>
                             {list.description}
                         </Title>
-                        <ListActions listId={list.id} isOwner={isOwner} />
+                        <Group justify="flex-end">
+                            {isOwner && !isEditing && !isRemoving && (
+                                <ListEditMenu
+                                    onOpenEditDetails={open}
+                                    listId={list.id}
+                                />
+                            )}
+                            {isEditing && (
+                                <ListActions
+                                    listId={list.id}
+                                    isOwner={isOwner}
+                                />
+                            )}
+                            {isRemoving && (
+                                <RemoveActions
+                                    listId={list.id}
+                                    isOwner={isOwner}
+                                />
+                            )}
+                        </Group>
                     </Stack>
                     <ListItemGrid
                         items={items}
@@ -47,6 +84,7 @@ export default function List({ list }: { list: ListPage }) {
                     />
                 </Stack>
             </BoundedContainer>
+            <EditListModal list={list} opened={opened} onClose={close} />
         </>
     );
 }

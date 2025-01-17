@@ -6,6 +6,7 @@ export type ListPage = {
     banner_type: "custom" | "tmdb";
     description: string | null;
     items: ListItem[];
+    is_public: boolean;
 };
 
 type ListUser = {
@@ -18,6 +19,7 @@ type ListUser = {
 
 export type ListItem = {
     id: number;
+    item_id: number;
     link: string | null;
     poster_path: string;
     poster_type: string;

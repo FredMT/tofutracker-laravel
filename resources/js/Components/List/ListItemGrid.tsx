@@ -1,4 +1,4 @@
-import { Flex } from "@mantine/core";
+import { Alert, Flex } from "@mantine/core";
 import { ListItem } from "@/types/listPage";
 import {
     closestCenter,
@@ -21,6 +21,7 @@ import {
 import { useState } from "react";
 import { ListItemCard } from "@/Components/List/ListItemCard";
 import { SortableListItem } from "@/Components/List/SortableListItem";
+import { InfoIcon } from "lucide-react";
 
 interface ListItemGridProps {
     items: ListItem[];
@@ -58,7 +59,7 @@ export function ListItemGrid({
     const sensors = useSensors(
         useSensor(PointerSensor, {
             activationConstraint: {
-                distance: 8,
+                distance: 0,
             },
         }),
         useSensor(KeyboardSensor, {
@@ -106,36 +107,47 @@ export function ListItemGrid({
             : null;
 
         return (
-            <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragStart={handleDragStart}
-                onDragEnd={handleDragEnd}
-                onDragCancel={handleDragCancel}
-            >
-                <SortableContext
-                    items={sortedItems.map((item) => item.id)}
-                    strategy={rectSortingStrategy}
+            <>
+                <Alert
+                    variant="light"
+                    color="blue"
+                    title="Hold and drag items to re-order them."
+                    icon={<InfoIcon />}
+                />
+                <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragStart={handleDragStart}
+                    onDragEnd={handleDragEnd}
+                    onDragCancel={handleDragCancel}
                 >
-                    <Flex
-                        gap="md"
-                        justify="flex-start"
-                        align="flex-start"
-                        wrap="wrap"
+                    <SortableContext
+                        items={sortedItems.map((item) => item.id)}
+                        strategy={rectSortingStrategy}
                     >
-                        {sortedItems.map((item) => (
-                            <SortableListItem key={item.id} item={item} />
-                        ))}
-                    </Flex>
-                </SortableContext>
-                <DragOverlay dropAnimation={dropAnimation}>
-                    {activeItem ? (
-                        <div style={dragOverlayStyle}>
-                            <ListItemCard item={activeItem} isEditing={true} />
-                        </div>
-                    ) : null}
-                </DragOverlay>
-            </DndContext>
+                        <Flex
+                            gap="md"
+                            justify="flex-start"
+                            align="flex-start"
+                            wrap="wrap"
+                        >
+                            {sortedItems.map((item) => (
+                                <SortableListItem key={item.id} item={item} />
+                            ))}
+                        </Flex>
+                    </SortableContext>
+                    <DragOverlay dropAnimation={dropAnimation}>
+                        {activeItem ? (
+                            <div style={dragOverlayStyle}>
+                                <ListItemCard
+                                    item={activeItem}
+                                    isEditing={true}
+                                />
+                            </div>
+                        ) : null}
+                    </DragOverlay>
+                </DndContext>
+            </>
         );
     }
 

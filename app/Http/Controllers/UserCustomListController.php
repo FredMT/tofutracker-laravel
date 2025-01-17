@@ -143,7 +143,7 @@ class UserCustomListController extends Controller
         }
     }
 
-    public function update(Request $request, string $username, UserCustomList $list)
+    public function update(Request $request, UserCustomList $list)
     {
         Gate::authorize('manage-custom-list', $list);
 

@@ -47,11 +47,11 @@ export default function ListItemCardContent({
             <Card.Section mt="xs">
                 <Tooltip label={`${title} (${year})`} openDelay={150}>
                     <Box>
-                        <Text fw={600} size="sm" lineClamp={2}>
-                            {title}
-                        </Text>
-                        <Text fw={600} size="sm" mt={6} c="dimmed">
+                        <Text fw={600} size="sm" c="dimmed">
                             {year}
+                        </Text>
+                        <Text fw={600} size="sm" mt={6} lineClamp={2}>
+                            {title}
                         </Text>
                     </Box>
                 </Tooltip>
