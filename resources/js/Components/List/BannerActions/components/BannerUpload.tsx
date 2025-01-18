@@ -1,6 +1,6 @@
-import {Button, Input} from "@mantine/core";
-import {ImageIcon} from "lucide-react";
-import React, {useRef} from "react";
+import { Button, Input } from "@mantine/core";
+import { ImageIcon } from "lucide-react";
+import React, { useRef } from "react";
 
 interface BannerUploadProps {
     onImageSelect: (file: File) => void;

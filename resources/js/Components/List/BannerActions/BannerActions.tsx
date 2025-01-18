@@ -1,9 +1,9 @@
-import {Button, Group} from "@mantine/core";
+import { Button, Group } from "@mantine/core";
 import classes from "./BannerActions.module.css";
-import {SaveBannerButton} from "@/Components/List/BannerActions/components/SaveBannerButton";
-import {BannerEditActions} from "@/Components/List/BannerActions/components/BannerEditActions";
-import {BannerUpload} from "@/Components/List/BannerActions/components/BannerUpload";
-import {BannerSearchModal} from "@/Components/List/BannerActions/components/BannerSearch/BannerSearchModal";
+import { SaveBannerButton } from "@/Components/List/BannerActions/components/SaveBannerButton";
+import { BannerUpload } from "@/Components/List/BannerActions/components/BannerUpload";
+import { BannerSearchModal } from "@/Components/List/BannerActions/components/BannerSearch/BannerSearchModal";
+import { BannerEditActions } from "./components/BannerEditActions";
 
 interface BannerActionsProps {
     listId: number;

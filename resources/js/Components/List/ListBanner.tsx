@@ -3,13 +3,14 @@ import { useState } from "react";
 import classes from "./ListBanner.module.css";
 import { Auth } from "@/types";
 import { usePage } from "@inertiajs/react";
-import { BannerActions } from "@/Components/List/BannerActions/BannerActions";
+import { ListEditMenu } from "@/Components/List/ListEditMenu";
 
 interface BannerProps {
     bannerImage: string | null;
     bannerType: "custom" | "tmdb";
     listUserUsername: string;
     listId: number;
+    onOpenEditDetails: () => void;
 }
 
 export function ListBanner({
@@ -17,9 +18,9 @@ export function ListBanner({
     bannerType,
     listUserUsername,
     listId,
+    onOpenEditDetails,
 }: BannerProps) {
     const auth = usePage<{ auth: Auth }>().props.auth;
-
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
@@ -63,15 +64,17 @@ export function ListBanner({
                     <div className={classes.bannerPlaceholder} />
                 )}
                 {auth && auth.user?.username === listUserUsername && (
-                    <BannerActions
-                        listId={listId}
-                        onImageSelect={handleImageSelect}
-                        onImageUrlSelect={handleImageUrlSelect}
-                        hasSelectedImage={!!selectedFile}
-                        selectedFile={selectedFile}
-                        onCancel={handleCancel}
-                        hasBanner={!!bannerImage}
-                    />
+                    <div className={classes.editMenuContainer}>
+                        <ListEditMenu
+                            listId={listId}
+                            onOpenEditDetails={onOpenEditDetails}
+                            onImageSelect={handleImageSelect}
+                            onImageUrlSelect={handleImageUrlSelect}
+                            hasBanner={!!bannerImage}
+                            selectedFile={selectedFile}
+                            onCancel={handleCancel}
+                        />
+                    </div>
                 )}
             </div>
         </div>

@@ -1,4 +1,4 @@
-import { Button, Menu } from "@mantine/core";
+import { Button, Menu, Group, Stack } from "@mantine/core";
 import {
     ListOrdered,
     PencilIcon,
@@ -6,6 +6,7 @@ import {
     Settings2,
     Trash2,
     X,
+    Image as ImageIcon,
 } from "lucide-react";
 import { useListStore } from "@/stores/listStore";
 import { useAddItemsStore } from "@/stores/addItemsStore";
@@ -14,19 +15,100 @@ import { useDisclosure } from "@mantine/hooks";
 import { ListDelete } from "./ListDelete";
 import { usePage } from "@inertiajs/react";
 import { PageProps } from "@/types";
+import { useState } from "react";
+import { BannerUpload } from "./BannerActions/components/BannerUpload";
+import { BannerSearchModal } from "./BannerActions/components/BannerSearch/BannerSearchModal";
+import { RemoveBannerModal } from "./BannerActions/components/RemoveBannerModal";
+import { SaveBannerButton } from "./BannerActions/components/SaveBannerButton";
 
 interface ListEditMenuProps {
     listId: number;
     onOpenEditDetails: () => void;
+    onImageSelect?: (file: File) => void;
+    onImageUrlSelect?: (url: string) => void;
+    hasBanner?: boolean;
+    selectedFile?: File | null;
+    onCancel?: () => void;
 }
 
-export function ListEditMenu({ listId, onOpenEditDetails }: ListEditMenuProps) {
+export function ListEditMenu({
+    listId,
+    onOpenEditDetails,
+    onImageSelect,
+    onImageUrlSelect,
+    hasBanner,
+    selectedFile,
+    onCancel,
+}: ListEditMenuProps) {
     const { auth } = usePage<PageProps>().props;
     const { setIsEditing, setIsRemoving } = useListStore();
     const { setIsOpen } = useAddItemsStore();
     const [opened, { open, close }] = useDisclosure(false);
+    const [isEditingBanner, setIsEditingBanner] = useState(false);
+    const [
+        removeBannerOpened,
+        { open: openRemoveBanner, close: closeRemoveBanner },
+    ] = useDisclosure(false);
 
     if (!auth.user) return null;
+
+    const handleImageSelect = (file: File) => {
+        onImageSelect?.(file);
+        setIsEditingBanner(false);
+    };
+
+    const handleImageUrlSelect = (url: string) => {
+        onImageUrlSelect?.(url);
+        setIsEditingBanner(false);
+    };
+
+    const handleSaveSuccess = () => {
+        onCancel?.();
+        setIsEditingBanner(false);
+    };
+
+    if (selectedFile) {
+        return (
+            <Group>
+                <Button color="red" onClick={onCancel}>
+                    Cancel
+                </Button>
+                <SaveBannerButton
+                    listId={listId}
+                    file={selectedFile}
+                    onSuccess={handleSaveSuccess}
+                />
+            </Group>
+        );
+    }
+
+    if (isEditingBanner) {
+        return (
+            <>
+                <RemoveBannerModal
+                    listId={listId}
+                    opened={removeBannerOpened}
+                    onClose={closeRemoveBanner}
+                    onSuccess={() => setIsEditingBanner(false)}
+                />
+                <Group>
+                    <Stack gap="sm">
+                        <Button onClick={() => setIsEditingBanner(false)}>
+                            Cancel Edit
+                        </Button>
+                        <Button color="red" onClick={openRemoveBanner}>
+                            Remove Banner
+                        </Button>
+                        <BannerUpload onImageSelect={handleImageSelect} />
+                        <BannerSearchModal
+                            listId={listId}
+                            onImageSelect={handleImageUrlSelect}
+                        />
+                    </Stack>
+                </Group>
+            </>
+        );
+    }
 
     return (
         <>
@@ -43,6 +125,12 @@ export function ListEditMenu({ listId, onOpenEditDetails }: ListEditMenuProps) {
                         onClick={onOpenEditDetails}
                     >
                         Edit Details
+                    </Menu.Item>
+                    <Menu.Item
+                        leftSection={<ImageIcon size={14} />}
+                        onClick={() => setIsEditingBanner(true)}
+                    >
+                        Edit Banner
                     </Menu.Item>
                     <Menu.Item
                         leftSection={<Plus size={14} />}

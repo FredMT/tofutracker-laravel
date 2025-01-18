@@ -14,6 +14,7 @@ import { ListEditModal } from "@/Components/List/ListEditModal";
 import { useDisclosure } from "@mantine/hooks";
 import { ListEditMenu } from "@/Components/List/ListEditMenu";
 import { ListStats } from "@/Components/List/ListStats";
+import ListSortAndFiltersSection from "@/Components/List/SortAndFilters/ListSortAndFiltersSection";
 
 export default function List({ list }: { list: ListPage }) {
     const { auth } = usePage<PageProps>().props;
@@ -42,6 +43,7 @@ export default function List({ list }: { list: ListPage }) {
                 listId={list.id}
                 bannerImage={list.banner_image}
                 listUserUsername={list.user.username}
+                onOpenEditDetails={open}
             />
             <BoundedContainer>
                 <Stack gap="lg">
@@ -61,10 +63,10 @@ export default function List({ list }: { list: ListPage }) {
                         )}
                         <ListStats list={list} />
                         <Group justify="flex-end">
-                            {isOwner && !isEditing && !isRemoving && (
-                                <ListEditMenu
-                                    onOpenEditDetails={open}
+                            {isRemoving && (
+                                <ListRemoveActions
                                     listId={list.id}
+                                    isOwner={isOwner}
                                 />
                             )}
                             {isEditing && (
@@ -73,14 +75,9 @@ export default function List({ list }: { list: ListPage }) {
                                     isOwner={isOwner}
                                 />
                             )}
-                            {isRemoving && (
-                                <ListRemoveActions
-                                    listId={list.id}
-                                    isOwner={isOwner}
-                                />
-                            )}
                         </Group>
                     </Stack>
+                    <ListSortAndFiltersSection />
                     <ListItemGrid
                         items={items}
                         isEditing={isEditing}

@@ -108,6 +108,7 @@ export function AddItemsModal({ listId }: AddItemsModalProps) {
             onClose={() => setIsOpen(false)}
             title="Add Items"
             size="lg"
+            centered
         >
             {content}
         </Modal>
