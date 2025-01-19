@@ -96,27 +96,30 @@ class UserCustomListItemController extends Controller
         }
     }
 
-    public function destroy(Request $request)
+    public function destroy(Request $request, int $list_id)
     {
         $validated = $request->validate([
-            'list_id' => 'required|integer|exists:user_custom_lists,id',
             'item_id' => 'required|integer',
             'item_type' => 'required|string|in:movie,tv,tvseason,tvepisode,animemovie,animetv,animeseason,animeepisode',
         ]);
 
-        $list = UserCustomList::findOrFail($validated['list_id']);
+        $list = UserCustomList::findOrFail($list_id);
 
         Gate::authorize('manage-custom-list-item', $list);
 
         try {
             $listableType = $this->getListableType($validated['item_type']);
 
-            $list->items()
+            $item = $list->items()
                 ->where('listable_type', $listableType)
                 ->where('listable_id', $validated['item_id'])
-                ->delete();
+                ->first();
 
-            $list->touch();
+            if (!$item) {
+                return back()->with(['success' => false, 'message' => 'Item not found in list']);
+            }
+
+            $item->delete();
 
             return back()->with(['success' => true, 'message' => 'Item removed from list successfully']);
         } catch (\Exception $e) {

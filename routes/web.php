@@ -3,11 +3,17 @@
 use App\Actions\Trending\GetTrendingAction;
 use App\Actions\Trending\GetTrendingGenresAndWatchProvidersAction;
 use App\Http\Controllers\AnimeController;
-use App\Http\Controllers\ListController;
+use App\Http\Controllers\List\ListBannerController;
+use App\Http\Controllers\List\ListBannerRemoveController;
+use App\Http\Controllers\List\ListBannerTmdbController;
+use App\Http\Controllers\List\ListBackdropsController;
+use App\Http\Controllers\List\ListController;
+use App\Http\Controllers\List\ListRemoveItemsController;
+use App\Http\Controllers\List\ListUpdateOrderController;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\QuickSearchController;
-use App\Http\Controllers\SearchController;
+use App\Http\Controllers\Search\QuickSearchController;
+use App\Http\Controllers\Search\SearchController;
 use App\Http\Controllers\TvController;
 use App\Http\Controllers\TvSeasonController;
 use App\Http\Controllers\UserAnimeEpisodeController;
@@ -61,10 +67,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/settings/banner', [ProfileController::class, 'updateBanner'])->name('profile.banner');
     Route::patch('/settings/bio', [ProfileController::class, 'updateBio'])->name('profile.bio');
 
-    Route::post('/list/{list}/banner', [ListController::class, 'updateBanner'])->name('list.banner.update');
-    Route::post('/list/{list}/banner/tmdb', [ListController::class, 'updateBannerFromTmdb'])->name('list.banner.tmdb.update');
-    Route::delete('/list/{list}/banner', [ListController::class, 'removeBanner'])->name('list.banner.remove');
-    Route::get('/list/{list}/backdrops', [ListController::class, 'getListItemBackdrops'])->name('list.backdrops');
+    Route::post('/list/{list}/banner', ListBannerController::class)->name('list.banner.update');
+    Route::post('/list/{list}/banner/tmdb', ListBannerTmdbController::class)->name('list.banner.tmdb.update');
+    Route::delete('/list/{list}/banner', ListBannerRemoveController::class)->name('list.banner.remove');
+    Route::get('/list/{list}/backdrops', ListBackdropsController::class)->name('list.backdrops');
+    Route::post('/list/{list}/remove-items', ListRemoveItemsController::class)->name('list.removeItems');
+    Route::post('/list/{list}/order', ListUpdateOrderController::class)->name('list.updateOrder');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -118,14 +126,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('user.lists.store');
     Route::patch('/user/lists/{list}', [UserCustomListController::class, 'update'])
         ->name('user.lists.update');
+    
+    // List items management routes
+    Route::post('/user/list-items', [UserCustomListItemController::class, 'store'])
+        ->name('user.lists.items.store');
+    Route::delete('/user/list-items/{list_id}/remove', [UserCustomListItemController::class, 'destroy'])
+        ->name('user.lists.items.destroy');
+
+    // List management routes
     Route::delete('/user/lists/{username}/{list}', [UserCustomListController::class, 'destroy'])
         ->name('user.lists.destroy');
-
-    Route::post('/user/lists/items/store', [UserCustomListItemController::class, 'store'])
-        ->name('user.lists.items.store');
-    Route::delete('/user/lists/items/destroy', [UserCustomListItemController::class, 'destroy'])
-        ->name('user.lists.items.destroy');
-    Route::post('/list/{list}/remove-items', [ListController::class, 'removeItems'])->name('list.removeItems');
 });
 
 Route::get('/movie/{id}', [MovieController::class, 'show'])
@@ -149,7 +159,5 @@ Route::get('/search', [SearchController::class, 'search'])->name('search');
 Route::get('/quicksearch', QuickSearchController::class)->name('quicksearch');
 
 Route::get('/list/{list}', [ListController::class, 'show'])->name('list.show');
-
-Route::post('/list/{list}/order', [ListController::class, 'updateOrder'])->name('list.updateOrder');
 
 require __DIR__.'/auth.php';

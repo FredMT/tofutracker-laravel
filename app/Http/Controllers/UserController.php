@@ -34,7 +34,7 @@ class UserController extends Controller
             ->orderBy('occurred_at', 'desc')
             ->paginate(20);
 
-        // Transform the activities to only include the fields we need
+
         $activities->through(function ($activity) {
             $poster = $activity->getPoster();
 
@@ -188,7 +188,7 @@ class UserController extends Controller
 
         $errors = app(ValidateShowFilters::class)->handle($request);
 
-        // If there are any validation errors, return early with empty arrays
+        
         if (! empty($errors)) {
             return Inertia::render('UserTv', [
                 'success' => false,
