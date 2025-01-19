@@ -24,6 +24,28 @@ class Movie extends Model
         });
     }
 
+    public function releaseDate(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->data['release_date'];
+        });
+    }
+
+    public function yearRange(): Attribute
+    {
+        return Attribute::get(function () {
+            $releaseDate = $this->data['release_date'] ?? null;
+
+            if (! $releaseDate) {
+                return null;
+            }
+
+            $releaseYear = Carbon::parse($releaseDate)->year;
+
+            return $releaseYear;
+        });
+    }
+
     public function voteAverage(): Attribute
     {
         return Attribute::get(function () {

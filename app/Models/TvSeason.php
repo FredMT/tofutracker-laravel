@@ -61,6 +61,13 @@ class TvSeason extends Model
         });
     }
 
+    public function genres(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->show->genres;
+        });
+    }
+
     public function episodes()
     {
         return $this->hasMany(TvEpisode::class, 'season_id', 'id');

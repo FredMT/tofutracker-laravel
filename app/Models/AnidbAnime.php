@@ -91,6 +91,22 @@ class AnidbAnime extends Model
         });
     }
 
+    public function genres(): Attribute
+    {
+        return Attribute::get(function () {
+            try {
+                $mapId = $this->map();
+                if ($mapId) {
+                    $map = AnimeMap::find($mapId);
+                    return $map ? $map->genres : collect();
+                }
+            } catch (\Exception $e) {
+                return collect();
+            }
+            return collect();
+        });
+    }
+
     public function episodes(): HasMany
     {
         return $this->hasMany(AnidbEpisode::class, 'anime_id');

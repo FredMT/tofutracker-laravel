@@ -26,6 +26,20 @@ class TvShow extends Model
         });
     }
 
+    public function firstAirDate(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->data['first_air_date'];
+        });
+    }
+
+    public function lastAirDate(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->data['last_air_date'];
+        });
+    }
+
     public function poster(): Attribute
     {
         return Attribute::get(function () {
@@ -421,5 +435,32 @@ class TvShow extends Model
             })
             ->values()
             ->all();
+    }
+
+    public function yearRange(): Attribute
+    {
+        return Attribute::get(function () {
+            $startYear = isset($this->data['first_air_date']) 
+                ? Carbon::parse($this->data['first_air_date'])->format('Y')
+                : null;
+            
+            if (!$startYear) {
+                return null;
+            }
+
+            if (isset($this->data['in_production']) && $this->data['in_production']) {
+                return "{$startYear} - Now";
+            }
+            
+            $endYear = isset($this->data['last_air_date'])
+                ? Carbon::parse($this->data['last_air_date'])->format('Y')
+                : null;
+
+            if (!$endYear) {
+                return null;
+            }
+
+            return $startYear === $endYear ? $startYear : "{$startYear} - {$endYear}";
+        });
     }
 }
