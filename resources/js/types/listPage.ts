@@ -9,6 +9,7 @@ export type ListPage = {
     is_public: boolean;
     stats: ListStats;
     list_genres: ListItemGenre[];
+    is_empty: boolean;
 };
 
 type ListUser = {
@@ -27,9 +28,11 @@ export type ListItem = {
     poster_type: string;
     title: string;
     vote_average: number;
-    year: number;
+    year: string;
     sort_order: number;
     genres: ListItemGenre[];
+    created_at: string;
+    updated_at: string;
 };
 
 export type ListStats = {

@@ -32,6 +32,7 @@ function GenresSelect({ listGenres }: GenresSelectProps) {
 
     return (
         <Select
+            label="Genre"
             value={selectedGenre || "any"}
             onChange={handleChange}
             data={genreOptions}

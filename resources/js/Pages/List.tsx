@@ -2,7 +2,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayo
 import { ListPage } from "@/types/listPage";
 import { Head, Link, usePage } from "@inertiajs/react";
 import { ListBanner } from "@/Components/List/ListBanner";
-import { Stack, Title, Group, Anchor } from "@mantine/core";
+import { Stack, Title, Group, Anchor, Alert } from "@mantine/core";
 import BoundedContainer from "@/Components/BoundedContainer";
 import { ListItemGrid } from "@/Components/List/ListItemGrid";
 import { PageProps } from "@/types";
@@ -43,6 +43,7 @@ export default function List({ list }: { list: ListPage }) {
                 bannerImage={list.banner_image}
                 listUserUsername={list.user.username}
                 onOpenEditDetails={open}
+                isEmpty={list.is_empty}
             />
             <BoundedContainer>
                 <Stack gap="lg">
@@ -76,12 +77,23 @@ export default function List({ list }: { list: ListPage }) {
                             )}
                         </Group>
                     </Stack>
-                    <ListSortAndFiltersSection listGenres={list.list_genres} />
-                    <ListItemGrid
-                        items={items}
-                        isEditing={isEditing}
-                        onOrderChange={handleOrderChange}
-                    />
+                    {!list.is_empty && (
+                        <ListSortAndFiltersSection
+                            listGenres={list.list_genres}
+                        />
+                    )}
+                    {!list.is_empty ? (
+                        <ListItemGrid
+                            items={items}
+                            isEditing={isEditing}
+                            onOrderChange={handleOrderChange}
+                        />
+                    ) : (
+                        <Alert>This list has no items.</Alert>
+                    )}
+                    {!list.is_empty && !items.length && (
+                        <Alert>No items found for selected filters.</Alert>
+                    )}
                 </Stack>
             </BoundedContainer>
             <ListEditModal list={list} opened={opened} onClose={close} />

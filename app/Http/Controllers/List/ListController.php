@@ -9,15 +9,23 @@ use App\Models\Movie;
 use App\Models\TvSeason;
 use App\Models\TvShow;
 use App\Models\UserCustomList;
+use App\Actions\List\FilterListItems;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ListController extends Controller
 {
     private array $processedAnimeIds = [];
+    private FilterListItems $filterListItems;
 
-    public function show(UserCustomList $list): Response
+    public function __construct(FilterListItems $filterListItems)
+    {
+        $this->filterListItems = $filterListItems;
+    }
+
+    public function show(Request $request, UserCustomList $list): Response
     {
         if (! $list->is_public && (! Auth::check() || Auth::id() !== $list->user_id)) {
             abort(404);
@@ -25,18 +33,53 @@ class ListController extends Controller
 
         $list->load(['user', 'items.listable']);
 
-        $mappedItems = $this->mapListItems($list->items);
+        if ($list->items->isEmpty()) {
+            return Inertia::render('List', [
+                'list' => [
+                    ...$list->only('id', 'title', 'user', 'banner_image', 'banner_type', 'description', 'is_public'),
+                    'items' => [],
+                    'stats' => [
+                        'total' => 0,
+                        'movies' => 0,
+                        'tv' => 0,
+                        'anime' => 0,
+                        'average_rating' => null,
+                        'total_runtime' => '0m',
+                    ],
+                    'list_genres' => [],
+                    'is_empty' => true,
+                ],
+            ]);
+        }
+
+        $mappedItems = $this->mapListItems($list->items)->all();
+        
+        // Apply filters
+        $filters = $this->getFiltersFromRequest($request);
+        $filteredItems = $this->filterListItems->execute($mappedItems, $filters);
+        
         $stats = $this->calculateStats($list->items);
         $listGenres = $this->collectDistinctGenres($list->items);
 
         $list = $list->toArray();
-        $list['items'] = $mappedItems;
+        $list['items'] = array_values($filteredItems);
         $list['stats'] = $stats;
         $list['list_genres'] = $listGenres;
+        $list['is_empty'] = false;
 
         return Inertia::render('List', [
             'list' => $list,
         ]);
+    }
+
+    private function getFiltersFromRequest(Request $request): array
+    {
+        return [
+            'search' => $request->query('search'),
+            'genre' => $request->query('genre'),
+            'rating' => $request->query('rating'),
+            'released' => $request->query('released', 'any'),
+        ];
     }
 
     private function mapListItems($items)
@@ -48,10 +91,12 @@ class ListController extends Controller
                 'id' => $item->id,
                 'item_id' => $item->listable_id,
                 'sort_order' => $item->sort_order,
+                'created_at' => $item->created_at,
+                'updated_at' => $item->updated_at,
                 'poster_path' => $mediaData['poster'],
                 'poster_type' => $mediaData['posterType'],
                 'title' => $mediaData['title'],
-                'year' => $mediaData['year'],
+                'year' => (string) $mediaData['year'],
                 'vote_average' => $mediaData['voteAverage'],
                 'link' => $mediaData['link'],
                 'genres' => $mediaData['genres'],

@@ -31,6 +31,7 @@ function ListSearchFilter() {
 
     return (
         <TextInput
+            label="Search"
             placeholder="Search in this list"
             value={value}
             onChange={(event) => setValue(event.currentTarget.value)}

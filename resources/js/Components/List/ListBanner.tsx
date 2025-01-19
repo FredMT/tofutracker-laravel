@@ -11,6 +11,7 @@ interface BannerProps {
     listUserUsername: string;
     listId: number;
     onOpenEditDetails: () => void;
+    isEmpty: boolean;
 }
 
 export function ListBanner({
@@ -19,6 +20,7 @@ export function ListBanner({
     listUserUsername,
     listId,
     onOpenEditDetails,
+    isEmpty,
 }: BannerProps) {
     const auth = usePage<{ auth: Auth }>().props.auth;
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -73,6 +75,7 @@ export function ListBanner({
                             hasBanner={!!bannerImage}
                             selectedFile={selectedFile}
                             onCancel={handleCancel}
+                            isEmpty={isEmpty}
                         />
                     </div>
                 )}

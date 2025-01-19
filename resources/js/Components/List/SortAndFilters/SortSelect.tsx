@@ -21,6 +21,7 @@ function SortSelect() {
 
     return (
         <Select
+            label="Sort by"
             value={sortBy}
             onChange={handleChange}
             data={sortOptions}

@@ -9,18 +9,6 @@ function ReleasedSelect() {
     const currentYear = new Date().getFullYear();
 
     const options = useMemo(() => {
-        // Recent periods
-        const recentOptions = [
-            {
-                label: "Last 7 days",
-                value: "7d",
-            },
-            {
-                label: "Last 30 days",
-                value: "1m",
-            },
-        ];
-
         const monthsAndYearsOptions = [
             {
                 label: "Last 12 months",
@@ -32,13 +20,11 @@ function ReleasedSelect() {
             },
         ];
 
-        // Individual years (current year and last 4 years)
         const yearOptions = Array.from({ length: 5 }, (_, i) => ({
             label: `${currentYear - i}`,
             value: `${currentYear - i}`,
         }));
 
-        // Decades
         const decadeOptions = Array.from({ length: 6 }, (_, i) => {
             const decade = 2020 - i * 10;
             return {
@@ -49,8 +35,13 @@ function ReleasedSelect() {
 
         return [
             {
-                group: "Recent",
-                items: recentOptions,
+                group: "Other",
+                items: [
+                    {
+                        label: "Any year",
+                        value: "any",
+                    },
+                ],
             },
             {
                 group: "Periods",
@@ -63,15 +54,6 @@ function ReleasedSelect() {
             {
                 group: "Decades",
                 items: decadeOptions,
-            },
-            {
-                group: "Other",
-                items: [
-                    {
-                        label: "Any year",
-                        value: "any",
-                    },
-                ],
             },
         ];
     }, [currentYear]);
@@ -89,6 +71,7 @@ function ReleasedSelect() {
 
     return (
         <Select
+            label="Released"
             data={options}
             value={released || "any"}
             onChange={handleChange}

@@ -29,6 +29,7 @@ interface ListEditMenuProps {
     hasBanner?: boolean;
     selectedFile?: File | null;
     onCancel?: () => void;
+    isEmpty: boolean;
 }
 
 export function ListEditMenu({
@@ -36,9 +37,9 @@ export function ListEditMenu({
     onOpenEditDetails,
     onImageSelect,
     onImageUrlSelect,
-    hasBanner,
     selectedFile,
     onCancel,
+    isEmpty,
 }: ListEditMenuProps) {
     const { auth } = usePage<PageProps>().props;
     const { setIsEditing, setIsRemoving } = useListStore();
@@ -138,19 +139,23 @@ export function ListEditMenu({
                     >
                         Add Items
                     </Menu.Item>
-                    <Menu.Item
-                        leftSection={<ListOrdered size={14} />}
-                        onClick={() => setIsEditing(true)}
-                    >
-                        Edit Order
-                    </Menu.Item>
-                    <Menu.Item
-                        leftSection={<Trash2 size={14} />}
-                        onClick={() => setIsRemoving(true)}
-                        color="red"
-                    >
-                        Remove Items
-                    </Menu.Item>
+                    {!isEmpty && (
+                        <Menu.Item
+                            leftSection={<ListOrdered size={14} />}
+                            onClick={() => setIsEditing(true)}
+                        >
+                            Edit Order
+                        </Menu.Item>
+                    )}
+                    {!isEmpty && (
+                        <Menu.Item
+                            leftSection={<Trash2 size={14} />}
+                            onClick={() => setIsRemoving(true)}
+                            color="red"
+                        >
+                            Remove Items
+                        </Menu.Item>
+                    )}
                     <Menu.Divider />
                     <Menu.Item
                         leftSection={<X size={14} />}

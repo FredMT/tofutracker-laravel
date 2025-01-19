@@ -16,9 +16,9 @@ function ListSortAndFiltersSection({
     listGenres,
 }: ListSortAndFiltersSectionProps) {
     return (
-        <Group align="flex-start">
+        <Group align="flex-end">
             <ListSearchFilter />
-            <Group gap="xs" align="flex-start">
+            <Group gap="xs" align="flex-end">
                 <SortSelect />
                 <SortDirectionToggle />
             </Group>

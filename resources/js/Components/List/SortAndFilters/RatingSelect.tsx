@@ -46,6 +46,7 @@ function RatingSelect() {
 
     return (
         <Select
+            label="Rating"
             value={minRating || "any"}
             onChange={handleChange}
             data={ratingOptions.map(({ value, label }) => ({ value, label }))}
