@@ -12,7 +12,6 @@ import { ListActions } from "@/Components/List/ListActions";
 import { ListRemoveActions } from "@/Components/List/ListRemoveActions";
 import { ListEditModal } from "@/Components/List/ListEditModal";
 import { useDisclosure } from "@mantine/hooks";
-import { ListEditMenu } from "@/Components/List/ListEditMenu";
 import { ListStats } from "@/Components/List/ListStats";
 import ListSortAndFiltersSection from "@/Components/List/SortAndFilters/ListSortAndFiltersSection";
 
@@ -77,7 +76,7 @@ export default function List({ list }: { list: ListPage }) {
                             )}
                         </Group>
                     </Stack>
-                    <ListSortAndFiltersSection />
+                    <ListSortAndFiltersSection listGenres={list.list_genres} />
                     <ListItemGrid
                         items={items}
                         isEditing={isEditing}
@@ -89,5 +88,4 @@ export default function List({ list }: { list: ListPage }) {
         </>
     );
 }
-
 List.layout = (page: any) => <AuthenticatedLayout>{page}</AuthenticatedLayout>;

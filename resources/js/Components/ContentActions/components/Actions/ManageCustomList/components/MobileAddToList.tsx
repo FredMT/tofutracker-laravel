@@ -1,9 +1,7 @@
-import {Button, Drawer} from "@mantine/core";
-import {
-    CreateListForm
-} from "@/Components/ContentActions/components/Actions/ManageCustomList/components/CreateListForm";
-import {ListContent} from "@/Components/ContentActions/components/Actions/ManageCustomList/components/ListContent";
-import {UserList} from "@/Components/ContentActions/components/Actions/ManageCustomList/types";
+import { Button, Drawer } from "@mantine/core";
+import { CreateListForm } from "@/Components/ContentActions/components/Actions/ManageCustomList/components/CreateListForm";
+import { ListContent } from "@/Components/ContentActions/components/Actions/ManageCustomList/components/ListContent";
+import { UserList } from "@/Components/ContentActions/components/Actions/ManageCustomList/types";
 
 type MobileAddToListProps = {
     opened: boolean;
@@ -15,6 +13,7 @@ type MobileAddToListProps = {
     search: string;
     setSearch: (value: string) => void;
     filteredLists: UserList[];
+    hasLists: boolean;
 };
 
 export default function MobileAddToList({
@@ -27,6 +26,7 @@ export default function MobileAddToList({
     search,
     setSearch,
     filteredLists,
+    hasLists,
 }: MobileAddToListProps) {
     return (
         <>
@@ -47,6 +47,7 @@ export default function MobileAddToList({
                         setSearch={setSearch}
                         filteredLists={filteredLists}
                         openCreate={openCreate}
+                        hasLists={hasLists}
                     />
                 </Drawer>
 

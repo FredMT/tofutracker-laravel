@@ -2,17 +2,23 @@
     position: relative;
     width: 100%;
     min-height: 100px;
-    margin-bottom: var(--mantine-spacing-lg);
     border-radius: var(--mantine-radius-md);
     overflow: hidden;
 }
+
+.backgroundOverlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    pointer-events: none;
+}
+
 .content {
     position: relative;
     width: 100%;
     min-height: 100px;
     padding: var(--mantine-spacing-md);
-    background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.8));
-    backdrop-filter: blur(8px);
+    z-index: 1;
 }
 
 .stat {

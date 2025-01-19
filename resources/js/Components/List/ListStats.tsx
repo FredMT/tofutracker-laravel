@@ -10,18 +10,20 @@ export function ListStats({ list }: ListStatsProps) {
     const { stats, banner_image, banner_type } = list;
 
     return (
-        <BackgroundImage
-            src={
-                banner_image
-                    ? `${
-                          banner_type === "tmdb"
-                              ? "https://image.tmdb.org/t/p/w780"
-                              : "https://images.tofutracker.com/"
-                      }${banner_image}`
-                    : ""
-            }
-            className={classes.container}
-        >
+        <div className={classes.container}>
+            <BackgroundImage
+                src={
+                    banner_image
+                        ? `${
+                              banner_type === "tmdb"
+                                  ? "https://image.tmdb.org/t/p/w780"
+                                  : "https://images.tofutracker.com/"
+                          }${banner_image}`
+                        : ""
+                }
+                style={{ position: "absolute", inset: 0 }}
+            />
+            <div className={classes.backgroundOverlay} />
             <div className={classes.content}>
                 <Group gap="md" justify="center" wrap="wrap">
                     <Stack gap={0} align="center" className={classes.stat}>
@@ -65,6 +67,6 @@ export function ListStats({ list }: ListStatsProps) {
                     </Stack>
                 </Group>
             </div>
-        </BackgroundImage>
+        </div>
     );
 }

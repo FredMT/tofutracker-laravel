@@ -8,6 +8,7 @@ export type ListPage = {
     items: ListItem[];
     is_public: boolean;
     stats: ListStats;
+    list_genres: ListItemGenre[];
 };
 
 type ListUser = {
@@ -28,6 +29,7 @@ export type ListItem = {
     vote_average: number;
     year: number;
     sort_order: number;
+    genres: ListItemGenre[];
 };
 
 export type ListStats = {
@@ -37,4 +39,9 @@ export type ListStats = {
     total: number;
     tv: number;
     total_runtime: string;
+};
+
+export type ListItemGenre = {
+    id: number;
+    name: string;
 };

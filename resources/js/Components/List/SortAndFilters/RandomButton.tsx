@@ -1,7 +1,6 @@
-import { Button } from "@mantine/core";
+import { ActionIcon, Button, Tooltip } from "@mantine/core";
 import { ShuffleIcon } from "lucide-react";
 import { useListStore } from "@/stores/listStore";
-import { router } from "@inertiajs/react";
 
 function RandomButton() {
     const { items } = useListStore();
@@ -16,15 +15,16 @@ function RandomButton() {
     };
 
     return (
-        <Button
-            leftSection={<ShuffleIcon size={16} />}
-            size="sm"
-            variant="outline"
-            onClick={handleRandomClick}
-            disabled={items.length === 0}
-        >
-            Random
-        </Button>
+        <Tooltip label="Visit random item in list">
+            <ActionIcon
+                size="lg"
+                variant="subtle"
+                onClick={handleRandomClick}
+                disabled={items.length === 0}
+            >
+                <ShuffleIcon size={20} />
+            </ActionIcon>
+        </Tooltip>
     );
 }
 

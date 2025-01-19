@@ -1,10 +1,9 @@
-import {AnimeUserLibrary, Auth} from "@/types";
-import {usePage} from "@inertiajs/react";
-import {Stack} from "@mantine/core";
+import { AnimeUserLibrary, Auth } from "@/types";
+import { usePage } from "@inertiajs/react";
+import { Stack } from "@mantine/core";
 import AddAnimeMovieToLibrary from "./Actions/AddToLibrary/Anime/Movie/AddAnimeMovieToLibrary";
 import RemoveAnimeMovieFromLibrary from "./Actions/RemoveFromLibrary/Anime/Movie/RemoveAnimeMovieFromLibrary";
-import AnimeMovieWatchStatus
-    from "@/Components/ContentActions/components/Actions/WatchStatus/Anime/Movie/AnimeMovieWatchStatus";
+import AnimeMovieWatchStatus from "@/Components/ContentActions/components/Actions/WatchStatus/Anime/Movie/AnimeMovieWatchStatus";
 import AnimeRateContent from "@/Components/ContentActions/components/Actions/Rate/Anime/Shared/AnimeRateContent";
 import ManageCustomList from "./Actions/ManageCustomList/ManageCustomList";
 

@@ -16,6 +16,7 @@ export type ListContentProps = {
     setSearch: (value: string) => void;
     filteredLists: UserList[];
     openCreate: () => void;
+    hasLists: boolean;
 };
 
 export type CreateFormProps = {

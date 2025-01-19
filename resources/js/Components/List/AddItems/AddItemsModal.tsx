@@ -22,7 +22,7 @@ interface AddItemsModalProps {
 export function AddItemsModal({ listId }: AddItemsModalProps) {
     const isMobile = useMediaQuery("(max-width: 48em)");
     const { isOpen, setIsOpen, query, setQuery } = useAddItemsStore();
-    const [debouncedQuery] = useDebouncedValue(query, 200);
+    const [debouncedQuery] = useDebouncedValue(query, 150);
     const [addedItems, setAddedItems] = useState<Set<number>>(new Set());
 
     const { data, loading, error } = useFetch<SearchResponse>(
