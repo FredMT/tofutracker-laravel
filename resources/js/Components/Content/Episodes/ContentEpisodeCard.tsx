@@ -1,6 +1,6 @@
-import { Episode } from "@/types";
-import { Flex, Group, Image, Spoiler, Stack, Text, Title } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
+import {Episode} from "@/types";
+import {Flex, Group, Image, Spoiler, Stack, Text, Title} from "@mantine/core";
+import {useMediaQuery} from "@mantine/hooks";
 import styles from "./ContentEpisodes.module.css";
 import AnimeEpisodeActions from "@/Components/Content/Episodes/AnimeEpisodeActions";
 import EpisodeActions from "@/Components/Content/Episodes/EpisodeActions";

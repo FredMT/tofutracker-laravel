@@ -3,22 +3,23 @@
 namespace App\Services;
 
 use App\Exceptions\Tvdb\TvdbSyncException;
-use App\Models\TvdbAnimeSeason;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Support\Facades\Cache;
 use App\Jobs\CreateTvdbAnimeSeasonJob;
 use App\Jobs\UpdateTvdbAnimeSeasonJob;
+use App\Models\TvdbAnimeSeason;
+use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 
 class TvdbService
 {
     private PendingRequest $client;
+
     private string $baseUrl = 'https://api4.thetvdb.com/v4';
 
     public function __construct()
     {
         $this->client = Http::withHeaders([
-            'Authorization' => 'Bearer ' . config('services.tvdb.token'),
+            'Authorization' => 'Bearer '.config('services.tvdb.token'),
             'Accept' => 'application/json',
         ])->baseUrl($this->baseUrl);
     }
@@ -37,6 +38,7 @@ class TvdbService
 
                 $nextUrl = $data->links->next;
             }
+
             return $allEpisodes;
         });
     }
@@ -53,7 +55,7 @@ class TvdbService
                 $data = json_decode($response->body());
 
                 // Store the complete data structure on first iteration
-                if (!$completeData) {
+                if (! $completeData) {
                     $completeData = $data;
                 }
 
@@ -77,18 +79,19 @@ class TvdbService
         $completeData = $this->getEpisodesWithAllData($seriesId);
         $season = TvdbAnimeSeason::where('slug', $completeData->data->slug)->first();
 
-        if (!$season) {
+        if (! $season) {
             logger()->info('No existing season found, dispatching creation job', [
                 'series_id' => $seriesId,
-                'slug' => $completeData->data->slug
+                'slug' => $completeData->data->slug,
             ]);
+
             return CreateTvdbAnimeSeasonJob::dispatch($completeData);
         }
 
         $shouldUpdate = $season->status_keep_updated ||
             ($season->last_fetched_at && now()->diffInMonths($season->last_fetched_at) >= 1);
 
-        if (!$shouldUpdate) {
+        if (! $shouldUpdate) {
             $logMessage = $season->last_fetched_at
                 ? 'Skipping update - monthly check not due yet'
                 : 'Skipping update - status_keep_updated is false and no previous fetch';
@@ -96,7 +99,7 @@ class TvdbService
             logger()->info($logMessage, [
                 'series_id' => $seriesId,
                 'season_id' => $season->id,
-                'months_until_next_check' => $season->last_fetched_at ? 1 - now()->diffInMonths($season->last_fetched_at) : null
+                'months_until_next_check' => $season->last_fetched_at ? 1 - now()->diffInMonths($season->last_fetched_at) : null,
             ]);
             throw new TvdbSyncException('Update not needed', 0, null);
         }

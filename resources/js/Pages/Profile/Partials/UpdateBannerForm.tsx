@@ -1,25 +1,18 @@
-import {
-    Group,
-    Text,
-    rem,
-    Image,
-    Button,
-    Box,
-    Stack,
-    Title,
-} from "@mantine/core";
-import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
-import { useState } from "react";
-import { useForm, usePage } from "@inertiajs/react";
-import { ImagesIcon, LucideUpload, X } from "lucide-react";
-import { PageProps } from "@/types";
+import {Button, Group, Image, Stack, Text, Title} from "@mantine/core";
+import {Dropzone, IMAGE_MIME_TYPE} from "@mantine/dropzone";
+import {useState} from "react";
+import {useForm, usePage} from "@inertiajs/react";
+import {LucideUpload, X} from "lucide-react";
+import {PageProps} from "@/types";
 
 export default function UpdateBannerForm() {
     const [preview, setPreview] = useState<string | null>(null);
-    const { data, setData, post, progress, processing } = useForm({
+    const { data, setData, post, processing } = useForm({
         banner: null as File | null,
     });
     const user = usePage<PageProps>().props.auth.user;
+
+    if (!user) return null;
 
     const currentBanner = user.banner
         ? `${import.meta.env.VITE_DO_URL}/${user.banner}`
@@ -52,7 +45,7 @@ export default function UpdateBannerForm() {
 
     return (
         <Stack>
-            <Title>Update Banner</Title>
+            <Title>Update ListBanner</Title>
             <Text>Add or update your profile banner.</Text>
 
             <form onSubmit={submit}>
@@ -107,14 +100,14 @@ export default function UpdateBannerForm() {
                             <Stack>
                                 <Image
                                     src={preview}
-                                    alt="New Banner"
+                                    alt="New ListBanner"
                                     maw={530}
                                     mih={200}
                                     loading="lazy"
                                     radius="md"
                                 />
                                 <Text size="xs" c="dimmed">
-                                    Preview Banner
+                                    Preview ListBanner
                                 </Text>
                             </Stack>
                         )}
@@ -122,14 +115,14 @@ export default function UpdateBannerForm() {
                             <Stack>
                                 <Image
                                     src={currentBanner}
-                                    alt="Current Banner"
+                                    alt="Current ListBanner"
                                     maw={530}
                                     mih={200}
                                     loading="lazy"
                                     radius="md"
                                 />
                                 <Text size="xs" c="dimmed">
-                                    Current Banner
+                                    Current ListBanner
                                 </Text>
                             </Stack>
                         )}
@@ -137,7 +130,7 @@ export default function UpdateBannerForm() {
                 </Stack>
                 <div className="mt-4">
                     <Button type="submit" disabled={!data.banner || processing}>
-                        Upload Banner
+                        Upload ListBanner
                     </Button>
                 </div>
             </form>

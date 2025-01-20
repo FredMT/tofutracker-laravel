@@ -5,7 +5,6 @@ namespace App\Pipeline\UserAnimeSeason;
 use App\Actions\Anime\Plays\CreateUserAnimePlayAction;
 use App\Enums\WatchStatus;
 use App\Models\AnimeEpisodeMapping;
-use App\Models\UserAnime;
 use App\Models\UserAnimeEpisode;
 use Closure;
 
@@ -37,13 +36,13 @@ class CreateUserAnimeSeasonEpisodes
 
             // Create missing episodes and their play records
             foreach ($requiredEpisodes as $episode) {
-                if (!in_array($episode->id, $existingEpisodeIds)) {
+                if (! in_array($episode->id, $existingEpisodeIds)) {
                     // Create episode
                     $userEpisode = UserAnimeEpisode::firstOrCreate([
                         'user_anime_id' => $payload['season']->id,
                         'episode_id' => $episode->tvdb_episode_id,
                         'watch_status' => WatchStatus::COMPLETED->value,
-                        'is_special' => false
+                        'is_special' => false,
                     ]);
 
                     // Create play record for episode
@@ -54,6 +53,7 @@ class CreateUserAnimeSeasonEpisodes
             // Create play record for the completed season
             $this->createPlayAction->execute($payload['season']);
         }
+
         return $next($payload);
     }
 }

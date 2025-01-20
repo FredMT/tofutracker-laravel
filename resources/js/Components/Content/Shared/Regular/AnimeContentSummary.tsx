@@ -1,10 +1,10 @@
-import { AnimeContentDataType, AnimeType } from "@/types";
-import { getLanguageName } from "@/utils/formatter";
-import { Badge, Group, Paper, Text } from "@mantine/core";
-import { usePage } from "@inertiajs/react";
+import {AnimeContentDataType, AnimeType} from "@/types";
+import {getLanguageName} from "@/utils/formatter";
+import {Badge, Group, Paper, Text} from "@mantine/core";
+import {usePage} from "@inertiajs/react";
 import classes from "./ContentSummary.module.css";
-import { AnimeSeason } from "@/types/animeseason";
-import { Anime } from "@/types/anime";
+import {AnimeSeason} from "@/types/animeseason";
+import {Anime} from "@/types/anime";
 
 
 export function AnimeContentSummary() {

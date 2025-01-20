@@ -1,5 +1,5 @@
-import {ContentType, PageProps} from "@/types";
-import { usePage } from "@inertiajs/react";
+import {ContentType} from "@/types";
+import {usePage} from "@inertiajs/react";
 import MovieActions from "./components/MovieActions";
 import TvShowActions from "./components/TvShowActions";
 import TvSeasonActions from "./components/TvSeasonActions";

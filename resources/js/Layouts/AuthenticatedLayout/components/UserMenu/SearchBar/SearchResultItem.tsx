@@ -1,5 +1,4 @@
 import { Badge, Group, Image, Space, Stack, Text } from "@mantine/core";
-import { Link } from "@inertiajs/react";
 
 interface SearchResultItemProps {
     id: number;

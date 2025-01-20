@@ -1,13 +1,12 @@
-import { useContent } from "@/hooks/useContent";
 import useForm from "@/hooks/useForm";
-import {BaseUserLibrary, PageProps, RegularContentDataType, RegularType, UserLibrary} from "@/types";
-import { usePage } from "@inertiajs/react";
-import { Button } from "@mantine/core";
-import { useDisclosure, useMediaQuery } from "@mantine/hooks";
-import { notifications } from "@mantine/notifications";
-import { Check, CircleAlertIcon, Star } from "lucide-react";
-import { DesktopRating } from "../../../Content/Shared/DesktopRating";
-import { MobileRating } from "../../../Content/Shared/MobileRating";
+import {BaseUserLibrary, RegularContentDataType, RegularType} from "@/types";
+import {usePage} from "@inertiajs/react";
+import {Button} from "@mantine/core";
+import {useDisclosure, useMediaQuery} from "@mantine/hooks";
+import {notifications} from "@mantine/notifications";
+import {Check, CircleAlertIcon, Star} from "lucide-react";
+import {DesktopRating} from "../../../Content/Shared/DesktopRating";
+import {MobileRating} from "../../../Content/Shared/MobileRating";
 
 export function RateContent() {
     const { user_library } = usePage<{user_library: BaseUserLibrary}>().props;

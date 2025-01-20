@@ -2,9 +2,9 @@
 
 namespace App\Jobs;
 
+use App\Models\AnimeChainEntry;
 use App\Models\AnimeMap;
 use App\Models\AnimePrequelSequelChain;
-use App\Models\AnimeChainEntry;
 use App\Models\AnimeRelatedEntry;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -15,8 +15,8 @@ use Illuminate\Queue\SerializesModels;
 class PopulateAnimeRelationshipTables implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    public $timeout = 3600; // 1 hour
 
+    public $timeout = 3600; // 1 hour
 
     public function handle(): void
     {
@@ -31,8 +31,8 @@ class PopulateAnimeRelationshipTables implements ShouldQueue
                     try {
                         $chainModel = AnimePrequelSequelChain::create([
                             'map_id' => $map->id,
-                            'name' => 'Chain ' . ($index + 1),
-                            'importance_order' => $index + 1
+                            'name' => 'Chain '.($index + 1),
+                            'importance_order' => $index + 1,
                         ]);
 
                         // Create entries for each anime ID in the chain
@@ -41,16 +41,18 @@ class PopulateAnimeRelationshipTables implements ShouldQueue
                                 AnimeChainEntry::create([
                                     'chain_id' => $chainModel->id,
                                     'anime_id' => $animeId,
-                                    'sequence_order' => $sequenceOrder + 1
+                                    'sequence_order' => $sequenceOrder + 1,
                                 ]);
                             } catch (\Illuminate\Database\UniqueConstraintViolationException $e) {
                                 logger()->info("Skipping duplicate chain entry for anime_id: {$animeId} in chain: {$chainModel->id}");
                                 logger()->info($e->getMessage());
+
                                 continue;
                             }
                         }
                     } catch (\Exception $e) {
-                        logger()->error("Error processing chain for map {$map->id}: " . $e->getMessage());
+                        logger()->error("Error processing chain for map {$map->id}: ".$e->getMessage());
+
                         continue;
                     }
                 }
@@ -60,16 +62,18 @@ class PopulateAnimeRelationshipTables implements ShouldQueue
                     try {
                         AnimeRelatedEntry::create([
                             'map_id' => $map->id,
-                            'anime_id' => $animeId
+                            'anime_id' => $animeId,
                         ]);
                     } catch (\Illuminate\Database\UniqueConstraintViolationException $e) {
                         logger()->info("Skipping duplicate related entry for anime_id: {$animeId} in map: {$map->id}");
                         logger()->info($e->getMessage());
+
                         continue;
                     }
                 }
             } catch (\Exception $e) {
-                logger()->error("Error processing map {$map->id}: " . $e->getMessage());
+                logger()->error("Error processing map {$map->id}: ".$e->getMessage());
+
                 continue;
             }
         }

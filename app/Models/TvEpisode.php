@@ -3,20 +3,21 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class TvEpisode extends Model
 {
     protected $table = 'tv_episodes';
+
     protected $fillable = ['id', 'show_id', 'season_id', 'data'];
 
     public $incrementing = false;
 
     protected $casts = [
         'data' => 'array',
-        'updated_at' => 'datetime'
+        'updated_at' => 'datetime',
     ];
 
     public function show(): BelongsTo

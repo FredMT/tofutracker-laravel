@@ -2,13 +2,14 @@
 
 namespace App\Console\Commands;
 
-use App\Models\AnimeMap;
 use App\Jobs\ProcessAnimeTmdbId;
+use App\Models\AnimeMap;
 use Illuminate\Console\Command;
 
 class ProcessAnimeTmdbIdsCommand extends Command
 {
     protected $signature = 'anime:process-tmdb-ids {--chunk=100}';
+
     protected $description = 'Process all AnimeMap entries to find their most common TMDB IDs';
 
     public function handle(): void

@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class TvSeason extends Model
 {
     protected $table = 'tv_seasons';
+
     protected $fillable = ['id', 'data', 'etag', 'show_id', 'season_number'];
 
     public $incrementing = false;
@@ -17,7 +18,7 @@ class TvSeason extends Model
     protected $casts = [
         'data' => 'array',
         'season_number' => 'integer',
-        'updated_at' => 'datetime'
+        'updated_at' => 'datetime',
     ];
 
     public function title(): Attribute
@@ -27,9 +28,25 @@ class TvSeason extends Model
         });
     }
 
+    public function year(): Attribute
+    {
+        return Attribute::get(function () {
+            return isset($this->data['air_date'])
+                ? Carbon::parse($this->data['air_date'])->year
+                : null;
+        });
+    }
+
+    public function voteAverage(): Attribute
+    {
+        return Attribute::get(function () {
+            return number_format($this->data['vote_average'], 2, '.', '');
+        });
+    }
+
     public function seasonNumber(): Attribute
     {
-        return Attribute::get(fn() => $this->data['season_number'] ?? null);
+        return Attribute::get(fn () => $this->data['season_number'] ?? null);
     }
 
     public function show(): BelongsTo
@@ -44,6 +61,13 @@ class TvSeason extends Model
         });
     }
 
+    public function genres(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->show->genres;
+        });
+    }
+
     public function episodes()
     {
         return $this->hasMany(TvEpisode::class, 'season_id', 'id');
@@ -55,12 +79,12 @@ class TvSeason extends Model
     private function getOverview(): ?string
     {
         // Check if season has a valid overview
-        if (!empty($this->data['overview'])) {
+        if (! empty($this->data['overview'])) {
             return $this->data['overview'];
         }
 
         // Try to get overview from related show
-        if ($this->show && !empty($this->show->data['overview'])) {
+        if ($this->show && ! empty($this->show->data['overview'])) {
             return $this->show->data['overview'];
         }
 
@@ -92,7 +116,7 @@ class TvSeason extends Model
             'Writer',
             'Co-Executive Producer',
             'Producer',
-            'Original Music Composer'
+            'Original Music Composer',
         ];
 
         $crewCollection = collect($this->data['credits']['crew'] ?? []);
@@ -104,13 +128,14 @@ class TvSeason extends Model
 
         $otherCrew = $crewCollection
             ->filter(function ($crew) use ($importantJobs) {
-                return !in_array($crew['job'], $importantJobs);
+                return ! in_array($crew['job'], $importantJobs);
             });
 
         return $priorityCrew->merge($otherCrew)
             ->groupBy('id')
             ->map(function ($groupedCrew) {
                 $firstCrew = $groupedCrew->first();
+
                 return [
                     'id' => $firstCrew['id'],
                     'name' => $firstCrew['name'],
@@ -139,9 +164,9 @@ class TvSeason extends Model
             if ($totalMinutes >= 60) {
                 $hours = floor($totalMinutes / 60);
                 $minutes = $totalMinutes % 60;
-                $runtime = $hours . 'h' . ($minutes > 0 ? ' ' . $minutes . 'm' : '');
-            } else if ($totalMinutes > 0) {
-                $runtime = $totalMinutes . 'm';
+                $runtime = $hours.'h'.($minutes > 0 ? ' '.$minutes.'m' : '');
+            } elseif ($totalMinutes > 0) {
+                $runtime = $totalMinutes.'m';
             }
 
             // Get show data from parent relationship
@@ -150,7 +175,7 @@ class TvSeason extends Model
             return [
                 'id' => $data['id'],
                 'show_id' => $show->id,
-                'title' => $show->data['name'] . ' - ' . $data['name'],
+                'title' => $show->data['name'].' - '.$data['name'],
                 'type' => 'tvseason',
                 'overview' => $this->getOverview(),
                 'season_number' => $data['season_number'],

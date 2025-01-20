@@ -1,4 +1,4 @@
-import { Filters } from "@/types/userMovies";
+import {Filters} from "@/types/userMovies";
 
 export const initializeFilters = (
     filters: Partial<Filters> | undefined,

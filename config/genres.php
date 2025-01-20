@@ -27,5 +27,5 @@ return [
     878 => 'Science Fiction',
     10770 => 'TV Movie',
     53 => 'Thriller',
-    10752 => 'War'
+    10752 => 'War',
 ];

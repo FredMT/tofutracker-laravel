@@ -1,7 +1,7 @@
-import { Card, Group, Image, Stack, Text, Title } from "@mantine/core";
-import { Star } from "lucide-react";
+import {Card, Group, Image, Stack, Text, Title} from "@mantine/core";
+import {Star} from "lucide-react";
 import classes from "./WelcomeCarouselCard.module.css";
-import { Link } from "@inertiajs/react";
+import {Link} from "@inertiajs/react";
 
 interface WelcomeCarouselCardProps {
     id: string | number;
@@ -32,7 +32,6 @@ function WelcomeCarouselCard({
     type,
     vote_average,
 }: WelcomeCarouselCardProps) {
-    console.log(id, anime_id);
     return (
         <Card
             w={200}

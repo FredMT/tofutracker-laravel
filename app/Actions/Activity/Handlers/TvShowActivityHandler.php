@@ -16,7 +16,7 @@ class TvShowActivityHandler implements TvShowActivityInterface
 
     public function createActivity(int $userId, string $activityType, Model $subject, ?array $metadata = null): UserActivity
     {
-        if (!$this->canHandle($subject)) {
+        if (! $this->canHandle($subject)) {
             throw new \InvalidArgumentException('This handler only supports UserTvShow models');
         }
 
@@ -40,7 +40,7 @@ class TvShowActivityHandler implements TvShowActivityInterface
 
     public function deleteActivity(Model $subject): void
     {
-        if (!$this->canHandle($subject)) {
+        if (! $this->canHandle($subject)) {
             throw new \InvalidArgumentException('This handler only supports UserTvShow models');
         }
 
@@ -52,7 +52,7 @@ class TvShowActivityHandler implements TvShowActivityInterface
 
     private function generateDescription(?TvShow $show): string
     {
-        if (!$show) {
+        if (! $show) {
             return 'Completed TV show';
         }
 
@@ -61,7 +61,7 @@ class TvShowActivityHandler implements TvShowActivityInterface
 
     public function getTvShowTitle(Model $subject): ?string
     {
-        if (!$this->canHandle($subject)) {
+        if (! $this->canHandle($subject)) {
             return null;
         }
 
@@ -70,7 +70,7 @@ class TvShowActivityHandler implements TvShowActivityInterface
 
     public function getTvShowId(Model $subject): ?int
     {
-        if (!$this->canHandle($subject)) {
+        if (! $this->canHandle($subject)) {
             return null;
         }
 

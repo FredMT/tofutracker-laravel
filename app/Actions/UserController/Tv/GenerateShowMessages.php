@@ -2,8 +2,8 @@
 
 namespace App\Actions\UserController\Tv;
 
-use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class GenerateShowMessages
 {
@@ -25,7 +25,7 @@ class GenerateShowMessages
             if ($request->filled('genres')) {
                 $validGenres = config('genres');
                 $genreNames = collect(explode(',', $request->genres))
-                    ->map(fn($id) => $validGenres[(int)$id] ?? null)
+                    ->map(fn ($id) => $validGenres[(int) $id] ?? null)
                     ->filter()
                     ->implode(', ');
                 $appliedFilters[] = "genres: {$genreNames}";
@@ -38,12 +38,12 @@ class GenerateShowMessages
             }
 
             if (count($appliedFilters) > 0) {
-                $messages[] = "No shows found matching " .
+                $messages[] = 'No shows found matching '.
                     (count($appliedFilters) > 1
-                        ? "all of these filters: " . implode(', ', $appliedFilters)
-                        : "the filter: " . $appliedFilters[0]);
+                        ? 'all of these filters: '.implode(', ', $appliedFilters)
+                        : 'the filter: '.$appliedFilters[0]);
             } else {
-                $messages[] = "You do not have any shows in your library";
+                $messages[] = 'You do not have any shows in your library';
             }
         }
 

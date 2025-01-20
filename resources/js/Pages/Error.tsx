@@ -1,4 +1,4 @@
-import { Title } from "@mantine/core";
+import {Title} from "@mantine/core";
 
 export default function Error({ status }: { status: 403 | 404 | 500 | 503 }) {
     const title = {

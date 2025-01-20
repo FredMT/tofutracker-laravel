@@ -1,12 +1,12 @@
-import { useFilterStore } from "@/hooks/useFilterStore";
-import { Button, Group, Select, Stack } from "@mantine/core";
-import { DatesProvider, DatePickerInput } from "@mantine/dates";
+import {useFilterStore} from "@/hooks/useFilterStore";
+import {Button, Group, Select} from "@mantine/core";
+import {DatePickerInput, DatesProvider} from "@mantine/dates";
 import FilterSearchInput from "./FilterSearchInput";
-import { useMediaQuery } from "@mantine/hooks";
-import { WatchStatusDisplay } from "@/types/enums";
+import {useMediaQuery} from "@mantine/hooks";
+import {WatchStatusDisplay} from "@/types/enums";
 import dayjs from "dayjs";
-import { router, usePage } from "@inertiajs/react";
-import { PageProps, UserTvGenre } from "@/types/userTv";
+import {router, usePage} from "@inertiajs/react";
+import {PageProps, UserTvGenre} from "@/types/userTv";
 
 interface FilterButtonGroupProps {
     contentType: "movies" | "tv" | "anime";

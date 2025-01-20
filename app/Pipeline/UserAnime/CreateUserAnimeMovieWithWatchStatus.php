@@ -19,7 +19,7 @@ class CreateUserAnimeMovieWithWatchStatus
         $collection = UserAnimeCollection::create([
             'user_library_id' => $payload['library']->id,
             'map_id' => $payload['validated']['map_id'],
-            'watch_status' => $payload['validated']['watch_status']
+            'watch_status' => $payload['validated']['watch_status'],
         ]);
 
         // Create anime entry
@@ -27,7 +27,7 @@ class CreateUserAnimeMovieWithWatchStatus
             'user_anime_collection_id' => $collection->id,
             'anidb_id' => $payload['validated']['anidb_id'],
             'is_movie' => true,
-            'watch_status' => $payload['validated']['watch_status']
+            'watch_status' => $payload['validated']['watch_status'],
         ]);
 
         $payload['collection'] = $collection;

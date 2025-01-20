@@ -1,6 +1,6 @@
-import { Badge, Box, Card, Image, Stack, Text, Tooltip } from "@mantine/core";
-import { Season } from "@/types";
-import { Link } from "@inertiajs/react";
+import {Badge, Card, Image, Stack, Text, Tooltip} from "@mantine/core";
+import {Season} from "@/types";
+import {Link} from "@inertiajs/react";
 
 interface SeasonCardProps {
     season: Season;

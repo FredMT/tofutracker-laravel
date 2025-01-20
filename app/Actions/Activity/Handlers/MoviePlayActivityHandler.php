@@ -16,13 +16,13 @@ class MoviePlayActivityHandler implements MovieActivityInterface
 
     public function createActivity(int $userId, string $activityType, Model $subject, ?array $metadata = null): UserActivity
     {
-        if (!$this->canHandle($subject)) {
+        if (! $this->canHandle($subject)) {
             throw new \InvalidArgumentException('This handler only supports UserMovie models');
         }
 
         $movie = Movie::find($subject->movie_id);
         $metadata = array_merge($metadata ?? [], [
-            'movie_id' => $movie?->id
+            'movie_id' => $movie?->id,
         ]);
 
         return UserActivity::create([
@@ -38,7 +38,7 @@ class MoviePlayActivityHandler implements MovieActivityInterface
 
     public function deleteActivity(Model $subject): void
     {
-        if (!$this->canHandle($subject)) {
+        if (! $this->canHandle($subject)) {
             throw new \InvalidArgumentException('This handler only supports UserMovie models');
         }
 
@@ -50,7 +50,7 @@ class MoviePlayActivityHandler implements MovieActivityInterface
 
     private function generateDescription(?Movie $movie): string
     {
-        if (!$movie) {
+        if (! $movie) {
             return 'Watched movie';
         }
 
@@ -59,7 +59,7 @@ class MoviePlayActivityHandler implements MovieActivityInterface
 
     public function getMovieTitle(Model $subject): ?string
     {
-        if (!$this->canHandle($subject)) {
+        if (! $this->canHandle($subject)) {
             return null;
         }
 
@@ -68,7 +68,7 @@ class MoviePlayActivityHandler implements MovieActivityInterface
 
     public function getMovieId(Model $subject): ?int
     {
-        if (!$this->canHandle($subject)) {
+        if (! $this->canHandle($subject)) {
             return null;
         }
 

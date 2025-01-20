@@ -2,19 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class AnidbCharacter extends Model
 {
     use HasFactory;
 
     protected $table = 'anidb_characters';
+
     protected $hidden = ['created_at', 'updated_at'];
-
-
 
     protected $fillable = [
         'anime_id',
@@ -25,12 +24,12 @@ class AnidbCharacter extends Model
         'description',
         'picture',
         'rating',
-        'rating_votes'
+        'rating_votes',
     ];
 
     protected $casts = [
         'rating' => 'decimal:2',
-        'rating_votes' => 'integer'
+        'rating_votes' => 'integer',
     ];
 
     public function anime(): BelongsTo

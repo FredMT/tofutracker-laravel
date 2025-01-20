@@ -3,13 +3,13 @@
 namespace App\Jobs;
 
 use App\Models\Movie;
+use App\Services\TmdbService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
-use App\Services\TmdbService;
 
 class UpdateOrCreateMovieData implements ShouldQueue
 {
@@ -24,9 +24,9 @@ class UpdateOrCreateMovieData implements ShouldQueue
         try {
             $response = app(TmdbService::class)->getMovie($this->movieId);
 
-
             if (isset($response['data']['success']) && $response['data']['success'] === false) {
                 logger()->error("Failed to update movie {$this->movieId}: {$response['data']['status_message']}");
+
                 return;
             }
 
@@ -36,13 +36,13 @@ class UpdateOrCreateMovieData implements ShouldQueue
             $movie = Movie::find($this->movieId);
 
             // Only update if etag is different or doesn't exist
-            if (!$movie || $movie->etag !== $etag) {
+            if (! $movie || $movie->etag !== $etag) {
 
                 Movie::updateOrCreate(
                     ['id' => $this->movieId],
                     [
                         'data' => $movieData,
-                        'etag' => $etag
+                        'etag' => $etag,
                     ]
                 );
 
@@ -50,7 +50,7 @@ class UpdateOrCreateMovieData implements ShouldQueue
                 Cache::put("movie.{$this->movieId}", $filteredData, now()->addHours(6));
             }
         } catch (\Exception $e) {
-            logger()->error("Error updating movie {$this->movieId}: " . $e->getMessage());
+            logger()->error("Error updating movie {$this->movieId}: ".$e->getMessage());
             throw $e;
         }
     }

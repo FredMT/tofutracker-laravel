@@ -13,7 +13,7 @@ class CreateUserAnimeCollection
         $collection = UserAnimeCollection::create([
             'user_library_id' => $payload['library']->id,
             'map_id' => $payload['validated']['map_id'],
-            'watch_status' => WatchStatus::COMPLETED
+            'watch_status' => WatchStatus::COMPLETED,
         ]);
 
         $payload['collection'] = $collection;

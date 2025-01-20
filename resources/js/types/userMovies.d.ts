@@ -73,11 +73,3 @@ export interface Link {
     label: string;
     active: boolean;
 }
-
-export interface UserData {
-    id: number;
-    username: string;
-    name: string;
-    created_at: string;
-    avatar_url: string;
-}

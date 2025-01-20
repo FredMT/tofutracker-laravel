@@ -1,7 +1,7 @@
-import { useFilterStore } from "@/stores/filterStore";
-import { PageProps } from "@/types/userMovies";
-import { router, usePage } from "@inertiajs/react";
-import { Button } from "@mantine/core";
+import {useFilterStore} from "@/stores/filterStore";
+import {PageProps} from "@/types/userMovies";
+import {router, usePage} from "@inertiajs/react";
+import {Button} from "@mantine/core";
 
 export function ClearFilters() {
     const { userData } = usePage<PageProps>().props;

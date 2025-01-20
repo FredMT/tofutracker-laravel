@@ -1,7 +1,7 @@
-import { Anime } from "@/types/anime";
-import { Config } from "ziggy-js";
-import { WatchStatus } from "./enums";
-import { AnimeSeason } from "@/types/animeseason";
+import {Anime} from "@/types/anime";
+import {Config} from "ziggy-js";
+import {WatchStatus} from "./enums";
+import {AnimeSeason} from "@/types/animeseason";
 
 export interface Auth {
     user: User | null;
@@ -94,24 +94,17 @@ export interface Links {
 export type PageProps<
     T extends Record<string, unknown> = Record<string, unknown>
 > = T & {
-    auth: {
-        user: User;
-    };
+    auth: Auth;
     type: ContentType;
-    movie?: Movie;
-    tv?: TvShow;
-    tvseason?: TvSeason;
-    animetv?: Anime;
-    animemovie?: Anime;
     flash?: FlashMessage;
     ziggy: Config & { location: string };
     user_library: ContentTypeToLibrary<T> | null;
 } & (
-        | { type: "movie"; movie: Movie }
-        | { type: "tv"; tv: TvShow }
-        | { type: "tvseason"; tvseason: TvSeason; links: Links }
-        | { type: "animetv"; animetv: Main }
-        | { type: "animemovie"; animemovie: Main }
+        | { type: "movie" }
+        | { type: "tv" }
+        | { type: "tvseason" }
+        | { type: "animetv" }
+        | { type: "animemovie" }
     );
 
 interface BaseContent {

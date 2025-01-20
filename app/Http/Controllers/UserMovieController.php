@@ -2,23 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Movie\Plays\CreateUserMoviePlayAction;
+use App\Actions\Movie\Plays\DeleteUserMoviePlayAction;
+use App\Enums\MediaType;
+use App\Enums\WatchStatus;
 use App\Models\Movie;
 use App\Models\UserLibrary;
 use App\Models\UserMovie;
-use App\Enums\MediaType;
-use App\Enums\WatchStatus;
-use App\Models\UserMoviePlay;
-use App\Actions\Movie\Plays\CreateUserMoviePlayAction;
-use App\Actions\Movie\Plays\DeleteUserMoviePlayAction;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rules\Enum;
-use Illuminate\Support\Facades\Pipeline;
-use App\Pipeline\UserMovie\EnsureUserLibrary;
 use App\Pipeline\UserMovie\CreateUserMovie;
 use App\Pipeline\UserMovie\CreateUserMoviePlay;
 use App\Pipeline\UserMovie\EnsureMovieExists;
-use App\Pipeline\UserMovie\UpdateMovieRating;
+use App\Pipeline\UserMovie\EnsureUserLibrary;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Pipeline;
 use Illuminate\Validation\Rule;
 
 class UserMovieController extends Controller
@@ -33,7 +30,7 @@ class UserMovieController extends Controller
         if ($request->user()->cannot('create', UserMovie::class)) {
             return back()->with([
                 'success' => false,
-                'message' => "You are not authorized to create a movie entry",
+                'message' => 'You are not authorized to create a movie entry',
             ]);
         }
 
@@ -61,10 +58,11 @@ class UserMovieController extends Controller
                     });
             });
         } catch (\Exception $e) {
-            logger()->error('Failed to add movie to library: ' . $e->getMessage());
+            logger()->error('Failed to add movie to library: '.$e->getMessage());
+
             return back()->with([
                 'success' => false,
-                'message' => "An error occurred while adding movie to library",
+                'message' => 'An error occurred while adding movie to library',
             ]);
         }
     }
@@ -86,7 +84,7 @@ class UserMovieController extends Controller
                 if ($userMovie && $request->user()->cannot('update', $userMovie)) {
                     return back()->with([
                         'success' => false,
-                        'message' => "You are not authorized to update this movie",
+                        'message' => 'You are not authorized to update this movie',
                     ]);
                 }
 
@@ -102,7 +100,7 @@ class UserMovieController extends Controller
                     ]);
                 }
 
-                if (!$userMovie) {
+                if (! $userMovie) {
                     // Create new movie entry
                     $userLibrary = UserLibrary::firstOrCreate([
                         'user_id' => $request->user()->id,
@@ -126,7 +124,7 @@ class UserMovieController extends Controller
                     $newStatus = WatchStatus::from($validated['watch_status']);
 
                     $userMovie->update([
-                        'watch_status' => $newStatus
+                        'watch_status' => $newStatus,
                     ]);
 
                     // Create a play record if status changed to COMPLETED
@@ -137,14 +135,15 @@ class UserMovieController extends Controller
 
                 return back()->with([
                     'success' => true,
-                    'message' => "Movie status updated successfully",
+                    'message' => 'Movie status updated successfully',
                 ]);
             });
         } catch (\Exception $e) {
-            logger()->error('Failed to update movie: ' . $e->getMessage());
+            logger()->error('Failed to update movie: '.$e->getMessage());
+
             return back()->with([
                 'success' => false,
-                'message' => "An error occurred while updating movie",
+                'message' => 'An error occurred while updating movie',
             ]);
         }
     }
@@ -158,17 +157,17 @@ class UserMovieController extends Controller
                     'movie_id' => $movieId,
                 ])->first();
 
-                if (!$userMovie) {
+                if (! $userMovie) {
                     return back()->with([
                         'success' => false,
-                        'message' => "Movie not found in your library",
+                        'message' => 'Movie not found in your library',
                     ]);
                 }
 
                 if ($request->user()->cannot('delete', $userMovie)) {
                     return back()->with([
                         'success' => false,
-                        'message' => "You are not authorized to delete this movie",
+                        'message' => 'You are not authorized to delete this movie',
                     ]);
                 }
 
@@ -180,14 +179,15 @@ class UserMovieController extends Controller
 
                 return back()->with([
                     'success' => true,
-                    'message' => "Movie removed from library",
+                    'message' => 'Movie removed from library',
                 ]);
             });
         } catch (\Exception $e) {
-            logger()->error('Failed to remove movie from library: ' . $e->getMessage());
+            logger()->error('Failed to remove movie from library: '.$e->getMessage());
+
             return back()->with([
                 'success' => false,
-                'message' => "An error occurred while removing movie from library",
+                'message' => 'An error occurred while removing movie from library',
             ]);
         }
     }
@@ -209,7 +209,7 @@ class UserMovieController extends Controller
         ])->then(function ($payload) {
             return back()->with([
                 'success' => true,
-                'message' => "Successfully rated movie",
+                'message' => 'Successfully rated movie',
             ]);
         });
     }

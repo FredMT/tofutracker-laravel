@@ -8,6 +8,7 @@ use Illuminate\Console\Command;
 class PopulateAnimeRelationshipTablesCommand extends Command
 {
     protected $signature = 'anime:populate-relationships';
+
     protected $description = 'Populate the normalized relationship tables from existing anime maps';
 
     public function handle(): void

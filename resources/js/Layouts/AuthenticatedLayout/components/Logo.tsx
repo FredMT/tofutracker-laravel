@@ -1,5 +1,5 @@
-import { Link } from "@inertiajs/react";
-import { Title } from "@mantine/core";
+import {Link} from "@inertiajs/react";
+import {Title} from "@mantine/core";
 
 export default function Logo() {
     return (

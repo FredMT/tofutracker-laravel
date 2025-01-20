@@ -32,13 +32,13 @@ class GenerateAnimeMessages
 
                     // Only include valid numeric genre IDs that exist in config
                     $genreNames = collect($genreIds)
-                        ->filter(fn($id) => is_numeric($id))
-                        ->map(fn($id) => config("genres.{$id}"))
+                        ->filter(fn ($id) => is_numeric($id))
+                        ->map(fn ($id) => config("genres.{$id}"))
                         ->filter()
                         ->values();
 
                     if ($genreNames->isNotEmpty()) {
-                        $filterDescriptions[] = "genres '" . $genreNames->implode(", ") . "'";
+                        $filterDescriptions[] = "genres '".$genreNames->implode(', ')."'";
                     }
                 }
 
@@ -46,13 +46,13 @@ class GenerateAnimeMessages
                     $filterDescriptions[] = "date range {$request->from_date} to {$request->to_date}";
                 }
 
-                if (!empty($filterDescriptions)) {
-                    $messages[] = "No anime found matching " . implode(", ", $filterDescriptions);
+                if (! empty($filterDescriptions)) {
+                    $messages[] = 'No anime found matching '.implode(', ', $filterDescriptions);
                 } else {
-                    $messages[] = "No anime found";
+                    $messages[] = 'No anime found';
                 }
             } else {
-                $messages[] = "No anime found";
+                $messages[] = 'No anime found';
             }
         } else {
             $filterDescriptions = [];
@@ -71,13 +71,13 @@ class GenerateAnimeMessages
 
                 // Only include valid numeric genre IDs that exist in config
                 $genreNames = collect($genreIds)
-                    ->filter(fn($id) => is_numeric($id))
-                    ->map(fn($id) => config("genres.{$id}"))
+                    ->filter(fn ($id) => is_numeric($id))
+                    ->map(fn ($id) => config("genres.{$id}"))
                     ->filter()
                     ->values();
 
                 if ($genreNames->isNotEmpty()) {
-                    $filterDescriptions[] = "genres '" . $genreNames->implode(", ") . "'";
+                    $filterDescriptions[] = "genres '".$genreNames->implode(', ')."'";
                 }
             }
 
@@ -85,8 +85,8 @@ class GenerateAnimeMessages
                 $filterDescriptions[] = "date range {$request->from_date} to {$request->to_date}";
             }
 
-            if (!empty($filterDescriptions)) {
-                $messages[] = "Showing anime matching " . implode(", ", $filterDescriptions);
+            if (! empty($filterDescriptions)) {
+                $messages[] = 'Showing anime matching '.implode(', ', $filterDescriptions);
             }
         }
 

@@ -23,7 +23,7 @@ class UpdateExistingUserAnimeMovie
     public function handle(array $payload, Closure $next)
     {
         $collection = UserAnimeCollection::where('map_id', $payload['validated']['map_id'])
-            ->whereHas('userLibrary', fn($q) => $q->where('user_id', $payload['user']->id))
+            ->whereHas('userLibrary', fn ($q) => $q->where('user_id', $payload['user']->id))
             ->first();
 
         if ($collection) {
@@ -48,7 +48,7 @@ class UpdateExistingUserAnimeMovie
                         ->where('playable_id', $collection->id)
                         ->exists();
 
-                    if (!$collectionHasPlay) {
+                    if (! $collectionHasPlay) {
                         // If collection doesn't have a play record, create for both
                         $this->createPlayAction->executeMultiple([$collection, $userAnime]);
                     } else {

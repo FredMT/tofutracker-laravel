@@ -10,7 +10,7 @@ class AnimeChainEntry extends Model
     protected $fillable = [
         'chain_id',
         'anime_id',
-        'sequence_order'
+        'sequence_order',
     ];
 
     public function chain(): BelongsTo

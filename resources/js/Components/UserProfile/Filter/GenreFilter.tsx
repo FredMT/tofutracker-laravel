@@ -1,15 +1,7 @@
-import { useFilterStore } from "@/stores/filterStore";
-import { PageProps } from "@/types/userMovies";
-import { usePage } from "@inertiajs/react";
-import {
-    Checkbox,
-    Combobox,
-    Group,
-    Input,
-    Pill,
-    PillsInput,
-    useCombobox,
-} from "@mantine/core";
+import {useFilterStore} from "@/stores/filterStore";
+import {PageProps} from "@/types/userMovies";
+import {usePage} from "@inertiajs/react";
+import {Checkbox, Combobox, Group, Input, Pill, PillsInput, useCombobox,} from "@mantine/core";
 
 export function GenreFilter() {
     const { genres } = usePage<PageProps>().props;

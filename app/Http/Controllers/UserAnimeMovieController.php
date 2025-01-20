@@ -5,27 +5,26 @@ namespace App\Http\Controllers;
 use App\Actions\Anime\Plays\CreateUserAnimePlayAction;
 use App\Actions\Anime\Plays\DeleteUserAnimePlayAction;
 use App\Enums\WatchStatus;
+use App\Models\AnidbAnime;
+use App\Models\UserAnime;
 use App\Pipeline\UserAnime\CreateUserAnimeCollection;
 use App\Pipeline\UserAnime\CreateUserAnimeMovie;
 use App\Pipeline\UserAnime\CreateUserAnimeMoviePlay;
 use App\Pipeline\UserAnime\EnsureUserAnimeLibrary;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Pipeline;
-use App\Models\AnidbAnime;
-use App\Models\UserAnime;
-use App\Pipeline\UserAnime\CreateUserAnimeMovieWithWatchStatus;
-use App\Pipeline\UserAnime\UpdateUserAnimeMovieWithWatchStatus;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Validation\Rule;
-use Illuminate\Auth\Access\AuthorizationException;
+use App\Pipeline\UserAnimeMovie\CreateNewUserAnimeMovie;
 use App\Pipeline\UserAnimeMovie\EnsureUserAnimeMovieLibrary;
 use App\Pipeline\UserAnimeMovie\UpdateExistingUserAnimeMovie;
-use App\Pipeline\UserAnimeMovie\CreateNewUserAnimeMovie;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Pipeline;
+use Illuminate\Validation\Rule;
 
 class UserAnimeMovieController extends Controller
 {
     protected CreateUserAnimePlayAction $createPlayAction;
+
     protected DeleteUserAnimePlayAction $deletePlayAction;
 
     public function __construct(
@@ -43,10 +42,8 @@ class UserAnimeMovieController extends Controller
             'map_id' => ['required', 'integer', 'exists:anime_maps,id'],
         ]);
 
-
         $anime = AnidbAnime::findOrFail($validated['anidb_id']);
         $mapId = $anime->map();
-
 
         if ($mapId !== $validated['map_id']) {
             return back()->with([
@@ -70,16 +67,17 @@ class UserAnimeMovieController extends Controller
                     ->then(function () {
                         return back()->with([
                             'success' => true,
-                            'message' => "Anime movie added to your library",
+                            'message' => 'Anime movie added to your library',
                         ]);
                     });
             });
         } catch (\Exception $e) {
-            logger()->error('Failed to add anime movie to library: ' . $e->getMessage());
+            logger()->error('Failed to add anime movie to library: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
+
             return back()->with([
                 'success' => false,
-                'message' => "An error occurred while adding anime movie to library",
+                'message' => 'An error occurred while adding anime movie to library',
             ]);
         }
     }
@@ -114,7 +112,7 @@ class UserAnimeMovieController extends Controller
                     ->where('anidb_id', $validated['anidb_id'])
                     ->first();
 
-                if (!$userAnime) {
+                if (! $userAnime) {
                     return back()->with([
                         'success' => false,
                         'message' => 'Anime not found in your library.',
@@ -142,8 +140,9 @@ class UserAnimeMovieController extends Controller
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to remove anime from library: ' . $e->getMessage());
+            logger()->error('Failed to remove anime from library: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
+
             return back()->with([
                 'success' => false,
                 'message' => 'An error occurred while removing anime from library.',
@@ -165,14 +164,12 @@ class UserAnimeMovieController extends Controller
                 $anime = AnidbAnime::findOrFail($validated['anidb_id']);
                 $mapId = $anime->map();
 
-                if ($mapId !== (int)$validated['map_id']) {
+                if ($mapId !== (int) $validated['map_id']) {
                     return back()->with([
                         'success' => false,
                         'message' => 'Invalid map ID for this anime.',
                     ]);
                 }
-
-
 
                 // Find existing anime entry
                 $userAnime = UserAnime::whereHas('collection', function ($query) use ($validated, $request) {
@@ -185,7 +182,7 @@ class UserAnimeMovieController extends Controller
                     ->first();
 
                 // If no existing entry, create new one with rating
-                if (!$userAnime) {
+                if (! $userAnime) {
                     // Authorize creating new entry with rating
                     if (Gate::denies('rate-anime', null)) {
                         throw new \Illuminate\Auth\Access\AuthorizationException('You are not authorized to rate this anime.');
@@ -204,7 +201,7 @@ class UserAnimeMovieController extends Controller
                         ->then(function ($payload) {
                             return back()->with([
                                 'success' => true,
-                                'message' => "Anime movie added to your library with rating",
+                                'message' => 'Anime movie added to your library with rating',
                             ]);
                         });
                 }
@@ -227,8 +224,9 @@ class UserAnimeMovieController extends Controller
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to rate anime: ' . $e->getMessage());
+            logger()->error('Failed to rate anime: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
+
             return back()->with([
                 'success' => false,
                 'message' => 'An error occurred while rating anime.',
@@ -258,7 +256,7 @@ class UserAnimeMovieController extends Controller
                     ->then(function ($payload) {
                         return back()->with([
                             'success' => true,
-                            'message' => "Anime watch status updated successfully",
+                            'message' => 'Anime watch status updated successfully',
                         ]);
                     });
             });
@@ -268,11 +266,12 @@ class UserAnimeMovieController extends Controller
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to update anime watch status: ' . $e->getMessage());
+            logger()->error('Failed to update anime watch status: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
+
             return back()->with([
                 'success' => false,
-                'message' => "An error occurred while updating anime watch status",
+                'message' => 'An error occurred while updating anime watch status',
             ]);
         }
     }

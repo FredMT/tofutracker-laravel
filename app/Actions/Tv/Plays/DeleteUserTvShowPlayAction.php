@@ -4,8 +4,8 @@ namespace App\Actions\Tv\Plays;
 
 use App\Actions\Activity\CreateUserActivityAction;
 use App\Models\UserActivity;
-use App\Models\UserTvShow;
 use App\Models\UserTvPlay;
+use App\Models\UserTvShow;
 
 class DeleteUserTvShowPlayAction
 {

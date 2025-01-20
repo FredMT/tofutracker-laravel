@@ -3,13 +3,11 @@
 namespace App\Models;
 
 use App\Enums\WatchStatus;
-use App\Models\TvdbAnimeEpisode;
-use Illuminate\Database\Eloquent\Concerns\HasRelationships;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Znck\Eloquent\Traits\BelongsToThrough;
 use Znck\Eloquent\Relations\BelongsToThrough as BelongsToThroughRelation;
+use Znck\Eloquent\Traits\BelongsToThrough;
 
 class UserAnimeEpisode extends Model
 {
@@ -20,13 +18,13 @@ class UserAnimeEpisode extends Model
         'episode_id',
         'rating',
         'watch_status',
-        'is_special'
+        'is_special',
     ];
 
     protected $casts = [
         'rating' => 'float',
         'watch_status' => WatchStatus::class,
-        'is_special' => 'boolean'
+        'is_special' => 'boolean',
     ];
 
     protected $hidden = ['created_at', 'updated_at'];

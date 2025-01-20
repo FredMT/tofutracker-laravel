@@ -1,9 +1,9 @@
-import { Box, Image, Stack } from "@mantine/core";
+import {Box, Image} from "@mantine/core";
 import React from "react";
-import { Carousel } from "@mantine/carousel";
+import {Carousel} from "@mantine/carousel";
 import WelcomeCarouselCard from "./WelcomeCarouselCard";
 import ResponsiveContainer from "@/Components/ResponsiveContainer";
-import { WelcomeProviderCarousel } from "./WelcomeProviderCarousel";
+import {WelcomeProviderCarousel} from "./WelcomeProviderCarousel";
 
 interface WatchProviderItem {
     id: number;

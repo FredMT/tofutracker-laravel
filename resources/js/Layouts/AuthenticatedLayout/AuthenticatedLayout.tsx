@@ -1,9 +1,9 @@
-import { PropsWithChildren, useEffect, useState } from "react";
+import {PropsWithChildren, useEffect, useState} from "react";
 import styles from "./AuthenticatedLayout.module.css";
 import Logo from "@/Layouts/AuthenticatedLayout/components/Logo";
 import MobileMenuButton from "@/Layouts/AuthenticatedLayout/components/MobileMenuButton";
 import MobileMenu from "@/Layouts/AuthenticatedLayout/components/MobileMenu";
-import { Box, Group } from "@mantine/core";
+import {Box, Group} from "@mantine/core";
 import SearchBar from "@/Layouts/AuthenticatedLayout/components/UserMenu/SearchBar/SearchBar";
 import UserMenu from "@/Layouts/AuthenticatedLayout/components/UserMenu/UserMenu";
 
@@ -20,7 +20,7 @@ export default function AuthenticatedLayout({
         const controlNavbar = () => {
             const currentScrollY = window.scrollY;
 
-            if (isSearchOpen) {
+            if (isSearchOpen || currentScrollY <= 64) {
                 setIsVisible(true);
                 return;
             }

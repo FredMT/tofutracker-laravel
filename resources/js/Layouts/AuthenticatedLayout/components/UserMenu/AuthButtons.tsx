@@ -1,5 +1,5 @@
-import { Link, usePage } from "@inertiajs/react";
-import { Button, Group } from "@mantine/core";
+import {Link, usePage} from "@inertiajs/react";
+import {Button, Group} from "@mantine/core";
 
 export default function AuthButtons() {
     const url = usePage().url;

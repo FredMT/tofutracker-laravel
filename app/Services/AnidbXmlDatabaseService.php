@@ -20,7 +20,6 @@ class AnidbXmlDatabaseService
     {
         try {
 
-
             $parsedData = $this->xmlService->parseAnimeXml($xmlContent);
 
             DB::beginTransaction();
@@ -42,7 +41,7 @@ class AnidbXmlDatabaseService
             DB::rollBack();
             logger()->error('Error processing anime XML', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
             throw $e;
         }
@@ -67,13 +66,13 @@ class AnidbXmlDatabaseService
                     'description' => $data['description'],
                     'rating' => $data['rating'],
                     'rating_count' => $data['rating_count'],
-                    'picture' => $data['picture']
+                    'picture' => $data['picture'],
                 ]
             );
         } catch (\Exception $e) {
             logger()->error('Error processing anime record', [
                 'data' => $data,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             throw $e;
         }
@@ -93,7 +92,7 @@ class AnidbXmlDatabaseService
                         'description' => $characterData['description'],
                         'picture' => $characterData['picture'],
                         'rating' => $characterData['rating'],
-                        'rating_votes' => $characterData['rating_votes']
+                        'rating_votes' => $characterData['rating_votes'],
                     ]
                 );
 
@@ -102,8 +101,9 @@ class AnidbXmlDatabaseService
             } catch (\Exception $e) {
                 logger()->error('Error processing character', [
                     'character_id' => $characterData['character_id'] ?? 'unknown',
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
+
                 continue;
             }
         }
@@ -118,8 +118,9 @@ class AnidbXmlDatabaseService
                 if (empty($seiyuuData['seiyuu_id']) || empty($seiyuuData['name'])) {
                     logger()->warning('Skipping invalid seiyuu data', [
                         'seiyuu_data' => $seiyuuData,
-                        'character_id' => $character->id
+                        'character_id' => $character->id,
                     ]);
+
                     continue;
                 }
 
@@ -127,7 +128,7 @@ class AnidbXmlDatabaseService
                     ['seiyuu_id' => $seiyuuData['seiyuu_id']],
                     [
                         'name' => $seiyuuData['name'],
-                        'picture' => $seiyuuData['picture'] ?? null
+                        'picture' => $seiyuuData['picture'] ?? null,
                     ]
                 );
 
@@ -136,21 +137,22 @@ class AnidbXmlDatabaseService
                 logger()->error('Error processing seiyuu', [
                     'seiyuu_data' => $seiyuuData,
                     'character_id' => $character->id,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
+
                 continue;
             }
         }
 
         // Sync seiyuus for this character
-        if (!empty($seiyuuIds)) {
+        if (! empty($seiyuuIds)) {
             try {
                 $character->seiyuus()->sync($seiyuuIds);
             } catch (\Exception $e) {
                 logger()->error('Error syncing seiyuus for character', [
                     'character_id' => $character->id,
                     'seiyuu_ids' => $seiyuuIds,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
             }
         }
@@ -174,15 +176,16 @@ class AnidbXmlDatabaseService
                         'rating' => $episodeData['rating'],
                         'rating_votes' => $episodeData['rating_votes'],
                         'resource_type' => $episodeData['resource_type'],
-                        'resource_identifier' => $episodeData['resource_identifier']
+                        'resource_identifier' => $episodeData['resource_identifier'],
                     ]
                 );
             } catch (\Exception $e) {
                 logger()->error('Error processing episode', [
                     'episode_id' => $episodeData['episode_id'] ?? 'unknown',
                     'anime_id' => $anime->id,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
+
                 continue;
             }
         }
@@ -196,15 +199,16 @@ class AnidbXmlDatabaseService
                     ['related_anime_id' => $relatedData['related_anime_id']],
                     [
                         'name' => $relatedData['name'],
-                        'relation_type' => $relatedData['relation_type']
+                        'relation_type' => $relatedData['relation_type'],
                     ]
                 );
             } catch (\Exception $e) {
                 logger()->error('Error processing related anime', [
                     'related_anime_id' => $relatedData['related_anime_id'] ?? 'unknown',
                     'anime_id' => $anime->id,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
+
                 continue;
             }
         }
@@ -217,15 +221,16 @@ class AnidbXmlDatabaseService
                 $anime->similarAnime()->updateOrCreate(
                     ['similar_anime_id' => $similarData['similar_anime_id']],
                     [
-                        'name' => $similarData['name']
+                        'name' => $similarData['name'],
                     ]
                 );
             } catch (\Exception $e) {
                 logger()->error('Error processing similar anime', [
                     'similar_anime_id' => $similarData['similar_anime_id'] ?? 'unknown',
                     'anime_id' => $anime->id,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
+
                 continue;
             }
         }
@@ -239,15 +244,16 @@ class AnidbXmlDatabaseService
                     ['creator_id' => $creatorData['creator_id']],
                     [
                         'name' => $creatorData['name'],
-                        'role' => $creatorData['role']
+                        'role' => $creatorData['role'],
                     ]
                 );
             } catch (\Exception $e) {
                 logger()->error('Error processing creator', [
                     'creator_id' => $creatorData['creator_id'] ?? 'unknown',
                     'anime_id' => $anime->id,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
+
                 continue;
             }
         }
@@ -257,26 +263,28 @@ class AnidbXmlDatabaseService
     {
         foreach ($links as $linkData) {
             try {
-                if (!in_array($linkData['type'], $this->getAllowedExternalLinkTypes())) {
+                if (! in_array($linkData['type'], $this->getAllowedExternalLinkTypes())) {
                     logger()->warning('Skipping invalid external link type', [
                         'type' => $linkData['type'],
-                        'anime_id' => $anime->id
+                        'anime_id' => $anime->id,
                     ]);
+
                     continue;
                 }
 
                 $anime->externalLinks()->updateOrCreate(
                     [
                         'type' => $linkData['type'],
-                        'identifier' => $linkData['identifier']
+                        'identifier' => $linkData['identifier'],
                     ],
                 );
             } catch (\Exception $e) {
                 logger()->error('Error processing external link', [
                     'type' => $linkData['type'] ?? 'unknown',
                     'anime_id' => $anime->id,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
+
                 continue;
             }
         }
@@ -301,7 +309,7 @@ class AnidbXmlDatabaseService
             'imdb',
             'tmdb',
             'funimation',
-            'primevideo'
+            'primevideo',
         ];
     }
 }

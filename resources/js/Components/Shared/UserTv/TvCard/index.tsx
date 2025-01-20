@@ -1,10 +1,10 @@
-import { UserTvShow } from "@/types/userTv";
-import { Card, Text, Title, Tooltip } from "@mantine/core";
-import { useState } from "react";
+import {UserTvShow} from "@/types/userTv";
+import {Card, Text, Tooltip} from "@mantine/core";
+import {useState} from "react";
 import TvSeasonModal from "../TvSeasonModal";
 import TvCardPoster from "./TvCardPoster";
 import TvCardSeasonsBadge from "./TvCardSeasonsBadge";
-import { Link } from "@inertiajs/react";
+import {Link} from "@inertiajs/react";
 
 interface TvCardProps {
     show: UserTvShow;

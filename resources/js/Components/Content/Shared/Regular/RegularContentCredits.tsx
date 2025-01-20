@@ -1,14 +1,10 @@
-import { Tabs, Text } from "@mantine/core";
-import { useState } from "react";
+import {Tabs, Text} from "@mantine/core";
+import {useState} from "react";
 import PersonCard from "./PersonCard";
-import {
-    ContentCreditsProps,
-    RegularContentDataType,
-    TmdbPerson,
-} from "@/types";
-import { usePage } from "@inertiajs/react";
-import { CustomCarousel } from "@/Components/Shared/CustomCarousel";
-import { Carousel } from "@mantine/carousel";
+import {ContentCreditsProps, RegularContentDataType, TmdbPerson,} from "@/types";
+import {usePage} from "@inertiajs/react";
+import {CustomCarousel} from "@/Components/Shared/CustomCarousel";
+import {Carousel} from "@mantine/carousel";
 
 export function RegularContentCredits({
     containerWidth,

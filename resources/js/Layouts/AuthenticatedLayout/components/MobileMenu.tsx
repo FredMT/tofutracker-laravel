@@ -1,6 +1,6 @@
-import { PageProps } from "@/types";
-import { Link, usePage } from "@inertiajs/react";
-import { Button, Stack } from "@mantine/core";
+import {PageProps} from "@/types";
+import {Link, usePage} from "@inertiajs/react";
+import {Button, Stack} from "@mantine/core";
 
 interface MobileMenuProps {
     showingNavigationDropdown: boolean;

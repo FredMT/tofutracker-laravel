@@ -3,10 +3,8 @@
 namespace App\Actions\Movie\Plays;
 
 use App\Actions\Activity\CreateUserActivityAction;
-use App\Models\Movie;
 use App\Models\UserMovie;
 use App\Models\UserMoviePlay;
-use Illuminate\Database\Eloquent\Model;
 
 class CreateUserMoviePlayAction
 {
@@ -20,7 +18,7 @@ class CreateUserMoviePlayAction
             'user_movie_id' => $userMovie->id,
             'user_id' => $userMovie->user_id,
             'movie_id' => $userMovie->movie_id,
-            'watched_at' => $watchedAt ?? now()
+            'watched_at' => $watchedAt ?? now(),
         ]);
 
         // Record activity

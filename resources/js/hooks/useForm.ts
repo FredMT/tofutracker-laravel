@@ -1,5 +1,5 @@
-import { useForm as useInertiaForm } from "@inertiajs/react";
-import { useEffect } from "react";
+import {useForm as useInertiaForm} from "@inertiajs/react";
+import {useEffect} from "react";
 
 export default function useForm<T extends Record<string, any>>(
     initialData: T,

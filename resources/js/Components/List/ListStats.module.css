@@ -1,0 +1,36 @@
+.container {
+    position: relative;
+    width: 100%;
+    min-height: 100px;
+    border-radius: var(--mantine-radius-md);
+    overflow: hidden;
+}
+
+.backgroundOverlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    pointer-events: none;
+}
+
+.content {
+    position: relative;
+    width: 100%;
+    min-height: 100px;
+    padding: var(--mantine-spacing-md);
+    z-index: 1;
+}
+
+.stat {
+    min-width: 80px;
+}
+
+@media (max-width: 36em) {
+    .content {
+        padding: var(--mantine-spacing-xs);
+    }
+
+    .stat {
+        min-width: 70px;
+    }
+}

@@ -1,9 +1,9 @@
-import { useFilterStore } from "@/stores/filterStore";
-import { UserData } from "@/types/userData";
-import { router, usePage } from "@inertiajs/react";
-import { TextInput } from "@mantine/core";
-import { useDebouncedValue } from "@mantine/hooks";
-import { useEffect, useRef } from "react";
+import {useFilterStore} from "@/stores/filterStore";
+import {UserData} from "@/types/userData";
+import {router, usePage} from "@inertiajs/react";
+import {TextInput} from "@mantine/core";
+import {useDebouncedValue} from "@mantine/hooks";
+import {useEffect, useRef} from "react";
 
 interface FilterSearchInputProps {
     contentType: "movies" | "tv" | "anime";

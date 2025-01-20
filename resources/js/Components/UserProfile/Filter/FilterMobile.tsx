@@ -1,6 +1,6 @@
 import FilterMobileDrawer from "@/Components/UserProfile/Filter/FilterMobileDrawer";
 import FilterSearchInput from "@/Components/UserProfile/Filter/FilterSearchInput";
-import { Grid } from "@mantine/core";
+import {Grid} from "@mantine/core";
 
 interface FilterMobileProps {
     contentType: "movies" | "tv";

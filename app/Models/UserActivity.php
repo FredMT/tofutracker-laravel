@@ -17,12 +17,12 @@ class UserActivity extends Model
         'anidb_id',
         'description',
         'metadata',
-        'occurred_at'
+        'occurred_at',
     ];
 
     protected $casts = [
         'metadata' => 'array',
-        'occurred_at' => 'datetime'
+        'occurred_at' => 'datetime',
     ];
 
     public function user(): BelongsTo
@@ -68,6 +68,6 @@ class UserActivity extends Model
         };
 
         // Only return the array if we have a valid poster path
-        return ($poster && isset($poster['path']) && !is_null($poster['path'])) ? $poster : null;
+        return ($poster && isset($poster['path']) && ! is_null($poster['path'])) ? $poster : null;
     }
 }

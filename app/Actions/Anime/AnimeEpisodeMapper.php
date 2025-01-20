@@ -8,8 +8,8 @@ class AnimeEpisodeMapper
 {
     public function mapEpisodes(SimpleXMLElement $anime, int $episodeCount): array
     {
-        $tvdbSeason = (string)$anime->attributes()['defaulttvdbseason'];
-        $episodeOffset = (int)($anime->attributes()['episodeoffset'] ?? 0);
+        $tvdbSeason = (string) $anime->attributes()['defaulttvdbseason'];
+        $episodeOffset = (int) ($anime->attributes()['episodeoffset'] ?? 0);
         $mappingList = $anime->{'mapping-list'}?->mapping;
 
         $mainEpisodes = [];
@@ -18,18 +18,18 @@ class AnimeEpisodeMapper
         // Handle Special Episodes
         if ($mappingList) {
             foreach ($mappingList as $mapping) {
-                $anidbSeason = (int)$mapping->attributes()['anidbseason'];
-                $tvdbSpecialSeason = (int)$mapping->attributes()['tvdbseason'];
-                $individualMappings = (string)$mapping;
+                $anidbSeason = (int) $mapping->attributes()['anidbseason'];
+                $tvdbSpecialSeason = (int) $mapping->attributes()['tvdbseason'];
+                $individualMappings = (string) $mapping;
 
                 if ($anidbSeason === 0) { // Special Seasons
-                    if (!empty($individualMappings)) {
+                    if (! empty($individualMappings)) {
                         $mappings = explode(';', trim($individualMappings, ';'));
                         foreach ($mappings as $map) {
-                            list($anidbEp, $tvdbEp) = explode('-', $map);
-                            $specialEpisodes[(int)$anidbEp] = [
+                            [$anidbEp, $tvdbEp] = explode('-', $map);
+                            $specialEpisodes[(int) $anidbEp] = [
                                 'season' => $tvdbSpecialSeason,
-                                'episode' => (int)$tvdbEp,
+                                'episode' => (int) $tvdbEp,
                             ];
                         }
                     }
@@ -39,7 +39,7 @@ class AnimeEpisodeMapper
 
         // Handle Main Episodes for "a" defaulttvdbseason
         if ($tvdbSeason !== 'a') {
-            $tvdbSeason = (int)$tvdbSeason;
+            $tvdbSeason = (int) $tvdbSeason;
             for ($i = 1; $i <= $episodeCount; $i++) {
                 $mainEpisodes[$i] = [
                     'season' => $tvdbSeason,
@@ -50,29 +50,33 @@ class AnimeEpisodeMapper
 
         if ($mappingList) {
             foreach ($mappingList as $mapping) {
-                $anidbSeason = (int)$mapping->attributes()['anidbseason'];
-                $tvdbMainSeason = (int)$mapping->attributes()['tvdbseason'];
-                $start = (int)($mapping->attributes()['start'] ?? 0);
-                $end = (int)($mapping->attributes()['end'] ?? 0);
-                $offset = (int)($mapping->attributes()['offset'] ?? 0);
-                $individualMappings = (string)$mapping;
+                $anidbSeason = (int) $mapping->attributes()['anidbseason'];
+                $tvdbMainSeason = (int) $mapping->attributes()['tvdbseason'];
+                $start = (int) ($mapping->attributes()['start'] ?? 0);
+                $end = (int) ($mapping->attributes()['end'] ?? 0);
+                $offset = (int) ($mapping->attributes()['offset'] ?? 0);
+                $individualMappings = (string) $mapping;
 
                 if ($anidbSeason === 1) { // Main Episodes
-                    if (!empty($individualMappings)) {
+                    if (! empty($individualMappings)) {
                         $mappings = explode(';', trim($individualMappings, ';'));
                         foreach ($mappings as $map) {
-                            if (empty($map)) continue;
+                            if (empty($map)) {
+                                continue;
+                            }
 
-                            list($anidbEp, $tvdbEp) = explode('-', $map);
+                            [$anidbEp, $tvdbEp] = explode('-', $map);
                             // If tvdbEp is 0, skip this mapping
-                            if ((int)$tvdbEp === 0) continue;
+                            if ((int) $tvdbEp === 0) {
+                                continue;
+                            }
 
                             // Check if this TVDB episode already exists in mainEpisodes
                             $tvdbEpisodeExists = false;
                             foreach ($mainEpisodes as $existingEpisode) {
                                 if (
                                     $existingEpisode['season'] === $tvdbMainSeason &&
-                                    $existingEpisode['episode'] === (int)$tvdbEp
+                                    $existingEpisode['episode'] === (int) $tvdbEp
                                 ) {
                                     $tvdbEpisodeExists = true;
                                     break;
@@ -80,10 +84,10 @@ class AnimeEpisodeMapper
                             }
 
                             // Only add if this TVDB episode hasn't been mapped yet
-                            if (!$tvdbEpisodeExists) {
-                                $mainEpisodes[(int)$anidbEp] = [
+                            if (! $tvdbEpisodeExists) {
+                                $mainEpisodes[(int) $anidbEp] = [
                                     'season' => $tvdbMainSeason,
-                                    'episode' => (int)$tvdbEp,
+                                    'episode' => (int) $tvdbEp,
                                 ];
                             }
                         }
@@ -120,7 +124,7 @@ class AnimeEpisodeMapper
                 $minAnidbEp = min(array_keys($mainEpisodes));
                 if ($minAnidbEp > 1) {
                     for ($i = 1; $i < $minAnidbEp; $i++) { // Corrected loop condition
-                        if (!isset($mainEpisodes[$i])) {
+                        if (! isset($mainEpisodes[$i])) {
                             $mainEpisodes[$i] = [
                                 'season' => 1,
                                 'episode' => $i,

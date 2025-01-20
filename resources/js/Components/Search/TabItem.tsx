@@ -1,4 +1,4 @@
-import { Badge, Group, Tabs, Text } from "@mantine/core";
+import {Badge, Group, Tabs, Text} from "@mantine/core";
 import classes from "./TabItem.module.css";
 
 type TabValue = "movies" | "tv" | "anime";

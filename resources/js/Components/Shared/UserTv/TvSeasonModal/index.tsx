@@ -1,6 +1,6 @@
-import { UserTvShow } from "@/types/userTv";
-import { Modal } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
+import {UserTvShow} from "@/types/userTv";
+import {Modal} from "@mantine/core";
+import {useMediaQuery} from "@mantine/hooks";
 import TvSeasonTable from "./TvSeasonTable";
 import TvSeasonVerticalTable from "./TvSeasonVerticalTable";
 

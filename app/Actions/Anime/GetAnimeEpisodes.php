@@ -3,14 +3,14 @@
 namespace App\Actions\Anime;
 
 use App\Jobs\SyncAnimeEpisodeMappings;
-use App\Models\AnidbAnime;
 use App\Jobs\SyncTvdbAnimeData;
+use App\Models\AnidbAnime;
 use App\Services\TvdbService;
+use Exception;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
 use SimpleXMLElement;
-use Exception;
-use Illuminate\Support\Facades\Bus;
 
 class GetAnimeEpisodes
 {
@@ -22,7 +22,6 @@ class GetAnimeEpisodes
     public function execute(int $anidbid): array
     {
         try {
-            // First try to get episodes from XML mapping
             $animeRecord = $this->getAnimeRecord($anidbid);
             $anime = $this->fetchAnimeFromXml($anidbid);
             $tvdbId = $this->validateTvdbId($anime, $anidbid);
@@ -32,14 +31,15 @@ class GetAnimeEpisodes
 
             Bus::chain([
                 new SyncTvdbAnimeData($tvdbId),
-                new SyncAnimeEpisodeMappings($anidbid, $tvdbId, $enhancedMapping)
+                new SyncAnimeEpisodeMappings($anidbid, $tvdbId, $enhancedMapping),
             ])->dispatch();
+
             return $enhancedMapping;
         } catch (\Exception $e) {
             logger()->info('Falling back to database episodes', ['anidb_id' => $anidbid]);
             logger()->error($e->getMessage());
             logger()->error($e->getTraceAsString());
-            abort(500, "Could not receive episodes");
+            abort(500, 'Could not receive episodes');
         }
     }
 
@@ -47,7 +47,7 @@ class GetAnimeEpisodes
     {
         $animeRecord = AnidbAnime::find($anidbid);
 
-        if (!$animeRecord) {
+        if (! $animeRecord) {
             throw new Exception('Anime not found in database');
         }
 
@@ -62,7 +62,7 @@ class GetAnimeEpisodes
                 $response = $this->client->get($xmlUrl);
 
                 if ($response->getStatusCode() !== 200) {
-                    throw new Exception('Failed to retrieve anime list XML. Status code: ' . $response->getStatusCode());
+                    throw new Exception('Failed to retrieve anime list XML. Status code: '.$response->getStatusCode());
                 }
 
                 return $response->getBody()->getContents();
@@ -88,16 +88,15 @@ class GetAnimeEpisodes
     private function validateTvdbId(SimpleXMLElement $anime, int $anidbid): int
     {
         $tvdbId = (int) $anime['tvdbid'];
-        if (!$tvdbId > 0) {
+        if (! $tvdbId > 0) {
             throw new Exception("Anime with anidbid {$anidbid} has an invalid TVDB ID.");
         }
+
         return $tvdbId;
     }
 
     private function enhanceWithEpisodeData(array $mapping, int $tvdbId): array
     {
-        $cacheKey = "anime_mapping_{$tvdbId}_";
-
         $tvdbService = app(TvdbService::class);
         $episodes = $tvdbService->getEpisodes($tvdbId);
 
@@ -114,7 +113,7 @@ class GetAnimeEpisodes
 
         $enhancedMapping = [
             'mainEpisodes' => [],
-            'specialEpisodes' => []
+            'specialEpisodes' => [],
         ];
 
         // Process main episodes and special episodes together

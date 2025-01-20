@@ -1,20 +1,12 @@
 import FilterButtonGroup from "@/Components/UserProfile/Filter/FilterButtonGroup";
 import AnimeCard from "@/Components/Shared/UserAnime/AnimeCard";
-import { useFilterStore } from "@/hooks/useFilterStore";
+import {useFilterStore} from "@/hooks/useFilterStore";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
 import UserProfileLayout from "@/Layouts/UserProfileLayout";
-import { UserAnimePageProps } from "@/types/userAnime";
-import { Head } from "@inertiajs/react";
-import {
-    Alert,
-    Divider,
-    Flex,
-    Group,
-    Space,
-    Stack,
-    Title,
-} from "@mantine/core";
-import { useEffect } from "react";
+import {UserAnimePageProps} from "@/types/userAnime";
+import {Head} from "@inertiajs/react";
+import {Alert, Flex, Group, Space, Stack, Title,} from "@mantine/core";
+import {useEffect} from "react";
 
 function UserAnime({
     userData,
@@ -41,7 +33,6 @@ function UserAnime({
     return (
         <>
             <Head title={`${userData.username}'s Anime`} />
-            <Divider my={16} />
             <Group>
                 <FilterButtonGroup contentType="anime" />
             </Group>

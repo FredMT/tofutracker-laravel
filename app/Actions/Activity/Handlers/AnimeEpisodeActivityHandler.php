@@ -16,7 +16,7 @@ class AnimeEpisodeActivityHandler implements AnimeActivityInterface
 
     public function createActivity(int $userId, string $activityType, Model $subject, ?array $metadata = null): UserActivity
     {
-        if (!$this->canHandle($subject)) {
+        if (! $this->canHandle($subject)) {
             throw new \InvalidArgumentException('This handler only supports UserAnimeEpisode models');
         }
 
@@ -38,7 +38,7 @@ class AnimeEpisodeActivityHandler implements AnimeActivityInterface
 
     public function deleteActivity(Model $subject): void
     {
-        if (!$this->canHandle($subject)) {
+        if (! $this->canHandle($subject)) {
             throw new \InvalidArgumentException('This handler only supports UserAnimeEpisode models');
         }
 
@@ -51,7 +51,7 @@ class AnimeEpisodeActivityHandler implements AnimeActivityInterface
                 $metadata['user_anime_episode_ids'] = array_values(
                     array_filter(
                         $metadata['user_anime_episode_ids'] ?? [],
-                        fn($id) => $id !== $subject->id
+                        fn ($id) => $id !== $subject->id
                     )
                 );
 
@@ -62,7 +62,7 @@ class AnimeEpisodeActivityHandler implements AnimeActivityInterface
                 } else {
                     $activity->update([
                         'metadata' => $metadata,
-                        'description' => $this->generateDescription($metadata)
+                        'description' => $this->generateDescription($metadata),
                     ]);
                 }
             });
@@ -70,19 +70,20 @@ class AnimeEpisodeActivityHandler implements AnimeActivityInterface
 
     private function generateDescription(?array $metadata): string
     {
-        if (!isset($metadata['anidb_id'])) {
+        if (! isset($metadata['anidb_id'])) {
             return 'Watched anime';
         }
 
         try {
             $anime = AnidbAnime::find($metadata['anidb_id']);
-            if (!$anime) {
+            if (! $anime) {
                 return 'Watched anime';
             }
 
             $count = $metadata['count'] ?? 1;
-            return "Watched " .
-                ($count === 1 ? "1 episode" : "{$count} episodes") .
+
+            return 'Watched '.
+                ($count === 1 ? '1 episode' : "{$count} episodes").
                 " of {$anime->title}";
         } catch (\Exception $e) {
             return 'Watched anime';
@@ -91,7 +92,7 @@ class AnimeEpisodeActivityHandler implements AnimeActivityInterface
 
     private function findRecentBatch(int $userId, ?int $userAnimeId): ?UserActivity
     {
-        if (!$userAnimeId) {
+        if (! $userAnimeId) {
             return null;
         }
 
@@ -115,7 +116,7 @@ class AnimeEpisodeActivityHandler implements AnimeActivityInterface
         $activity->update([
             'metadata' => $metadata,
             'description' => $this->generateDescription($metadata),
-            'occurred_at' => now()
+            'occurred_at' => now(),
         ]);
 
         return $activity;
@@ -123,7 +124,7 @@ class AnimeEpisodeActivityHandler implements AnimeActivityInterface
 
     public function getAnimeTitle(Model $subject): ?string
     {
-        if (!$this->canHandle($subject)) {
+        if (! $this->canHandle($subject)) {
             return null;
         }
 
@@ -132,7 +133,7 @@ class AnimeEpisodeActivityHandler implements AnimeActivityInterface
 
     public function getAnimeId(Model $subject): ?int
     {
-        if (!$this->canHandle($subject)) {
+        if (! $this->canHandle($subject)) {
             return null;
         }
 

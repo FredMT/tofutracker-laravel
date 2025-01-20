@@ -1,6 +1,6 @@
-import { UserTvShow } from "@/types/userTv";
-import { Link } from "@inertiajs/react";
-import { Badge, Image, Table, Title } from "@mantine/core";
+import {UserTvShow} from "@/types/userTv";
+import {Link} from "@inertiajs/react";
+import {Badge, Image, Table, Title} from "@mantine/core";
 
 interface TvSeasonTableProps {
     show: UserTvShow;

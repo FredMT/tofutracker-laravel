@@ -2,15 +2,14 @@
 
 namespace App\Pipeline\UserTvSeason;
 
+use App\Actions\Activity\CreateUserActivityAction;
 use App\Actions\Tv\Plays\CreateUserTvPlayAction;
 use App\Actions\Tv\Plays\CreateUserTvSeasonPlayAction;
-use App\Actions\Activity\CreateUserActivityAction;
 use App\Enums\WatchStatus;
 use App\Models\TvEpisode;
+use App\Models\UserActivity;
 use App\Models\UserTvEpisode;
 use App\Models\UserTvPlay;
-use App\Models\UserTvSeason;
-use App\Models\UserActivity;
 use Closure;
 
 class UpdateWatchStatus
@@ -69,7 +68,7 @@ class UpdateWatchStatus
                 $episodeIds[] = $userEpisode->id;
 
                 // Only create play record if not already watched
-                if (!in_array($userEpisode->id, $existingEpisodeIds)) {
+                if (! in_array($userEpisode->id, $existingEpisodeIds)) {
                     UserTvPlay::firstOrCreate([
                         'user_id' => $payload['user']->id,
                         'user_tv_show_id' => $payload['show']->id,
@@ -84,7 +83,7 @@ class UpdateWatchStatus
             }
 
             // Update or create episode activity
-            if (!empty($createdEpisodes)) {
+            if (! empty($createdEpisodes)) {
                 $firstEpisode = $createdEpisodes[0];
 
                 if ($existingActivity) {
@@ -97,7 +96,7 @@ class UpdateWatchStatus
                     $existingActivity->update([
                         'metadata' => $metadata,
                         'description' => "Watched {$metadata['count']} episodes of {$firstEpisode->userTvSeason->show->title} {$firstEpisode->userTvSeason->season->title}",
-                        'occurred_at' => now()
+                        'occurred_at' => now(),
                     ]);
                 } else {
                     // Create new activity with all episodes
@@ -112,7 +111,7 @@ class UpdateWatchStatus
                             'season_id' => $firstEpisode->season_id,
                             'episode_id' => $firstEpisode->episode_id,
                             'user_tv_episode_ids' => $episodeIds,
-                            'count' => count($episodeIds)
+                            'count' => count($episodeIds),
                         ]
                     );
                 }

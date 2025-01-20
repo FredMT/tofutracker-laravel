@@ -19,7 +19,6 @@ class CreateUserTvShowForRating
             'user_library_id' => $payload['library']->id,
         ]);
 
-
         return $next($payload);
     }
 }

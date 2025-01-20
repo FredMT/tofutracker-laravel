@@ -1,8 +1,8 @@
-import { useForm, usePage, Link } from "@inertiajs/react";
-import { FormEventHandler } from "react";
-import { PageProps } from "@/types";
-import { Button, TextInput, Stack, Title, Text, Box } from "@mantine/core";
-import { z } from "zod";
+import {Link, useForm, usePage} from "@inertiajs/react";
+import {FormEventHandler} from "react";
+import {PageProps} from "@/types";
+import {Box, Button, Stack, Text, TextInput, Title} from "@mantine/core";
+import {z} from "zod";
 
 const usernameSchema = z
     .string()

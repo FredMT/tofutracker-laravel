@@ -19,7 +19,7 @@ class ConfirmablePasswordController extends Controller
     public function show(): Response
     {
         return Inertia::render('Auth/ConfirmPassword', [
-            'backdropImage' => app(TmdbService::class)->getRandomTrendingBackdropImage()
+            'backdropImage' => app(TmdbService::class)->getRandomTrendingBackdropImage(),
 
         ]);
     }

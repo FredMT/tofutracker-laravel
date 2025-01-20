@@ -40,11 +40,11 @@ class ProcessTvSeasons implements ShouldQueue
                 if ($existingSeason->etag !== ($response['etag'] ?? null)) {
                     $existingSeason->update([
                         'data' => collect($seasonData)->except('episodes')->all(),
-                        'etag' => $response['etag']
+                        'etag' => $response['etag'],
                     ]);
 
                     // Prepare episode data for batch insert
-                    $rows = array_map(function ($episodeData) use ($existingSeason, $response) {
+                    $rows = array_map(function ($episodeData) use ($existingSeason) {
                         return [
                             'id' => $episodeData['id'],
                             'show_id' => $this->showId,
@@ -54,7 +54,7 @@ class ProcessTvSeasons implements ShouldQueue
                     }, $seasonData['episodes'] ?? []);
 
                     // Direct DB insert
-                    if (!empty($rows)) {
+                    if (! empty($rows)) {
                         DB::table('tv_episodes')->insert($rows);
                     }
                 }
@@ -67,11 +67,11 @@ class ProcessTvSeasons implements ShouldQueue
                     'show_id' => $this->showId,
                     'season_number' => $this->seasonNumber,
                     'data' => collect($seasonData)->except('episodes')->all(),
-                    'etag' => $response['etag']
+                    'etag' => $response['etag'],
                 ]);
 
                 // Prepare episode data for batch insert
-                $rows = array_map(function ($episodeData) use ($season, $response) {
+                $rows = array_map(function ($episodeData) use ($season) {
                     return [
                         'id' => $episodeData['id'],
                         'show_id' => $this->showId,
@@ -81,14 +81,14 @@ class ProcessTvSeasons implements ShouldQueue
                 }, $seasonData['episodes'] ?? []);
 
                 // Direct DB insert
-                if (!empty($rows)) {
+                if (! empty($rows)) {
                     DB::table('tv_episodes')->insert($rows);
                 }
             }
         } catch (\Exception $e) {
-            logger()->error("Error processing TV season: " . $e->getMessage(), [
+            logger()->error('Error processing TV season: '.$e->getMessage(), [
                 'show_id' => $this->showId,
-                'season_number' => $this->seasonNumber
+                'season_number' => $this->seasonNumber,
             ]);
 
             throw $e;

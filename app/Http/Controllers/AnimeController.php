@@ -16,6 +16,7 @@ use App\Services\TmdbService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -23,8 +24,11 @@ use Inertia\Response;
 class AnimeController extends Controller
 {
     private GetTmdbData $getTmdbData;
+
     private GetAnidbData $getAnidbData;
+
     private GetAnimeTypeAction $getAnimeType;
+
     private TmdbService $tmdbService;
 
     public function __construct(GetTmdbData $getTmdbData, GetAnidbData $getAnidbData, GetAnimeTypeAction $getAnimeType, TmdbService $tmdbService)
@@ -35,8 +39,7 @@ class AnimeController extends Controller
         $this->tmdbService = $tmdbService;
     }
 
-
-    public function show($accessId)
+    public function show(Request $request, $accessId): Response
     {
         try {
             $animeMap = AnimeMap::where('id', $accessId)->firstOrFail();
@@ -48,13 +51,14 @@ class AnimeController extends Controller
 
             // Get first entry from prequel_sequel_chains
             $firstChainEntry = null;
-            if (!empty($anidbData['prequel_sequel_chains'])) {
+            if (! empty($anidbData['prequel_sequel_chains'])) {
                 $firstChain = array_values($anidbData['prequel_sequel_chains'])[0] ?? [];
                 $firstChainEntry = $firstChain[0] ?? null;
             }
 
             // Get user's anime library entry if it exists
             $userLibrary = null;
+            $userLists = null;
             if (Auth::check()) {
                 $userAnimeCollection = UserAnimeCollection::where('map_id', $accessId)
                     ->whereHas('userLibrary', function ($query) {
@@ -82,9 +86,24 @@ class AnimeController extends Controller
                                 'rating' => $anime->rating,
                                 'watch_status' => $anime->watch_status,
                             ];
-                        })->toArray()
+                        })->toArray(),
                     ];
                 }
+
+                $userLists = $request->user()
+                    ->customLists()
+                    ->select('id', 'title')
+                    ->orderBy('title', 'ASC')
+                    ->withExists(['items as has_item' => function ($query) use ($accessId) {
+                        $query->where('listable_type', AnimeMap::class)
+                            ->where('listable_id', $accessId);
+                    }])
+                    ->get();
+
+                if ($userLists->isEmpty()) {
+                    $userLists = null;
+                }
+
             }
 
             return Inertia::render('AnimeContent', [
@@ -96,26 +115,26 @@ class AnimeController extends Controller
                     'map_id' => $firstChainEntry ? $firstChainEntry['map_id'] : $accessId,
                     'anidb_id' => $firstChainEntry ? $firstChainEntry['id'] : null,
                 ],
-                'user_library' => $userLibrary
+                'user_library' => $userLibrary,
+                'user_lists' => $userLists,
             ]);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            abort(400, "Could not find this anime");
+            abort(400, 'Could not find this anime');
         } catch (\JsonException $e) {
-            abort(500, "Problem on our end finding this anime");
+            abort(500, 'Problem on our end finding this anime');
         } catch (\Exception $e) {
             logger()->error('Error processing anime data', [
                 'error' => $e->getMessage(),
             ]);
-            abort(500, "Problem on our end finding this anime");
+            abort(500, 'Problem on our end finding this anime');
         }
     }
 
-
-    public function showSeason($accessId, $seasonId): Response
+    public function showSeason(Request $request, $accessId, $seasonId): Response
     {
         try {
-            if (!$this->verifySeasonRelationship($accessId, $seasonId)) {
-                return abort(400, "Season not found");
+            if (! $this->verifySeasonRelationship($accessId, $seasonId)) {
+                return abort(400, 'Season not found');
             }
 
             $this->checkAnimeType($seasonId);
@@ -131,7 +150,6 @@ class AnimeController extends Controller
                 'creators',
                 'externalLinks',
             ])->findOrFail($seasonId);
-
 
             $anime->setAttribute('mapped_episodes', $anime->mappedEpisodes());
 
@@ -158,7 +176,7 @@ class AnimeController extends Controller
             if ($mainCharacters->isEmpty() && $otherCharacters->isEmpty()) {
                 $anime['credits'] = [
                     'cast' => null,
-                    'seiyuu' => null
+                    'seiyuu' => null,
                 ];
             } else {
                 // Group characters by name
@@ -178,7 +196,7 @@ class AnimeController extends Controller
                         'id' => $primaryCharacter->character_id,
                         'name' => $primaryCharacter->name,
                         'picture' => "https://anidb.net/images/main/{$primaryCharacter->picture}",
-                        'seiyuu' => $seiyuuNames
+                        'seiyuu' => $seiyuuNames,
                     ];
                 })->values();
 
@@ -203,14 +221,14 @@ class AnimeController extends Controller
                             'id' => $seiyuu->seiyuu_id,
                             'name' => $seiyuu->name,
                             'picture' => "https://anidb.net/images/main/{$seiyuu->picture}",
-                            'characters' => $characterNames
+                            'characters' => $characterNames,
                         ];
                     })
                     ->values();
 
                 $anime['credits'] = [
                     'cast' => $cast,
-                    'seiyuu' => $seiyuus
+                    'seiyuu' => $seiyuus,
                 ];
             }
 
@@ -219,7 +237,7 @@ class AnimeController extends Controller
                 $mapId = $related->relatedEntry?->map_id;
 
                 // If no direct related entry, check chain entry
-                if (!$mapId && $related->chainEntry) {
+                if (! $mapId && $related->chainEntry) {
                     $mapId = $related->chainEntry->chain?->map_id;
                 }
 
@@ -229,7 +247,7 @@ class AnimeController extends Controller
                     'name' => $related->name,
                     'relation_type' => $related->relation_type,
                     'picture' => $related->relatedAnime?->picture,
-                    'map_id' => $mapId
+                    'map_id' => $mapId,
                 ];
             })->filter()->values()->toArray();
 
@@ -238,7 +256,7 @@ class AnimeController extends Controller
                 $mapId = $similar->relatedEntry?->map_id;
 
                 // If no direct related entry, check chain entry
-                if (!$mapId && $similar->chainEntry) {
+                if (! $mapId && $similar->chainEntry) {
                     $mapId = $similar->chainEntry->chain?->map_id;
                 }
 
@@ -247,7 +265,7 @@ class AnimeController extends Controller
                     'similar_anime_id' => $similar->similar_anime_id,
                     'name' => $similar->name,
                     'picture' => $similar->similarAnime?->picture,
-                    'map_id' => $mapId
+                    'map_id' => $mapId,
                 ];
             })->filter()->values()->toArray();
 
@@ -258,11 +276,13 @@ class AnimeController extends Controller
                     $videos[] = [
                         'id' => $link->id,
                         'url' => $link->identifier ? "https://youtube.com/{$link->identifier}" : null,
-                        'type' => $link->type
+                        'type' => $link->type,
                     ];
+
                     return false;
                 }
-                return !in_array($link->type, ['myanimelist', 'animenewsnetwork', 'youtube']);
+
+                return ! in_array($link->type, ['myanimelist', 'animenewsnetwork', 'youtube']);
             })->values()->toArray();
 
             // Get external IDs
@@ -273,7 +293,7 @@ class AnimeController extends Controller
                     'thetvdb_id',
                     'livechart_id',
                     'anime_planet_id',
-                    'imdb_id'
+                    'imdb_id',
                 ])
                 ->first();
 
@@ -289,7 +309,7 @@ class AnimeController extends Controller
 
             // Filter out null identifiers
             $externalLinks = array_filter($externalLinks, function ($link) {
-                return !is_null($link['identifier']);
+                return ! is_null($link['identifier']);
             });
 
             $mapId = $anime->map();
@@ -324,7 +344,7 @@ class AnimeController extends Controller
                         $minutes = $totalRuntime % 60;
 
                         $totalRuntime = $hours > 0
-                            ? "{$hours}h " . ($minutes > 0 ? "{$minutes}m" : "")
+                            ? "{$hours}h ".($minutes > 0 ? "{$minutes}m" : '')
                             : "{$minutes}m";
                     }
 
@@ -373,10 +393,11 @@ class AnimeController extends Controller
             $anime['videos'] = $videos;
 
             $userLibrary = null;
+            $userLists = null;
 
             if (Auth::check()) {
                 $userAnime = UserAnime::with('episodes')
-                    ->whereHas('collection', function ($query) use ($seasonId) {
+                    ->whereHas('collection', function ($query) {
                         $query->whereHas('userLibrary', function ($query) {
                             $query->where('user_id', Auth::id());
                         });
@@ -400,9 +421,19 @@ class AnimeController extends Controller
                                 'rating' => $episode->rating,
                                 'is_special' => $episode->is_special,
                             ];
-                        })->toArray()
+                        })->toArray(),
                     ];
                 }
+
+                $userLists = $request->user()
+                    ->customLists()
+                    ->select('id', 'title')
+                    ->orderBy('title', 'ASC')
+                    ->withExists(['items as has_item' => function ($query) use ($seasonId) {
+                        $query->where('listable_type', AnidbAnime::class)
+                            ->where('listable_id', $seasonId);
+                    }])
+                    ->get();
             }
 
             // Generate navigation links
@@ -413,8 +444,9 @@ class AnimeController extends Controller
                 [
                     'data' => $anime,
                     'user_library' => $userLibrary,
+                    'user_lists' => $userLists,
                     'type' => 'animeseason',
-                    'links' => $links
+                    'links' => $links,
                 ]
             );
         } catch (ModelNotFoundException $e) {
@@ -423,8 +455,9 @@ class AnimeController extends Controller
             logger()->error('Error fetching anime season', [
                 'error' => $e->getMessage(),
                 'access_id' => $accessId,
-                'season_id' => $seasonId
+                'season_id' => $seasonId,
             ]);
+
             return response()->json(['error' => 'An error occurred while fetching anime data'], 500);
         }
     }
@@ -455,16 +488,16 @@ class AnimeController extends Controller
                 return [
                     'show' => [
                         'url' => url("/anime/{$accessId}"),
-                        'name' => $animeMap->collection_name
+                        'name' => $animeMap->collection_name,
                     ],
                     'seasons' => $chainEntries->map(function ($entry) use ($accessId, $seasonId) {
                         return [
                             'url' => url("/anime/{$accessId}/season/{$entry->anime_id}"),
                             'name' => $entry->anime->title ?? 'Unknown Season',
                             'season_number' => $entry->sequence_order,
-                            'is_current' => $entry->anime_id === $seasonId
+                            'is_current' => $entry->anime_id === $seasonId,
                         ];
-                    })->values()->all()
+                    })->values()->all(),
                 ];
             }
 
@@ -482,15 +515,15 @@ class AnimeController extends Controller
                 return [
                     'show' => [
                         'url' => url("/anime/{$accessId}"),
-                        'name' => $animeMap->collection_name
+                        'name' => $animeMap->collection_name,
                     ],
                     'seasons' => $relatedEntries->map(function ($entry) use ($accessId, $seasonId) {
                         return [
                             'url' => url("/anime/{$accessId}/season/{$entry->anime_id}"),
                             'name' => $entry->anime->title ?? 'Unknown Season',
-                            'is_current' => $entry->anime_id === $seasonId
+                            'is_current' => $entry->anime_id === $seasonId,
                         ];
-                    })->values()->all()
+                    })->values()->all(),
                 ];
             }
 
@@ -499,8 +532,9 @@ class AnimeController extends Controller
             logger()->error('Error generating navigation links', [
                 'error' => $e->getMessage(),
                 'access_id' => $accessId,
-                'season_id' => $seasonId
+                'season_id' => $seasonId,
             ]);
+
             return null;
         }
     }
@@ -525,7 +559,7 @@ class AnimeController extends Controller
             logger()->error('Error verifying season relationship', [
                 'error' => $e->getMessage(),
                 'access_id' => $accessId,
-                'season_id' => $seasonId
+                'season_id' => $seasonId,
             ]);
             abort(400, 'Season not found');
         }
@@ -537,13 +571,13 @@ class AnimeController extends Controller
             $animeType = AnidbAnime::where('id', $seasonId)
                 ->value('type');
 
-            if ($animeType === 'Music Video' || $animeType === "unknown") {
+            if ($animeType === 'Music Video' || $animeType === 'unknown') {
                 throw new Exception('Music videos or unknown type are not supported');
             }
         } catch (\Exception $e) {
             logger()->error('Error checking anime type', [
                 'error' => $e->getMessage(),
-                'season_id' => $seasonId
+                'season_id' => $seasonId,
             ]);
 
             abort(500, 'Error checking anime type');

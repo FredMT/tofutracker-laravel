@@ -1,5 +1,5 @@
-import { useContent } from "@/hooks/useContent";
-import { Grid, Text, Title } from "@mantine/core";
+import {useContent} from "@/hooks/useContent";
+import {Grid, Text, Title} from "@mantine/core";
 
 type DetailsField = {
     key: string;

@@ -20,7 +20,6 @@ class CreateUserAnimeSeasonWatchStatusCollection
             ]
         );
 
-
         $payload['collection'] = $collection;
 
         return $next($payload);

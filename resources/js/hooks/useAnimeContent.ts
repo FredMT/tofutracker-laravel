@@ -1,6 +1,6 @@
-import { PageProps } from "@/types";
-import { Anime, ShowData, MovieData, TmdbData, AnidbData } from "@/types/anime";
-import { usePage } from "@inertiajs/react";
+import {PageProps} from "@/types";
+import {AnidbData, Anime, MovieData, ShowData} from "@/types/anime";
+import {usePage} from "@inertiajs/react";
 
 interface AnimeContentReturn {
     content: Anime;

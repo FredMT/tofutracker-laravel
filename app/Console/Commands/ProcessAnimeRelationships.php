@@ -2,13 +2,14 @@
 
 namespace App\Console\Commands;
 
-use App\Models\AnidbAnime;
 use App\Jobs\ProcessAnimeRelationship;
+use App\Models\AnidbAnime;
 use Illuminate\Console\Command;
 
 class ProcessAnimeRelationships extends Command
 {
     protected $signature = 'anime:process-relationships {--chunk=100}';
+
     protected $description = 'Process relationships for all anime in the database';
 
     public function handle(): void

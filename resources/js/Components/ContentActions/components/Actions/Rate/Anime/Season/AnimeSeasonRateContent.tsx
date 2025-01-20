@@ -1,13 +1,13 @@
 import useForm from "@/hooks/useForm";
-import { AnimeSeasonUserLibrary, AnimeType, PageProps } from "@/types";
-import { usePage } from "@inertiajs/react";
-import { Button } from "@mantine/core";
-import { useDisclosure, useMediaQuery } from "@mantine/hooks";
-import { notifications } from "@mantine/notifications";
-import { Check, CircleAlertIcon, Star } from "lucide-react";
-import { AnimeSeason } from "@/types/animeseason";
-import { MobileRating } from "@/Components/Content/Shared/MobileRating";
-import { DesktopRating } from "@/Components/Content/Shared/DesktopRating";
+import {AnimeSeasonUserLibrary} from "@/types";
+import {usePage} from "@inertiajs/react";
+import {Button} from "@mantine/core";
+import {useDisclosure, useMediaQuery} from "@mantine/hooks";
+import {notifications} from "@mantine/notifications";
+import {Check, CircleAlertIcon, Star} from "lucide-react";
+import {AnimeSeason} from "@/types/animeseason";
+import {MobileRating} from "@/Components/Content/Shared/MobileRating";
+import {DesktopRating} from "@/Components/Content/Shared/DesktopRating";
 
 type AnimeSeasonRateContentProps = {
     data: AnimeSeason;

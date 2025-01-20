@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\UpdateOrCreateMovieData;
 use App\Models\Movie;
+use App\Models\UserMovie;
 use App\Services\TmdbService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Support\Facades\Cache;
-use App\Jobs\UpdateOrCreateMovieData;
-use Illuminate\Http\Request;
-use App\Models\UserMovie;
 
 class MovieController extends Controller
 {
-
     public function __construct(
         private readonly TmdbService $tmdbService
     ) {}
@@ -23,20 +22,35 @@ class MovieController extends Controller
 
         $cacheKey = "movie.{$id}";
         $userLibraryData = null;
+        $userLists = null;
 
-        // Get user library data if authenticated
         if ($request->user()) {
             $userLibraryData = UserMovie::where([
                 'user_id' => $request->user()->id,
-                'movie_id' => $id
+                'movie_id' => $id,
             ])->first();
+
+            $userLists = $request->user()
+                ->customLists()
+                ->select('id', 'title')
+                ->orderBy('title', 'ASC')
+                ->withExists(['items as has_item' => function ($query) use ($id) {
+                    $query->where('listable_type', Movie::class)
+                        ->where('listable_id', $id);
+                }])
+                ->get();
+
+            if ($userLists->isEmpty()) {
+                $userLists = null;
+            }
         }
 
         if (Cache::has($cacheKey)) {
             return Inertia::render('Movie', [
                 'data' => Cache::get($cacheKey),
                 'type' => 'movie',
-                'user_library' => $userLibraryData
+                'user_library' => $userLibraryData,
+                'user_lists' => $userLists,
             ]);
         }
 
@@ -46,11 +60,11 @@ class MovieController extends Controller
                 UpdateOrCreateMovieData::dispatch($id);
             }
 
-
             return Inertia::render('Movie', [
                 'data' => $existingMovie->filteredData,
                 'type' => 'movie',
-                'user_library' => $userLibraryData
+                'user_library' => $userLibraryData,
+                'user_lists' => $userLists,
 
             ]);
         }
@@ -59,15 +73,14 @@ class MovieController extends Controller
         $movie = Movie::find($id);
         Cache::put($cacheKey, $movie->filteredData, now()->addHours(6));
 
-
         return Inertia::render('Movie', [
             'data' => Cache::get($cacheKey),
             'type' => 'movie',
-            'user_library' => $userLibraryData
+            'user_library' => $userLibraryData,
+            'user_lists' => $userLists,
 
         ]);
     }
-
 
     private function fetchAndStoreMovie(string $id): void
     {
@@ -81,14 +94,14 @@ class MovieController extends Controller
         $movieData = $response['data'];
         $etag = $response['etag'] ?? null;
 
-        if (!$etag) {
+        if (! $etag) {
             logger()->warning("No etag received for movie {$id}");
         }
 
         Movie::create([
             'id' => $id,
             'data' => $movieData,
-            'etag' => $etag
+            'etag' => $etag,
         ]);
     }
 }

@@ -1,5 +1,5 @@
-import { RelatedAnimeData } from "@/types/anime";
-import { Badge, Card, Image, Stack, Text, Tooltip } from "@mantine/core";
+import {RelatedAnimeData} from "@/types/anime";
+import {Badge, Card, Image, Stack, Text, Tooltip} from "@mantine/core";
 
 interface AnimeSeasonCardProps {
     season: RelatedAnimeData;

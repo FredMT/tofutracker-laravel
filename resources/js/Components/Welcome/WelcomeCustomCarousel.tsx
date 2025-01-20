@@ -1,15 +1,7 @@
-import { Carousel } from "@mantine/carousel";
-import {
-    Container,
-    ContainerProps,
-    Title,
-    Stack,
-    Space,
-    Group,
-    Tabs,
-} from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
-import { ReactNode } from "react";
+import {Carousel} from "@mantine/carousel";
+import {Container, ContainerProps, Space, Stack, Title,} from "@mantine/core";
+import {useMediaQuery} from "@mantine/hooks";
+import {ReactNode} from "react";
 import classes from "./WelcomeCustomCarousel.module.css";
 
 interface WelcomeCustomCarouselProps {

@@ -1,6 +1,6 @@
 import ContentEpisodeCard from "@/Components/Content/Episodes/ContentEpisodeCard";
-import { TvSeason } from "@/types";
-import { Divider, Stack, Title } from "@mantine/core";
+import {TvSeason} from "@/types";
+import {Divider, Stack, Title} from "@mantine/core";
 import {usePage} from "@inertiajs/react";
 
 function ContentEpisodes() {

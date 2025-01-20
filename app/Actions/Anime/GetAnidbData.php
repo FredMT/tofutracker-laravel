@@ -4,11 +4,11 @@ namespace App\Actions\Anime;
 
 use App\Http\Resources\AnidbAnimeResource;
 use App\Models\AnidbAnime;
+use App\Models\AnidbCharacter;
+use App\Models\AnimeChainEntry;
 use App\Models\AnimeMap;
 use App\Models\AnimePrequelSequelChain;
-use App\Models\AnimeChainEntry;
 use App\Models\AnimeRelatedEntry;
-use App\Models\AnidbCharacter;
 
 class GetAnidbData
 {
@@ -39,6 +39,7 @@ class GetAnidbData
             // Process related entries
             $otherRelatedIds = $relatedEntries->map(function ($relatedEntry) use ($anidbAnimeData) {
                 $data = $anidbAnimeData[$relatedEntry->anime_id] ?? null;
+
                 return $data ? [
                     'id' => $data['id'],
                     'type' => $data['type'],
@@ -63,6 +64,7 @@ class GetAnidbData
                     ->get()
                     ->map(function ($entry) use ($anidbAnimeData, $chain) {
                         $data = $anidbAnimeData[$entry->anime_id] ?? null;
+
                         return $data ? [
                             'id' => $data['id'],
                             'type' => $data['type'],
@@ -78,7 +80,7 @@ class GetAnidbData
                     ->values()
                     ->toArray();
 
-                if (!empty($chainAnime)) {
+                if (! empty($chainAnime)) {
                     $prequelSequelChains[$chain->name] = $chainAnime;
                 }
             }
@@ -133,7 +135,7 @@ class GetAnidbData
                     'id' => $primaryCharacter->character_id,
                     'name' => $primaryCharacter->name,
                     'picture' => "https://anidb.net/images/main/{$primaryCharacter->picture}",
-                    'seiyuu' => $seiyuuNames
+                    'seiyuu' => $seiyuuNames,
                 ];
             })->values();
 
@@ -159,7 +161,7 @@ class GetAnidbData
                         'id' => $seiyuu->seiyuu_id,
                         'name' => $seiyuu->name,
                         'picture' => "https://anidb.net/images/main/{$seiyuu->picture}",
-                        'characters' => $characterNames
+                        'characters' => $characterNames,
                     ];
                 })
                 ->values();
@@ -169,21 +171,22 @@ class GetAnidbData
                 'prequel_sequel_chains' => $prequelSequelChains,
                 'credits' => [
                     'cast' => $cast,
-                    'seiyuu' => $seiyuus
-                ]
+                    'seiyuu' => $seiyuus,
+                ],
             ];
         } catch (\Exception $e) {
             logger()->error('Error processing anime data', [
                 'error' => $e->getMessage(),
-                'map_id' => $animeMap->id
+                'map_id' => $animeMap->id,
             ]);
+
             return [
                 'other_related_ids' => [],
                 'prequel_sequel_chains' => [],
                 'credits' => [
                     'cast' => [],
-                    'seiyuu' => []
-                ]
+                    'seiyuu' => [],
+                ],
             ];
         }
     }

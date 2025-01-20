@@ -1,13 +1,13 @@
-import { ApplyFiltersButton } from "@/Components/UserProfile/Filter/ApplyFiltersButton";
-import { ClearFilters } from "@/Components/UserProfile/Filter/ClearFilters";
-import { DateRangeFilter } from "@/Components/UserProfile/Filter/DateRangeFilter";
-import { FilterWatchStatusSelect } from "@/Components/UserProfile/Filter/FilterWatchStatusSelect";
+import {ApplyFiltersButton} from "@/Components/UserProfile/Filter/ApplyFiltersButton";
+import {ClearFilters} from "@/Components/UserProfile/Filter/ClearFilters";
+import {DateRangeFilter} from "@/Components/UserProfile/Filter/DateRangeFilter";
+import {FilterWatchStatusSelect} from "@/Components/UserProfile/Filter/FilterWatchStatusSelect";
 import FilterSearchInput from "@/Components/UserProfile/Filter/FilterSearchInput";
-import { GenreFilter } from "@/Components/UserProfile/Filter/GenreFilter";
-import { useFilterStore } from "@/stores/filterStore";
-import { Button, Drawer, Stack, Title } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import { useMemo } from "react";
+import {GenreFilter} from "@/Components/UserProfile/Filter/GenreFilter";
+import {useFilterStore} from "@/stores/filterStore";
+import {Button, Drawer, Stack, Title} from "@mantine/core";
+import {useDisclosure} from "@mantine/hooks";
+import {useMemo} from "react";
 
 interface FilterMobileDrawerProps {
     contentType: "movies" | "tv";

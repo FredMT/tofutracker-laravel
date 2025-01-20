@@ -1,8 +1,8 @@
-import { CastMember, SeiyuuMember } from "@/types/anime";
-import { Card, Group, Image, Stack, Text, Tooltip } from "@mantine/core";
-import { Carousel } from "@mantine/carousel";
+import {CastMember, SeiyuuMember} from "@/types/anime";
+import {Card, Group, Image, Stack, Text, Tooltip} from "@mantine/core";
+import {Carousel} from "@mantine/carousel";
 import classes from "./AnimeCreditsCard.module.css";
-import { Cast } from "@/types/animeseason";
+import {Cast} from "@/types/animeseason";
 
 interface AnimeCreditsCardProps {
     character: CastMember | Cast;

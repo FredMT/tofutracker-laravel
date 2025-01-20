@@ -16,10 +16,9 @@ class UpdateUserAnimeSeasonWatchStatus
             ],
             [
                 'is_movie' => false,
-                'watch_status' => $payload['validated']['watch_status']
+                'watch_status' => $payload['validated']['watch_status'],
             ]
         );
-
 
         $payload['season'] = $season;
 

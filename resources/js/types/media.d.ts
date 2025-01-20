@@ -1,4 +1,4 @@
-import { WatchStatus } from "./enums";
+import {WatchStatus} from "./enums";
 
 export interface MediaEntry {
     id: number;

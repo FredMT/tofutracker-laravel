@@ -8,11 +8,17 @@ use App\Models\AnimeMap;
 class AnimeRelationshipService
 {
     private array $visitedIds = [];
+
     private array $prequelSequelChains = [];
+
     private array $otherRelatedIds = [];
+
     private array $processedChainIds = [];
+
     private array $relationshipMap = [];
+
     private int $requestCount = 0;
+
     private const MAX_REQUESTS = 10;
 
     /**
@@ -21,7 +27,7 @@ class AnimeRelationshipService
      */
     public function getRelatedAnimeIds(int $animeId, array &$processedIds = [], int $depth = 0): array
     {
-        logger()->info("Processing ID: " . $animeId);
+        logger()->info('Processing ID: '.$animeId);
 
         // First check if this ID exists in any existing map's data
         $existingMaps = AnimeMap::all();
@@ -31,14 +37,16 @@ class AnimeRelationshipService
             foreach ($map->data['prequel_sequel_chains'] as $chain) {
                 $chainIds = array_merge($chainIds, $chain);
                 if (in_array($animeId, $chain)) {
-                    logger()->info("Found ID in prequel/sequel chain");
+                    logger()->info('Found ID in prequel/sequel chain');
+
                     return array_merge(['source_id' => $animeId], $map->data);
                 }
             }
 
             // If we haven't found it in any chain but it's in other_related_ids
             if (in_array($animeId, $map->data['other_related_ids'])) {
-                logger()->info("Found ID in other_related_ids");
+                logger()->info('Found ID in other_related_ids');
+
                 return array_merge(['source_id' => $animeId], $map->data);
             }
         }
@@ -53,10 +61,11 @@ class AnimeRelationshipService
             if ($relations->isEmpty()) {
                 $result = [
                     'prequel_sequel_chains' => [[$animeId]],
-                    'other_related_ids' => []
+                    'other_related_ids' => [],
                 ];
 
                 $this->createNewMap($result);
+
                 return array_merge(['source_id' => $animeId], $result);
             }
 
@@ -80,10 +89,11 @@ class AnimeRelationshipService
             if ($allNonSequential) {
                 $result = [
                     'prequel_sequel_chains' => [[$animeId]],
-                    'other_related_ids' => []
+                    'other_related_ids' => [],
                 ];
 
                 $this->createNewMap($result);
+
                 return array_merge(['source_id' => $animeId], $result);
             }
         }
@@ -96,10 +106,11 @@ class AnimeRelationshipService
         if ($relations->isEmpty()) {
             $result = [
                 'prequel_sequel_chains' => [[$animeId]], // Include the anime ID in a single chain
-                'other_related_ids' => []
+                'other_related_ids' => [],
             ];
 
             $this->createNewMap($result);
+
             return array_merge(['source_id' => $animeId], $result);
         }
 
@@ -116,14 +127,14 @@ class AnimeRelationshipService
         // Build initial relationship map
         $this->buildRelationshipMap($animeId);
         $rootId = $this->findRootPrequel($animeId);
-        logger()->info("Root ID found: " . $rootId);
+        logger()->info('Root ID found: '.$rootId);
 
         // Process from root
         $this->visitedIds = [$rootId];
         $this->findAllRelatedIds($rootId, false);
 
         foreach ($this->visitedIds as $id) {
-            if (!in_array($id, $this->processedChainIds)) {
+            if (! in_array($id, $this->processedChainIds)) {
                 $this->buildCompleteChain($id);
             }
         }
@@ -137,9 +148,9 @@ class AnimeRelationshipService
         // Only process recursive calls for chain IDs
         $allResults = [];
         foreach ($chainIds as $chainId) {
-            if ($chainId !== $animeId && !in_array($chainId, $processedIds)) {
+            if ($chainId !== $animeId && ! in_array($chainId, $processedIds)) {
                 $result = $this->getRelatedAnimeIds($chainId, $processedIds, $depth + 1);
-                if (!empty($result)) {
+                if (! empty($result)) {
                     $allResults[] = $result;
                 }
             }
@@ -147,7 +158,7 @@ class AnimeRelationshipService
 
         $currentResult = [
             'prequel_sequel_chains' => array_values($this->prequelSequelChains),
-            'other_related_ids' => array_values(array_diff(array_unique($this->otherRelatedIds), $chainIds))
+            'other_related_ids' => array_values(array_diff(array_unique($this->otherRelatedIds), $chainIds)),
         ];
 
         if (empty($allResults)) {
@@ -155,12 +166,13 @@ class AnimeRelationshipService
                 $lastMap = AnimeMap::orderBy('id', 'desc')->first();
                 $nextAccessId = $lastMap ? $lastMap->id + 1 : 100;
 
-                logger()->info("Creating new map with id: " . $nextAccessId);
+                logger()->info('Creating new map with id: '.$nextAccessId);
                 AnimeMap::create([
                     'id' => $nextAccessId,
-                    'data' => $currentResult
+                    'data' => $currentResult,
                 ]);
             }
+
             return array_merge(['source_id' => $animeId], $currentResult);
         }
 
@@ -168,17 +180,17 @@ class AnimeRelationshipService
         $bestResult = $this->getResultWithMostIds($allResults);
 
         // Only store at depth 0 and only store once
-        if ($depth === 0 && !empty($bestResult)) {
+        if ($depth === 0 && ! empty($bestResult)) {
             $lastMap = AnimeMap::orderBy('id', 'desc')->first();
             $nextAccessId = $lastMap ? $lastMap->id + 1 : 100;
 
-            logger()->info("Creating new map with id: " . $nextAccessId);
+            logger()->info('Creating new map with id: '.$nextAccessId);
             AnimeMap::create([
                 'id' => $nextAccessId,
                 'data' => [
                     'prequel_sequel_chains' => $bestResult['prequel_sequel_chains'],
-                    'other_related_ids' => $bestResult['other_related_ids']
-                ]
+                    'other_related_ids' => $bestResult['other_related_ids'],
+                ],
             ]);
         }
 
@@ -204,7 +216,7 @@ class AnimeRelationshipService
         foreach ($relations as $relation) {
             $this->relationshipMap[$animeId][] = [
                 'id' => $relation->related_anime_id,
-                'type' => $relation->relation_type
+                'type' => $relation->relation_type,
             ];
 
             // Don't traverse "Other" relationships
@@ -262,7 +274,7 @@ class AnimeRelationshipService
         $visited[] = $animeId;
         $roots = [];
 
-        if (!isset($this->relationshipMap[$animeId])) {
+        if (! isset($this->relationshipMap[$animeId])) {
             return [$animeId];
         }
 
@@ -279,7 +291,7 @@ class AnimeRelationshipService
         }
 
         // If no prequels found, this might be a root
-        if (!$hasPrequel) {
+        if (! $hasPrequel) {
             $roots[] = $animeId;
         }
 
@@ -299,7 +311,7 @@ class AnimeRelationshipService
         while (true) {
             $hasSequel = false;
             foreach ($this->relationshipMap[$currentId] ?? [] as $relation) {
-                if (strtolower($relation['type']) === 'sequel' && !in_array($relation['id'], $visited)) {
+                if (strtolower($relation['type']) === 'sequel' && ! in_array($relation['id'], $visited)) {
                     $visited[] = $relation['id'];
                     $currentId = $relation['id'];
                     $length++;
@@ -307,7 +319,9 @@ class AnimeRelationshipService
                     break;
                 }
             }
-            if (!$hasSequel) break;
+            if (! $hasSequel) {
+                break;
+            }
         }
 
         return $length;
@@ -323,6 +337,7 @@ class AnimeRelationshipService
                 return true;
             }
         }
+
         return false;
     }
 
@@ -336,9 +351,11 @@ class AnimeRelationshipService
         $idsToProcess = [$animeId];
 
         // First, traverse up to find all prequels
-        while (!empty($idsToProcess)) {
+        while (! empty($idsToProcess)) {
             $currentId = array_shift($idsToProcess);
-            if (in_array($currentId, $processedIds)) continue;
+            if (in_array($currentId, $processedIds)) {
+                continue;
+            }
 
             $prequels = AnidbAnime::find($currentId)
                 ->relatedAnime()
@@ -347,8 +364,8 @@ class AnimeRelationshipService
 
             foreach ($prequels as $prequel) {
                 if (
-                    !in_array($prequel->related_anime_id, $processedIds) &&
-                    !in_array($prequel->related_anime_id, $this->processedChainIds)
+                    ! in_array($prequel->related_anime_id, $processedIds) &&
+                    ! in_array($prequel->related_anime_id, $this->processedChainIds)
                 ) {
                     array_unshift($chain, $prequel->related_anime_id);
                     $idsToProcess[] = $prequel->related_anime_id;
@@ -358,7 +375,7 @@ class AnimeRelationshipService
         }
 
         // Add the source ID if not already in chain
-        if (!in_array($animeId, $chain)) {
+        if (! in_array($animeId, $chain)) {
             $chain[] = $animeId;
         }
 
@@ -367,9 +384,11 @@ class AnimeRelationshipService
         $idsToProcess = [$animeId];
 
         // Then traverse down to find all sequels
-        while (!empty($idsToProcess)) {
+        while (! empty($idsToProcess)) {
             $currentId = array_shift($idsToProcess);
-            if (in_array($currentId, $processedIds)) continue;
+            if (in_array($currentId, $processedIds)) {
+                continue;
+            }
 
             $sequels = AnidbAnime::find($currentId)
                 ->relatedAnime()
@@ -378,8 +397,8 @@ class AnimeRelationshipService
 
             foreach ($sequels as $sequel) {
                 if (
-                    !in_array($sequel->related_anime_id, $processedIds) &&
-                    !in_array($sequel->related_anime_id, $this->processedChainIds)
+                    ! in_array($sequel->related_anime_id, $processedIds) &&
+                    ! in_array($sequel->related_anime_id, $this->processedChainIds)
                 ) {
                     $chain[] = $sequel->related_anime_id;
                     $idsToProcess[] = $sequel->related_anime_id;
@@ -411,7 +430,7 @@ class AnimeRelationshipService
             $relationType = strtolower($relation['type']);
 
             // Add all non-prequel/sequel relations to other_related_ids
-            if (!in_array($relationType, ['prequel', 'sequel'])) {
+            if (! in_array($relationType, ['prequel', 'sequel'])) {
                 $this->otherRelatedIds[] = $relation['id'];
             }
 
@@ -449,10 +468,10 @@ class AnimeRelationshipService
         $lastMap = AnimeMap::orderBy('id', 'desc')->first();
         $nextAccessId = $lastMap ? $lastMap->id + 1 : 100;
 
-        logger()->info("Creating new map with id: " . $nextAccessId);
+        logger()->info('Creating new map with id: '.$nextAccessId);
         AnimeMap::create([
             'id' => $nextAccessId,
-            'data' => $data
+            'data' => $data,
         ]);
     }
 }

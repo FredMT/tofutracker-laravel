@@ -1,5 +1,5 @@
-import { Genre } from "@/types";
-import { Badge, Flex, Group, Image, Paper } from "@mantine/core";
+import {Genre} from "@/types";
+import {Badge, Flex, Group, Image, Paper} from "@mantine/core";
 import classes from "./styles/BannerImage.module.css";
 
 interface BannerImageProps {

@@ -1,7 +1,7 @@
-import { Link, usePage } from "@inertiajs/react";
-import { Avatar, Group, Menu, Text } from "@mantine/core";
+import {Link, usePage} from "@inertiajs/react";
+import {Avatar, Group, Menu, Text} from "@mantine/core";
 import styles from "../../AuthenticatedLayout.module.css";
-import { PageProps } from "@/types";
+import {PageProps} from "@/types";
 
 export default function UserDropdown() {
     const user = usePage<PageProps>().props.auth.user;

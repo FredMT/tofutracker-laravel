@@ -3,7 +3,6 @@
 namespace App\Actions\Activity\Handlers;
 
 use App\Models\UserActivity;
-use App\Models\UserTvEpisode;
 use Illuminate\Database\Eloquent\Model;
 
 class TvActivityHandler implements ActivityHandlerInterface
@@ -16,16 +15,16 @@ class TvActivityHandler implements ActivityHandlerInterface
     public function __construct()
     {
         $this->handlers = [
-            new TvEpisodeActivityHandler(),
-            new TvSeasonActivityHandler(),
-            new TvShowActivityHandler(),
-            // Add more TV-specific handlers here as needed
+            new TvEpisodeActivityHandler,
+            new TvSeasonActivityHandler,
+            new TvShowActivityHandler,
+
         ];
     }
 
     public function canHandle(Model $subject): bool
     {
-        return collect($this->handlers)->contains(fn($handler) => $handler->canHandle($subject));
+        return collect($this->handlers)->contains(fn ($handler) => $handler->canHandle($subject));
     }
 
     public function createActivity(int $userId, string $activityType, Model $subject, ?array $metadata = null): UserActivity
@@ -44,6 +43,7 @@ class TvActivityHandler implements ActivityHandlerInterface
         foreach ($this->handlers as $handler) {
             if ($handler->canHandle($subject)) {
                 $handler->deleteActivity($subject);
+
                 return;
             }
         }

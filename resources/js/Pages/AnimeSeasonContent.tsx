@@ -1,18 +1,18 @@
 import AnimeContentEpisodes from "@/Components/Content/Shared/Anime/AnimeContentEpisodes";
 import AnimeRelatedContent from "@/Components/Content/Shared/Anime/AnimeRelatedContent";
-import {AnimeBannerImageContainer} from "@/Components/Content/Shared/Anime/AnimeBannerImageContainer";
+import { AnimeBannerImageContainer } from "@/Components/Content/Shared/Anime/AnimeBannerImageContainer";
 import ContentActions from "@/Components/ContentActions/ContentActions";
 import ResponsiveContainer from "@/Components/ResponsiveContainer";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
 import ContentLayout from "@/Layouts/ContentLayout";
 import AnimeSeasonDetails from "@/Pages/AnimeSeasonDetails";
-import {Head, usePage} from "@inertiajs/react";
-import {Box, Divider, Space, Stack, Title} from "@mantine/core";
-import {useViewportSize} from "@mantine/hooks";
+import { Head, usePage } from "@inertiajs/react";
+import { Box, Space, Stack, Title } from "@mantine/core";
+import { useViewportSize } from "@mantine/hooks";
 import SeasonBreadcrumbs from "@/Components/Content/TV/Seasons/SeasonBreadcrumbs";
-import {AnimeSeason} from "@/types/animeseason";
+import { AnimeSeason } from "@/types/animeseason";
 import AnimePosterImage from "@/Components/Content/Shared/Anime/AnimePosterImage";
-import {AnimeContentSummary} from "@/Components/Content/Shared/Regular/AnimeContentSummary";
+import { AnimeContentSummary } from "@/Components/Content/Shared/Regular/AnimeContentSummary";
 
 function AnimeSeasonContent() {
     const { data } = usePage<{ data: AnimeSeason }>().props;
@@ -66,7 +66,7 @@ function AnimeSeasonContent() {
                                 <AnimeSeasonDetails />
                             </Stack>
                             <AnimeContentEpisodes />
-                            <Divider my={16} />
+                            <Space h={16} />
                             <AnimeRelatedContent
                                 containerWidth={width * 0.67}
                             />

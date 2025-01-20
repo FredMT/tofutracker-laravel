@@ -1,5 +1,5 @@
-import { WatchStatus } from "./enums";
-import { PageProps as InertiaPageProps } from "@inertiajs/core";
+import {WatchStatus} from "./enums";
+import {PageProps as InertiaPageProps} from "@inertiajs/core";
 
 export interface User {
     id: number;

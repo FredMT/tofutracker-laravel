@@ -20,7 +20,7 @@ class EmailVerificationPromptController extends Controller
             ? redirect()->intended(route('me', absolute: false))
             : Inertia::render('Auth/VerifyEmail', [
                 'status' => session('status'),
-                'backdropImage' => app(TmdbService::class)->getRandomTrendingBackdropImage()
+                'backdropImage' => app(TmdbService::class)->getRandomTrendingBackdropImage(),
             ]);
     }
 }

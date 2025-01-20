@@ -1,11 +1,11 @@
-import { Divider, Space, Stack, Title } from "@mantine/core";
+import {Divider, Space, Stack, Title} from "@mantine/core";
 import AnimeCreditsCard from "../Anime/AnimeCreditsCard";
-import { AnimeType, ContentCreditsProps, AnimeContentDataType } from "@/types";
-import { usePage } from "@inertiajs/react";
-import { AnimeSeason, Cast } from "@/types/animeseason";
-import { CustomCarousel } from "@/Components/Shared/CustomCarousel";
-import { Carousel } from "@mantine/carousel";
-import { Anime } from "@/types/anime";
+import {AnimeContentDataType, AnimeType, ContentCreditsProps} from "@/types";
+import {usePage} from "@inertiajs/react";
+import {AnimeSeason, Cast} from "@/types/animeseason";
+import {CustomCarousel} from "@/Components/Shared/CustomCarousel";
+import {Carousel} from "@mantine/carousel";
+import {Anime} from "@/types/anime";
 
 export function AnimeContentCredits({
     containerWidth,

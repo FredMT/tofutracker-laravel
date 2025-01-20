@@ -1,7 +1,7 @@
-import { Modal, Title, Group, Rating as MantineRating } from "@mantine/core";
-import { RatingProps } from "../../ContentActions/components/Rating/types";
-import { RatingSubmitButton } from "../../ContentActions/components/Rating/RatingSubmitButton";
-import { RatingStar } from "../../ContentActions/components/Rating/RatingStar";
+import {Group, Modal, Rating as MantineRating, Title} from "@mantine/core";
+import {RatingProps} from "../../ContentActions/components/Rating/types";
+import {RatingSubmitButton} from "../../ContentActions/components/Rating/RatingSubmitButton";
+import {RatingStar} from "../../ContentActions/components/Rating/RatingStar";
 
 export function DesktopRating({
     opened,

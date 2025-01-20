@@ -1,9 +1,9 @@
-import { Button, Paper } from "@mantine/core";
-import { CheckCircle2, XCircle } from "lucide-react";
-import { useForm, usePage } from "@inertiajs/react";
-import { notifications } from "@mantine/notifications";
-import { BaseUserLibrary, PageProps, TvSeason } from "@/types";
-import { useState } from "react";
+import {Button, Paper} from "@mantine/core";
+import {CheckCircle2, XCircle} from "lucide-react";
+import {useForm, usePage} from "@inertiajs/react";
+import {notifications} from "@mantine/notifications";
+import {BaseUserLibrary, TvSeason} from "@/types";
+import {useState} from "react";
 
 interface EpisodeActionsProps {
     episodal_id: number;

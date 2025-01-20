@@ -1,8 +1,7 @@
-import { useContent } from "@/hooks/useContent";
 import {useForm, usePage} from "@inertiajs/react";
-import { Button, Group, Modal, useModalsStack } from "@mantine/core";
-import { notifications } from "@mantine/notifications";
-import { Check, CircleAlertIcon, Trash2 } from "lucide-react";
+import {Button, Group, Modal, useModalsStack} from "@mantine/core";
+import {notifications} from "@mantine/notifications";
+import {Check, CircleAlertIcon, Trash2} from "lucide-react";
 import {AnimeType} from "@/types";
 import {AnimeSeason} from "@/types/animeseason";
 

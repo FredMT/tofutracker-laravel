@@ -18,7 +18,7 @@ class GetTrendingGenresAndWatchProvidersAction
         283 => 'Crunchyroll',
         337 => 'Disney Plus',
         350 => 'Apple TV Plus',
-        531 => 'Paramount Plus'
+        531 => 'Paramount Plus',
     ];
 
     public function __construct(
@@ -39,10 +39,10 @@ class GetTrendingGenresAndWatchProvidersAction
     {
         return Cache::flexible('trending_organized', [60 * 60 * 23, 60 * 60 * 24], function () {
             UpdateTrendingGenresAndWatchProvidersJob::dispatch();
+
             return Cache::get('trending_organized');
         });
     }
-
 
     private function getTrendingIds(): array
     {
@@ -51,7 +51,7 @@ class GetTrendingGenresAndWatchProvidersAction
         $genreMap = config('genres');
 
         while (count($ids) < 1000 && ($trendingData = $this->tmdbService->getTrendingAllPaginated($page++))) {
-            if (!isset($trendingData['results']) || empty($trendingData['results'])) {
+            if (! isset($trendingData['results']) || empty($trendingData['results'])) {
                 break;
             }
 
@@ -60,10 +60,10 @@ class GetTrendingGenresAndWatchProvidersAction
                     ->map(function ($genreId) use ($genreMap) {
                         return [
                             'id' => $genreId,
-                            'name' => $genreMap[$genreId] ?? null
+                            'name' => $genreMap[$genreId] ?? null,
                         ];
                     })
-                    ->filter(fn($genre) => !is_null($genre['name']))
+                    ->filter(fn ($genre) => ! is_null($genre['name']))
                     ->values()
                     ->all();
 
@@ -115,7 +115,7 @@ class GetTrendingGenresAndWatchProvidersAction
                 $result[] = array_merge($item, [
                     'media_type' => 'anime',
                     'original_media_type' => $item['media_type'],
-                    'anime_id' => $animeMapId
+                    'anime_id' => $animeMapId,
                 ]);
             } else {
                 $result[] = $item;
@@ -136,12 +136,12 @@ class GetTrendingGenresAndWatchProvidersAction
                 ? Movie::find($item['id'])
                 : TvShow::find($item['id']);
 
-            if (!$model) {
+            if (! $model) {
                 return array_merge($item, ['us_watch_providers' => []]);
             }
 
             return array_merge($item, [
-                'us_watch_providers' => $model->getWatchProvidersForCountry('US')
+                'us_watch_providers' => $model->getWatchProvidersForCountry('US'),
             ]);
         }, $items);
     }
@@ -153,7 +153,7 @@ class GetTrendingGenresAndWatchProvidersAction
 
         // Filter out ignored IDs and sort by popularity
         $items = collect($items)
-            ->reject(fn($item) => in_array($item['id'], $ignoredIds))
+            ->reject(fn ($item) => in_array($item['id'], $ignoredIds))
             ->sortByDesc('popularity')
             ->values()
             ->all();
@@ -166,7 +166,7 @@ class GetTrendingGenresAndWatchProvidersAction
             $byProvider[$providerId] = [
                 'provider_name' => $providerName,
                 'provider_logo' => null,
-                'items' => []
+                'items' => [],
             ];
         }
 
@@ -191,16 +191,16 @@ class GetTrendingGenresAndWatchProvidersAction
 
             // Process by genre
             foreach ($item['genres'] as $genre) {
-                if (!isset($byGenre[$genre['id']])) {
+                if (! isset($byGenre[$genre['id']])) {
                     $byGenre[$genre['id']] = [
                         'genre_name' => $genre['name'],
-                        'items' => []
+                        'items' => [],
                     ];
                 }
 
                 // Check if this ID already exists in this genre
                 $existingIds = array_column($byGenre[$genre['id']]['items'], 'id');
-                if (!in_array($item['id'], $existingIds) && count($byGenre[$genre['id']]['items']) < 20) {
+                if (! in_array($item['id'], $existingIds) && count($byGenre[$genre['id']]['items']) < 20) {
                     $byGenre[$genre['id']]['items'][] = $cleanItem;
                 }
             }
@@ -216,7 +216,7 @@ class GetTrendingGenresAndWatchProvidersAction
 
                     // Check if this ID already exists in this provider
                     $existingIds = array_column($byProvider[$providerId]['items'], 'id');
-                    if (!in_array($item['id'], $existingIds) && count($byProvider[$providerId]['items']) < 20) {
+                    if (! in_array($item['id'], $existingIds) && count($byProvider[$providerId]['items']) < 20) {
                         $byProvider[$providerId]['items'][] = $cleanItem;
                     }
                 }
@@ -228,7 +228,7 @@ class GetTrendingGenresAndWatchProvidersAction
 
         return [
             'by_genre' => $byGenre,
-            'by_provider' => $byProvider
+            'by_provider' => $byProvider,
         ];
     }
 }

@@ -2,9 +2,8 @@
 
 namespace App\Actions\Anime;
 
-use App\Actions\Anime\GetMostCommonTmdbId;
-use App\Models\AnimeMappingExternalId;
 use App\Models\AnimeChainEntry;
+use App\Models\AnimeMappingExternalId;
 use App\Models\AnimePrequelSequelChain;
 use App\Models\AnimeRelatedEntry;
 use App\Services\TmdbService;
@@ -14,6 +13,7 @@ use Illuminate\Support\Facades\Cache;
 class GetTmdbData
 {
     private TmdbService $tmdbService;
+
     private GetMostCommonTmdbId $getMostCommonTmdbId;
 
     public function __construct(
@@ -26,7 +26,7 @@ class GetTmdbData
 
     public function execute($accessId): JsonResponse
     {
-        return Cache::remember('tmdb_data_' . $accessId, now()->addMonth(), function () use ($accessId) {
+        return Cache::remember('tmdb_data_'.$accessId, now()->addMonth(), function () use ($accessId) {
             $result = $this->getMostCommonTmdbId->execute($accessId);
 
             if (isset($result['most_common_tmdb_id']) && isset($result['tmdb_type'])) {
@@ -36,10 +36,12 @@ class GetTmdbData
                 if ($type === 'movie') {
                     $tmdbData = $this->tmdbService->getMovieAnime($tmdbId);
                     $tmdbData['data']['recommendations'] = $this->transformRecommendations($tmdbData['data']['recommendations']['results'] ?? [], $type);
+
                     return response()->json($tmdbData);
                 } elseif ($type === 'tv') {
                     $tmdbData = $this->tmdbService->getTvAnime($tmdbId);
                     $tmdbData['data']['recommendations'] = $this->transformRecommendations($tmdbData['data']['recommendations']['results'] ?? [], $type);
+
                     return response()->json($tmdbData);
                 }
             }
@@ -58,7 +60,7 @@ class GetTmdbData
             ->map(function ($recommendation) use ($type) {
                 $mappingExternalId = AnimeMappingExternalId::where('themoviedb_id', $recommendation['id'])->first();
 
-                if (!$mappingExternalId) {
+                if (! $mappingExternalId) {
                     return null;
                 }
 
@@ -91,7 +93,7 @@ class GetTmdbData
             'map_id' => $mapId,
             'poster_path' => $recommendation['poster_path'],
             'vote_average' => $recommendation['vote_average'],
-            'collection_name' => $type === 'movie' ? $recommendation['title'] : $recommendation['name']
+            'collection_name' => $type === 'movie' ? $recommendation['title'] : $recommendation['name'],
         ];
     }
 }

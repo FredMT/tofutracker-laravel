@@ -10,9 +10,10 @@ class AnidbController extends Controller
     public function importAnimeData(): JsonResponse
     {
         ImportAnimeDataJob::dispatch()->onQueue('imports');
+
         return response()->json([
             'message' => 'Import job has been queued successfully',
-            'note' => 'Check the job status in your queue worker logs'
+            'note' => 'Check the job status in your queue worker logs',
         ]);
     }
 }

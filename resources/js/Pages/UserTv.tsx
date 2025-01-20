@@ -1,21 +1,13 @@
 import TvCard from "@/Components/Shared/UserTv/TvCard";
 import FilterButtonGroup from "@/Components/UserProfile/Filter/FilterButtonGroup";
-import { useFilterStore } from "@/hooks/useFilterStore";
+import {useFilterStore} from "@/hooks/useFilterStore";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
 import UserProfileLayout from "@/Layouts/UserProfileLayout";
-import { UserData } from "@/types/userData";
-import { UserTvShow } from "@/types/userTv";
-import { Head } from "@inertiajs/react";
-import {
-    Alert,
-    Divider,
-    Flex,
-    Group,
-    Space,
-    Stack,
-    Title,
-} from "@mantine/core";
-import { useEffect } from "react";
+import {UserData} from "@/types/userData";
+import {UserTvShow} from "@/types/userTv";
+import {Head} from "@inertiajs/react";
+import {Alert, Flex, Group, Space, Stack, Title,} from "@mantine/core";
+import {useEffect} from "react";
 
 interface Props {
     userData: UserData;
@@ -53,7 +45,6 @@ function UserTv({ userData, filters, shows, messages }: Props) {
     return (
         <>
             <Head title={`${userData.username}'s Shows`} />
-            <Divider my={16} />
             <Group>
                 <FilterButtonGroup contentType="anime" />
             </Group>

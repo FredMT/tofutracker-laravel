@@ -16,7 +16,7 @@ class CreateUserAnimeEpisodeCollection
                 'map_id' => $payload['validated']['map_id'],
             ],
             [
-                'watch_status' => WatchStatus::WATCHING->value
+                'watch_status' => WatchStatus::WATCHING->value,
             ]
         );
 

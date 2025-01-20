@@ -11,7 +11,7 @@ class ValidateAnimeFilters
     {
         $errors = [];
 
-        if ($request->filled('status') && !WatchStatus::tryFrom($request->status)) {
+        if ($request->filled('status') && ! WatchStatus::tryFrom($request->status)) {
             $errors['status'] = 'Invalid status value';
         }
 
@@ -19,16 +19,16 @@ class ValidateAnimeFilters
             $genreIds = explode(',', $request->genres);
 
             // Check if all genre IDs are numeric
-            if (!collect($genreIds)->every(fn($id) => is_numeric($id))) {
+            if (! collect($genreIds)->every(fn ($id) => is_numeric($id))) {
                 $errors['genres'] = 'All genre IDs must be numeric';
             } else {
                 // Check if all genres exist in config
                 $invalidGenres = collect($genreIds)
-                    ->filter(fn($id) => !config("genres.{$id}"))
+                    ->filter(fn ($id) => ! config("genres.{$id}"))
                     ->values();
 
                 if ($invalidGenres->isNotEmpty()) {
-                    $errors['genres'] = 'Invalid genre IDs: ' . $invalidGenres->implode(', ');
+                    $errors['genres'] = 'Invalid genre IDs: '.$invalidGenres->implode(', ');
                 }
             }
         }

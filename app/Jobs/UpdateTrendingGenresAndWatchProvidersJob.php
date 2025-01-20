@@ -13,7 +13,6 @@ class UpdateTrendingGenresAndWatchProvidersJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-
     public int $timeout = 0;
 
     public function handle(GetTrendingGenresAndWatchProvidersAction $action): void
@@ -21,7 +20,7 @@ class UpdateTrendingGenresAndWatchProvidersJob implements ShouldQueue
         try {
             $action->store();
         } catch (\Exception $e) {
-            logger()->error('Failed to update trending genres and watch providers: ' . $e->getMessage());
+            logger()->error('Failed to update trending genres and watch providers: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
             $this->fail($e->getMessage());
         }

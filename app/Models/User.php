@@ -6,10 +6,9 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Facades\DB;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -27,7 +26,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'bio',
         'avatar',
-        'banner'
+        'banner',
     ];
 
     /**
@@ -50,7 +49,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            ''
+            '',
         ];
     }
 
@@ -89,5 +88,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function activities(): HasMany
     {
         return $this->hasMany(UserActivity::class);
+    }
+
+    public function customLists(): HasMany
+    {
+        return $this->hasMany(UserCustomList::class);
     }
 }

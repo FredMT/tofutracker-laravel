@@ -16,13 +16,13 @@ class AnimePlayActivityHandler implements AnimeActivityInterface
 
     public function createActivity(int $userId, string $activityType, Model $subject, ?array $metadata = null): UserActivity
     {
-        if (!$this->canHandle($subject)) {
+        if (! $this->canHandle($subject)) {
             throw new \InvalidArgumentException('This handler only supports UserAnime models');
         }
 
         $anime = AnidbAnime::find($subject->anidb_id);
         $metadata = array_merge($metadata ?? [], [
-            'map_id' => $anime?->map()
+            'map_id' => $anime?->map(),
         ]);
 
         return UserActivity::create([
@@ -38,7 +38,7 @@ class AnimePlayActivityHandler implements AnimeActivityInterface
 
     public function deleteActivity(Model $subject): void
     {
-        if (!$this->canHandle($subject)) {
+        if (! $this->canHandle($subject)) {
             throw new \InvalidArgumentException('This handler only supports UserAnime models');
         }
 
@@ -50,7 +50,7 @@ class AnimePlayActivityHandler implements AnimeActivityInterface
 
     private function generateDescription(?AnidbAnime $anime): string
     {
-        if (!$anime) {
+        if (! $anime) {
             return 'Watched anime';
         }
 
@@ -59,7 +59,7 @@ class AnimePlayActivityHandler implements AnimeActivityInterface
 
     public function getAnimeTitle(Model $subject): ?string
     {
-        if (!$this->canHandle($subject)) {
+        if (! $this->canHandle($subject)) {
             return null;
         }
 
@@ -68,7 +68,7 @@ class AnimePlayActivityHandler implements AnimeActivityInterface
 
     public function getAnimeId(Model $subject): ?int
     {
-        if (!$this->canHandle($subject)) {
+        if (! $this->canHandle($subject)) {
             return null;
         }
 

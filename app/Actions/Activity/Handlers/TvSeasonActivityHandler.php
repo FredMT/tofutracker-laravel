@@ -2,8 +2,8 @@
 
 namespace App\Actions\Activity\Handlers;
 
-use App\Models\TvShow;
 use App\Models\TvSeason;
+use App\Models\TvShow;
 use App\Models\UserActivity;
 use App\Models\UserTvSeason;
 use Illuminate\Database\Eloquent\Model;
@@ -17,7 +17,7 @@ class TvSeasonActivityHandler implements TvActivityInterface
 
     public function createActivity(int $userId, string $activityType, Model $subject, ?array $metadata = null): UserActivity
     {
-        if (!$this->canHandle($subject)) {
+        if (! $this->canHandle($subject)) {
             throw new \InvalidArgumentException('This handler only supports UserTvSeason models');
         }
 
@@ -43,7 +43,7 @@ class TvSeasonActivityHandler implements TvActivityInterface
 
     public function deleteActivity(Model $subject): void
     {
-        if (!$this->canHandle($subject)) {
+        if (! $this->canHandle($subject)) {
             throw new \InvalidArgumentException('This handler only supports UserTvSeason models');
         }
 
@@ -55,17 +55,18 @@ class TvSeasonActivityHandler implements TvActivityInterface
 
     private function generateDescription(?TvShow $show, ?TvSeason $season): string
     {
-        if (!$show) {
+        if (! $show) {
             return 'Completed TV season';
         }
 
         $seasonTitle = $season?->title ? " {$season->title}" : '';
+
         return "Completed {$show->title}{$seasonTitle}";
     }
 
     public function getTvShowTitle(Model $subject): ?string
     {
-        if (!$this->canHandle($subject)) {
+        if (! $this->canHandle($subject)) {
             return null;
         }
 
@@ -74,7 +75,7 @@ class TvSeasonActivityHandler implements TvActivityInterface
 
     public function getTvShowId(Model $subject): ?int
     {
-        if (!$this->canHandle($subject)) {
+        if (! $this->canHandle($subject)) {
             return null;
         }
 

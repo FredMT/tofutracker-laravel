@@ -1,9 +1,9 @@
-import { PageProps } from "@/types";
-import { useForm, usePage } from "@inertiajs/react";
-import { Button, Group, Image, Stack, Text, Title } from "@mantine/core";
-import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
-import { LucideUpload, X } from "lucide-react";
-import { useState } from "react";
+import {PageProps} from "@/types";
+import {useForm, usePage} from "@inertiajs/react";
+import {Button, Group, Image, Stack, Text, Title} from "@mantine/core";
+import {Dropzone, IMAGE_MIME_TYPE} from "@mantine/dropzone";
+import {LucideUpload, X} from "lucide-react";
+import {useState} from "react";
 
 export default function UpdateAvatarForm() {
     const [preview, setPreview] = useState<string | null>(null);

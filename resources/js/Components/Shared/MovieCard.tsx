@@ -1,16 +1,7 @@
-import {
-    Badge,
-    Card,
-    Group,
-    Image,
-    Space,
-    Text,
-    Title,
-    Tooltip,
-} from "@mantine/core";
+import {Badge, Card, Group, Image, Space, Text, Title, Tooltip,} from "@mantine/core";
 import classes from "./MovieCard.module.css";
-import { Calendar } from "lucide-react";
-import { Link } from "@inertiajs/react";
+import {Calendar} from "lucide-react";
+import {Link} from "@inertiajs/react";
 
 interface MovieCardProps {
     id: number;

@@ -1,8 +1,8 @@
-import { useForm, usePage } from "@inertiajs/react";
-import { FormEventHandler } from "react";
-import { PageProps } from "@/types";
-import { Button, Stack, Title, Text, Textarea } from "@mantine/core";
-import { z } from "zod";
+import {useForm, usePage} from "@inertiajs/react";
+import {FormEventHandler} from "react";
+import {PageProps} from "@/types";
+import {Button, Stack, Text, Textarea, Title} from "@mantine/core";
+import {z} from "zod";
 
 const bioSchema = z
     .string()

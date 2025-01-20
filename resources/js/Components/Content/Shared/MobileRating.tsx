@@ -1,13 +1,7 @@
-import { RatingStar } from "../../ContentActions/components/Rating/RatingStar";
-import { RatingSubmitButton } from "../../ContentActions/components/Rating/RatingSubmitButton";
-import { RatingProps } from "../../ContentActions/components/Rating/types";
-import {
-    Drawer,
-    Group,
-    Rating as MantineRating,
-    Stack,
-    Title,
-} from "@mantine/core";
+import {RatingStar} from "../../ContentActions/components/Rating/RatingStar";
+import {RatingSubmitButton} from "../../ContentActions/components/Rating/RatingSubmitButton";
+import {RatingProps} from "../../ContentActions/components/Rating/types";
+import {Drawer, Group, Rating as MantineRating, Stack, Title,} from "@mantine/core";
 
 export function MobileRating({
     opened,

@@ -6,13 +6,14 @@ use App\Actions\Anime\GetAnimeEpisodes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Znck\Eloquent\Relations\BelongsToThrough;
 
 class AnidbAnime extends Model
 {
     use \Znck\Eloquent\Traits\BelongsToThrough;
+
     protected $table = 'anidb_anime';
+
     protected $hidden = ['created_at', 'updated_at'];
 
     protected $fillable = [
@@ -30,7 +31,7 @@ class AnidbAnime extends Model
         'description',
         'rating',
         'rating_count',
-        'picture'
+        'picture',
     ];
 
     protected $casts = [
@@ -38,13 +39,13 @@ class AnidbAnime extends Model
         'enddate' => 'date',
         'rating' => 'decimal:2',
         'rating_count' => 'integer',
-        'episode_count' => 'integer'
+        'episode_count' => 'integer',
     ];
 
     protected function title(): Attribute
     {
         return Attribute::get(
-            fn() => $this->title_main
+            fn () => $this->title_main
         );
     }
 
@@ -55,9 +56,55 @@ class AnidbAnime extends Model
         });
     }
 
+    public function runtime(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->episodes()
+                ->where('type', 1)
+                ->sum('length');
+        });
+    }
+
     public function characters(): HasMany
     {
         return $this->hasMany(AnidbCharacter::class, 'anime_id');
+    }
+
+    public function year(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->startdate?->year;
+        });
+    }
+
+    public function rating(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->getRawOriginal('rating');
+        });
+    }
+
+    public function voteAverage(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->getRawOriginal('rating');
+        });
+    }
+
+    public function genres(): Attribute
+    {
+        return Attribute::get(function () {
+            try {
+                $mapId = $this->map();
+                if ($mapId) {
+                    $map = AnimeMap::find($mapId);
+                    return $map ? $map->genres : collect();
+                }
+            } catch (\Exception $e) {
+                return collect();
+            }
+            return collect();
+        });
     }
 
     public function episodes(): HasMany
@@ -127,7 +174,7 @@ class AnidbAnime extends Model
             return $mapId;
         }
 
-        throw new \Exception("Map ID not found for Anidb ID: " . $anidbId);
+        throw new \Exception('Map ID not found for Anidb ID: '.$anidbId);
     }
 
     public function map()

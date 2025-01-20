@@ -11,7 +11,7 @@ class GetUserData
         return [
             'id' => $user->id,
             'username' => $user->username,
-            'created_at' => 'Joined ' . $user->created_at->format('F Y'),
+            'created_at' => 'Joined '.$user->created_at->format('F Y'),
             'avatar' => $user->avatar,
             'banner' => $user->banner,
         ];

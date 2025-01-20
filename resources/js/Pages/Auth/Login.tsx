@@ -1,6 +1,7 @@
 import { Head, Link, useForm } from "@inertiajs/react";
 import {
     Anchor,
+    Box,
     Button,
     Checkbox,
     Container,
@@ -10,7 +11,6 @@ import {
     Stack,
     TextInput,
     Title,
-    Box,
 } from "@mantine/core";
 import { FormEventHandler } from "react";
 import styles from "./Login.module.css";

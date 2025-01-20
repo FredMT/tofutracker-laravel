@@ -15,7 +15,7 @@ class CreateUserAnimeMovie
             'anidb_id' => $payload['validated']['anidb_id'],
             'is_movie' => true,
             'rating' => $payload['validated']['rating'] ?? null,
-            'watch_status' => WatchStatus::COMPLETED
+            'watch_status' => WatchStatus::COMPLETED,
         ]);
 
         $payload['user_anime'] = $userAnime;

@@ -1,11 +1,7 @@
-import {
-    ActionIcon,
-    useMantineColorScheme,
-    useComputedColorScheme,
-} from "@mantine/core";
+import {ActionIcon, useComputedColorScheme, useMantineColorScheme,} from "@mantine/core";
 import cx from "clsx";
 import classes from "./ThemeButton.module.css";
-import { Moon, Sun } from "lucide-react";
+import {Moon, Sun} from "lucide-react";
 
 export default function ThemeButton() {
     const { setColorScheme } = useMantineColorScheme();

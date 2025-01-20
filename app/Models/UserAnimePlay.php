@@ -11,11 +11,11 @@ class UserAnimePlay extends Model
     protected $fillable = [
         'playable_id',
         'playable_type',
-        'watched_at'
+        'watched_at',
     ];
 
     protected $casts = [
-        'watched_at' => 'datetime'
+        'watched_at' => 'datetime',
     ];
 
     public function user(): BelongsTo

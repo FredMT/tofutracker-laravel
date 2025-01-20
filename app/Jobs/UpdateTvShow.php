@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Models\TvShow;
 use App\Actions\Tv\TvShowActions;
+use App\Models\TvShow;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

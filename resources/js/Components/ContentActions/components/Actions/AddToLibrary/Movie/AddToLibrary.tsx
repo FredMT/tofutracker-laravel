@@ -1,9 +1,8 @@
-import { useContent } from "@/hooks/useContent";
 import {useForm, usePage} from "@inertiajs/react";
-import { Button } from "@mantine/core";
-import { notifications } from "@mantine/notifications";
-import { Check, CircleAlertIcon, PlusCircle } from "lucide-react";
-import {ContentType, Movie} from "@/types";
+import {Button} from "@mantine/core";
+import {notifications} from "@mantine/notifications";
+import {Check, CircleAlertIcon, PlusCircle} from "lucide-react";
+import {Movie} from "@/types";
 
 function AddToLibrary() {
     const {type, data} = usePage<{type: "movie", data: Movie}>().props

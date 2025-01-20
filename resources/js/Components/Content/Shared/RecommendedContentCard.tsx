@@ -1,6 +1,6 @@
-import { Badge, Box, Card, Image, Text, Tooltip } from "@mantine/core";
-import { Link, usePage } from "@inertiajs/react";
-import { PageProps, Recommended } from "@/types";
+import {Badge, Box, Card, Image, Text, Tooltip} from "@mantine/core";
+import {Link, usePage} from "@inertiajs/react";
+import {PageProps, Recommended} from "@/types";
 
 interface RecommendedContentCardProps {
     content: Recommended;

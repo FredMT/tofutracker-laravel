@@ -19,19 +19,19 @@ class CreateNewUserAnimeMovie
 
     public function handle(array $payload, Closure $next)
     {
-        if (!isset($payload['updated'])) {
+        if (! isset($payload['updated'])) {
             // Create new collection and anime entry
             $collection = UserAnimeCollection::create([
                 'user_library_id' => $payload['library']->id,
                 'map_id' => $payload['validated']['map_id'],
-                'watch_status' => $payload['validated']['watch_status']
+                'watch_status' => $payload['validated']['watch_status'],
             ]);
 
             $userAnime = UserAnime::create([
                 'user_anime_collection_id' => $collection->id,
                 'anidb_id' => $payload['validated']['anidb_id'],
                 'is_movie' => true,
-                'watch_status' => $payload['validated']['watch_status']
+                'watch_status' => $payload['validated']['watch_status'],
             ]);
 
             if ($payload['validated']['watch_status'] === WatchStatus::COMPLETED->value) {

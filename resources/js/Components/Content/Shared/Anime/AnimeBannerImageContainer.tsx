@@ -1,8 +1,8 @@
-import { BannerImage } from "@/Components/Content/Shared/Regular/BannerImage";
-import { usePage } from "@inertiajs/react";
-import { AnimeSeason } from "@/types/animeseason";
-import { Anime } from "@/types/anime";
-import { AnimeType } from "@/types";
+import {BannerImage} from "@/Components/Content/Shared/Regular/BannerImage";
+import {usePage} from "@inertiajs/react";
+import {AnimeSeason} from "@/types/animeseason";
+import {Anime} from "@/types/anime";
+import {AnimeType} from "@/types";
 
 export function AnimeBannerImageContainer() {
     const { type } = usePage<{

@@ -1,17 +1,8 @@
-import { usePage } from "@inertiajs/react";
-import {
-    Box,
-    Group,
-    Image,
-    SimpleGrid,
-    Space,
-    Spoiler,
-    Tabs,
-    Text,
-} from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
+import {usePage} from "@inertiajs/react";
+import {Box, Group, Image, SimpleGrid, Space, Spoiler, Tabs, Text,} from "@mantine/core";
+import {useMediaQuery} from "@mantine/hooks";
 import classes from "./AnimeSeasonDetails.module.css";
-import { externalLinkMapping } from "@/utils/externalLinkMapping";
+import {externalLinkMapping} from "@/utils/externalLinkMapping";
 import {AnimeSeason} from "@/types/animeseason";
 
 function AnimeSeasonDetails() {

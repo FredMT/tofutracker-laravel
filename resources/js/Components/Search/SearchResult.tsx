@@ -1,17 +1,6 @@
-import { MediaItem } from "@/types/search";
-import { Link } from "@inertiajs/react";
-import {
-    Badge,
-    Card,
-    Group,
-    Image,
-    Text,
-    Box,
-    Spoiler,
-    Title,
-    AspectRatio,
-    Tooltip,
-} from "@mantine/core";
+import {MediaItem} from "@/types/search";
+import {Link} from "@inertiajs/react";
+import {Badge, Box, Card, Group, Image, Spoiler, Text, Title, Tooltip,} from "@mantine/core";
 
 interface SearchResultProps {
     item: MediaItem;

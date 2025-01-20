@@ -11,10 +11,10 @@ class EnsureMovieExists
     {
         $movie = Movie::find($payload['validated']['movie_id']);
 
-        if (!$movie) {
+        if (! $movie) {
             return back()->with([
                 'success' => false,
-                'message' => "Movie not found in the database",
+                'message' => 'Movie not found in the database',
             ]);
         }
 

@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Models\TvdbAnimeSeason;
 use App\Models\TvdbAnimeEpisode;
+use App\Models\TvdbAnimeSeason;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -15,11 +15,15 @@ class CreateTvdbAnimeSeasonJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $tries = 3;
+
     public $maxExceptions = 3;
+
     public $timeout = 300;
+
     protected const BATCH_SIZE = 100;
 
     protected $seasonData;
+
     protected $episodes;
 
     public function __construct($completeData)
@@ -59,7 +63,7 @@ class CreateTvdbAnimeSeasonJob implements ShouldQueue
     {
         logger()->info('Starting creation of new TVDB anime season', [
             'slug' => $this->seasonData['slug'],
-            'episode_count' => count($this->episodes)
+            'episode_count' => count($this->episodes),
         ]);
 
         $season = TvdbAnimeSeason::create([
@@ -78,7 +82,7 @@ class CreateTvdbAnimeSeasonJob implements ShouldQueue
                 logger()->info('Processing episode chunk', [
                     'season_id' => $season->id,
                     'chunk_number' => $index + 1,
-                    'chunk_size' => count($chunk)
+                    'chunk_size' => count($chunk),
                 ]);
 
                 $episodesData = array_map(function ($episode) use ($season) {
@@ -90,7 +94,7 @@ class CreateTvdbAnimeSeasonJob implements ShouldQueue
                 logger()->error('Error processing episode chunk', [
                     'season_id' => $season->id,
                     'chunk_number' => $index + 1,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
                 throw $e;
             }
@@ -98,7 +102,7 @@ class CreateTvdbAnimeSeasonJob implements ShouldQueue
 
         logger()->info('Completed creation of TVDB anime season and episodes', [
             'season_id' => $season->id,
-            'total_episodes' => count($this->episodes)
+            'total_episodes' => count($this->episodes),
         ]);
     }
 
@@ -107,7 +111,7 @@ class CreateTvdbAnimeSeasonJob implements ShouldQueue
         logger()->error('Failed to create TVDB anime season', [
             'slug' => $this->seasonData['slug'],
             'error' => $exception->getMessage(),
-            'trace' => $exception->getTraceAsString()
+            'trace' => $exception->getTraceAsString(),
         ]);
     }
 }

@@ -1,4 +1,4 @@
-import { Group, Avatar, Stack, Title, Text } from "@mantine/core";
+import {Avatar, Group, Stack, Text, Title} from "@mantine/core";
 
 interface UserProfileHeaderProps {
     username: string;

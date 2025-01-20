@@ -2,21 +2,22 @@
 
 namespace App\Jobs;
 
-use App\Models\TvdbAnimeSeason;
 use App\Models\TvdbAnimeEpisode;
+use App\Models\TvdbAnimeSeason;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Collection;
 
 class UpdateTvdbAnimeEpisodesJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $season;
+
     protected $episodes;
+
     protected const BATCH_SIZE = 100;
 
     public function __construct(TvdbAnimeSeason $season, $episodes)

@@ -1,27 +1,17 @@
-import { AnimeBannerImageContainer } from "@/Components/Content/Shared/Anime/AnimeBannerImageContainer";
 import ContentActions from "@/Components/ContentActions/ContentActions";
-import { RegularContentSummary } from "@/Components/Content/Shared/Regular/RegularContentSummary";
+import {RegularContentSummary} from "@/Components/Content/Shared/Regular/RegularContentSummary";
 import ResponsiveContainer from "@/Components/ResponsiveContainer";
-import SimilarContent from "@/Components/Content/Shared/SimilarContent";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
 import ContentLayout from "@/Layouts/ContentLayout";
-import { TvSeason } from "@/types";
-import { Head, usePage } from "@inertiajs/react";
-import {
-    Box,
-    Divider,
-    Space,
-    Spoiler,
-    Stack,
-    Text,
-    Title,
-} from "@mantine/core";
-import { useViewportSize } from "@mantine/hooks";
+import {TvSeason} from "@/types";
+import {Head, usePage} from "@inertiajs/react";
+import {Box, Divider, Space, Spoiler, Stack, Text, Title,} from "@mantine/core";
+import {useViewportSize} from "@mantine/hooks";
 import ContentEpisodes from "@/Components/Content/Episodes/ContentEpisodes";
 import SeasonBreadcrumbs from "@/Components/Content/TV/Seasons/SeasonBreadcrumbs";
-import { RegularContentCredits } from "@/Components/Content/Shared/Regular/RegularContentCredits";
+import {RegularContentCredits} from "@/Components/Content/Shared/Regular/RegularContentCredits";
 import RegularPosterImage from "@/Components/Content/Shared/Regular/RegularPosterImage";
-import { RegularBannerImageContainer } from "@/Components/Content/Shared/Regular/RegularBannerImageContainer";
+import {RegularBannerImageContainer} from "@/Components/Content/Shared/Regular/RegularBannerImageContainer";
 
 function TVSeason() {
     const { width } = useViewportSize();

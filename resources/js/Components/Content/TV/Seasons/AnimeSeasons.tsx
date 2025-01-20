@@ -1,10 +1,9 @@
 import AnimeSeasonCard from "@/Components/Content/TV/Seasons/AnimeSeasonCard";
-import { useAnimeContent } from "@/hooks/useAnimeContent";
 import {Anime, RelatedAnimeData} from "@/types/anime";
 import {Link, usePage} from "@inertiajs/react";
-import { Carousel } from "@mantine/carousel";
-import { Stack, Title } from "@mantine/core";
-import { CustomCarousel } from "@/Components/Shared/CustomCarousel";
+import {Carousel} from "@mantine/carousel";
+import {Stack, Title} from "@mantine/core";
+import {CustomCarousel} from "@/Components/Shared/CustomCarousel";
 
 interface AnimeSeasonsProps {
     containerWidth: number;

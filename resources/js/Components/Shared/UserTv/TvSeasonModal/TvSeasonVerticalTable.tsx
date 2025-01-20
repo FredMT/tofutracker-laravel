@@ -1,7 +1,7 @@
-import { UserTvShow } from "@/types/userTv";
-import { Link } from "@inertiajs/react";
-import { Badge, Group, Stack, Table, Title } from "@mantine/core";
-import { ExternalLink } from "lucide-react";
+import {UserTvShow} from "@/types/userTv";
+import {Link} from "@inertiajs/react";
+import {Badge, Group, Stack, Table, Title} from "@mantine/core";
+import {ExternalLink} from "lucide-react";
 
 interface TvSeasonVerticalTableProps {
     show: UserTvShow;
