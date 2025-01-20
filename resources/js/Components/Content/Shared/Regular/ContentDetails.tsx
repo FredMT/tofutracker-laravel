@@ -1,5 +1,7 @@
-import {useContent} from "@/hooks/useContent";
-import {Grid, Text, Title} from "@mantine/core";
+import { useContent } from "@/hooks/useContent";
+import { RegularContentDataType } from "@/types";
+import { usePage } from "@inertiajs/react";
+import { Grid, Text, Title } from "@mantine/core";
 
 type DetailsField = {
     key: string;
@@ -7,8 +9,10 @@ type DetailsField = {
 };
 
 export function ContentDetails() {
-    const { content, type } = useContent();
-    if (!content || type === "tvseason" || !("details" in content)) return null;
+    const { data, type } = usePage<{
+        data: RegularContentDataType;
+        type: "movie" | "tv";
+    }>().props;
 
     const getDetailsFields = (): DetailsField[] => {
         switch (type) {
@@ -55,9 +59,7 @@ export function ContentDetails() {
             <Grid columns={6}>
                 {getDetailsFields().map(
                     ({ key, label }) =>
-                        content.details[
-                            key as keyof typeof content.details
-                        ] && (
+                        data.details[key as keyof typeof data.details] && (
                             <Grid.Col key={key} span={6}>
                                 <Grid columns={6}>
                                     <Grid.Col span={2}>
@@ -67,8 +69,8 @@ export function ContentDetails() {
                                         <Text>
                                             {formatValue(
                                                 key,
-                                                content.details[
-                                                    key as keyof typeof content.details
+                                                data.details[
+                                                    key as keyof typeof data.details
                                                 ]
                                             )}
                                         </Text>

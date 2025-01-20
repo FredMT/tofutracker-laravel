@@ -1,8 +1,8 @@
-import {Link, useForm, usePage} from "@inertiajs/react";
-import {FormEventHandler} from "react";
-import {PageProps} from "@/types";
-import {Box, Button, Stack, Text, TextInput, Title} from "@mantine/core";
-import {z} from "zod";
+import { Link, useForm, usePage } from "@inertiajs/react";
+import { FormEventHandler } from "react";
+import { Auth, PageProps } from "@/types";
+import { Box, Button, Stack, Text, TextInput, Title } from "@mantine/core";
+import { z } from "zod";
 
 const usernameSchema = z
     .string()
@@ -21,10 +21,14 @@ export default function UpdateProfileInformation({
     status?: string;
     className?: string;
 }) {
-    const user = usePage<PageProps>().props.auth.user;
+    const { auth } = usePage<{ auth: Auth }>().props;
+
+    if (!auth.user) {
+        return null;
+    }
     const { data, setData, patch, errors, processing } = useForm({
-        email: user.email,
-        username: user.username,
+        email: auth.user.email,
+        username: auth.user.username,
     });
 
     const submit: FormEventHandler = (e) => {
@@ -67,36 +71,37 @@ export default function UpdateProfileInformation({
                             description="Username must be between 3 and 16 characters and cannot contain only numbers."
                         />
 
-                        {mustVerifyEmail && user.email_verified_at === null && (
-                            <Box>
-                                <Text size="sm">
-                                    Your email address is unverified.{" "}
-                                    <Link
-                                        href={route("verification.send")}
-                                        method="post"
-                                        as="button"
-                                        className="underline hover:text-gray-900"
-                                    >
-                                        Click here to re-send the verification
-                                        email.
-                                    </Link>
-                                </Text>
-
-                                {status === "verification-link-sent" && (
-                                    <Text size="sm" c="green" mt="xs">
-                                        A new verification link has been sent to
-                                        your email address.
+                        {mustVerifyEmail &&
+                            auth.user.email_verified_at === null && (
+                                <Box>
+                                    <Text size="sm">
+                                        Your email address is unverified.{" "}
+                                        <Link
+                                            href={route("verification.send")}
+                                            method="post"
+                                            as="button"
+                                            className="underline hover:text-gray-900"
+                                        >
+                                            Click here to re-send the
+                                            verification email.
+                                        </Link>
                                     </Text>
-                                )}
-                            </Box>
-                        )}
+
+                                    {status === "verification-link-sent" && (
+                                        <Text size="sm" c="green" mt="xs">
+                                            A new verification link has been
+                                            sent to your email address.
+                                        </Text>
+                                    )}
+                                </Box>
+                            )}
 
                         <Button
                             type="submit"
                             loading={processing}
                             disabled={
                                 processing ||
-                                data.username === user.username ||
+                                data.username === auth.user.username ||
                                 !usernameSchema.safeParse(data.username).success
                             }
                             maw={350}
@@ -104,7 +109,7 @@ export default function UpdateProfileInformation({
                             Save
                         </Button>
 
-                        {data.username === user.username && (
+                        {data.username === auth.user.username && (
                             <Text size="sm" c="dimmed">
                                 Enter a different username to save changes.
                             </Text>

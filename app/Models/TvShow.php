@@ -256,6 +256,30 @@ class TvShow extends Model
             ->all();
     }
 
+    private function getRecommendedShows(): array
+    {
+        $similarShows = $this->data['recommendations']['results'] ?? [];
+
+        return collect($similarShows)
+            ->filter(function ($show) {
+                return ! empty($show['poster_path']) &&
+                    ! empty($show['vote_average']) &&
+                    ! empty($show['name']) &&
+                    ! empty($show['first_air_date']);
+            })
+            ->map(function ($show) {
+                return [
+                    'id' => $show['id'],
+                    'title' => $show['name'],
+                    'poster_path' => $show['poster_path'],
+                    'vote_average' => $show['vote_average'],
+                    'release_date' => $show['first_air_date'],
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
     public function filteredData(): Attribute
     {
         return Attribute::get(function () {
@@ -307,6 +331,7 @@ class TvShow extends Model
                 ],
                 'certification' => $this->getUSCertification(),
                 'similar' => $this->getSimilarShows(),
+                'recommended' => $this->getRecommendedShows(),
                 'seasons' => $this->seasons->map(function ($season) {
                     return [
                         'id' => $season->data['id'],

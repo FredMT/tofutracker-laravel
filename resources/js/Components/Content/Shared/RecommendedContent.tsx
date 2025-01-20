@@ -1,9 +1,10 @@
-import {useContent} from "@/hooks/useContent";
-import {Recommended} from "@/types";
-import {Carousel} from "@mantine/carousel";
-import {Container, Stack, Title} from "@mantine/core";
+import { useContent } from "@/hooks/useContent";
+import { Recommended, RegularContentDataType } from "@/types";
+import { Carousel } from "@mantine/carousel";
+import { Container, Stack, Title } from "@mantine/core";
 import classes from "./RecommendedContent.module.css";
 import RecommendedContentCard from "./RecommendedContentCard";
+import { usePage } from "@inertiajs/react";
 
 interface RecommendedContentProps {
     containerWidth: number;
@@ -14,8 +15,7 @@ export default function RecommendedContent({
     containerWidth,
     slideSize = "0%",
 }: RecommendedContentProps) {
-    const { content, type } = useContent();
-    if (!content || type === "tvseason") return null;
+    const { data } = usePage<{ data: RegularContentDataType }>().props;
 
     return (
         <Stack>
@@ -31,7 +31,7 @@ export default function RecommendedContent({
                         controls: classes.carouselControls,
                     }}
                 >
-                    {content.recommended.map((recommended: Recommended) => (
+                    {data.recommended.map((recommended: Recommended) => (
                         <Carousel.Slide key={recommended.id}>
                             <RecommendedContentCard content={recommended} />
                         </Carousel.Slide>

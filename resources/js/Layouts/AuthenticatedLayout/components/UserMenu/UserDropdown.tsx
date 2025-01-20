@@ -1,10 +1,13 @@
-import {Link, usePage} from "@inertiajs/react";
-import {Avatar, Group, Menu, Text} from "@mantine/core";
+import { Link, usePage } from "@inertiajs/react";
+import { Avatar, Group, Menu, Text } from "@mantine/core";
 import styles from "../../AuthenticatedLayout.module.css";
-import {PageProps} from "@/types";
+import { Auth, PageProps } from "@/types";
 
 export default function UserDropdown() {
-    const user = usePage<PageProps>().props.auth.user;
+    const { auth } = usePage<{ auth: Auth }>().props;
+
+    if (!auth.user) return null;
+
     return (
         <div className="relative ms-3">
             <Menu width={200} trigger="click-hover" position="bottom-end">
@@ -16,12 +19,12 @@ export default function UserDropdown() {
                         >
                             <Group>
                                 <Avatar
-                                    src={`https://images.tofutracker.com/${user.avatar}`}
+                                    src={`https://images.tofutracker.com/${auth.user.avatar}`}
                                     alt="Avatar"
                                     size="sm"
                                 />
                                 <Text c="white" size="sm">
-                                    {user.username}
+                                    {auth.user.username}
                                 </Text>
                             </Group>
                             <svg

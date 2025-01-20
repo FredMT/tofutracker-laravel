@@ -1,16 +1,21 @@
-import {PageProps} from "@/types";
-import {useForm, usePage} from "@inertiajs/react";
-import {Button, Group, Image, Stack, Text, Title} from "@mantine/core";
-import {Dropzone, IMAGE_MIME_TYPE} from "@mantine/dropzone";
-import {LucideUpload, X} from "lucide-react";
-import {useState} from "react";
+import { Auth, PageProps } from "@/types";
+import { useForm, usePage } from "@inertiajs/react";
+import { Button, Group, Image, Stack, Text, Title } from "@mantine/core";
+import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
+import { LucideUpload, X } from "lucide-react";
+import { useState } from "react";
 
 export default function UpdateAvatarForm() {
     const [preview, setPreview] = useState<string | null>(null);
     const { data, setData, post, progress, processing } = useForm({
         avatar: null as File | null,
     });
-    const { auth } = usePage<PageProps>().props;
+    const { auth } = usePage<{ auth: Auth }>().props;
+
+    if (!auth.user) {
+        return null;
+    }
+
     const currentAvatar = auth.user.avatar
         ? `${import.meta.env.VITE_DO_URL}/${auth.user.avatar}`
         : null;

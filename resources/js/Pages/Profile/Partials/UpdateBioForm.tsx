@@ -1,8 +1,8 @@
-import {useForm, usePage} from "@inertiajs/react";
-import {FormEventHandler} from "react";
-import {PageProps} from "@/types";
-import {Button, Stack, Text, Textarea, Title} from "@mantine/core";
-import {z} from "zod";
+import { useForm, usePage } from "@inertiajs/react";
+import { FormEventHandler } from "react";
+import { Auth, PageProps } from "@/types";
+import { Button, Stack, Text, Textarea, Title } from "@mantine/core";
+import { z } from "zod";
 
 const bioSchema = z
     .string()
@@ -12,9 +12,14 @@ const bioSchema = z
     .transform((val) => (val === "" ? null : val));
 
 export default function UpdateBioForm() {
-    const user = usePage<PageProps>().props.auth.user;
+    const { auth } = usePage<{ auth: Auth }>().props;
+
+    if (!auth.user) {
+        return null;
+    }
+
     const { data, setData, patch, errors, processing } = useForm({
-        bio: user.bio || "",
+        bio: auth.user.bio || "",
     });
 
     const submit: FormEventHandler = (e) => {
@@ -58,7 +63,7 @@ export default function UpdateBioForm() {
                         loading={processing}
                         disabled={
                             processing ||
-                            data.bio === user.bio ||
+                            data.bio === auth.user.bio ||
                             !bioSchema.safeParse(data.bio).success
                         }
                         maw={350}
@@ -66,7 +71,7 @@ export default function UpdateBioForm() {
                         Save
                     </Button>
 
-                    {data.bio === user.bio && (
+                    {data.bio === auth.user.bio && (
                         <Text size="sm" c="dimmed">
                             Make changes to your bio to save.
                         </Text>

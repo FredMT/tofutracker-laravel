@@ -3,7 +3,7 @@ import { Badge, Box, Card, Image, Text, Tooltip } from "@mantine/core";
 interface ListItemCardContent {
     imageUrl: string;
     title: string;
-    year: number;
+    year: string;
     voteAverage: number;
 }
 
