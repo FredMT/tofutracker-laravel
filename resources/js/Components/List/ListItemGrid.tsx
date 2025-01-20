@@ -53,7 +53,6 @@ export function ListItemGrid({
     isEditing = false,
     onOrderChange,
 }: ListItemGridProps) {
-    const sortedItems = [...items].sort((a, b) => a.sort_order - b.sort_order);
     const [activeId, setActiveId] = useState<number | null>(null);
 
     const sensors = useSensors(
@@ -79,14 +78,10 @@ export function ListItemGrid({
         setActiveId(null);
 
         if (over && active.id !== over.id) {
-            const oldIndex = sortedItems.findIndex(
-                (item) => item.id === active.id
-            );
-            const newIndex = sortedItems.findIndex(
-                (item) => item.id === over.id
-            );
+            const oldIndex = items.findIndex((item) => item.id === active.id);
+            const newIndex = items.findIndex((item) => item.id === over.id);
 
-            const newItems = arrayMove(sortedItems, oldIndex, newIndex).map(
+            const newItems = arrayMove(items, oldIndex, newIndex).map(
                 (item, index) => ({
                     ...item,
                     sort_order: index + 1,
@@ -103,7 +98,7 @@ export function ListItemGrid({
 
     if (isEditing) {
         const activeItem = activeId
-            ? sortedItems.find((item) => item.id === activeId)
+            ? items.find((item) => item.id === activeId)
             : null;
 
         return (
@@ -122,7 +117,7 @@ export function ListItemGrid({
                     onDragCancel={handleDragCancel}
                 >
                     <SortableContext
-                        items={sortedItems.map((item) => item.id)}
+                        items={items.map((item) => item.id)}
                         strategy={rectSortingStrategy}
                     >
                         <Flex
@@ -131,7 +126,7 @@ export function ListItemGrid({
                             align="flex-start"
                             wrap="wrap"
                         >
-                            {sortedItems.map((item) => (
+                            {items.map((item) => (
                                 <ListSortableItem key={item.id} item={item} />
                             ))}
                         </Flex>
@@ -153,7 +148,7 @@ export function ListItemGrid({
 
     return (
         <Flex gap="md" justify="flex-start" align="flex-start" wrap="wrap">
-            {sortedItems.map((item) => (
+            {items.map((item) => (
                 <ListItemCard key={item.id} item={item} isEditing={isEditing} />
             ))}
         </Flex>

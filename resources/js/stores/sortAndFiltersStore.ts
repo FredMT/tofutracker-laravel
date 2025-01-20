@@ -41,7 +41,7 @@ export const useSortAndFiltersStore = create<SortAndFiltersStore>(
             sortBy: validSortOptions.includes(sortParam || "")
                 ? sortParam!
                 : "sort_order",
-            sortDirection: directionParam === "asc" ? "asc" : "desc",
+            sortDirection: directionParam === "desc" ? "desc" : "asc",
             selectedGenre: genreParam,
             minRating: ratingParam,
             released: releasedParam,
@@ -68,7 +68,7 @@ export const useSortAndFiltersStore = create<SortAndFiltersStore>(
                     {
                         key: "direction",
                         value: sortDirection,
-                        defaultValue: "desc",
+                        alwaysInclude: true,
                     },
                     { key: "genre", value: selectedGenre, defaultValue: "any" },
                     { key: "rating", value: minRating, defaultValue: "any" },
@@ -76,13 +76,17 @@ export const useSortAndFiltersStore = create<SortAndFiltersStore>(
                     { key: "search", value: search, defaultValue: "" },
                 ];
 
-                params.forEach(({ key, value, defaultValue }) => {
-                    if (value && value !== defaultValue) {
-                        url.searchParams.set(key, value);
-                    } else {
-                        url.searchParams.delete(key);
+                params.forEach(
+                    ({ key, value, defaultValue, alwaysInclude }) => {
+                        if (alwaysInclude) {
+                            url.searchParams.set(key, value);
+                        } else if (value && value !== defaultValue) {
+                            url.searchParams.set(key, value);
+                        } else {
+                            url.searchParams.delete(key);
+                        }
                     }
-                });
+                );
 
                 router.get(
                     url.pathname + url.search,

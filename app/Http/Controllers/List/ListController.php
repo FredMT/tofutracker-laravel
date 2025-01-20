@@ -10,6 +10,7 @@ use App\Models\TvSeason;
 use App\Models\TvShow;
 use App\Models\UserCustomList;
 use App\Actions\List\FilterListItems;
+use App\Actions\List\SortListItems;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -19,10 +20,12 @@ class ListController extends Controller
 {
     private array $processedAnimeIds = [];
     private FilterListItems $filterListItems;
+    private SortListItems $sortListItems;
 
-    public function __construct(FilterListItems $filterListItems)
+    public function __construct(FilterListItems $filterListItems, SortListItems $sortListItems)
     {
         $this->filterListItems = $filterListItems;
+        $this->sortListItems = $sortListItems;
     }
 
     public function show(Request $request, UserCustomList $list): Response
@@ -54,15 +57,20 @@ class ListController extends Controller
 
         $mappedItems = $this->mapListItems($list->items)->all();
         
-        // Apply filters
         $filters = $this->getFiltersFromRequest($request);
         $filteredItems = $this->filterListItems->execute($mappedItems, $filters);
         
+        $sortedItems = $this->sortListItems->execute(
+            $filteredItems,
+            $request->query('sort', 'sort_order'),
+            $request->query('direction', 'asc')
+        );
+
         $stats = $this->calculateStats($list->items);
         $listGenres = $this->collectDistinctGenres($list->items);
 
         $list = $list->toArray();
-        $list['items'] = array_values($filteredItems);
+        $list['items'] = array_values($sortedItems);
         $list['stats'] = $stats;
         $list['list_genres'] = $listGenres;
         $list['is_empty'] = false;
