@@ -98,11 +98,13 @@ class AnidbAnime extends Model
                 $mapId = $this->map();
                 if ($mapId) {
                     $map = AnimeMap::find($mapId);
+
                     return $map ? $map->genres : collect();
                 }
             } catch (\Exception $e) {
                 return collect();
             }
+
             return collect();
         });
     }

@@ -1,6 +1,6 @@
-import {Badge, Box, Card, Image, Text, Tooltip} from "@mantine/core";
-import {Link, usePage} from "@inertiajs/react";
-import {PageProps, Recommended} from "@/types";
+import { Badge, Box, Card, Image, Text, Tooltip } from "@mantine/core";
+import { Link, usePage } from "@inertiajs/react";
+import { PageProps, Recommended } from "@/types";
 
 interface RecommendedContentCardProps {
     content: Recommended;
@@ -53,11 +53,11 @@ function RecommendedContentCard({ content }: RecommendedContentCardProps) {
                         openDelay={150}
                     >
                         <Box>
-                            <Text fw={600} size="sm" lineClamp={2}>
-                                {content.title}
-                            </Text>
                             <Text fw={600} size="sm" mt={6} c="dimmed">
                                 {new Date(content.release_date).getFullYear()}
+                            </Text>
+                            <Text fw={600} size="sm" lineClamp={2}>
+                                {content.title}
                             </Text>
                         </Box>
                     </Tooltip>

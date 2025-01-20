@@ -43,4 +43,4 @@ class ListBannerTmdbController extends Controller
             return back()->withErrors(['banner' => 'Failed to update banner. Please try again.']);
         }
     }
-} 
+}

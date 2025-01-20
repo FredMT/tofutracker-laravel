@@ -64,4 +64,4 @@ class ListBannerController extends Controller
             return back()->withErrors(['banner' => 'Failed to upload banner. Please try again.']);
         }
     }
-} 
+}

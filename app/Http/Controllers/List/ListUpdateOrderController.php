@@ -36,4 +36,4 @@ class ListUpdateOrderController extends Controller
             return back()->withErrors(['order' => 'Failed to update list order. Please try again.']);
         }
     }
-} 
+}

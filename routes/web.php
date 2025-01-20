@@ -3,10 +3,10 @@
 use App\Actions\Trending\GetTrendingAction;
 use App\Actions\Trending\GetTrendingGenresAndWatchProvidersAction;
 use App\Http\Controllers\AnimeController;
+use App\Http\Controllers\List\ListBackdropsController;
 use App\Http\Controllers\List\ListBannerController;
 use App\Http\Controllers\List\ListBannerRemoveController;
 use App\Http\Controllers\List\ListBannerTmdbController;
-use App\Http\Controllers\List\ListBackdropsController;
 use App\Http\Controllers\List\ListController;
 use App\Http\Controllers\List\ListRemoveItemsController;
 use App\Http\Controllers\List\ListUpdateOrderController;
@@ -126,7 +126,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('user.lists.store');
     Route::patch('/user/lists/{list}', [UserCustomListController::class, 'update'])
         ->name('user.lists.update');
-    
+
     // List items management routes
     Route::post('/user/list-items', [UserCustomListItemController::class, 'store'])
         ->name('user.lists.items.store');

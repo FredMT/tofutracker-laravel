@@ -2,9 +2,9 @@
 
 namespace App\Actions\List;
 
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
-use Carbon\Carbon;
 
 class FilterListItems
 {
@@ -15,7 +15,7 @@ class FilterListItems
         }
 
         $items = collect($items);
-        
+
         if (isset($filters['search'])) {
             $items = $this->applySearchFilter($items, $filters['search']);
         }
@@ -38,7 +38,7 @@ class FilterListItems
     private function normalizeText(string $text): string
     {
         return Str::lower(
-            preg_replace('/[^a-zA-Z0-9\s]/', '', 
+            preg_replace('/[^a-zA-Z0-9\s]/', '',
                 str_replace('-', ' ', $text)
             )
         );
@@ -46,7 +46,7 @@ class FilterListItems
 
     private function applySearchFilter(Collection $items, ?string $search): Collection
     {
-        if (!$search) {
+        if (! $search) {
             return $items;
         }
 
@@ -56,9 +56,9 @@ class FilterListItems
         return $items->filter(function ($item) use ($searchTerms) {
             $normalizedTitle = $this->normalizeText($item['title']);
             $normalizedYear = $item['year'] ? $this->normalizeText($item['year']) : '';
-            
+
             return $searchTerms->some(function ($term) use ($normalizedTitle, $normalizedYear) {
-                return Str::contains($normalizedTitle, $term) || 
+                return Str::contains($normalizedTitle, $term) ||
                        Str::contains($normalizedYear, $term);
             });
         });
@@ -66,7 +66,7 @@ class FilterListItems
 
     private function applyGenreFilter(Collection $items, ?string $genreId): Collection
     {
-        if (!$genreId || $genreId === 'any') {
+        if (! $genreId || $genreId === 'any') {
             return $items;
         }
 
@@ -77,15 +77,15 @@ class FilterListItems
 
     private function applyRatingFilter(Collection $items, ?string $minRating): Collection
     {
-        if (!$minRating || $minRating === 'any') {
+        if (! $minRating || $minRating === 'any') {
             return $items;
         }
 
         $minRatingValue = (float) $minRating;
 
         return $items->filter(function ($item) use ($minRatingValue) {
-            return isset($item['vote_average']) && 
-                   $item['vote_average'] !== null && 
+            return isset($item['vote_average']) &&
+                   $item['vote_average'] !== null &&
                    $item['vote_average'] >= $minRatingValue;
         });
     }
@@ -102,7 +102,7 @@ class FilterListItems
         if (Str::endsWith($released, 'y')) {
             $years = (int) Str::before($released, 'y');
             $startDate = $now->copy()->subYears($years)->startOfYear();
-            
+
             return $items->filter(function ($item) use ($startDate) {
                 return $this->isYearInRange($item['year'], $startDate->year, Carbon::now()->year);
             });
@@ -112,7 +112,7 @@ class FilterListItems
         if (Str::endsWith($released, 's')) {
             $decadeStart = (int) Str::before($released, 's');
             $decadeEnd = $decadeStart + 9;
-            
+
             return $items->filter(function ($item) use ($decadeStart, $decadeEnd) {
                 return $this->isYearInRange($item['year'], $decadeStart, $decadeEnd);
             });
@@ -120,6 +120,7 @@ class FilterListItems
 
         // Handle specific years
         $year = (int) $released;
+
         return $items->filter(function ($item) use ($year) {
             return $this->isYearInRange($item['year'], $year, $year);
         });
@@ -127,29 +128,30 @@ class FilterListItems
 
     private function isYearInRange(?string $yearString, int $startYear, int $endYear): bool
     {
-        if (!$yearString) {
+        if (! $yearString) {
             return false;
         }
 
         // Handle single year
         if (is_numeric($yearString)) {
             $year = (int) $yearString;
+
             return $year >= $startYear && $year <= $endYear;
         }
 
         // Handle year ranges (e.g., "2020 - 2024" or "2020 - Now")
         if (Str::contains($yearString, '-')) {
             [$rangeStart, $rangeEnd] = array_map('trim', explode('-', $yearString));
-            
+
             $rangeStartYear = (int) $rangeStart;
-            $rangeEndYear = Str::lower($rangeEnd) === 'now' 
-                ? Carbon::now()->year 
+            $rangeEndYear = Str::lower($rangeEnd) === 'now'
+                ? Carbon::now()->year
                 : (int) $rangeEnd;
 
             // Check if any year in the range overlaps with the target range
-            return !($rangeEndYear < $startYear || $rangeStartYear > $endYear);
+            return ! ($rangeEndYear < $startYear || $rangeStartYear > $endYear);
         }
 
         return false;
     }
-} 
+}

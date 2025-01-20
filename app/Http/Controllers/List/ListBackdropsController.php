@@ -97,4 +97,4 @@ class ListBackdropsController extends Controller
 
         return response()->json($backdrops);
     }
-} 
+}

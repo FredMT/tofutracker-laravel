@@ -37,4 +37,4 @@ class ListBannerRemoveController extends Controller
             return back()->withErrors(['banner' => 'Failed to remove banner. Please try again.']);
         }
     }
-} 
+}

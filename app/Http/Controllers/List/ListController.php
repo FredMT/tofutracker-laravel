@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\List;
 
+use App\Actions\List\FilterListItems;
+use App\Actions\List\SortListItems;
 use App\Http\Controllers\Controller;
 use App\Models\AnidbAnime;
 use App\Models\AnimeMap;
@@ -9,17 +11,17 @@ use App\Models\Movie;
 use App\Models\TvSeason;
 use App\Models\TvShow;
 use App\Models\UserCustomList;
-use App\Actions\List\FilterListItems;
-use App\Actions\List\SortListItems;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ListController extends Controller
 {
     private array $processedAnimeIds = [];
+
     private FilterListItems $filterListItems;
+
     private SortListItems $sortListItems;
 
     public function __construct(FilterListItems $filterListItems, SortListItems $sortListItems)
@@ -56,10 +58,10 @@ class ListController extends Controller
         }
 
         $mappedItems = $this->mapListItems($list->items)->all();
-        
+
         $filters = $this->getFiltersFromRequest($request);
         $filteredItems = $this->filterListItems->execute($mappedItems, $filters);
-        
+
         $sortedItems = $this->sortListItems->execute(
             $filteredItems,
             $request->query('sort', 'sort_order'),
@@ -125,7 +127,7 @@ class ListController extends Controller
             'genres' => collect(),
         ];
 
-        if (!$listable) {
+        if (! $listable) {
             return $data;
         }
 
@@ -176,7 +178,7 @@ class ListController extends Controller
         $data = [
             'poster' => $season->poster,
             'posterType' => 'tmdb',
-            'title' => $season->title . " - " . $season->show->title,
+            'title' => $season->title.' - '.$season->show->title,
             'year' => $season->year,
             'voteAverage' => $season->voteAverage,
             'link' => null,
@@ -274,7 +276,9 @@ class ListController extends Controller
         $totalRuntime = 0;
 
         foreach ($items as $item) {
-            if (!$item->listable) continue;
+            if (! $item->listable) {
+                continue;
+            }
 
             $runtime = $this->getItemRuntime($item->listable, $item->listable_type);
             $totalRuntime += $runtime;
@@ -290,25 +294,27 @@ class ListController extends Controller
             case TvShow::class:
             case TvSeason::class:
                 return $listable->runtime ?? 0;
-            
+
             case AnimeMap::class:
                 if (in_array($listable->id, $this->processedAnimeIds)) {
                     return 0;
                 }
                 $this->processedAnimeIds[] = $listable->id;
+
                 return $listable->runtime ?? 0;
-            
+
             case AnidbAnime::class:
                 try {
                     $mapId = $listable->map();
-                    if (!$mapId || !in_array($mapId, $this->processedAnimeIds)) {
+                    if (! $mapId || ! in_array($mapId, $this->processedAnimeIds)) {
                         return $listable->runtime ?? 0;
                     }
                 } catch (\Exception $e) {
                     // If map not found, return 0
                 }
+
                 return 0;
-            
+
             default:
                 return 0;
         }
@@ -338,4 +344,4 @@ class ListController extends Controller
 
         return $genres->unique('id')->values()->all();
     }
-} 
+}

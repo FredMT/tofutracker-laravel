@@ -1,10 +1,10 @@
-import { useContent } from "@/hooks/useContent";
 import { Recommended, RegularContentDataType } from "@/types";
 import { Carousel } from "@mantine/carousel";
 import { Container, Stack, Title } from "@mantine/core";
 import classes from "./RecommendedContent.module.css";
 import RecommendedContentCard from "./RecommendedContentCard";
 import { usePage } from "@inertiajs/react";
+import CustomCarousel from "@/Components/Shared/CustomCarousel";
 
 interface RecommendedContentProps {
     containerWidth: number;
@@ -20,24 +20,18 @@ export default function RecommendedContent({
     return (
         <Stack>
             <Title order={3}>Recommended</Title>
-            <Container size={containerWidth} px={0} mx={0}>
-                <Carousel
-                    height={300}
-                    slideSize={slideSize}
-                    align="start"
-                    slidesToScroll={3}
-                    classNames={{
-                        control: classes.carouselControl,
-                        controls: classes.carouselControls,
-                    }}
-                >
-                    {data.recommended.map((recommended: Recommended) => (
-                        <Carousel.Slide key={recommended.id}>
-                            <RecommendedContentCard content={recommended} />
-                        </Carousel.Slide>
-                    ))}
-                </Carousel>
-            </Container>
+            <CustomCarousel
+                containerWidth={containerWidth}
+                slideSize={slideSize}
+                height={300}
+                slidesToScroll={3}
+            >
+                {data.recommended.map((recommended: Recommended) => (
+                    <Carousel.Slide key={recommended.id}>
+                        <RecommendedContentCard content={recommended} />
+                    </Carousel.Slide>
+                ))}
+            </CustomCarousel>
         </Stack>
     );
 }

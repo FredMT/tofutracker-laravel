@@ -321,6 +321,30 @@ class Movie extends Model
             ->all();
     }
 
+    private function getRecommendedMovies(): array
+    {
+        $similarMovies = $this->data['recommendations']['results'] ?? [];
+
+        return collect($similarMovies)
+            ->filter(function ($movie) {
+                return ! empty($movie['poster_path']) &&
+                    ! empty($movie['vote_average']) &&
+                    ! empty($movie['title']) &&
+                    ! empty($movie['release_date']);
+            })
+            ->map(function ($movie) {
+                return [
+                    'id' => $movie['id'],
+                    'title' => $movie['title'],
+                    'poster_path' => $movie['poster_path'],
+                    'vote_average' => $movie['vote_average'],
+                    'release_date' => $movie['release_date'],
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
     public function filteredData(): Attribute
     {
         return Attribute::get(function () {
@@ -375,6 +399,7 @@ class Movie extends Model
                 ],
                 'certification' => $this->getUSCertification(),
                 'similar' => $this->getSimilarMovies(),
+                'recommended' => $this->getRecommendedMovies(),
             ];
         });
     }

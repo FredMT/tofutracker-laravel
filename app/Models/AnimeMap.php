@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -48,6 +47,7 @@ class AnimeMap extends Model
     {
         return Attribute::get(function () {
             $model = $this->getTmdbModel();
+
             return $model ? $model->genres : collect();
         });
     }
@@ -69,8 +69,8 @@ class AnimeMap extends Model
     {
         return Attribute::get(function () {
             $model = $this->getTmdbModel();
-            
-            if (!$model) {
+
+            if (! $model) {
                 return null;
             }
 

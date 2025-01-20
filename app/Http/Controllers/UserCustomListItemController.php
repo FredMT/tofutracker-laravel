@@ -115,7 +115,7 @@ class UserCustomListItemController extends Controller
                 ->where('listable_id', $validated['item_id'])
                 ->first();
 
-            if (!$item) {
+            if (! $item) {
                 return back()->with(['success' => false, 'message' => 'Item not found in list']);
             }
 

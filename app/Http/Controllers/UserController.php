@@ -34,7 +34,6 @@ class UserController extends Controller
             ->orderBy('occurred_at', 'desc')
             ->paginate(20);
 
-
         $activities->through(function ($activity) {
             $poster = $activity->getPoster();
 
@@ -188,7 +187,6 @@ class UserController extends Controller
 
         $errors = app(ValidateShowFilters::class)->handle($request);
 
-        
         if (! empty($errors)) {
             return Inertia::render('UserTv', [
                 'success' => false,

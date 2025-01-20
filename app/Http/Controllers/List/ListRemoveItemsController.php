@@ -53,4 +53,4 @@ class ListRemoveItemsController extends Controller
             return back()->withErrors(['items' => 'Failed to remove items. Please try again.']);
         }
     }
-} 
+}

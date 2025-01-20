@@ -1,4 +1,3 @@
-import { useContent } from "@/hooks/useContent";
 import { RegularContentDataType } from "@/types";
 import { usePage } from "@inertiajs/react";
 import { Grid, Text, Title } from "@mantine/core";

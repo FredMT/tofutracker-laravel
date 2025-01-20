@@ -24,7 +24,7 @@ class SortListItems
         }
 
         $sortedItems = collect($items)->sortBy(function ($item) use ($sortBy) {
-            return match($sortBy) {
+            return match ($sortBy) {
                 'rating' => $item['vote_average'] ?? 0,
                 'alphabetical' => strtolower($item['title']),
                 'date_added' => $item['created_at'],
@@ -36,4 +36,4 @@ class SortListItems
 
         return $sortedItems->values()->all();
     }
-} 
+}
