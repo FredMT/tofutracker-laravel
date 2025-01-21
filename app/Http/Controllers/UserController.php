@@ -30,21 +30,22 @@ class UserController extends Controller
             ->firstOrFail();
 
         $activities = $user->activities()
-            ->select('id', 'description', 'metadata', 'occurred_at', 'subject_type', 'activity_type')
+            ->select('id', 'metadata', 'description', 'occurred_at', 'subject_type', 'activity_type')
             ->orderBy('occurred_at', 'desc')
             ->paginate(20);
 
         $activities->through(function ($activity) {
             $poster = $activity->getPoster();
 
+            // Let the model handle the metadata filtering
+            $array = $activity->toArray();
+
             return [
                 'id' => $activity->id,
                 'description' => $activity->description,
                 'occurred_at_diff' => $activity->occurred_at->diffForHumans(),
-                'poster_path' => $poster['path'] ?? null,
-                'poster_from' => $poster['from'] ?? null,
                 'activity_type' => $activity->activity_type,
-                'metadata' => $activity->metadata,
+                'metadata' => $array['metadata'] ?? [], // This will now be filtered
             ];
         });
 
@@ -53,7 +54,7 @@ class UserController extends Controller
         $userData = [
             'id' => $user->id,
             'username' => $user->username,
-            'created_at' => 'Joined '.$user->created_at->format('F Y'),
+            'created_at' => 'Joined ' . $user->created_at->format('F Y'),
             'avatar' => $user->avatar,
             'banner' => $user->banner,
             'bio' => $user->bio,
@@ -65,7 +66,7 @@ class UserController extends Controller
 
         return Inertia::render('UserProfile', [
             'userData' => $userData,
-            'activities' => Inertia::merge(fn () => $activities->items()),
+            'activities' => Inertia::merge(fn() => $activities->items()),
             'activities_pagination' => $activities->toArray(),
         ]);
     }
@@ -114,7 +115,7 @@ class UserController extends Controller
             'userData' => [
                 'id' => $user->id,
                 'username' => $user->username,
-                'created_at' => 'Joined '.$user->created_at->format('F Y'),
+                'created_at' => 'Joined ' . $user->created_at->format('F Y'),
                 'avatar' => $user->avatar,
                 'banner' => $user->banner,
             ],
@@ -135,7 +136,7 @@ class UserController extends Controller
             if (! empty($searchTerms)) {
                 $query->whereHas('movie', function ($query) use ($searchTerms) {
                     foreach ($searchTerms as $term) {
-                        $query->where('data->title', 'ilike', '%'.$term.'%');
+                        $query->where('data->title', 'ilike', '%' . $term . '%');
                     }
                 });
             }
@@ -150,7 +151,7 @@ class UserController extends Controller
 
         if ($request->filled('genres')) {
             $genreIds = collect(explode(',', $request->genres))
-                ->map(fn ($genreId) => (int) $genreId)
+                ->map(fn($genreId) => (int) $genreId)
                 ->toArray();
 
             $query->whereHas('movie', function ($query) use ($genreIds) {
@@ -286,7 +287,7 @@ class UserController extends Controller
                             ? $tmdbService->getMovieBasic($collection->animeMap->most_common_tmdb_id)
                             : $tmdbService->getTvBasic($collection->animeMap->most_common_tmdb_id);
                     } catch (\Exception $e) {
-                        logger()->error('Failed to fetch TMDB data: '.$e->getMessage());
+                        logger()->error('Failed to fetch TMDB data: ' . $e->getMessage());
 
                         return null;
                     }

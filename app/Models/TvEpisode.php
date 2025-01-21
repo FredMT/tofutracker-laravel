@@ -30,6 +30,13 @@ class TvEpisode extends Model
         return $this->belongsTo(TvSeason::class, 'season_id', 'id');
     }
 
+    public function poster(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->data['still_path'] ?? null;
+        });
+    }
+
     public function filteredData(): Attribute
     {
         return Attribute::get(function () {

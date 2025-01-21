@@ -23,6 +23,10 @@ class MoviePlayActivityHandler implements MovieActivityInterface
         $movie = Movie::find($subject->movie_id);
         $metadata = array_merge($metadata ?? [], [
             'movie_id' => $movie?->id,
+            'movie_title' => $movie?->title,
+            'poster_path' => $movie?->poster,
+            'poster_from' => 'tmdb',
+            'movie_link' => "/movie/{$movie?->id}",
         ]);
 
         return UserActivity::create([

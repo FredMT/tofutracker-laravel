@@ -59,7 +59,7 @@ class UserTvEpisodeController extends Controller
                     });
             });
         } catch (\Exception $e) {
-            logger()->error('Failed to add episode to library: '.$e->getMessage());
+            logger()->error('Failed to add episode to library: ' . $e->getMessage());
             logger()->error($e->getTraceAsString());
 
             return back()->with([
@@ -110,7 +110,7 @@ class UserTvEpisodeController extends Controller
                 'message' => 'You are not authorized to remove this episode',
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to remove episode from library: '.$e->getMessage());
+            logger()->error('Failed to remove episode from library: ' . $e->getMessage());
 
             return back()->with([
                 'success' => false,

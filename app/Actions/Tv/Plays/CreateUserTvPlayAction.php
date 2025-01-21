@@ -29,7 +29,6 @@ class CreateUserTvPlayAction
             'watched_at' => $watchedAt ?? now(),
         ]);
 
-        // Record activity
         $this->createActivity->execute(
             userId: $episode->user_id,
             activityType: 'tv_watch',

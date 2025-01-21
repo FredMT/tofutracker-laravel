@@ -25,9 +25,14 @@ class TvSeasonActivityHandler implements TvActivityInterface
         $season = TvSeason::find($subject->season_id);
 
         $metadata = array_merge($metadata ?? [], [
+            'poster_path' => $subject->season->poster,
+            'poster_from' => 'tmdb',
             'show_id' => $show?->id,
             'season_id' => $subject->season_id,
             'user_tv_show_id' => $subject->user_tv_show_id,
+            'type' => 'tv_season',
+            'season_title' => "{$show->title} {$season->title}",
+            'season_link' => "/tv/{$show->id}/season/{$season->season_number}",
         ]);
 
         return UserActivity::create([

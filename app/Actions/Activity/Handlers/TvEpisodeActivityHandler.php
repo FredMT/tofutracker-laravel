@@ -24,7 +24,6 @@ class TvEpisodeActivityHandler implements TvActivityInterface
         $show = TvShow::find($subject->show_id);
         $season = TvSeason::find($subject->season_id);
 
-        // Find recent activity for this season
         $recentActivity = UserActivity::where('activity_type', 'tv_watch')
             ->where('user_id', $userId)
             ->where('subject_type', UserTvEpisode::class)
@@ -51,11 +50,12 @@ class TvEpisodeActivityHandler implements TvActivityInterface
             return $recentActivity;
         }
 
-        // Create new activity
         $episodeIds = $metadata['user_tv_episode_ids'] ?? [$subject->id];
         $count = count($episodeIds);
 
         $metadata = array_merge($metadata ?? [], [
+            'poster_path' => $subject->episode->poster,
+            'poster_from' => 'tmdb',
             'user_tv_show_id' => $subject->userTvSeason->user_tv_show_id,
             'user_tv_season_id' => $subject->user_tv_season_id,
             'show_id' => $show?->id,
@@ -63,6 +63,9 @@ class TvEpisodeActivityHandler implements TvActivityInterface
             'episode_id' => $subject->episode_id,
             'user_tv_episode_ids' => $episodeIds,
             'count' => $count,
+            'season_title' => "{$show->title} {$season->title}",
+            'season_link' => "/tv/{$show->id}/season/{$season->season_number}",
+            'type' => 'tv_episode',
         ]);
 
         return UserActivity::create([
@@ -91,7 +94,7 @@ class TvEpisodeActivityHandler implements TvActivityInterface
                 $metadata['user_tv_episode_ids'] = array_values(
                     array_filter(
                         $metadata['user_tv_episode_ids'] ?? [],
-                        fn ($id) => $id !== $subject->id
+                        fn($id) => $id !== $subject->id
                     )
                 );
 

@@ -103,7 +103,6 @@ class AnimeController extends Controller
                 if ($userLists->isEmpty()) {
                     $userLists = null;
                 }
-
             }
 
             return Inertia::render('AnimeContent', [
@@ -344,7 +343,7 @@ class AnimeController extends Controller
                         $minutes = $totalRuntime % 60;
 
                         $totalRuntime = $hours > 0
-                            ? "{$hours}h ".($minutes > 0 ? "{$minutes}m" : '')
+                            ? "{$hours}h " . ($minutes > 0 ? "{$minutes}m" : '')
                             : "{$minutes}m";
                     }
 
@@ -456,6 +455,7 @@ class AnimeController extends Controller
                 'error' => $e->getMessage(),
                 'access_id' => $accessId,
                 'season_id' => $seasonId,
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json(['error' => 'An error occurred while fetching anime data'], 500);

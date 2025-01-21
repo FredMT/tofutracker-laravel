@@ -1,0 +1,12 @@
+.linkedTitle {
+    color: light-dark(#5f3dc4, #d0bfff);
+    text-decoration: none;
+}
+
+.linkedTitle:hover {
+    text-decoration: underline;
+}
+
+.card {
+    background-color: light-dark(#222222, #eeeeee);
+}

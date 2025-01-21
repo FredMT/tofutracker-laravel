@@ -23,8 +23,13 @@ class TvShowActivityHandler implements TvShowActivityInterface
         $show = TvShow::find($subject->show_id);
 
         $metadata = array_merge($metadata ?? [], [
+            'poster_path' => $show?->poster,
+            'poster_from' => 'tmdb',
             'show_id' => $show?->id,
             'user_tv_show_id' => $subject->id,
+            'type' => 'tv_show',
+            'show_title' => $show->title,
+            'show_link' => "/tv/{$show->id}",
         ]);
 
         return UserActivity::create([

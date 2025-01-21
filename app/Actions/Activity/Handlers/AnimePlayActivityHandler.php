@@ -22,6 +22,8 @@ class AnimePlayActivityHandler implements AnimeActivityInterface
 
         $anime = AnidbAnime::find($subject->anidb_id);
         $metadata = array_merge($metadata ?? [], [
+            'poster_path' => $anime?->poster,
+            'poster_from' => 'anidb',
             'map_id' => $anime?->map(),
         ]);
 

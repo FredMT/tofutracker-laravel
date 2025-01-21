@@ -1,8 +1,8 @@
-import {router, usePage} from "@inertiajs/react";
-import {Card, Stack, Text} from "@mantine/core";
-import {PageProps as InertiaPageProps} from "@inertiajs/core";
-import {ActivityListItem} from "@/Components/UserProfile/Activity/ActivityListItem";
-import {useIntersection} from "@mantine/hooks";
+import { router, usePage } from "@inertiajs/react";
+import { Card, Stack, Text } from "@mantine/core";
+import { PageProps as InertiaPageProps } from "@inertiajs/core";
+import { ActivityListItem } from "@/Components/UserProfile/Activity/ActivityListItem";
+import { useIntersection } from "@mantine/hooks";
 import React from "react";
 
 interface PaginationLink {
@@ -12,11 +12,11 @@ interface PaginationLink {
 }
 
 interface Activity {
+    activity_type: string;
     id: number;
     description: string;
     occurred_at_diff: string;
-    poster_path: string | null;
-    poster_from: string | null;
+    metadata: Record<string, any>;
 }
 
 interface PaginationData {
@@ -45,6 +45,8 @@ export default function ActivitySection() {
     const { ref, entry } = useIntersection({
         threshold: 1,
     });
+
+    console.log(activities);
     React.useEffect(() => {
         if (
             entry?.isIntersecting &&

@@ -1,9 +1,9 @@
-import {Button, Paper} from "@mantine/core";
-import {CheckCircle2, XCircle} from "lucide-react";
-import {useForm, usePage} from "@inertiajs/react";
-import {notifications} from "@mantine/notifications";
-import {BaseUserLibrary, TvSeason} from "@/types";
-import {useState} from "react";
+import { Button, Paper } from "@mantine/core";
+import { CheckCircle2, XCircle } from "lucide-react";
+import { useForm, usePage } from "@inertiajs/react";
+import { notifications } from "@mantine/notifications";
+import { BaseUserLibrary, TvSeason } from "@/types";
+import { useState } from "react";
 
 interface EpisodeActionsProps {
     episodal_id: number;
@@ -17,8 +17,8 @@ interface FormErrors {
 }
 
 export default function EpisodeActions({ episodal_id }: EpisodeActionsProps) {
-    const { tvseason, user_library } = usePage<{
-        tvseason: TvSeason;
+    const { data, user_library } = usePage<{
+        data: TvSeason;
         user_library: BaseUserLibrary;
     }>().props;
     const [isHovered, setIsHovered] = useState(false);
@@ -29,8 +29,8 @@ export default function EpisodeActions({ episodal_id }: EpisodeActionsProps) {
         season_id?: number;
     }>({
         episode_id: episodal_id,
-        show_id: tvseason?.show_id,
-        season_id: tvseason?.id,
+        show_id: data?.show_id,
+        season_id: data?.id,
     });
 
     const isEpisodeWatched = user_library?.episodes?.some(
@@ -42,7 +42,11 @@ export default function EpisodeActions({ episodal_id }: EpisodeActionsProps) {
     const handleEpisodeAction = () => {
         if (isEpisodeWatched) {
             form.delete(
-                route("tv.episode.destroy", { episode_id: episodal_id }),
+                route("tv.episode.destroy", {
+                    show_id: data?.show_id,
+                    season_id: data?.id,
+                    episode_id: episodal_id,
+                }),
                 {
                     preserveScroll: true,
                     onSuccess: () => {
@@ -64,25 +68,32 @@ export default function EpisodeActions({ episodal_id }: EpisodeActionsProps) {
                 }
             );
         } else {
-            form.post(route("tv.episode.store", { episode_id: episodal_id }), {
-                preserveScroll: true,
-                onSuccess: () => {
-                    notifications.show({
-                        title: "Success",
-                        message: "Episode added to your library",
-                        color: "green",
-                    });
-                },
-                onError: (errors: FormErrors) => {
-                    notifications.show({
-                        title: "Error",
-                        message:
-                            errors.message ||
-                            "Failed to add episode to library",
-                        color: "red",
-                    });
-                },
-            });
+            form.post(
+                route("tv.episode.store", {
+                    show_id: data?.show_id,
+                    season_id: data?.id,
+                    episode_id: episodal_id,
+                }),
+                {
+                    preserveScroll: true,
+                    onSuccess: () => {
+                        notifications.show({
+                            title: "Success",
+                            message: "Episode added to your library",
+                            color: "green",
+                        });
+                    },
+                    onError: (errors: FormErrors) => {
+                        notifications.show({
+                            title: "Error",
+                            message:
+                                errors.message ||
+                                "Failed to add episode to library",
+                            color: "red",
+                        });
+                    },
+                }
+            );
         }
     };
 

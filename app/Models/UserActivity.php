@@ -25,6 +25,17 @@ class UserActivity extends Model
         'occurred_at' => 'datetime',
     ];
 
+    /**
+     * The metadata keys that should be hidden when sending to the frontend.
+     *
+     * @var array
+     */
+    protected $hiddenMetadataKeys = [
+        'user_movie_id',
+        'user_show_id',
+        'user_anime_id',
+    ];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -69,5 +80,36 @@ class UserActivity extends Model
 
         // Only return the array if we have a valid poster path
         return ($poster && isset($poster['path']) && ! is_null($poster['path'])) ? $poster : null;
+    }
+
+    /**
+     * Get the array representation of the model.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(): array
+    {
+        $array = parent::toArray();
+
+        // Filter out hidden metadata keys if metadata exists
+        if (isset($array['metadata']) && is_array($array['metadata'])) {
+            $array['metadata'] = $this->filterHiddenMetadata($array['metadata']);
+        }
+
+        return $array;
+    }
+
+    /**
+     * Filter out hidden metadata keys.
+     *
+     * @param array<string, mixed> $metadata
+     * @return array<string, mixed>
+     */
+    protected function filterHiddenMetadata(array $metadata): array
+    {
+        return array_diff_key(
+            $metadata,
+            array_flip($this->hiddenMetadataKeys)
+        );
     }
 }
