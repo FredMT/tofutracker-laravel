@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 
 class TvdbAnimeEpisode extends Model
@@ -32,5 +33,12 @@ class TvdbAnimeEpisode extends Model
     public function season()
     {
         return $this->belongsTo(TvdbAnimeSeason::class, 'series_id', 'id');
+    }
+
+    public function poster(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->image;
+        });
     }
 }

@@ -23,12 +23,10 @@ class CreateUserAnimePlayAction
             'watched_at' => $watchedAt ?? now(),
         ]);
 
-        // Load necessary relationships for activity recording
         if ($playable instanceof UserAnimeEpisode && ! $playable->relationLoaded('userAnime')) {
             $playable->load(['userAnime.user']);
         }
 
-        // Record activity using the new activity system
         if ($playable instanceof UserAnimeEpisode && $playable->userAnime?->user) {
             $anime = AnidbAnime::find($playable->userAnime->anidb_id);
             $this->createActivity->execute(
@@ -41,6 +39,11 @@ class CreateUserAnimePlayAction
                     'map_id' => $anime?->map(),
                     'user_anime_episode_ids' => [$playable->id],
                     'count' => 1,
+                    'poster_path' => $playable?->episode->poster,
+                    'poster_from' => 'tvdb',
+                    'anime_title' => $anime?->title,
+                    'anime_link' => "/anime/{$anime?->map()}/season/{$anime->id}",
+                    'type' => 'anime_episode',
                 ]
             );
         } elseif ($playable instanceof UserAnime) {
@@ -54,6 +57,11 @@ class CreateUserAnimePlayAction
                     'anidb_id' => $playable->anidb_id,
                     'map_id' => $anime?->map(),
                     'is_movie' => $playable->is_movie,
+                    'poster_path' => $anime->poster,
+                    'poster_from' => 'anidb',
+                    'anime_title' => $anime?->title,
+                    'anime_link' => "/anime/{$anime?->map()}/season/{$anime->id}",
+                    'type' => 'anime_season',
                 ]
             );
         }

@@ -14,7 +14,7 @@ interface ActivityListItemProps {
     activity: Activity;
 }
 
-function getPosterPath(activity: Activity) {
+function getPosterPath(activity: Activity): string | null {
     if (activity.metadata.poster_path) {
         switch (activity.metadata.poster_from) {
             case "anidb":
@@ -27,6 +27,13 @@ function getPosterPath(activity: Activity) {
                     "https://image.tmdb.org/t/p/w500" +
                     activity.metadata.poster_path
                 );
+            case "tvdb":
+                return (
+                    "https://artworks.thetvdb.com" +
+                    activity.metadata.poster_path
+                );
+            default:
+                return null;
         }
     }
     return null;
@@ -37,7 +44,11 @@ function getItemType(activity: Activity): string | null {
         return "movie";
     }
 
-    if (activity.activity_type === "tv_watch" && activity.metadata.type) {
+    if (
+        (activity.activity_type === "tv_watch" ||
+            activity.activity_type === "anime_watch") &&
+        activity.metadata.type
+    ) {
         return activity.metadata.type;
     }
 
@@ -56,6 +67,10 @@ function getItemLink(activity: Activity): string | null {
             return activity.metadata.season_link || null;
         case "tv_show":
             return activity.metadata.show_link || null;
+        case "anime_episode":
+            return activity.metadata.anime_link || null;
+        case "anime_season":
+            return activity.metadata.anime_link || null;
         default:
             return null;
     }
@@ -73,6 +88,10 @@ function getItemTitle(activity: Activity): string | null {
             return activity.metadata.season_title || null;
         case "tv_show":
             return activity.metadata.show_title || null;
+        case "anime_episode":
+            return activity.metadata.anime_title || null;
+        case "anime_season":
+            return activity.metadata.anime_title || null;
         default:
             return null;
     }
@@ -80,7 +99,8 @@ function getItemTitle(activity: Activity): string | null {
 
 export function ActivityListItem({ activity }: ActivityListItemProps) {
     const itemType = getItemType(activity);
-    const isEpisodeWatch = itemType === "tv_episode";
+    const isEpisodeWatch =
+        itemType === "tv_episode" || itemType === "anime_episode";
     const itemLink = getItemLink(activity);
     const itemTitle = getItemTitle(activity);
 
@@ -114,7 +134,7 @@ export function ActivityListItem({ activity }: ActivityListItemProps) {
         return (
             <Text mt="xs">
                 {parts[0]}
-                <Link href={itemLink} className={styles.linkedTitle}>
+                <Link href={itemLink} className={styles.linkedTitle} prefetch>
                     {itemTitle}
                 </Link>
                 {parts[1]}
