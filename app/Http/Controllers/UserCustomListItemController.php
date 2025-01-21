@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Activity\CreateUserActivityAction;
 use App\Models\AnidbAnime;
 use App\Models\AnimeEpisodeMapping;
 use App\Models\AnimeMap;
@@ -15,6 +16,10 @@ use Illuminate\Support\Facades\Gate;
 
 class UserCustomListItemController extends Controller
 {
+    public function __construct(
+        private readonly CreateUserActivityAction $createActivity
+    ) {}
+
     private function getListableModel(string $type, int $id)
     {
         return match ($type) {
@@ -78,12 +83,18 @@ class UserCustomListItemController extends Controller
 
             $maxSortOrder = $list->items()->max('sort_order') ?? 0;
 
-            $list->items()->create([
+            $listItem = $list->items()->create([
                 'custom_list_id' => $request->list_id,
                 'listable_type' => $listableType,
                 'listable_id' => $validated['item_id'],
                 'sort_order' => $maxSortOrder + 1,
             ]);
+
+            $this->createActivity->execute(
+                userId: $request->user()->id,
+                activityType: 'list_item_add',
+                subject: $listItem
+            );
 
             $list->touch();
 
@@ -118,6 +129,9 @@ class UserCustomListItemController extends Controller
             if (! $item) {
                 return back()->with(['success' => false, 'message' => 'Item not found in list']);
             }
+
+            // Delete activity for the removed item
+            $this->createActivity->deleteForSubject($item);
 
             $item->delete();
 

@@ -1,4 +1,4 @@
-import {Card, Group, Image, Stack, Text} from "@mantine/core";
+import { Card, Group, Image, Stack, Text } from "@mantine/core";
 
 interface Activity {
     id: number;
@@ -29,20 +29,22 @@ export function ActivityListItem({ activity }: ActivityListItemProps) {
             key={activity.id}
             radius="md"
             withBorder={false}
-            bg="transparent"
-            py={2}
-            px={0}
+            bg="#222222"
+            p={8}
         >
             <Group>
-                <Image
-                    src={getPosterPath(activity)}
-                    alt={activity.description}
-                    height={100}
-                    h={100}
-                    w={67}
-                    loading="lazy"
-                    radius="md"
-                />
+                {getPosterPath(activity) && (
+                    <Image
+                        src={getPosterPath(activity)}
+                        alt={activity.description}
+                        height={100}
+                        h={100}
+                        w={67}
+                        width={67}
+                        loading="lazy"
+                        radius="md"
+                    />
+                )}
                 <Stack gap={0}>
                     <Text size="sm" c="dimmed">
                         {activity.occurred_at_diff}

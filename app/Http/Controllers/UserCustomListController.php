@@ -8,6 +8,7 @@ use App\Models\Movie;
 use App\Models\TvSeason;
 use App\Models\TvShow;
 use App\Models\User;
+use App\Models\UserActivity;
 use App\Models\UserCustomList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -132,7 +133,22 @@ class UserCustomListController extends Controller
                 'private_note' => 'nullable|string',
                 'is_public' => 'boolean',
             ]);
-            $request->user()->customLists()->create($validated);
+            $list = $request->user()->customLists()->create($validated);
+
+            if ($list->is_public) {
+                UserActivity::create([
+                    'user_id' => $request->user()->id,
+                    'activity_type' => 'custom_list_created',
+                    'subject_type' => UserCustomList::class,
+                    'subject_id' => $list->id,
+                    'description' => "Created a new list: {$list->title}",
+                    'metadata' => [
+                        'list_id' => $list->id,
+                        'list_title' => $list->title,
+                    ],
+                    'occurred_at' => now(),
+                ]);
+            }
 
             return back()->with(['success' => true, 'message' => 'List created successfully.']);
         } catch (\Exception $e) {
@@ -163,6 +179,14 @@ class UserCustomListController extends Controller
     public function destroy(string $username, UserCustomList $list)
     {
         Gate::authorize('manage-custom-list', $list);
+        UserActivity::where(function ($query) use ($list) {
+            $query->where(function ($q) use ($list) {
+                $q->where('subject_type', UserCustomList::class)
+                    ->where('subject_id', $list->id);
+            })->orWhere(function ($q) use ($list) {
+                $q->whereJsonContains('metadata->list_id', $list->id);
+            });
+        })->delete();
 
         $list->delete();
 

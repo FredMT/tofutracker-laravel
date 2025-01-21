@@ -4,6 +4,7 @@ namespace App\Actions\Activity;
 
 use App\Actions\Activity\Handlers\ActivityHandlerInterface;
 use App\Actions\Activity\Handlers\AnimeActivityHandler;
+use App\Actions\Activity\Handlers\ListItemActivityHandler;
 use App\Actions\Activity\Handlers\MovieActivityHandler;
 use App\Actions\Activity\Handlers\TvActivityHandler;
 use App\Models\UserActivity;
@@ -26,7 +27,7 @@ class CreateUserActivityAction
                 new AnimeActivityHandler,
                 new MovieActivityHandler,
                 new TvActivityHandler,
-                // Add more handlers here as needed
+                new ListItemActivityHandler,
             ];
         }
     }
@@ -43,7 +44,6 @@ class CreateUserActivityAction
             }
         }
 
-        // Default fallback if no handler is found
         return UserActivity::create([
             'user_id' => $userId,
             'activity_type' => $activityType,
