@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class AnimeMap extends Model
 {
-    protected $fillable = ['id', 'data', 'most_common_tmdb_id', 'tmdb_type'];
+    protected $fillable = ['id', 'data', 'most_common_tmdb_id', 'tmdb_type', 'collection_name'];
 
     protected $casts = [
         'data' => 'array',
@@ -18,6 +18,19 @@ class AnimeMap extends Model
     public function chains(): HasMany
     {
         return $this->hasMany(AnimePrequelSequelChain::class, 'map_id');
+    }
+
+    public function title(): Attribute
+    {
+        return Attribute::get(function () {
+            if ($this->collection_name && trim($this->collection_name) !== '') {
+                return $this->collection_name;
+            }
+
+            $model = $this->getTmdbModel();
+
+            return $model ? $model->title : null;
+        });
     }
 
     public function runtime(): Attribute

@@ -30,7 +30,7 @@ class UserController extends Controller
             ->firstOrFail();
 
         $activities = $user->activities()
-            ->select('id', 'description', 'metadata', 'occurred_at', 'subject_type')
+            ->select('id', 'description', 'metadata', 'occurred_at', 'subject_type', 'activity_type')
             ->orderBy('occurred_at', 'desc')
             ->paginate(20);
 
@@ -43,6 +43,8 @@ class UserController extends Controller
                 'occurred_at_diff' => $activity->occurred_at->diffForHumans(),
                 'poster_path' => $poster['path'] ?? null,
                 'poster_from' => $poster['from'] ?? null,
+                'activity_type' => $activity->activity_type,
+                'metadata' => $activity->metadata,
             ];
         });
 

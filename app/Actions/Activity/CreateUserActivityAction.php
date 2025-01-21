@@ -4,8 +4,10 @@ namespace App\Actions\Activity;
 
 use App\Actions\Activity\Handlers\ActivityHandlerInterface;
 use App\Actions\Activity\Handlers\AnimeActivityHandler;
+use App\Actions\Activity\Handlers\ListItemActivityHandler;
 use App\Actions\Activity\Handlers\MovieActivityHandler;
 use App\Actions\Activity\Handlers\TvActivityHandler;
+use App\Actions\Activity\Handlers\UserCustomListActivityHandler;
 use App\Models\UserActivity;
 use Illuminate\Database\Eloquent\Model;
 
@@ -20,13 +22,13 @@ class CreateUserActivityAction
     {
         $this->handlers = $handlers;
 
-        // Register default handlers if none provided
         if (empty($handlers)) {
             $this->handlers = [
                 new AnimeActivityHandler,
                 new MovieActivityHandler,
                 new TvActivityHandler,
-                // Add more handlers here as needed
+                new ListItemActivityHandler,
+                new UserCustomListActivityHandler,
             ];
         }
     }
@@ -43,7 +45,6 @@ class CreateUserActivityAction
             }
         }
 
-        // Default fallback if no handler is found
         return UserActivity::create([
             'user_id' => $userId,
             'activity_type' => $activityType,

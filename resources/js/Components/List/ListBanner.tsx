@@ -1,9 +1,10 @@
+import { ListEditMenu } from "@/Components/List/ListEditMenu";
+import { Auth } from "@/types";
+import { usePage } from "@inertiajs/react";
 import { Image } from "@mantine/core";
 import { useState } from "react";
 import classes from "./ListBanner.module.css";
-import { Auth } from "@/types";
-import { usePage } from "@inertiajs/react";
-import { ListEditMenu } from "@/Components/List/ListEditMenu";
+import BoundedContainer from "@/Components/BoundedContainer";
 
 interface BannerProps {
     bannerImage: string | null;
@@ -67,16 +68,22 @@ export function ListBanner({
                 )}
                 {auth && auth.user?.username === listUserUsername && (
                     <div className={classes.editMenuContainer}>
-                        <ListEditMenu
-                            listId={listId}
-                            onOpenEditDetails={onOpenEditDetails}
-                            onImageSelect={handleImageSelect}
-                            onImageUrlSelect={handleImageUrlSelect}
-                            hasBanner={!!bannerImage}
-                            selectedFile={selectedFile}
-                            onCancel={handleCancel}
-                            isEmpty={isEmpty}
-                        />
+                        <BoundedContainer>
+                            <div className={classes.editMenuInner}>
+                                <div className={classes.editMenuPosition}>
+                                    <ListEditMenu
+                                        listId={listId}
+                                        onOpenEditDetails={onOpenEditDetails}
+                                        onImageSelect={handleImageSelect}
+                                        onImageUrlSelect={handleImageUrlSelect}
+                                        hasBanner={!!bannerImage}
+                                        selectedFile={selectedFile}
+                                        onCancel={handleCancel}
+                                        isEmpty={isEmpty}
+                                    />
+                                </div>
+                            </div>
+                        </BoundedContainer>
                     </div>
                 )}
             </div>

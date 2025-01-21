@@ -1,6 +1,6 @@
-import {UserTvShow} from "@/types/userTv";
-import {Modal} from "@mantine/core";
-import {useMediaQuery} from "@mantine/hooks";
+import { UserTvShow } from "@/types/userTv";
+import { Modal } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import TvSeasonTable from "./TvSeasonTable";
 import TvSeasonVerticalTable from "./TvSeasonVerticalTable";
 
@@ -22,7 +22,6 @@ export function TvSeasonModal({ show, opened, onClose }: TvSeasonModalProps) {
             onClose={onClose}
             title={`${show.title} Seasons`}
             size="xl"
-            centered
         >
             {isDesktop ? (
                 <TvSeasonTable show={show} sortedSeasons={sortedSeasons} />

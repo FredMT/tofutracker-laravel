@@ -49,6 +49,7 @@ export function AddItemsModal({ listId }: AddItemsModalProps) {
                 leftSection={<Search size={16} />}
                 rightSection={loading && <Loader size="xs" />}
                 mt={8}
+                data-autofocus
             />
             <Stack gap="xs">
                 {error ? (
@@ -108,7 +109,6 @@ export function AddItemsModal({ listId }: AddItemsModalProps) {
             onClose={() => setIsOpen(false)}
             title="Add Items"
             size="lg"
-            centered
         >
             {content}
         </Modal>

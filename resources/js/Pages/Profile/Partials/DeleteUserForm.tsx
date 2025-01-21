@@ -1,6 +1,14 @@
-import {useForm} from "@inertiajs/react";
-import {FormEventHandler, useRef, useState} from "react";
-import {Button, Group, Modal, PasswordInput, Stack, Text, Title,} from "@mantine/core";
+import { useForm } from "@inertiajs/react";
+import { FormEventHandler, useRef, useState } from "react";
+import {
+    Button,
+    Group,
+    Modal,
+    PasswordInput,
+    Stack,
+    Text,
+    Title,
+} from "@mantine/core";
 
 export default function DeleteUserForm({
     className = "",
@@ -67,7 +75,6 @@ export default function DeleteUserForm({
                             Are you sure you want to delete your account?
                         </Title>
                     }
-                    centered
                 >
                     <form onSubmit={deleteUser}>
                         <Stack>

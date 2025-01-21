@@ -96,7 +96,6 @@ export function ListDelete({
                 onClose={onClose}
                 title="Delete List"
                 size="sm"
-                centered
             >
                 {initialContent}
             </Modal>
@@ -105,7 +104,6 @@ export function ListDelete({
                 onClose={() => setIsConfirming(false)}
                 title="Confirm Delete"
                 size="sm"
-                centered
             >
                 {confirmContent}
             </Modal>

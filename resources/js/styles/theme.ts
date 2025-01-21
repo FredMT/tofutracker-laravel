@@ -1,6 +1,14 @@
-import {Carousel} from "@mantine/carousel";
-import {Card, Container, createTheme, rem, Select, virtualColor,} from "@mantine/core";
-import {DatePickerInput} from "@mantine/dates";
+import { Carousel } from "@mantine/carousel";
+import {
+    Card,
+    Container,
+    createTheme,
+    Modal,
+    rem,
+    Select,
+    virtualColor,
+} from "@mantine/core";
+import { DatePickerInput } from "@mantine/dates";
 import "./theme.module.css";
 
 const CONTAINER_SIZES: Record<string, string> = {
@@ -217,133 +225,6 @@ const theme = createTheme({
                 control: "rounded",
             }),
         }),
-        //     Paper: Paper.extend({
-        //         defaultProps: {
-        //             // p: "md",
-        //             shadow: "xl",
-        //             radius: "md",
-        //             withBorder: true,
-        //         },
-        //     }),
-        //     Popover: Popover.extend({
-        //         styles: () => ({
-        //             dropdown: {
-        //                 backgroundColor: "var(--mantine-color-default)",
-        //                 borderColor: "var(--mantine-color-default-border)",
-        //             },
-        //         }),
-        //     }),
-        //     Input: Input.extend({
-        //         classNames: (_theme, props) => {
-        //             if (props.variant !== "unstyled")
-        //                 return {
-        //                     input: "globalMantineInput",
-        //                 };
-        //             return {};
-        //         },
-        //         vars: (theme) => {
-        //             return {
-        //                 input: {
-        //                     "--input-bd": "var(--mantine-color-default-border)",
-        //                     "--input-bd-focus":
-        //                         "var(--mantine-primary-color-filled)",
-        //                     "--input-bg": "var(--mantine-color-default)",
-        //                 },
-        //                 wrapper: {},
-        //             };
-        //         },
-        //     }),
-        //     Divider: Divider.extend({
-        //         styles: () => ({
-        //             root: {
-        //                 borderColor: "var(--mantine-color-default-border)",
-        //             },
-        //         }),
-        //     }),
-        //     Table: Table.extend({
-        //         styles: () => ({
-        //             table: {
-        //                 borderColor: "var(--mantine-color-default-border)",
-        //             },
-        //             tr: {
-        //                 borderColor: "var(--mantine-color-default-border)",
-        //             },
-        //             th: {
-        //                 borderColor: "var(--mantine-color-default-border)",
-        //             },
-        //             td: {
-        //                 borderColor: "var(--mantine-color-default-border)",
-        //             },
-        //         }),
-        //         classNames: () => ({
-        //             tr: "globalMantineTableRow",
-        //         }),
-        //     }),
-        //     Checkbox: Checkbox.extend({
-        //         classNames: () => {
-        //             return {
-        //                 input: "globalMantineCheckbox",
-        //             };
-        //         },
-        //         vars: () => ({
-        //             root: {
-        //                 "--checkbox-color": "var(--mantine-primary-color-filled)",
-        //                 "--checkbox-icon-color":
-        //                     "var(--mantine-primary-color-contrast)",
-        //             },
-        //         }),
-        //     }),
-        //     Switch: Switch.extend({
-        //         styles: () => ({
-        //             thumb: {
-        //                 backgroundColor: "var(--mantine-color-default)",
-        //                 borderColor: "var(--mantine-color-default-border)",
-        //             },
-        //             track: {
-        //                 borderColor: "var(--mantine-color-default-border)",
-        //             },
-        //         }),
-        //     }),
-        // Modal: Modal.extend({
-        //     defaultProps: {
-        //         p: "md",
-        //     },
-        //     styles: () => ({
-        //         content: {
-        //             border: "1px solid var(--mantine-color-default-border)",
-        //         },
-        //     }),
-        // }),
-        //     Code: Code.extend({
-        //         vars: () => ({
-        //             root: {
-        //                 "--code-bg": "var(--mantine-color-dark-filled)",
-        //             },
-        //         }),
-        //         styles: () => ({
-        //             root: {
-        //                 border: "1px solid var(--mantine-color-default-border)",
-        //                 color: "var(--mantine-color-text)",
-        //             },
-        //         }),
-        //     }),
-        //     Spotlight: Spotlight.extend({
-        //         styles: () => ({
-        //             content: {
-        //                 border: "1px solid var(--mantine-color-default-border)",
-        //             },
-        //         }),
-        //     }),
-        //     Anchor: Anchor.extend({
-        //         defaultProps: {
-        //             underline: "always",
-        //         },
-        //     }),
-        //     HoverCard: HoverCard.extend({
-        //         classNames: () => ({
-        //             dropdown: "globalMantineHoverCard",
-        //         }),
-        //     }),
         Select: Select.extend({
             styles: {
                 input: {
@@ -364,13 +245,15 @@ const theme = createTheme({
                 },
             },
         }),
-        //     Tabs: Tabs.extend({
-        //         defaultProps: {
-        //             variant: "outline",
-        //         },
-        //     }),
-        //     // Title: used static class (.mantine-Title-root) to style the title
-        //     // DatePicker: used static classes to style the date picker
+        Modal: Modal.extend({
+            defaultProps: {
+                overlayProps: {
+                    backgroundOpacity: 0.55,
+                    blur: 3,
+                },
+                centered: true,
+            },
+        }),
     },
 });
 

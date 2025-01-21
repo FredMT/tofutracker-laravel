@@ -17,6 +17,8 @@ export default function RecommendedContent({
 }: RecommendedContentProps) {
     const { data } = usePage<{ data: RegularContentDataType }>().props;
 
+    if (!data.recommended || data.recommended.length < 1) return null;
+
     return (
         <Stack>
             <Title order={3}>Recommended</Title>
