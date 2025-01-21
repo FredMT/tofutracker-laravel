@@ -1,12 +1,15 @@
-import {useForm, usePage} from "@inertiajs/react";
-import {Button, Group, Modal, useModalsStack} from "@mantine/core";
-import {notifications} from "@mantine/notifications";
-import {Check, CircleAlertIcon, Trash2} from "lucide-react";
-import {AnimeType} from "@/types";
-import {AnimeSeason} from "@/types/animeseason";
+import { useForm, usePage } from "@inertiajs/react";
+import { Button, Group, Modal, useModalsStack } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
+import { Check, CircleAlertIcon, Trash2 } from "lucide-react";
+import { AnimeType } from "@/types";
+import { AnimeSeason } from "@/types/animeseason";
 
 export default function RemoveAnimeSeasonFromLibrary() {
-    const {type, data: content} = usePage<{type: AnimeType, data: AnimeSeason}>().props
+    const { type, data: content } = usePage<{
+        type: AnimeType;
+        data: AnimeSeason;
+    }>().props;
     if (!content || type !== "animeseason") return null;
     const stack = useModalsStack(["confirm-delete"]);
 
@@ -59,7 +62,6 @@ export default function RemoveAnimeSeasonFromLibrary() {
                 <Modal
                     {...stack.register("confirm-delete")}
                     title="Remove from Library?"
-                    centered
                 >
                     Are you sure you want to remove this content from your
                     library? This will also remove all your episode activity for

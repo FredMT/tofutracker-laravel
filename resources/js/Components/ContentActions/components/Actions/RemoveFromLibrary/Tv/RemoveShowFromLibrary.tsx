@@ -1,11 +1,11 @@
-import {useForm, usePage} from "@inertiajs/react";
-import {Button, Group, Modal, useModalsStack} from "@mantine/core";
-import {notifications} from "@mantine/notifications";
-import {Check, CircleAlertIcon, MinusCircle} from "lucide-react";
-import {TvShow} from "@/types";
+import { useForm, usePage } from "@inertiajs/react";
+import { Button, Group, Modal, useModalsStack } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
+import { Check, CircleAlertIcon, MinusCircle } from "lucide-react";
+import { TvShow } from "@/types";
 
 function RemoveShowFromLibrary() {
-    const {data: content} = usePage<{ data: TvShow }>().props
+    const { data: content } = usePage<{ data: TvShow }>().props;
     const stack = useModalsStack(["confirm-delete"]);
 
     const { delete: remove, processing } = useForm({
@@ -58,7 +58,6 @@ function RemoveShowFromLibrary() {
                 <Modal
                     {...stack.register("confirm-delete")}
                     title="Remove Show?"
-                    centered
                 >
                     Are you sure you want to remove this show from your library?
                     This will also remove all your seasons and episodes!

@@ -39,7 +39,6 @@ export default function DesktopAddToList({
                 onClose={close}
                 title="Add to List"
                 size="md"
-                centered
             >
                 <ListContent
                     search={search}
@@ -55,7 +54,6 @@ export default function DesktopAddToList({
                 onClose={closeCreate}
                 title="Create New List"
                 size="md"
-                centered
             >
                 <CreateListForm closeCreate={closeCreate} />
             </Modal>

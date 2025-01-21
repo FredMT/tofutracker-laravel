@@ -1,6 +1,6 @@
-import {AnimeCollection} from "@/types/userAnime";
-import {Modal, Stack} from "@mantine/core";
-import {useMediaQuery} from "@mantine/hooks";
+import { AnimeCollection } from "@/types/userAnime";
+import { Modal, Stack } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import AnimeSeasonTable from "./AnimeSeasonTable";
 import AnimeSeasonVerticalTable from "./AnimeSeasonVerticalTable";
 
@@ -24,7 +24,6 @@ export function AnimeSeasonModal({
             onClose={onClose}
             title={`${collection.title} ${isMovie ? "Details" : "Seasons"}`}
             size="xl"
-            centered
         >
             {isDesktop ? (
                 <Stack gap="md">

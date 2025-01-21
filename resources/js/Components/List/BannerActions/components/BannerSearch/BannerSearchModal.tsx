@@ -1,11 +1,11 @@
-import {Button, Drawer, Modal, useModalsStack} from "@mantine/core";
-import {useFetch, useMediaQuery} from "@mantine/hooks";
-import {useForm} from "@inertiajs/react";
-import {SearchIcon} from "lucide-react";
-import {useState} from "react";
-import {BackdropData} from "@/Components/List/BannerActions/components/BannerSearch/types";
-import {ItemsList} from "@/Components/List/BannerActions/components/BannerSearch/ItemsList";
-import {BackdropGrid} from "@/Components/List/BannerActions/components/BannerSearch/BackdropGrid";
+import { Button, Drawer, Modal, useModalsStack } from "@mantine/core";
+import { useFetch, useMediaQuery } from "@mantine/hooks";
+import { useForm } from "@inertiajs/react";
+import { SearchIcon } from "lucide-react";
+import { useState } from "react";
+import { BackdropData } from "@/Components/List/BannerActions/components/BannerSearch/types";
+import { ItemsList } from "@/Components/List/BannerActions/components/BannerSearch/ItemsList";
+import { BackdropGrid } from "@/Components/List/BannerActions/components/BannerSearch/BackdropGrid";
 
 interface BannerSearchModalProps {
     listId: number;
@@ -133,7 +133,6 @@ export function BannerSearchModal({
                     {...stack.register("items-list")}
                     title="Select an item from your list"
                     size="lg"
-                    centered
                 >
                     {renderContent("items-list")}
                 </Modal>
@@ -146,7 +145,6 @@ export function BannerSearchModal({
                             : "Select a backdrop"
                     }
                     size="xl"
-                    centered
                 >
                     {renderContent("backdrops")}
                 </Modal>

@@ -29,12 +29,7 @@ export function ListEditModal({ list, opened, onClose }: EditListModalProps) {
     }
 
     return (
-        <Modal
-            opened={opened}
-            onClose={onClose}
-            title="Edit List Details"
-            centered
-        >
+        <Modal opened={opened} onClose={onClose} title="Edit List Details">
             {content}
         </Modal>
     );

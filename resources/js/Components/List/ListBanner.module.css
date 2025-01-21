@@ -1,8 +1,12 @@
 .container {
     position: relative;
-    width: 100%;
+    width: 100vw;
     height: 400px;
     margin-bottom: 2rem;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
 }
 
 .imageContainer {
@@ -43,16 +47,21 @@
     pointer-events: none;
 }
 
-.actionsContainer {
-    position: absolute;
-    bottom: 24px;
-    right: 24px;
-    z-index: 1;
-}
-
 .editMenuContainer {
     position: absolute;
-    bottom: 1rem;
-    right: 1rem;
+    bottom: 0;
+    left: 0;
+    right: 0;
     z-index: 10;
+}
+
+.editMenuInner {
+    position: relative;
+    height: 100%;
+}
+
+.editMenuPosition {
+    position: absolute;
+    bottom: 1rem;
+    right: 0;
 }

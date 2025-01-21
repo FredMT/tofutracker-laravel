@@ -2,15 +2,23 @@
 
 namespace App\Http\Controllers\List;
 
+use App\Actions\Activity\CreateUserActivityAction;
 use App\Http\Controllers\Controller;
 use App\Models\UserCustomList;
+use App\Models\UserCustomListItem;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class ListRemoveItemsController extends Controller
 {
+    protected CreateUserActivityAction $activityAction;
+
+    public function __construct(CreateUserActivityAction $activityAction)
+    {
+        $this->activityAction = $activityAction;
+    }
+
     public function __invoke(Request $request, UserCustomList $list): RedirectResponse
     {
         if ($list->user_id !== Auth::id()) {
@@ -23,33 +31,29 @@ class ListRemoveItemsController extends Controller
                 'items.*.id' => ['required', 'integer', 'exists:user_custom_list_items,id'],
             ]);
 
-            $list->items()->whereIn('id', collect($request->items)->pluck('id'))->delete();
+            $itemsToDelete = $list->items()
+                ->with('customList')
+                ->whereIn('id', collect($request->items)->pluck('id'))
+                ->get();
 
-            $remainingItems = $list->items()
+            if ($list->is_public) {
+                foreach ($itemsToDelete as $item) {
+                    $this->activityAction->deleteForSubject($item);
+                }
+            }
+
+            $list->items()->whereIn('id', $itemsToDelete->pluck('id'))->delete();
+
+            $list->items()
                 ->orderBy('sort_order')
-                ->pluck('id')
-                ->values()
-                ->toArray();
-
-            $cases = [];
-            $ids = [];
-            foreach ($remainingItems as $index => $id) {
-                $cases[] = "WHEN {$id} THEN ".($index + 1);
-                $ids[] = $id;
-            }
-
-            if (! empty($cases)) {
-                $list->items()
-                    ->whereIn('id', $ids)
-                    ->update([
-                        'sort_order' => DB::raw('CASE id '.implode(' ', $cases).' END'),
-                    ]);
-            }
+                ->get()
+                ->each(function ($item, $index) {
+                    $item->update(['sort_order' => $index + 1]);
+                });
 
             return back()->with('status', 'Items removed successfully.');
         } catch (\Exception $e) {
-            logger()->error('List items removal failed: '.$e->getMessage());
-
+            logger()->error('List items removal failed: ' . $e->getMessage());
             return back()->withErrors(['items' => 'Failed to remove items. Please try again.']);
         }
     }

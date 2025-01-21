@@ -1,11 +1,11 @@
-import {useForm, usePage} from "@inertiajs/react";
-import {Button, Group, Modal, useModalsStack} from "@mantine/core";
-import {notifications} from "@mantine/notifications";
-import {Check, CircleAlertIcon, Trash2} from "lucide-react";
-import {Anime} from "@/types/anime";
+import { useForm, usePage } from "@inertiajs/react";
+import { Button, Group, Modal, useModalsStack } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
+import { Check, CircleAlertIcon, Trash2 } from "lucide-react";
+import { Anime } from "@/types/anime";
 
 function RemoveAnimeMovieFromLibrary() {
-    const { data: content } = usePage<{data: Anime}>().props
+    const { data: content } = usePage<{ data: Anime }>().props;
     if (!content) return null;
     const stack = useModalsStack(["confirm-delete"]);
 
@@ -59,7 +59,6 @@ function RemoveAnimeMovieFromLibrary() {
                 <Modal
                     {...stack.register("confirm-delete")}
                     title="Remove from Library?"
-                    centered
                 >
                     Are you sure you want to remove this item from your library?
                     <Group mt="lg" justify="flex-end">

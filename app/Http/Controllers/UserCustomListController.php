@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Activity\CreateUserActivityAction;
 use App\Models\AnidbAnime;
 use App\Models\AnimeMap;
 use App\Models\Movie;
@@ -17,6 +18,13 @@ use Inertia\Response;
 
 class UserCustomListController extends Controller
 {
+    protected CreateUserActivityAction $activityAction;
+
+    public function __construct(CreateUserActivityAction $activityAction)
+    {
+        $this->activityAction = $activityAction;
+    }
+
     public function index(Request $request, string $username): Response
     {
         $user = User::where('username', $username)
@@ -75,12 +83,14 @@ class UserCustomListController extends Controller
                     'poster_path' => $poster,
                     'poster_type' => $posterType,
                 ];
-            })->filter(fn ($item) => ! is_null($item['poster_path']))->values();
+            })->filter(fn($item) => ! is_null($item['poster_path']))->values();
 
-            $movieCount = $items->filter(fn ($item) => $item->listable_type === Movie::class)->count();
-            $tvCount = $items->filter(fn ($item) => in_array($item->listable_type, [TvShow::class, TvSeason::class])
+            $movieCount = $items->filter(fn($item) => $item->listable_type === Movie::class)->count();
+            $tvCount = $items->filter(
+                fn($item) => in_array($item->listable_type, [TvShow::class, TvSeason::class])
             )->count();
-            $animeCount = $items->filter(fn ($item) => in_array($item->listable_type, [AnimeMap::class, AnidbAnime::class])
+            $animeCount = $items->filter(
+                fn($item) => in_array($item->listable_type, [AnimeMap::class, AnidbAnime::class])
             )->count();
 
             return [
@@ -105,7 +115,7 @@ class UserCustomListController extends Controller
         $userData = [
             'id' => $user->id,
             'username' => $user->username,
-            'created_at' => 'Joined '.$user->created_at->format('F Y'),
+            'created_at' => 'Joined ' . $user->created_at->format('F Y'),
             'avatar' => $user->avatar,
             'banner' => $user->banner,
             'bio' => $user->bio,
@@ -136,18 +146,11 @@ class UserCustomListController extends Controller
             $list = $request->user()->customLists()->create($validated);
 
             if ($list->is_public) {
-                UserActivity::create([
-                    'user_id' => $request->user()->id,
-                    'activity_type' => 'custom_list_created',
-                    'subject_type' => UserCustomList::class,
-                    'subject_id' => $list->id,
-                    'description' => "Created a new list: {$list->title}",
-                    'metadata' => [
-                        'list_id' => $list->id,
-                        'list_title' => $list->title,
-                    ],
-                    'occurred_at' => now(),
-                ]);
+                $this->activityAction->execute(
+                    $request->user()->id,
+                    'custom_list_created',
+                    $list
+                );
             }
 
             return back()->with(['success' => true, 'message' => 'List created successfully.']);
@@ -179,14 +182,10 @@ class UserCustomListController extends Controller
     public function destroy(string $username, UserCustomList $list)
     {
         Gate::authorize('manage-custom-list', $list);
-        UserActivity::where(function ($query) use ($list) {
-            $query->where(function ($q) use ($list) {
-                $q->where('subject_type', UserCustomList::class)
-                    ->where('subject_id', $list->id);
-            })->orWhere(function ($q) use ($list) {
-                $q->whereJsonContains('metadata->list_id', $list->id);
-            });
-        })->delete();
+
+        if ($list->is_public) {
+            $this->activityAction->deleteForSubject($list);
+        }
 
         $list->delete();
 

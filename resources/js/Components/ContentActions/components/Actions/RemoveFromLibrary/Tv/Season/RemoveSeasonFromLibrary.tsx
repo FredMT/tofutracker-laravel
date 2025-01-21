@@ -1,11 +1,11 @@
-import {useForm, usePage} from "@inertiajs/react";
-import {Button, Group, Modal, useModalsStack} from "@mantine/core";
-import {notifications} from "@mantine/notifications";
-import {Check, CircleAlertIcon, MinusCircle} from "lucide-react";
-import {TvSeason} from "@/types";
+import { useForm, usePage } from "@inertiajs/react";
+import { Button, Group, Modal, useModalsStack } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
+import { Check, CircleAlertIcon, MinusCircle } from "lucide-react";
+import { TvSeason } from "@/types";
 
 function RemoveSeasonFromLibrary() {
-    const { data: content } = usePage<{data: TvSeason}>().props;
+    const { data: content } = usePage<{ data: TvSeason }>().props;
     if (!content) return null;
     const stack = useModalsStack(["confirm-delete"]);
 
@@ -60,7 +60,6 @@ function RemoveSeasonFromLibrary() {
                 <Modal
                     {...stack.register("confirm-delete")}
                     title="Remove Season?"
-                    centered
                 >
                     Are you sure you want to remove this season from your
                     library?

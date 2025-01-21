@@ -1,11 +1,11 @@
-import {useForm, usePage} from "@inertiajs/react";
-import {Button, Group, Modal, useModalsStack} from "@mantine/core";
-import {notifications} from "@mantine/notifications";
-import {Check, CircleAlertIcon, MinusCircle} from "lucide-react";
-import {Movie} from "@/types";
+import { useForm, usePage } from "@inertiajs/react";
+import { Button, Group, Modal, useModalsStack } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
+import { Check, CircleAlertIcon, MinusCircle } from "lucide-react";
+import { Movie } from "@/types";
 
 function RemoveFromLibrary() {
-    const {type, data} = usePage<{type: "movie", data: Movie}>().props
+    const { type, data } = usePage<{ type: "movie"; data: Movie }>().props;
     const stack = useModalsStack(["confirm-delete"]);
 
     const { delete: remove, processing } = useForm({
@@ -58,7 +58,6 @@ function RemoveFromLibrary() {
                 <Modal
                     {...stack.register("confirm-delete")}
                     title={`Remove ${data.title}?`}
-                    centered
                 >
                     Are you sure you want to remove this item from your library?
                     <Group mt="lg" justify="flex-end">

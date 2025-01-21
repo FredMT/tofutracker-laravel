@@ -1,5 +1,5 @@
-import {Button, Group, Modal, Text} from "@mantine/core";
-import {useForm} from "@inertiajs/react";
+import { Button, Group, Modal, Text } from "@mantine/core";
+import { useForm } from "@inertiajs/react";
 import React from "react";
 
 interface RemoveBannerModalProps {
@@ -28,7 +28,7 @@ export function RemoveBannerModal({
     };
 
     return (
-        <Modal opened={opened} onClose={onClose} title="Remove Banner" centered>
+        <Modal opened={opened} onClose={onClose} title="Remove Banner">
             <Text>Are you sure you want to remove this banner?</Text>
             <Group justify="flex-end" mt="md">
                 <Button

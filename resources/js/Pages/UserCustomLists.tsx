@@ -1,17 +1,15 @@
-import {
-    CreateListForm
-} from "@/Components/ContentActions/components/Actions/ManageCustomList/components/CreateListForm";
+import { CreateListForm } from "@/Components/ContentActions/components/Actions/ManageCustomList/components/CreateListForm";
 import UserCustomList from "@/Components/UserCustomLists/components/UserCustomList";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
 import UserProfileLayout from "@/Layouts/UserProfileLayout";
-import {Auth} from "@/types";
-import {UserList, UserLists} from "@/types/userCustomLists";
-import {UserData} from "@/types/userData";
-import {Head} from "@inertiajs/react";
-import {Button, Drawer, Modal, Stack} from "@mantine/core";
-import {useViewportSize} from "@mantine/hooks";
-import {PlusIcon} from "lucide-react";
-import {useState} from "react";
+import { Auth } from "@/types";
+import { UserList, UserLists } from "@/types/userCustomLists";
+import { UserData } from "@/types/userData";
+import { Head } from "@inertiajs/react";
+import { Button, Drawer, Modal, Stack } from "@mantine/core";
+import { useViewportSize } from "@mantine/hooks";
+import { PlusIcon } from "lucide-react";
+import { useState } from "react";
 
 function UserCustomLists({
     userData,
@@ -44,7 +42,6 @@ function UserCustomLists({
                         opened={showCreateForm}
                         onClose={() => setShowCreateForm(false)}
                         title="Create New List"
-                        centered
                     >
                         <CreateListForm
                             closeCreate={() => setShowCreateForm(false)}

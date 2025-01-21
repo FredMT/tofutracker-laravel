@@ -1,7 +1,7 @@
-import {Group, Modal, Rating as MantineRating, Title} from "@mantine/core";
-import {RatingProps} from "../../ContentActions/components/Rating/types";
-import {RatingSubmitButton} from "../../ContentActions/components/Rating/RatingSubmitButton";
-import {RatingStar} from "../../ContentActions/components/Rating/RatingStar";
+import { Group, Modal, Rating as MantineRating, Title } from "@mantine/core";
+import { RatingProps } from "../../ContentActions/components/Rating/types";
+import { RatingSubmitButton } from "../../ContentActions/components/Rating/RatingSubmitButton";
+import { RatingStar } from "../../ContentActions/components/Rating/RatingStar";
 
 export function DesktopRating({
     opened,
@@ -16,7 +16,6 @@ export function DesktopRating({
         <Modal
             opened={opened}
             onClose={close}
-            centered
             size="xl"
             styles={{
                 inner: { overflow: "visible" },
