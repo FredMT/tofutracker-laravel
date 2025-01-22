@@ -35,9 +35,6 @@ class UserController extends Controller
             ->paginate(20);
 
         $activities->through(function ($activity) {
-            $poster = $activity->getPoster();
-
-            // Let the model handle the metadata filtering
             $array = $activity->toArray();
 
             return [
@@ -45,7 +42,7 @@ class UserController extends Controller
                 'description' => $activity->description,
                 'occurred_at_diff' => $activity->occurred_at->diffForHumans(),
                 'activity_type' => $activity->activity_type,
-                'metadata' => $array['metadata'] ?? [], // This will now be filtered
+                'metadata' => $array['metadata'] ?? [],
             ];
         });
 

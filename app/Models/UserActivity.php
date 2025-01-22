@@ -34,6 +34,11 @@ class UserActivity extends Model
         'user_movie_id',
         'user_show_id',
         'user_anime_id',
+        'user_anime_episode_ids',
+        'user_tv_show_id',
+        'user_tv_episode_ids',
+        'user_tv_season_id',
+
     ];
 
     public function user(): BelongsTo
