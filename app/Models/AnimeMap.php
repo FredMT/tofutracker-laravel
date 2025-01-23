@@ -15,6 +15,13 @@ class AnimeMap extends Model
         'data' => 'array',
     ];
 
+    public function poster(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->getTmdbModel()->poster;
+        });
+    }
+
     public function chains(): HasMany
     {
         return $this->hasMany(AnimePrequelSequelChain::class, 'map_id');

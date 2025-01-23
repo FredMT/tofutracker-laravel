@@ -17,7 +17,6 @@ class UserCustomListActivityHandler implements ActivityHandlerInterface
     {
         $description = match ($activityType) {
             'custom_list_created' => "Created a new list: {$subject->title}",
-            'custom_list_deleted' => "Deleted list: {$subject->title}",
             default => "List activity: {$subject->title}"
         };
 

@@ -1,8 +1,8 @@
 import ResponsiveContainer from "@/Components/ResponsiveContainer";
 import UserBanner from "@/Components/UserProfile/UserBanner";
 import UserProfileInfo from "@/Components/UserProfile/UserProfileInfo";
-import {Box, Divider, Space} from "@mantine/core";
-import {PropsWithChildren} from "react";
+import { Box, Divider, Space } from "@mantine/core";
+import { PropsWithChildren } from "react";
 
 interface UserData {
     id: number;

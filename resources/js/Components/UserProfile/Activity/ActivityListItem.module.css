@@ -8,5 +8,14 @@
 }
 
 .card {
-    background-color: light-dark(#222222, #eeeeee);
+    background-color: light-dark(#eeeeeede, #222222);
+}
+
+.imageColumn {
+    min-width: 120px;
+    transition: min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.imageColumn[data-expanded="true"] {
+    min-width: 170px;
 }

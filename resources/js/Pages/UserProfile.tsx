@@ -1,8 +1,8 @@
 import UserOverviewLayout from "@/Components/UserOverviewLayout";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
 import UserProfileLayout from "@/Layouts/UserProfileLayout";
-import {Head} from "@inertiajs/react";
-import {Paper, Stack, Text, Title} from "@mantine/core";
+import { Head } from "@inertiajs/react";
+import { Paper, Stack, Text, Title } from "@mantine/core";
 import ActivitySection from "@/Components/UserProfile/Activity/ActivitySection";
 import ResponsiveContainer from "@/Components/ResponsiveContainer";
 
@@ -45,14 +45,12 @@ function UserProfile({ userData }: PageProps) {
     return (
         <>
             <Head title={`${userData.username}'s Activity`} />
-            <ResponsiveContainer>
-                <UserOverviewLayout
-                    leftSection={leftSection}
-                    rightSection={rightSection}
-                    leftWidth={400}
-                    gap={16}
-                />
-            </ResponsiveContainer>
+            <UserOverviewLayout
+                leftSection={leftSection}
+                rightSection={rightSection}
+                leftWidth={400}
+                gap={16}
+            />
         </>
     );
 }

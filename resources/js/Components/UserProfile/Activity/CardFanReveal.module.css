@@ -1,0 +1,40 @@
+.container {
+    position: relative;
+    width: 120px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1000px;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.container[data-hovered="true"] {
+    width: 170px;
+}
+
+.cardWrapper {
+    position: absolute;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: bottom center;
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+    will-change: transform;
+}
+
+.image {
+    border: 0.5px solid;
+    border-color: light-dark(#121212, #ededed);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+}
+
+.placeholder {
+    width: 67px;
+    aspect-ratio: 2/3;
+    background-color: var(--mantine-color-default);
+    border-radius: var(--mantine-radius-md);
+    border: 0.5px solid;
+    border-color: light-dark(#121212, #ededed);
+}

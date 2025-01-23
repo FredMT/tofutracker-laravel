@@ -54,6 +54,7 @@ class ListRemoveItemsController extends Controller
             return back()->with('status', 'Items removed successfully.');
         } catch (\Exception $e) {
             logger()->error('List items removal failed: ' . $e->getMessage());
+            \Sentry\captureException($e);
             return back()->withErrors(['items' => 'Failed to remove items. Please try again.']);
         }
     }

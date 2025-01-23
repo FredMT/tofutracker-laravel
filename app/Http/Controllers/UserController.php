@@ -12,6 +12,7 @@ use App\Enums\WatchStatus;
 use App\Models\User;
 use App\Models\UserAnimeCollection;
 use App\Models\UserMovie;
+use Carbon\CarbonInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
@@ -40,7 +41,7 @@ class UserController extends Controller
             return [
                 'id' => $activity->id,
                 'description' => $activity->description,
-                'occurred_at_diff' => $activity->occurred_at->diffForHumans(),
+                'occurred_at_diff' => $activity->occurred_at->diffForHumans(now(), CarbonInterface::DIFF_RELATIVE_TO_NOW, true),
                 'activity_type' => $activity->activity_type,
                 'metadata' => $array['metadata'] ?? [],
             ];
