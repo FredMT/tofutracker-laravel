@@ -12,13 +12,14 @@ import {
     Text,
 } from "@mantine/core";
 import { useHover, useMediaQuery } from "@mantine/hooks";
-import { Clock, Heart, MessageCircle } from "lucide-react";
+import { Clock, MessageCircle } from "lucide-react";
 import styles from "./ActivityListItem.module.css";
 import { useActivityItemType } from "@/Components/UserProfile/Activity/hooks/useActivityItemType";
 import { useActivityItemDetails } from "@/Components/UserProfile/Activity/hooks/useActivityItemDetails";
 import { useActivityDescription } from "@/Components/UserProfile/Activity/hooks/useActivityDescription";
 import { useActivityPoster } from "@/Components/UserProfile/Activity/hooks/useActivityPoster";
 import { Activity } from "@/Components/UserProfile/Activity/activityType";
+import { ActivityLike } from "@/Components/UserProfile/Activity/ActivityLike";
 
 interface ActivityListItemProps {
     activity: Activity;
@@ -121,13 +122,11 @@ export function ActivityListItem({ activity }: ActivityListItemProps) {
                             <Text size="sm">{activity.occurred_at_diff}</Text>
                         </Group>
                         <Group gap={4} pb={10}>
-                            <Group gap={1}>
-                                <ActionIcon variant="subtle">
-                                    <Heart size={16} />
-                                </ActionIcon>
-                                {/* TODO: Add likes */}
-                                <Text size="xs">2</Text>
-                            </Group>
+                            <ActivityLike
+                                activityId={activity.id}
+                                initialLikesCount={activity.likes_count}
+                                isLiked={activity.is_liked}
+                            />
                             <Group gap={1}>
                                 <ActionIcon variant="subtle">
                                     <MessageCircle size={16} />

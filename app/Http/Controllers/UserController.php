@@ -35,7 +35,7 @@ class UserController extends Controller
             ->orderBy('occurred_at', 'desc')
             ->paginate(20);
 
-        $activities->through(function ($activity) {
+        $activities->through(function ($activity) use ($request) {
             $array = $activity->toArray();
 
             return [
@@ -44,6 +44,8 @@ class UserController extends Controller
                 'occurred_at_diff' => $activity->occurred_at->diffForHumans(now(), CarbonInterface::DIFF_RELATIVE_TO_NOW, true),
                 'activity_type' => $activity->activity_type,
                 'metadata' => $array['metadata'] ?? [],
+                'likes_count' => $activity->likesCount(),
+                'is_liked' => $request->user() ? $activity->isLikedBy($request->user()->id) : false,
             ];
         });
 

@@ -27,6 +27,7 @@ use App\Http\Controllers\UserMovieController;
 use App\Http\Controllers\UserTvEpisodeController;
 use App\Http\Controllers\UserTvSeasonController;
 use App\Http\Controllers\UserTvShowController;
+use App\Http\Controllers\Activity\ToggleActivityLikeController;
 use App\Http\Middleware\CheckAnimeMapping;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -78,6 +79,8 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/movies/library/{movie_id}', [UserMovieController::class, 'store'])
         ->name('movie.library.store');
+    Route::post('/activity/{activity}/like', ToggleActivityLikeController::class)
+        ->name('activity.like.toggle');
     Route::delete('/movies/library/{movie_id}', [UserMovieController::class, 'destroy'])
         ->name('movie.library.destroy');
     Route::patch('/movie/library/status/{movie_id}', [UserMovieController::class, 'update'])
@@ -160,4 +163,4 @@ Route::get('/quicksearch', QuickSearchController::class)->name('quicksearch');
 
 Route::get('/list/{list}', [ListController::class, 'show'])->name('list.show');
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
