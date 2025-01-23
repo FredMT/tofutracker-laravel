@@ -24,7 +24,7 @@ function Login({
     backdropImage: string;
 }) {
     const { data, setData, post, processing, errors, reset } = useForm({
-        email: "",
+        credential: "",
         password: "",
         remember: false,
     });
@@ -65,17 +65,24 @@ function Login({
                                 <form onSubmit={handleSubmit}>
                                     <Stack>
                                         <TextInput
-                                            id="email"
-                                            label="Email"
-                                            type="email"
-                                            value={data.email}
+                                            id="credential"
+                                            label="Email or Username"
+                                            type="text"
+                                            value={data.credential}
                                             onChange={(e) =>
-                                                setData("email", e.target.value)
+                                                setData(
+                                                    "credential",
+                                                    e.target.value
+                                                )
                                             }
                                             required
-                                            error={errors.email}
+                                            error={
+                                                // @ts-ignore
+                                                errors.email || errors.username
+                                            }
                                             autoFocus
                                         />
+
                                         <div className={styles.inputGroup}>
                                             <PasswordInput
                                                 label="Password"
@@ -93,7 +100,7 @@ function Login({
                                         </div>
                                         <div className={styles.checkboxGroup}>
                                             <Checkbox
-                                                defaultChecked
+                                                defaultChecked={data.remember}
                                                 label="Remember me"
                                             />
                                             {canResetPassword && (
