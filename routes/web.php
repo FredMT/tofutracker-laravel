@@ -76,11 +76,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/list/{list}/order', ListUpdateOrderController::class)->name('list.updateOrder');
 });
 
+Route::post('/activity/{activity}/like', ToggleActivityLikeController::class)
+    ->name('activity.like.toggle')
+    ->middleware(['auth', 'verified']);
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/movies/library/{movie_id}', [UserMovieController::class, 'store'])
         ->name('movie.library.store');
-    Route::post('/activity/{activity}/like', ToggleActivityLikeController::class)
-        ->name('activity.like.toggle');
+
     Route::delete('/movies/library/{movie_id}', [UserMovieController::class, 'destroy'])
         ->name('movie.library.destroy');
     Route::patch('/movie/library/status/{movie_id}', [UserMovieController::class, 'update'])

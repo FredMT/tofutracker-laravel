@@ -11,7 +11,7 @@ class ToggleActivityLikeController extends Controller
 {
     public function __invoke(Request $request, UserActivity $activity)
     {
-        $liked = $activity->toggleLike(Auth::id());
+        $liked = $activity->toggleLike($request->user()->id);
 
         return back()->with([
             'liked' => $liked,
