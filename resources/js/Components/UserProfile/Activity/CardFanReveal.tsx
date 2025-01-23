@@ -2,15 +2,7 @@ import { AspectRatio, Image } from "@mantine/core";
 import { Link } from "@inertiajs/react";
 import styles from "./CardFanReveal.module.css";
 import { useHover } from "@mantine/hooks";
-
-interface ListItem {
-    id: number;
-    type: string;
-    title: string;
-    link: string;
-    poster_path: string | null;
-    poster_type: string;
-}
+import { ListItem } from "@/Components/UserProfile/Activity/activityType";
 
 interface CardFanRevealProps {
     items: ListItem[];

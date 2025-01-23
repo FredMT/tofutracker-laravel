@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Activity } from "./types";
+import { Activity } from "@/Components/UserProfile/Activity/activityType";
 import { useActivityItemType } from "./useActivityItemType";
 
 export const useActivityItemDetails = (activity: Activity) => {

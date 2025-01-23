@@ -14,13 +14,11 @@ import {
 import { useHover, useMediaQuery } from "@mantine/hooks";
 import { Clock, Heart, MessageCircle } from "lucide-react";
 import styles from "./ActivityListItem.module.css";
-import {
-    Activity,
-    useActivityDescription,
-    useActivityItemDetails,
-    useActivityItemType,
-    useActivityPoster,
-} from "./hooks";
+import { useActivityItemType } from "@/Components/UserProfile/Activity/hooks/useActivityItemType";
+import { useActivityItemDetails } from "@/Components/UserProfile/Activity/hooks/useActivityItemDetails";
+import { useActivityDescription } from "@/Components/UserProfile/Activity/hooks/useActivityDescription";
+import { useActivityPoster } from "@/Components/UserProfile/Activity/hooks/useActivityPoster";
+import { Activity } from "@/Components/UserProfile/Activity/activityType";
 
 interface ActivityListItemProps {
     activity: Activity;
@@ -31,7 +29,7 @@ export function ActivityListItem({ activity }: ActivityListItemProps) {
     const itemType = useActivityItemType(activity);
     const { itemLink, itemTitle } = useActivityItemDetails(activity);
     const description = useActivityDescription(activity, itemLink, itemTitle);
-    const hidePoster = useMediaQuery("(min-width: 640px)");
+    const min_sm_width = useMediaQuery("(min-width: 640px)");
     const { hovered, ref } = useHover();
 
     const isEpisodeWatch =
@@ -68,7 +66,7 @@ export function ActivityListItem({ activity }: ActivityListItemProps) {
             className={styles.card}
         >
             <Grid>
-                {hidePoster && (
+                {min_sm_width && (
                     <Grid.Col span="content">
                         <Box
                             ref={ref}
@@ -94,27 +92,49 @@ export function ActivityListItem({ activity }: ActivityListItemProps) {
                 )}
                 <Grid.Col span="auto">
                     <Stack gap={0} justify="flex-end" h="100%" pb={10}>
-                        {description}
+                        <Group
+                            gap={4}
+                            align="center"
+                            wrap="wrap"
+                            hiddenFrom="sm"
+                        >
+                            <Clock size={16} />
+                            <Text size="sm">{activity.occurred_at_diff}</Text>
+                        </Group>
+                        <Text size="sm">{description}</Text>
                     </Stack>
                 </Grid.Col>
                 <Grid.Col span="content">
                     <Stack
                         gap={20}
                         align="flex-end"
-                        justify="space-between"
+                        justify={min_sm_width ? "space-between" : "flex-end"}
                         h="100%"
                     >
-                        <Group gap={4} align="center" wrap="wrap">
+                        <Group
+                            gap={4}
+                            align="center"
+                            wrap="wrap"
+                            visibleFrom="sm"
+                        >
                             <Clock size={16} />
                             <Text size="sm">{activity.occurred_at_diff}</Text>
                         </Group>
                         <Group gap={4} pb={10}>
-                            <ActionIcon variant="subtle">
-                                <Heart size={16} />
-                            </ActionIcon>
-                            <ActionIcon variant="subtle">
-                                <MessageCircle size={16} />
-                            </ActionIcon>
+                            <Group gap={1}>
+                                <ActionIcon variant="subtle">
+                                    <Heart size={16} />
+                                </ActionIcon>
+                                {/* TODO: Add likes */}
+                                <Text size="xs">2</Text>
+                            </Group>
+                            <Group gap={1}>
+                                <ActionIcon variant="subtle">
+                                    <MessageCircle size={16} />
+                                </ActionIcon>
+                                {/* TODO: Add comments */}
+                                <Text size="xs">2</Text>
+                            </Group>
                         </Group>
                     </Stack>
                 </Grid.Col>

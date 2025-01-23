@@ -1,6 +1,5 @@
 import { useMemo } from "react";
-import { Activity } from "./types";
-
+import { Activity } from "@/Components/UserProfile/Activity/activityType";
 export const useActivityItemType = (activity: Activity) => {
     return useMemo(() => {
         if (activity.activity_type === "movie_watch") return "movie";

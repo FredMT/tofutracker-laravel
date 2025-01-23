@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import { Link } from "@inertiajs/react";
 import { Text, Tooltip } from "@mantine/core";
-import { Activity } from "./types";
 import styles from "../ActivityListItem.module.css";
+import { Activity } from "@/Components/UserProfile/Activity/activityType";
 
 export const useActivityDescription = (
     activity: Activity,

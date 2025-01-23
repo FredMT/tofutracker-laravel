@@ -1,5 +1,5 @@
+import { Activity } from "@/Components/UserProfile/Activity/activityType";
 import { useMemo } from "react";
-import { Activity } from "./types";
 
 export const useActivityPoster = (activity: Activity) => {
     return useMemo(() => {
