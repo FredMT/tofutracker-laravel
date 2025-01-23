@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Traits\Likeable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class UserActivity extends Model
 {
+    use Likeable;
     protected $fillable = [
         'user_id',
         'activity_type',

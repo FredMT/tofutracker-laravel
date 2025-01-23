@@ -4,6 +4,8 @@ export type Activity = {
     description: string;
     occurred_at_diff: string;
     metadata: Record<string, any>;
+    likes_count: number;
+    is_liked: boolean;
 };
 
 export type PaginationData = {
