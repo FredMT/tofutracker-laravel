@@ -1,8 +1,8 @@
-import BoundedContainer from "@/Components/BoundedContainer";
-import {Link} from "@inertiajs/react";
-import {Badge, Button, Flex, Image, Stack, Text, Title} from "@mantine/core";
+import { Link } from "@inertiajs/react";
+import { Badge, Button, Flex, Image, Stack, Text, Title } from "@mantine/core";
 import classes from "./WelcomeCarouselSlide.module.css";
-import {useMediaQuery} from "@mantine/hooks";
+import { useMediaQuery } from "@mantine/hooks";
+import ResponsiveContainer from "@/Components/ResponsiveContainer";
 
 interface MediaItem {
     title: string;
@@ -41,7 +41,7 @@ export default function WelcomeCarouselSlide({
                     loading="lazy"
                 />
             </div>
-            <BoundedContainer>
+            <ResponsiveContainer>
                 {logo_path ? (
                     <Link href={`/${type}/${link}`} prefetch>
                         <Image
@@ -88,7 +88,7 @@ export default function WelcomeCarouselSlide({
                         See More
                     </Button>
                 </Stack>
-            </BoundedContainer>
+            </ResponsiveContainer>
         </div>
     );
 }
