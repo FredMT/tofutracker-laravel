@@ -1,7 +1,7 @@
 import { useCommentStore } from "@/stores/commentStore";
 import { CommentContent } from "./CommentContent";
 import { CommentEditor } from "./CommentEditor";
-import { CommentThreadProps, LINE_COLORS } from "./types";
+import { CommentThreadProps } from "./types";
 import { usePage } from "@inertiajs/react";
 
 export function CommentThread({ children, ...props }: CommentThreadProps) {
@@ -56,7 +56,7 @@ export function CommentThread({ children, ...props }: CommentThreadProps) {
     return (
         <div className="relative">
             <div
-                className={`absolute left-0 top-0 bottom-0 w-[3px] ${LINE_COLORS[0]} hover:bg-gray-300 transition-colors cursor-pointer`}
+                className={`absolute left-0 top-0 bottom-0 w-[3px] bg-gray-700 hover:bg-gray-300 transition-colors cursor-pointer`}
                 onClick={() => toggleCollapsed(props.id)}
                 role="button"
                 tabIndex={0}

@@ -43,7 +43,6 @@ class CommentController extends Controller
 
     public function store(Request $request, string $type, string $id)
     {
-
         $request->validate([
             'body' => 'required|string|min:1|max:2000',
             'parent_id' => 'nullable|exists:comments,id',
@@ -76,6 +75,8 @@ class CommentController extends Controller
                 'timeAgo' => 'just now',
                 'content' => $comment->body,
                 'children' => [],
+                'isEdited' => false,
+                'isDeleted' => false,
             ],
         ]);
     }
@@ -97,6 +98,8 @@ class CommentController extends Controller
             'timeAgo' => $comment->updated_at->diffForHumans(now(), CarbonInterface::DIFF_RELATIVE_TO_NOW, true),
             'content' => $comment->body,
             'children' => $comment->children,
+            'isEdited' => true,
+            'isDeleted' => false,
         ]);
     }
 
@@ -109,6 +112,8 @@ class CommentController extends Controller
                 'points' => $comment->points,
                 'timeAgo' => $comment->time_ago,
                 'content' => $comment->body,
+                'isEdited' => $comment->user_id !== null && $comment->created_at->ne($comment->updated_at),
+                'isDeleted' => $comment->user_id === null && $comment->deleted_at !== null,
             ];
 
             if ($comment->children->isNotEmpty()) {
@@ -137,6 +142,8 @@ class CommentController extends Controller
             'id' => (string) $comment->id,
             'author' => null,
             'content' => '[deleted]',
+            'isEdited' => false,
+            'isDeleted' => true,
         ]);
     }
 }

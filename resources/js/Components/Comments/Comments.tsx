@@ -45,7 +45,6 @@ export default function Comments() {
 
     return (
         <>
-            <Divider my="md" />
             <Stack gap={12}>
                 <Title order={3}>Comments</Title>
                 <CommentEditor onSave={handleAddComment} />

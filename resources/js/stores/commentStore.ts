@@ -56,6 +56,8 @@ export const useCommentStore = create<CommentStore>((set) => ({
             timeAgo: "just now",
             content,
             children: [],
+            isEdited: false,
+            isDeleted: false,
         };
 
         // Optimistic update
@@ -231,6 +233,8 @@ export const useCommentStore = create<CommentStore>((set) => ({
                 points: 1, // Start with 1 point for auto-upvote
                 timeAgo: "just now",
                 content,
+                isEdited: false,
+                isDeleted: false,
             };
 
             const addReplyToComments = (comments: Comment[]): Comment[] => {
