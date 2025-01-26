@@ -5,8 +5,8 @@ namespace App\Pipeline\UserMovie\Rate;
 use App\Enums\MediaType;
 use App\Enums\WatchStatus;
 use App\Models\UserLibrary;
-use App\Models\UserMovie;
-use App\Models\UserMoviePlay;
+use App\Models\UserMovie\UserMovie;
+use App\Models\UserMovie\UserMoviePlay;
 use Closure;
 use Illuminate\Support\Facades\Gate;
 

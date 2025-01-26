@@ -4,7 +4,7 @@ namespace App\Actions\Anime;
 
 use App\Jobs\SyncAnimeEpisodeMappings;
 use App\Jobs\SyncTvdbAnimeData;
-use App\Models\AnidbAnime;
+use App\Models\Anidb\AnidbAnime;
 use App\Services\TvdbService;
 use Exception;
 use GuzzleHttp\Client;

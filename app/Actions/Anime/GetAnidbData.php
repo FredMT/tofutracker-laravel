@@ -3,12 +3,12 @@
 namespace App\Actions\Anime;
 
 use App\Http\Resources\AnidbAnimeResource;
-use App\Models\AnidbAnime;
-use App\Models\AnidbCharacter;
-use App\Models\AnimeChainEntry;
-use App\Models\AnimeMap;
-use App\Models\AnimePrequelSequelChain;
-use App\Models\AnimeRelatedEntry;
+use App\Models\Anidb\AnidbAnime;
+use App\Models\Anidb\AnidbCharacter;
+use App\Models\Anime\AnimeChainEntry;
+use App\Models\Anime\AnimeMap;
+use App\Models\Anime\AnimePrequelSequelChain;
+use App\Models\Anime\AnimeRelatedEntry;
 
 class GetAnidbData
 {

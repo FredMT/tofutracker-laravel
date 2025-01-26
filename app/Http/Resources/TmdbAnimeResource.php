@@ -2,10 +2,10 @@
 
 namespace App\Http\Resources;
 
-use App\Models\AnimeChainEntry;
-use App\Models\AnimeMappingExternalId;
-use App\Models\AnimePrequelSequelChain;
-use App\Models\AnimeRelatedEntry;
+use App\Models\Anime\AnimeChainEntry;
+use App\Models\Anime\AnimeMappingExternalId;
+use App\Models\Anime\AnimePrequelSequelChain;
+use App\Models\Anime\AnimeRelatedEntry;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 

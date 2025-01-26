@@ -4,7 +4,7 @@ namespace App\Actions\Activity\Handlers;
 
 use App\Models\Movie;
 use App\Models\UserActivity;
-use App\Models\UserMovie;
+use App\Models\UserMovie\UserMovie;
 use Illuminate\Database\Eloquent\Model;
 
 class MoviePlayActivityHandler implements MovieActivityInterface

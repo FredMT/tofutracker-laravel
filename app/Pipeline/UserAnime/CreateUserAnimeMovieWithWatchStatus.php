@@ -2,8 +2,8 @@
 
 namespace App\Pipeline\UserAnime;
 
-use App\Models\UserAnime;
-use App\Models\UserAnimeCollection;
+use App\Models\UserAnime\UserAnime;
+use App\Models\UserAnime\UserAnimeCollection;
 use Closure;
 
 class CreateUserAnimeMovieWithWatchStatus

@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\AnidbAnime;
-use App\Models\AnimeMap;
+use App\Models\Anidb\AnidbAnime;
+use App\Models\Anime\AnimeMap;
 
 class AnimeRelationshipService
 {

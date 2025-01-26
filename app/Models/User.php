@@ -2,6 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\UserAnime\UserAnimeCollection;
+use App\Models\UserCustomList\UserCustomList;
+use App\Models\UserMovie\UserMovie;
+use App\Models\UserTv\UserTvShow;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;

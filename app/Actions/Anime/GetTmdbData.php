@@ -2,10 +2,10 @@
 
 namespace App\Actions\Anime;
 
-use App\Models\AnimeChainEntry;
-use App\Models\AnimeMappingExternalId;
-use App\Models\AnimePrequelSequelChain;
-use App\Models\AnimeRelatedEntry;
+use App\Models\Anime\AnimeChainEntry;
+use App\Models\Anime\AnimeMappingExternalId;
+use App\Models\Anime\AnimePrequelSequelChain;
+use App\Models\Anime\AnimeRelatedEntry;
 use App\Services\TmdbService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;

@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\ProcessAnimeRelationship;
-use App\Models\AnidbAnime;
+use App\Models\Anidb\AnidbAnime;
 use Illuminate\Console\Command;
 
 class ProcessAnimeRelationships extends Command

@@ -3,7 +3,7 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\UserMovie;
+use App\Models\UserMovie\UserMovie;
 use Illuminate\Auth\Access\Response;
 
 class UserMoviePolicy

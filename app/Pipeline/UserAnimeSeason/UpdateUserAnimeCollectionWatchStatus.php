@@ -3,8 +3,8 @@
 namespace App\Pipeline\UserAnimeSeason;
 
 use App\Enums\WatchStatus;
-use App\Models\AnimeMap;
-use App\Models\UserAnime;
+use App\Models\Anime\AnimeMap;
+use App\Models\UserAnime\UserAnime;
 use Closure;
 
 class UpdateUserAnimeCollectionWatchStatus

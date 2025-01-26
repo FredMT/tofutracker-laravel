@@ -1,41 +1,37 @@
 import { ActionIcon, Flex, Text } from "@mantine/core";
 import { ArrowUpIcon, ArrowDownIcon } from "lucide-react";
-import { useState } from "react";
+import { useCommentStore } from "@/stores/commentStore";
 
 interface VoteButtonsProps {
+    commentId: string;
     initialPoints: number;
 }
 
-export function VoteButtons({ initialPoints }: VoteButtonsProps) {
-    const [score, setScore] = useState(initialPoints);
-    const [voted, setVoted] = useState<"up" | "down" | null>(null);
+export function VoteButtons({ commentId, initialPoints }: VoteButtonsProps) {
+    const { vote, uiState } = useCommentStore();
+    const voted = uiState.votes[commentId];
 
     const handleVote = (direction: "up" | "down") => {
         if (voted === direction) {
-            setScore(initialPoints);
-            setVoted(null);
+            vote(commentId, null);
         } else {
-            setScore(
-                direction === "up" ? initialPoints + 1 : initialPoints - 1
-            );
-            setVoted(direction);
+            vote(commentId, direction);
         }
     };
 
     return (
-        <Flex direction="column" align="center" gap="xs" miw={35}>
+        <Flex direction="column" align="center" gap="xs" maw={26}>
             <ActionIcon
                 onClick={() => handleVote("up")}
                 variant="subtle"
-                c="dimmed"
+                c={voted === "up" ? "blue" : "dimmed"}
             >
                 <ArrowUpIcon className="h-4 w-4" />
             </ActionIcon>
-            <Text size="xs">{score}</Text>
             <ActionIcon
                 onClick={() => handleVote("down")}
                 variant="subtle"
-                c="dimmed"
+                c={voted === "down" ? "red" : "dimmed"}
             >
                 <ArrowDownIcon className="h-4 w-4" />
             </ActionIcon>

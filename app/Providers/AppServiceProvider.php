@@ -3,14 +3,14 @@
 namespace App\Providers;
 
 use App\Models\User;
-use App\Models\UserAnime;
-use App\Models\UserAnimeCollection;
-use App\Models\UserAnimeEpisode;
-use App\Models\UserCustomList;
+use App\Models\UserAnime\UserAnime;
+use App\Models\UserAnime\UserAnimeCollection;
+use App\Models\UserAnime\UserAnimeEpisode;
+use App\Models\UserCustomList\UserCustomList;
 use App\Models\UserLibrary;
-use App\Models\UserMovie;
-use App\Models\UserTvSeason;
-use App\Models\UserTvShow;
+use App\Models\UserMovie\UserMovie;
+use App\Models\UserTv\UserTvSeason;
+use App\Models\UserTv\UserTvShow;
 use Illuminate\Auth\Access\Response;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;

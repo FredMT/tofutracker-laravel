@@ -2,7 +2,7 @@
 
 namespace App\Pipeline\UserTvShow;
 
-use App\Models\UserTvShow;
+use App\Models\UserTv\UserTvShow;
 use Closure;
 
 class CreateUserTvShowWithStatus

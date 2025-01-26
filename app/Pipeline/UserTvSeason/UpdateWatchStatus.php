@@ -8,8 +8,8 @@ use App\Actions\Tv\Plays\CreateUserTvSeasonPlayAction;
 use App\Enums\WatchStatus;
 use App\Models\TvEpisode;
 use App\Models\UserActivity;
-use App\Models\UserTvEpisode;
-use App\Models\UserTvPlay;
+use App\Models\UserTv\UserTvEpisode;
+use App\Models\UserTv\UserTvPlay;
 use Closure;
 
 class UpdateWatchStatus

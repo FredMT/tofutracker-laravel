@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Anidb\AnidbAnime;
+use App\Models\UserAnime\UserAnime;
 use App\Traits\Likeable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -65,21 +67,21 @@ class UserActivity extends Model
         $metadata = $this->metadata;
 
         $poster = match ($subjectType) {
-            'App\Models\UserAnime',
-            'App\Models\UserAnimeEpisode' => $metadata['anidb_id']
+            'App\Models\UserAnime\UserAnime',
+            'App\Models\UserAnime\UserAnimeEpisode' => $metadata['anidb_id']
                 ? ['path' => AnidbAnime::find($metadata['anidb_id'])?->poster, 'from' => 'anidb']
                 : null,
 
-            'App\Models\UserTvShow' => $metadata['show_id']
+            'App\Models\UserTv\UserTvShow' => $metadata['show_id']
                 ? ['path' => TvShow::find($metadata['show_id'])?->poster, 'from' => 'tmdb']
                 : null,
 
-            'App\Models\UserTvSeason',
-            'App\Models\UserTvEpisode' => $metadata['season_id']
+            'App\Models\UserTv\UserTvSeason',
+            'App\Models\UserTv\UserTvEpisode' => $metadata['season_id']
                 ? ['path' => TvSeason::find($metadata['season_id'])?->poster, 'from' => 'tmdb']
                 : null,
 
-            'App\Models\UserMovie' => $metadata['movie_id']
+            'App\Models\UserMovie\UserMovie' => $metadata['movie_id']
                 ? ['path' => Movie::find($metadata['movie_id'])?->poster, 'from' => 'tmdb']
                 : null,
 

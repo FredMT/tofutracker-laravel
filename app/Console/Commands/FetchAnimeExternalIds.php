@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\ProcessAnimeMapping;
-use App\Models\AnimeMappingExternalId;
+use App\Models\Anime\AnimeMappingExternalId;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\LazyCollection;

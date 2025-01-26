@@ -2,7 +2,7 @@
 
 namespace App\Pipeline\UserAnimeSeason;
 
-use App\Models\UserAnime;
+use App\Models\UserAnime\UserAnime;
 use Closure;
 
 class UpdateUserAnimeSeasonWatchStatus

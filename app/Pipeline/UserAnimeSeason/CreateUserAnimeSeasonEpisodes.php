@@ -4,8 +4,8 @@ namespace App\Pipeline\UserAnimeSeason;
 
 use App\Actions\Anime\Plays\CreateUserAnimePlayAction;
 use App\Enums\WatchStatus;
-use App\Models\AnimeEpisodeMapping;
-use App\Models\UserAnimeEpisode;
+use App\Models\Anime\AnimeEpisodeMapping;
+use App\Models\UserAnime\UserAnimeEpisode;
 use Closure;
 
 class CreateUserAnimeSeasonEpisodes

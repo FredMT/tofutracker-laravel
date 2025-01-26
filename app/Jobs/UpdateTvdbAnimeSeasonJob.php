@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Actions\TVDB\UpdateTvdbAnimeEpisodesAction as TVDBUpdateTvdbAnimeEpisodesAction;
-use App\Models\TvdbAnimeSeason;
+use App\Models\Tvdb\TvdbAnimeSeason;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

@@ -3,7 +3,7 @@
 namespace App\Actions\Trending;
 
 use App\Jobs\UpdateTrendingGenresAndWatchProvidersJob;
-use App\Models\AnimeMap;
+use App\Models\Anime\AnimeMap;
 use App\Models\Movie;
 use App\Models\TvShow;
 use App\Services\TmdbService;

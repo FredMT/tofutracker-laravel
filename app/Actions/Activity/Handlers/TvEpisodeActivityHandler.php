@@ -5,7 +5,7 @@ namespace App\Actions\Activity\Handlers;
 use App\Models\TvSeason;
 use App\Models\TvShow;
 use App\Models\UserActivity;
-use App\Models\UserTvEpisode;
+use App\Models\UserTv\UserTvEpisode;
 use Illuminate\Database\Eloquent\Model;
 
 class TvEpisodeActivityHandler implements TvActivityInterface

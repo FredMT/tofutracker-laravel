@@ -3,7 +3,7 @@
 namespace App\Actions\Activity\Handlers;
 
 use App\Models\UserActivity;
-use App\Models\UserCustomList;
+use App\Models\UserCustomList\UserCustomList;
 use Illuminate\Database\Eloquent\Model;
 
 class UserCustomListActivityHandler implements ActivityHandlerInterface

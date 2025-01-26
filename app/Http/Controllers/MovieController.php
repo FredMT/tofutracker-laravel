@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Comment\CommentController;
 use App\Jobs\UpdateOrCreateMovieData;
 use App\Models\Movie;
-use App\Models\UserMovie;
+use App\Models\UserMovie\UserMovie;
 use App\Services\TmdbService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -14,15 +15,17 @@ use Inertia\Response;
 class MovieController extends Controller
 {
     public function __construct(
-        private readonly TmdbService $tmdbService
+        private readonly TmdbService $tmdbService,
+        private readonly CommentController $commentController
     ) {}
 
     public function show(Request $request, string $id): Response
     {
-
         $cacheKey = "movie.{$id}";
         $userLibraryData = null;
         $userLists = null;
+        $existingMovie = Movie::find($id);
+        $comments = $this->commentController->index('movie', $id);
 
         if ($request->user()) {
             $userLibraryData = UserMovie::where([
@@ -51,10 +54,10 @@ class MovieController extends Controller
                 'type' => 'movie',
                 'user_library' => $userLibraryData,
                 'user_lists' => $userLists,
+                'comments' => $comments,
             ]);
         }
 
-        $existingMovie = Movie::find($id);
         if ($existingMovie) {
             if ($existingMovie->updated_at->lt(now()->subHours(6))) {
                 UpdateOrCreateMovieData::dispatch($id);
@@ -65,7 +68,7 @@ class MovieController extends Controller
                 'type' => 'movie',
                 'user_library' => $userLibraryData,
                 'user_lists' => $userLists,
-
+                'comments' => $comments,
             ]);
         }
 
@@ -78,7 +81,7 @@ class MovieController extends Controller
             'type' => 'movie',
             'user_library' => $userLibraryData,
             'user_lists' => $userLists,
-
+            'comments' => $comments,
         ]);
     }
 

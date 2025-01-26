@@ -3,7 +3,7 @@
 namespace App\Actions\UserController\Tv;
 
 use App\Models\User;
-use App\Models\UserTvShow;
+use App\Models\UserTv\UserTvShow;
 
 class GetUserTvGenres
 {

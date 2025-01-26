@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\AnidbAnime;
-use App\Models\AnidbSeiyuu;
+use App\Models\Anidb\AnidbAnime;
+use App\Models\Anidb\AnidbSeiyuu;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 

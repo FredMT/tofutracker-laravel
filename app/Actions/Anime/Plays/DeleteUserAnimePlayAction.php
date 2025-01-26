@@ -3,10 +3,10 @@
 namespace App\Actions\Anime\Plays;
 
 use App\Actions\Activity\CreateUserActivityAction;
-use App\Models\UserAnime;
-use App\Models\UserAnimeCollection;
-use App\Models\UserAnimeEpisode;
-use App\Models\UserAnimePlay;
+use App\Models\UserAnime\UserAnime;
+use App\Models\UserAnime\UserAnimeCollection;
+use App\Models\UserAnime\UserAnimeEpisode;
+use App\Models\UserAnime\UserAnimePlay;
 use Illuminate\Database\Eloquent\Model;
 
 class DeleteUserAnimePlayAction

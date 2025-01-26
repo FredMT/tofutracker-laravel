@@ -3,7 +3,7 @@
 namespace App\Pipeline\UserMovie;
 
 use App\Enums\WatchStatus;
-use App\Models\UserMovie;
+use App\Models\UserMovie\UserMovie;
 use Closure;
 
 class CreateUserMovie

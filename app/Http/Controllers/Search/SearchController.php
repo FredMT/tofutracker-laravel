@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Search;
 
 use App\Http\Controllers\Controller;
-use App\Models\AnidbAnime;
-use App\Models\AnimeMappingExternalId;
+use App\Models\Anidb\AnidbAnime;
+use App\Models\Anime\AnimeMappingExternalId;
 use App\Services\TmdbService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;

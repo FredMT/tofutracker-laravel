@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\ProcessAnimeTmdbId;
-use App\Models\AnimeMap;
+use App\Models\Anime\AnimeMap;
 use Illuminate\Console\Command;
 
 class ProcessAnimeTmdbIdsCommand extends Command

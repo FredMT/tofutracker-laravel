@@ -54,7 +54,7 @@ function Movie() {
                             <ContentActions />
                             <Box hiddenFrom="sm">
                                 <ContentDetails />
-                                <Divider my={16} />
+                                <Divider my="md" />
 
                                 <Stack mt={16}>
                                     <Title order={3}>Overview</Title>
@@ -77,6 +77,7 @@ function Movie() {
                                 <RecommendedContent
                                     containerWidth={width * 0.95}
                                 />
+                                <Comments />
                             </Box>
                         </Stack>
                     }
@@ -92,7 +93,7 @@ function Movie() {
                             </Stack>
 
                             <ContentDetails />
-
+                            <Divider my="md" />
                             <Stack mt={16}>
                                 <Title order={3}>Overview</Title>
                                 <Spoiler

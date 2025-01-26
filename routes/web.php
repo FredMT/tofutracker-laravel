@@ -2,7 +2,9 @@
 
 use App\Actions\Trending\GetTrendingAction;
 use App\Actions\Trending\GetTrendingGenresAndWatchProvidersAction;
+use App\Http\Controllers\Activity\ToggleActivityLikeController;
 use App\Http\Controllers\AnimeController;
+use App\Http\Controllers\Comment\CommentController;
 use App\Http\Controllers\List\ListBackdropsController;
 use App\Http\Controllers\List\ListBannerController;
 use App\Http\Controllers\List\ListBannerRemoveController;
@@ -16,18 +18,17 @@ use App\Http\Controllers\Search\QuickSearchController;
 use App\Http\Controllers\Search\SearchController;
 use App\Http\Controllers\TvController;
 use App\Http\Controllers\TvSeasonController;
-use App\Http\Controllers\UserAnimeEpisodeController;
-use App\Http\Controllers\UserAnimeMovieController;
-use App\Http\Controllers\UserAnimeSeasonController;
-use App\Http\Controllers\UserAnimeTvController;
+use App\Http\Controllers\UserAnime\UserAnimeEpisodeController;
+use App\Http\Controllers\UserAnime\UserAnimeMovieController;
+use App\Http\Controllers\UserAnime\UserAnimeSeasonController;
+use App\Http\Controllers\UserAnime\UserAnimeTvController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\UserCustomListController;
-use App\Http\Controllers\UserCustomListItemController;
+use App\Http\Controllers\UserCustomList\UserCustomListController;
+use App\Http\Controllers\UserCustomList\UserCustomListItemController;
 use App\Http\Controllers\UserMovieController;
-use App\Http\Controllers\UserTvEpisodeController;
-use App\Http\Controllers\UserTvSeasonController;
-use App\Http\Controllers\UserTvShowController;
-use App\Http\Controllers\Activity\ToggleActivityLikeController;
+use App\Http\Controllers\UserTv\UserTvEpisodeController;
+use App\Http\Controllers\UserTv\UserTvSeasonController;
+use App\Http\Controllers\UserTv\UserTvShowController;
 use App\Http\Middleware\CheckAnimeMapping;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -166,4 +167,8 @@ Route::get('/quicksearch', QuickSearchController::class)->name('quicksearch');
 
 Route::get('/list/{list}', [ListController::class, 'show'])->name('list.show');
 
-require __DIR__ . '/auth.php';
+Route::get('/{type}/{id}/comments', [CommentController::class, 'index'])
+    ->where('type', 'movie|tv|user')
+    ->name('comments.index');
+
+require __DIR__.'/auth.php';

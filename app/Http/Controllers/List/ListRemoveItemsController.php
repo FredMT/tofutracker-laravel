@@ -4,8 +4,7 @@ namespace App\Http\Controllers\List;
 
 use App\Actions\Activity\CreateUserActivityAction;
 use App\Http\Controllers\Controller;
-use App\Models\UserCustomList;
-use App\Models\UserCustomListItem;
+use App\Models\UserCustomList\UserCustomList;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

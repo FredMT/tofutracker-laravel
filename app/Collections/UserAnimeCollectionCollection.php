@@ -3,8 +3,8 @@
 namespace App\Collections;
 
 use App\Enums\WatchStatus;
-use App\Models\AnimeEpisodeMapping;
-use App\Models\UserAnimeEpisode;
+use App\Models\Anime\AnimeEpisodeMapping;
+use App\Models\UserAnime\UserAnimeEpisode;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Database\Eloquent\Collection;

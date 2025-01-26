@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\List;
 
 use App\Http\Controllers\Controller;
-use App\Models\AnidbAnime;
-use App\Models\AnimeMap;
+use App\Models\Anidb\AnidbAnime;
+use App\Models\Anime\AnimeMap;
 use App\Models\Movie;
 use App\Models\TvSeason;
 use App\Models\TvShow;
-use App\Models\UserCustomList;
+use App\Models\UserCustomList\UserCustomList;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 

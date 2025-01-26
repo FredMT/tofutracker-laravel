@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\Tv\TvShowActions;
 use App\Models\TvShow;
-use App\Models\UserTvShow;
+use App\Models\UserTv\UserTvShow;
 use App\Services\TmdbService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;

@@ -3,7 +3,7 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\UserTvEpisode;
+use App\Models\UserTv\UserTvEpisode;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class UserTvEpisodePolicy

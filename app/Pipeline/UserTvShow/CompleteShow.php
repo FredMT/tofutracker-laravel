@@ -5,9 +5,9 @@ namespace App\Pipeline\UserTvShow;
 use App\Enums\WatchStatus;
 use App\Models\TvEpisode;
 use App\Models\TvSeason;
-use App\Models\UserTvEpisode;
-use App\Models\UserTvPlay;
-use App\Models\UserTvSeason;
+use App\Models\UserTv\UserTvEpisode;
+use App\Models\UserTv\UserTvPlay;
+use App\Models\UserTv\UserTvSeason;
 use Closure;
 
 class CompleteShow

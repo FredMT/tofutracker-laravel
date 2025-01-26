@@ -2,8 +2,8 @@
 
 namespace App\Pipeline\UserTvSeason;
 
-use App\Models\UserTvPlay;
-use App\Models\UserTvSeason;
+use App\Models\UserTv\UserTvPlay;
+use App\Models\UserTv\UserTvSeason;
 use Closure;
 
 class CreateUserTvSeasonPlay

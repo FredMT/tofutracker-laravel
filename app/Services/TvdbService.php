@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Exceptions\Tvdb\TvdbSyncException;
 use App\Jobs\CreateTvdbAnimeSeasonJob;
 use App\Jobs\UpdateTvdbAnimeSeasonJob;
-use App\Models\TvdbAnimeSeason;
+use App\Models\Tvdb\TvdbAnimeSeason;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;

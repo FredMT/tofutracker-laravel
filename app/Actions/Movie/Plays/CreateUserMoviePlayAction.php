@@ -3,8 +3,8 @@
 namespace App\Actions\Movie\Plays;
 
 use App\Actions\Activity\CreateUserActivityAction;
-use App\Models\UserMovie;
-use App\Models\UserMoviePlay;
+use App\Models\UserMovie\UserMovie;
+use App\Models\UserMovie\UserMoviePlay;
 
 class CreateUserMoviePlayAction
 {

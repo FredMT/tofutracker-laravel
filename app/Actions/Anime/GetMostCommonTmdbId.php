@@ -2,9 +2,9 @@
 
 namespace App\Actions\Anime;
 
-use App\Models\AnidbAnime;
-use App\Models\AnimeMap;
-use App\Models\AnimeMappingExternalId;
+use App\Models\Anidb\AnidbAnime;
+use App\Models\Anime\AnimeMap;
+use App\Models\Anime\AnimeMappingExternalId;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 

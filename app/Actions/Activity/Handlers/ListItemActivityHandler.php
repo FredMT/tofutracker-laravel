@@ -3,7 +3,7 @@
 namespace App\Actions\Activity\Handlers;
 
 use App\Models\UserActivity;
-use App\Models\UserCustomListItem;
+use App\Models\UserCustomList\UserCustomListItem;
 use Illuminate\Database\Eloquent\Model;
 
 class ListItemActivityHandler implements ActivityHandlerInterface
@@ -20,9 +20,9 @@ class ListItemActivityHandler implements ActivityHandlerInterface
             'App\Models\TvShow' => 'tv_show',
             'App\Models\TvSeason' => 'tv_season',
             'App\Models\TvEpisode' => 'tv_episode',
-            'App\Models\AnimeMap' => 'anime',
-            'App\Models\AnidbAnime' => 'anime_season',
-            'App\Models\AnimeEpisodeMapping' => 'anime_episode',
+            'App\Models\Anime\AnimeMap' => 'anime',
+            'App\Models\Anidb\AnidbAnime' => 'anime_season',
+            'App\Models\Anime\AnimeEpisodeMapping' => 'anime_episode',
             default => ''
         };
     }
@@ -176,9 +176,9 @@ class ListItemActivityHandler implements ActivityHandlerInterface
             'App\Models\TvShow' => $item->listable->title ?? 'Unknown Show',
             'App\Models\TvSeason' => $item->listable->show->title . " S{$item->listable->season_number}",
             'App\Models\TvEpisode' => $item->listable->show->title . " S{$item->listable->season_number}E{$item->listable->episode_number}",
-            'App\Models\AnimeMap' => $item->listable->title ?? 'Unknown Anime Collection',
-            'App\Models\AnidbAnime' => $item->listable->title ?? 'Unknown Anime',
-            'App\Models\AnimeEpisodeMapping' => $item->listable->anime->title . " Episode {$item->listable->episode_number}",
+            'App\Models\Anime\AnimeMap' => $item->listable->title ?? 'Unknown Anime Collection',
+            'App\Models\Anidb\AnidbAnime' => $item->listable->title ?? 'Unknown Anime',
+            'App\Models\Anime\AnimeEpisodeMapping' => $item->listable->anime->title . " Episode {$item->listable->episode_number}",
             default => 'Unknown Item'
         };
     }
@@ -190,9 +190,9 @@ class ListItemActivityHandler implements ActivityHandlerInterface
             'App\Models\TvShow' => "/tv/{$item->id}",
             'App\Models\TvSeason' => "/tv/{$item->show->id}/season/{$item->season_number}",
             'App\Models\TvEpisode' => "/tv/{$item->show->id}/season/{$item->season_number}",
-            'App\Models\AnimeMap' => "/anime/{$item->id}",
-            'App\Models\AnidbAnime' => "/anime/{$item->map()}/season/{$item->id}",
-            'App\Models\AnimeEpisodeMapping' => "/anime/{$item->anime->map()}/season/{$item->anime->id}",
+            'App\Models\Anime\AnimeMap' => "/anime/{$item->id}",
+            'App\Models\Anidb\AnidbAnime' => "/anime/{$item->map()}/season/{$item->id}",
+            'App\Models\Anime\AnimeEpisodeMapping' => "/anime/{$item->anime->map()}/season/{$item->anime->id}",
             default => ''
         };
     }
@@ -200,9 +200,9 @@ class ListItemActivityHandler implements ActivityHandlerInterface
     private function getPosterType(string $type): string
     {
         return match ($type) {
-            'App\Models\Movie', 'App\Models\TvShow', 'App\Models\TvSeason', 'App\Models\TvEpisode', 'App\Models\AnimeMap' => 'tmdb',
-            'App\Models\AnidbAnime' => 'anidb',
-            'App\Models\AnimeEpisodeMapping' => 'tvdb',
+            'App\Models\Movie', 'App\Models\TvShow', 'App\Models\TvSeason', 'App\Models\TvEpisode', 'App\Models\Anime\AnimeMap' => 'tmdb',
+            'App\Models\Anidb\AnidbAnime' => 'anidb',
+            'App\Models\Anime\AnimeEpisodeMapping' => 'tvdb',
             default => ''
         };
     }

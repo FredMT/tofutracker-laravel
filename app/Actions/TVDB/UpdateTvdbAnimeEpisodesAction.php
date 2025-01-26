@@ -3,7 +3,7 @@
 namespace App\Actions\TVDB;
 
 use App\Jobs\UpdateTvdbAnimeEpisodesJob;
-use App\Models\TvdbAnimeSeason;
+use App\Models\Tvdb\TvdbAnimeSeason;
 
 class UpdateTvdbAnimeEpisodesAction
 {

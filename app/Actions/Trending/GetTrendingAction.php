@@ -4,7 +4,7 @@ namespace App\Actions\Trending;
 
 use App\Actions\Tv\TvShowActions;
 use App\Jobs\UpdateOrCreateMovieData;
-use App\Models\AnimeMap;
+use App\Models\Anime\AnimeMap;
 use App\Models\Movie;
 use App\Models\TvShow;
 use App\Services\TmdbService;

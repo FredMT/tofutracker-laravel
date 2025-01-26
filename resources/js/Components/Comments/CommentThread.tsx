@@ -1,16 +1,8 @@
-import { Group, Stack, Text } from "@mantine/core";
 import { useState } from "react";
-import { Comment, LINE_COLORS } from "./types";
-import { VoteButtons } from "./VoteButtons";
-import { CommentHeader } from "./CommentHeader";
-import { CommentActions } from "./CommentActions";
-import { CommentEditor } from "./CommentEditor";
 import { CommentContent } from "./CommentContent";
-
-interface CommentThreadProps extends Comment {
-    onReply?: (parentId: string, content: string) => void;
-    onEdit?: (commentId: string, content: string) => void;
-}
+import { CommentEditor } from "./CommentEditor";
+import { CommentThreadProps, LINE_COLORS } from "./types";
+import { useCommentStore } from "@/stores/commentStore";
 
 export function CommentThread({
     children,
@@ -18,53 +10,53 @@ export function CommentThread({
     onEdit,
     ...props
 }: CommentThreadProps) {
-    const [isCollapsed, setIsCollapsed] = useState(false);
-    const [isReplying, setIsReplying] = useState(false);
-    const [isEditing, setIsEditing] = useState(false);
+    const { uiState, setReplying, setEditing, toggleCollapsed } =
+        useCommentStore();
+    const isReplying = uiState.isReplying === props.id;
+    const isEditing = uiState.isEditing === props.id;
+    const isCollapsed = uiState.isCollapsed.includes(props.id);
 
     const handleReply = () => {
-        setIsReplying(true);
+        setReplying(props.id);
     };
 
     const handleSaveReply = (content: string) => {
-        onReply?.(props.id, content);
-        setIsReplying(false);
+        onReply(props.id, content);
     };
 
     const handleCancelReply = () => {
-        setIsReplying(false);
+        setReplying(null);
     };
 
     const handleEdit = () => {
-        setIsEditing(true);
+        setEditing(props.id);
     };
 
     const handleSaveEdit = (content: string) => {
-        onEdit?.(props.id, content);
-        setIsEditing(false);
+        onEdit(props.id, content);
     };
 
     const handleCancelEdit = () => {
-        setIsEditing(false);
+        setEditing(null);
     };
 
     return (
         <div className="relative">
             <div
                 className={`absolute left-0 top-0 bottom-0 w-[3px] ${LINE_COLORS[0]} hover:bg-gray-300 transition-colors cursor-pointer`}
-                onClick={() => setIsCollapsed(!isCollapsed)}
+                onClick={() => toggleCollapsed(props.id)}
                 role="button"
                 tabIndex={0}
                 aria-label={isCollapsed ? "Expand comment" : "Collapse comment"}
                 onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
-                        setIsCollapsed(!isCollapsed);
+                        toggleCollapsed(props.id);
                     }
                 }}
             >
                 <div className="absolute inset-0 w-6 -left-3" />
             </div>
-            <div className="pl-6">
+            <div className="pl-4">
                 <CommentContent
                     {...props}
                     isCollapsed={isCollapsed}

@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Models\AnidbAnime;
-use App\Models\AnidbCharacter;
-use App\Models\AnidbSeiyuu;
+use App\Models\Anidb\AnidbAnime;
+use App\Models\Anidb\AnidbCharacter;
+use App\Models\Anidb\AnidbSeiyuu;
 use Illuminate\Support\Facades\DB;
 
 class AnidbXmlDatabaseService

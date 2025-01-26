@@ -3,7 +3,7 @@
 namespace App\Pipeline\UserAnimeEpisode;
 
 use App\Enums\WatchStatus;
-use App\Models\UserAnimeCollection;
+use App\Models\UserAnime\UserAnimeCollection;
 use Closure;
 
 class CreateUserAnimeEpisodeCollection

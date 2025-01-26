@@ -4,7 +4,7 @@ namespace App\Actions\Activity\Handlers;
 
 use App\Models\TvShow;
 use App\Models\UserActivity;
-use App\Models\UserTvShow;
+use App\Models\UserTv\UserTvShow;
 use Illuminate\Database\Eloquent\Model;
 
 class TvShowActivityHandler implements TvShowActivityInterface

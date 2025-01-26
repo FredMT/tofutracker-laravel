@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\AnidbAnime;
+use App\Models\Anidb\AnidbAnime;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;

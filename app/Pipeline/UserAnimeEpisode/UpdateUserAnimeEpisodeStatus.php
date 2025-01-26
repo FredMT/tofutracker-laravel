@@ -4,7 +4,7 @@ namespace App\Pipeline\UserAnimeEpisode;
 
 use App\Actions\Anime\Plays\CreateUserAnimePlayAction;
 use App\Enums\WatchStatus;
-use App\Models\AnimeEpisodeMapping;
+use App\Models\Anime\AnimeEpisodeMapping;
 use Closure;
 
 class UpdateUserAnimeEpisodeStatus

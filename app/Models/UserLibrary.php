@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use App\Enums\MediaType;
+use App\Models\UserAnime\UserAnimeCollection;
+use App\Models\UserMovie\UserMovie;
+use App\Models\UserTv\UserTvShow;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;

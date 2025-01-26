@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Search;
 
 use App\Actions\Anime\GetAnimeTypeAction;
 use App\Http\Controllers\Controller;
-use App\Models\AnimeMap;
+use App\Models\Anime\AnimeMap;
 use App\Services\TmdbService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

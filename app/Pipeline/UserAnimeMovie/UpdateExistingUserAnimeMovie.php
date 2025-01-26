@@ -4,9 +4,9 @@ namespace App\Pipeline\UserAnimeMovie;
 
 use App\Actions\Anime\Plays\CreateUserAnimePlayAction;
 use App\Enums\WatchStatus;
-use App\Models\UserAnime;
-use App\Models\UserAnimeCollection;
-use App\Models\UserAnimePlay;
+use App\Models\UserAnime\UserAnime;
+use App\Models\UserAnime\UserAnimeCollection;
+use App\Models\UserAnime\UserAnimePlay;
 use Closure;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Gate;

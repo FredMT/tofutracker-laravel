@@ -2,10 +2,10 @@
 
 namespace App\Jobs;
 
-use App\Models\AnimeChainEntry;
-use App\Models\AnimeMap;
-use App\Models\AnimePrequelSequelChain;
-use App\Models\AnimeRelatedEntry;
+use App\Models\Anime\AnimeChainEntry;
+use App\Models\Anime\AnimeMap;
+use App\Models\Anime\AnimePrequelSequelChain;
+use App\Models\Anime\AnimeRelatedEntry;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

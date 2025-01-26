@@ -5,7 +5,7 @@ namespace App\Pipeline\UserTvSeason;
 use App\Actions\Tv\Plays\CreateUserTvPlayAction;
 use App\Enums\WatchStatus;
 use App\Models\TvEpisode;
-use App\Models\UserTvEpisode;
+use App\Models\UserTv\UserTvEpisode;
 use Closure;
 
 class CreateUserTvEpisodes

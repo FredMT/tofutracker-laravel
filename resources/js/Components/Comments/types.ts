@@ -5,7 +5,11 @@ export interface Comment {
     timeAgo: string;
     content: string;
     children?: Comment[];
-    isReplying?: boolean;
+}
+
+export interface CommentThreadProps extends Comment {
+    onReply: (parentId: string, content: string) => void;
+    onEdit: (commentId: string, content: string) => void;
 }
 
 export const LINE_COLORS = [

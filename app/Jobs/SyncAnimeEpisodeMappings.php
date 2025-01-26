@@ -3,8 +3,8 @@
 namespace App\Jobs;
 
 use App\Exceptions\Tvdb\TvdbSyncException;
-use App\Models\AnimeEpisodeMapping;
-use App\Models\TvdbAnimeSeason;
+use App\Models\Anime\AnimeEpisodeMapping;
+use App\Models\Tvdb\TvdbAnimeSeason;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

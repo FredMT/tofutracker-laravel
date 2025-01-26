@@ -2,9 +2,9 @@
 
 namespace App\Actions\Activity\Handlers;
 
-use App\Models\AnidbAnime;
+use App\Models\Anidb\AnidbAnime;
 use App\Models\UserActivity;
-use App\Models\UserAnime;
+use App\Models\UserAnime\UserAnime;
 use Illuminate\Database\Eloquent\Model;
 
 class AnimePlayActivityHandler implements AnimeActivityInterface

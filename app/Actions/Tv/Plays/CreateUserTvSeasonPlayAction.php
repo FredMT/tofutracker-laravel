@@ -3,8 +3,8 @@
 namespace App\Actions\Tv\Plays;
 
 use App\Actions\Activity\CreateUserActivityAction;
-use App\Models\UserTvPlay;
-use App\Models\UserTvSeason;
+use App\Models\UserTv\UserTvPlay;
+use App\Models\UserTv\UserTvSeason;
 
 class CreateUserTvSeasonPlayAction
 {

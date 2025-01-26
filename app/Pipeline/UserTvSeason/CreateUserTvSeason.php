@@ -3,7 +3,7 @@
 namespace App\Pipeline\UserTvSeason;
 
 use App\Enums\WatchStatus;
-use App\Models\UserTvSeason;
+use App\Models\UserTv\UserTvSeason;
 use Closure;
 
 class CreateUserTvSeason

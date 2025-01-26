@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\Tv\TvShowActions;
 use App\Models\TvSeason;
 use App\Models\TvShow;
-use App\Models\UserTvSeason;
+use App\Models\UserTv\UserTvSeason;
 use App\Services\TmdbService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\List;
 
 use App\Http\Controllers\Controller;
-use App\Models\UserCustomList;
+use App\Models\UserCustomList\UserCustomList;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;

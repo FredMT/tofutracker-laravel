@@ -3,7 +3,7 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\UserTvSeason;
+use App\Models\UserTv\UserTvSeason;
 
 class UserTvSeasonPolicy
 {
