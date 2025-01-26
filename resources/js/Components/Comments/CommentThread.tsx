@@ -1,17 +1,20 @@
-import { useState } from "react";
+import { useCommentStore } from "@/stores/commentStore";
 import { CommentContent } from "./CommentContent";
 import { CommentEditor } from "./CommentEditor";
 import { CommentThreadProps, LINE_COLORS } from "./types";
-import { useCommentStore } from "@/stores/commentStore";
+import { usePage } from "@inertiajs/react";
 
-export function CommentThread({
-    children,
-    onReply,
-    onEdit,
-    ...props
-}: CommentThreadProps) {
-    const { uiState, setReplying, setEditing, toggleCollapsed } =
-        useCommentStore();
+export function CommentThread({ children, ...props }: CommentThreadProps) {
+    const { type, data } = usePage<{ type: string; data: { id: string } }>()
+        .props;
+    const {
+        uiState,
+        setReplying,
+        setEditing,
+        toggleCollapsed,
+        addComment,
+        editComment,
+    } = useCommentStore();
     const isReplying = uiState.isReplying === props.id;
     const isEditing = uiState.isEditing === props.id;
     const isCollapsed = uiState.isCollapsed.includes(props.id);
@@ -20,8 +23,13 @@ export function CommentThread({
         setReplying(props.id);
     };
 
-    const handleSaveReply = (content: string) => {
-        onReply(props.id, content);
+    const handleSaveReply = async (content: string) => {
+        try {
+            await addComment(type, data.id, content, props.id);
+            setReplying(null);
+        } catch (error) {
+            console.error("Failed to add reply:", error);
+        }
     };
 
     const handleCancelReply = () => {
@@ -32,8 +40,13 @@ export function CommentThread({
         setEditing(props.id);
     };
 
-    const handleSaveEdit = (content: string) => {
-        onEdit(props.id, content);
+    const handleSaveEdit = async (content: string) => {
+        try {
+            await editComment(props.id, content);
+            setEditing(null);
+        } catch (error) {
+            console.error("Failed to edit comment:", error);
+        }
     };
 
     const handleCancelEdit = () => {
@@ -78,12 +91,7 @@ export function CommentThread({
                 {!isCollapsed && children && (
                     <div className="mt-2 space-y-6">
                         {children.map((child) => (
-                            <CommentThread
-                                key={child.id}
-                                {...child}
-                                onReply={onReply}
-                                onEdit={onEdit}
-                            />
+                            <CommentThread key={child.id} {...child} />
                         ))}
                     </div>
                 )}

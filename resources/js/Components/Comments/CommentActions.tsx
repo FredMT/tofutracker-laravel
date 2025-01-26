@@ -8,18 +8,23 @@ interface CommentActionsProps {
     commentId: string;
     onReply: () => void;
     onEdit: () => void;
+    authorUsername: string | null;
 }
 
 export function CommentActions({
     commentId,
     onReply,
     onEdit,
+    authorUsername,
 }: CommentActionsProps) {
     return (
         <Group gap={8}>
             <ReplyButton onReply={onReply} />
-            <EditButton onEdit={onEdit} />
-            <DeleteButton commentId={commentId} />
+            <EditButton onEdit={onEdit} authorUsername={authorUsername} />
+            <DeleteButton
+                commentId={commentId}
+                authorUsername={authorUsername}
+            />
             {/* <ShareButton /> TODO: Add share button */}
         </Group>
     );

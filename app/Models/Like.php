@@ -28,9 +28,10 @@ class Like extends Model
     /**
      * Toggle like status for a model instance
      *
-     * @param Model $model The model to toggle like for
-     * @param int $userId The user ID who is toggling the like
+     * @param  Model  $model  The model to toggle like for
+     * @param  int  $userId  The user ID who is toggling the like
      * @return bool True if liked, false if unliked
+     *
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public static function toggle(Model $model, int $userId): bool
@@ -44,6 +45,7 @@ class Like extends Model
 
         if ($like) {
             $like->delete();
+
             return false;
         }
 

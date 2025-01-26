@@ -32,7 +32,7 @@ export function CommentContent({
 
     return (
         <Group gap={8} wrap="nowrap" align="flex-start">
-            <VoteButtons commentId={id} initialPoints={props.points} />
+            <VoteButtons commentId={id} author={props.author} />
             <Stack gap={2} style={{ width: "100%" }}>
                 <CommentHeader {...props} />
                 {isEditing ? (
@@ -52,6 +52,7 @@ export function CommentContent({
                     commentId={id}
                     onReply={onReply}
                     onEdit={onEdit}
+                    authorUsername={props.author}
                 />
             </Stack>
         </Group>

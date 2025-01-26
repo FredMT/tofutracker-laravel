@@ -15,7 +15,13 @@ class Comment extends Model
 
     protected $with = ['user', 'votes'];
 
-    protected $appends = ['points', 'time_ago', 'author_username'];
+    protected $appends = ['points', 'time_ago'];
+
+    protected $fillable = ['body', 'parent_id', 'user_id', 'deleted_at'];
+
+    protected $casts = [
+        'deleted_at' => 'datetime',
+    ];
 
     public function user(): BelongsTo
     {
@@ -47,8 +53,8 @@ class Comment extends Model
         return $this->created_at->diffForHumans(now(), CarbonInterface::DIFF_RELATIVE_TO_NOW, true);
     }
 
-    public function getAuthorUsernameAttribute()
+    public function getBodyAttribute($value)
     {
-        return $this->user->username;
+        return $this->user_id ? $value : '[deleted]';
     }
 }

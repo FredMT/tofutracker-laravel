@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { Comment } from "../Components/Comments/types";
+import axios from "axios";
 
 interface CommentUIState {
     isReplying: string | null;
@@ -11,7 +12,12 @@ interface CommentUIState {
 interface CommentStore {
     comments: Comment[];
     uiState: CommentUIState;
-    addComment: (content: string) => void;
+    addComment: (
+        commentableType: string,
+        commentableId: string,
+        content: string,
+        parentId: string | null
+    ) => Promise<void>;
     addReply: (parentId: string, content: string) => void;
     editComment: (commentId: string, content: string) => void;
     deleteComment: (commentId: string) => void;
@@ -36,27 +42,185 @@ export const useCommentStore = create<CommentStore>((set) => ({
             comments,
         })),
 
-    addComment: (content: string) =>
+    addComment: async (
+        commentableType: string,
+        commentableId: string,
+        content: string,
+        parentId: string | null
+    ) => {
+        const tempId = Math.random().toString();
+        const tempComment = {
+            id: tempId,
+            author: "Current User",
+            points: 1,
+            timeAgo: "just now",
+            content,
+            children: [],
+        };
+
+        // Optimistic update
         set((state) => {
-            const newCommentId = Math.random().toString();
-            const newComment: Comment = {
-                id: newCommentId,
-                author: "Current User", // TODO: Get from auth
-                points: 1, // Start with 1 point for auto-upvote
-                timeAgo: "just now",
-                content,
+            if (!parentId) {
+                // Add as top-level comment
+                return {
+                    comments: [tempComment, ...state.comments],
+                    uiState: {
+                        ...state.uiState,
+                        votes: {
+                            ...state.uiState.votes,
+                            [tempId]: "up",
+                        },
+                    },
+                };
+            }
+
+            // Add as reply to parent
+            const addReplyToComments = (comments: Comment[]): Comment[] => {
+                return comments.map((comment) => {
+                    if (comment.id === parentId) {
+                        return {
+                            ...comment,
+                            children: [
+                                ...(comment.children || []),
+                                tempComment,
+                            ],
+                        };
+                    }
+                    if (comment.children) {
+                        return {
+                            ...comment,
+                            children: addReplyToComments(comment.children),
+                        };
+                    }
+                    return comment;
+                });
             };
+
             return {
-                comments: [newComment, ...state.comments],
+                comments: addReplyToComments(state.comments),
                 uiState: {
                     ...state.uiState,
                     votes: {
                         ...state.uiState.votes,
-                        [newCommentId]: "up", // Auto-upvote
+                        [tempId]: "up",
                     },
                 },
             };
-        }),
+        });
+
+        try {
+            const response = await axios.post(
+                `/${commentableType}/${commentableId}/comments`,
+                {
+                    body: content,
+                    parent_id: parentId,
+                }
+            );
+
+            // Replace temporary comment with real data
+            set((state) => {
+                if (!parentId) {
+                    // Update top-level comment
+                    return {
+                        comments: state.comments.map((comment) =>
+                            comment.id === tempId
+                                ? response.data.comment
+                                : comment
+                        ),
+                    };
+                }
+
+                // Update reply
+                const updateReplyInComments = (
+                    comments: Comment[]
+                ): Comment[] => {
+                    return comments.map((comment) => {
+                        if (comment.id === parentId) {
+                            return {
+                                ...comment,
+                                children: (comment.children || []).map(
+                                    (child) =>
+                                        child.id === tempId
+                                            ? response.data.comment
+                                            : child
+                                ),
+                            };
+                        }
+                        if (comment.children) {
+                            return {
+                                ...comment,
+                                children: updateReplyInComments(
+                                    comment.children
+                                ),
+                            };
+                        }
+                        return comment;
+                    });
+                };
+
+                return {
+                    comments: updateReplyInComments(state.comments),
+                };
+            });
+        } catch (error) {
+            // Remove temporary comment on error
+            set((state) => {
+                if (!parentId) {
+                    return {
+                        comments: state.comments.filter(
+                            (comment) => comment.id !== tempId
+                        ),
+                        uiState: {
+                            ...state.uiState,
+                            votes: Object.fromEntries(
+                                Object.entries(state.uiState.votes).filter(
+                                    ([key]) => key !== tempId
+                                )
+                            ),
+                        },
+                    };
+                }
+
+                // Remove reply
+                const removeReplyFromComments = (
+                    comments: Comment[]
+                ): Comment[] => {
+                    return comments.map((comment) => {
+                        if (comment.id === parentId) {
+                            return {
+                                ...comment,
+                                children: (comment.children || []).filter(
+                                    (child) => child.id !== tempId
+                                ),
+                            };
+                        }
+                        if (comment.children) {
+                            return {
+                                ...comment,
+                                children: removeReplyFromComments(
+                                    comment.children
+                                ),
+                            };
+                        }
+                        return comment;
+                    });
+                };
+
+                return {
+                    comments: removeReplyFromComments(state.comments),
+                    uiState: {
+                        ...state.uiState,
+                        votes: Object.fromEntries(
+                            Object.entries(state.uiState.votes).filter(
+                                ([key]) => key !== tempId
+                            )
+                        ),
+                    },
+                };
+            });
+            throw error;
+        }
+    },
 
     addReply: (parentId: string, content: string) =>
         set((state) => {
@@ -100,7 +264,8 @@ export const useCommentStore = create<CommentStore>((set) => ({
             };
         }),
 
-    editComment: (commentId: string, content: string) =>
+    editComment: async (commentId: string, content: string) => {
+        // Optimistic update
         set((state) => {
             const editCommentInTree = (comments: Comment[]): Comment[] => {
                 return comments.map((comment) => {
@@ -125,9 +290,76 @@ export const useCommentStore = create<CommentStore>((set) => ({
                 comments: editCommentInTree(state.comments),
                 uiState: { ...state.uiState, isEditing: null },
             };
-        }),
+        });
 
-    deleteComment: (commentId: string) =>
+        try {
+            const response = await axios.patch(`/comments/${commentId}`, {
+                body: content,
+            });
+
+            // Update with server response
+            set((state) => {
+                const updateCommentInTree = (
+                    comments: Comment[]
+                ): Comment[] => {
+                    return comments.map((comment) => {
+                        if (comment.id === commentId) {
+                            return {
+                                ...comment,
+                                content: response.data.content,
+                                timeAgo: response.data.timeAgo,
+                                points: response.data.points,
+                            };
+                        }
+                        if (comment.children) {
+                            return {
+                                ...comment,
+                                children: updateCommentInTree(comment.children),
+                            };
+                        }
+                        return comment;
+                    });
+                };
+
+                return {
+                    comments: updateCommentInTree(state.comments),
+                };
+            });
+        } catch (error) {
+            // Revert optimistic update on error
+            set((state) => {
+                const revertCommentInTree = (
+                    comments: Comment[]
+                ): Comment[] => {
+                    return comments.map((comment) => {
+                        if (comment.id === commentId) {
+                            return {
+                                ...comment,
+                                content: comment.content, // Original content will be restored
+                                timeAgo: comment.timeAgo,
+                            };
+                        }
+                        if (comment.children) {
+                            return {
+                                ...comment,
+                                children: revertCommentInTree(comment.children),
+                            };
+                        }
+                        return comment;
+                    });
+                };
+
+                return {
+                    comments: revertCommentInTree(state.comments),
+                    uiState: { ...state.uiState, isEditing: null },
+                };
+            });
+            throw error;
+        }
+    },
+
+    deleteComment: async (commentId: string) => {
+        // Optimistic update
         set((state) => {
             const deleteCommentInTree = (comments: Comment[]): Comment[] => {
                 return comments.map((comment) => {
@@ -151,7 +383,41 @@ export const useCommentStore = create<CommentStore>((set) => ({
             return {
                 comments: deleteCommentInTree(state.comments),
             };
-        }),
+        });
+
+        try {
+            await axios.delete(`/comments/${commentId}`);
+        } catch (error) {
+            // Revert optimistic update on error
+            set((state) => {
+                const revertCommentInTree = (
+                    comments: Comment[]
+                ): Comment[] => {
+                    return comments.map((comment) => {
+                        if (comment.id === commentId) {
+                            // Restore original comment state
+                            const originalComment = state.comments.find(
+                                (c) => c.id === commentId
+                            );
+                            return originalComment || comment;
+                        }
+                        if (comment.children) {
+                            return {
+                                ...comment,
+                                children: revertCommentInTree(comment.children),
+                            };
+                        }
+                        return comment;
+                    });
+                };
+
+                return {
+                    comments: revertCommentInTree(state.comments),
+                };
+            });
+            throw error;
+        }
+    },
 
     setReplying: (commentId: string | null) =>
         set((state) => ({

@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { usePage } from "@inertiajs/react";
 import { Auth } from "@/types";
 import { InfoIcon } from "lucide-react";
+import { Link as InertiaLink } from "@inertiajs/react";
 
 interface CommentEditorProps {
     onSave: (content: string) => void;
@@ -24,29 +25,37 @@ export function CommentEditor({
     initialContent = "",
 }: CommentEditorProps) {
     const { auth } = usePage<{ auth: Auth }>().props;
-    console.log(auth);
     const [isEmpty, setIsEmpty] = useState(true);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const editor = useEditor({
         extensions: [StarterKit, Underline, Link, Superscript, SubScript],
         content: initialContent,
         onUpdate: ({ editor }) => {
-            // Check if editor has any content
             setIsEmpty(editor.isEmpty);
         },
     });
 
-    // Set initial empty state
     useEffect(() => {
         if (editor) {
             setIsEmpty(editor.isEmpty);
         }
     }, [editor]);
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (editor && !isEmpty) {
-            onSave(editor.getHTML());
-            editor.commands.clearContent();
+            try {
+                setIsSubmitting(true);
+                setError(null);
+                await onSave(editor.getHTML());
+                editor.commands.clearContent();
+            } catch (err) {
+                setError("Failed to save comment. Please try again.");
+                console.error("Error saving comment:", err);
+            } finally {
+                setIsSubmitting(false);
+            }
         }
     };
 
@@ -96,23 +105,36 @@ export function CommentEditor({
                 )}
                 <Button
                     onClick={handleSave}
+                    loading={isSubmitting}
                     disabled={
-                        isEmpty || !auth.user || !auth.user.email_verified_at
+                        isEmpty ||
+                        !auth.user ||
+                        !auth.user.email_verified_at ||
+                        isSubmitting
                     }
                 >
-                    Save
+                    {isReply ? "Reply" : "Save"}
                 </Button>
+                {error && (
+                    <Alert color="red" title="Error" icon={<InfoIcon />}>
+                        {error}
+                    </Alert>
+                )}
                 {!auth.user && (
-                    <Alert
-                        title="You must be logged in to comment"
-                        icon={<InfoIcon />}
-                    />
+                    <InertiaLink href={route("login")}>
+                        <Alert
+                            title="You must be logged in to comment"
+                            icon={<InfoIcon />}
+                        />
+                    </InertiaLink>
                 )}
                 {auth.user && !auth.user?.email_verified_at && (
-                    <Alert
-                        title="You must verify your email to comment"
-                        icon={<InfoIcon />}
-                    />
+                    <InertiaLink href={route("verification.notice")}>
+                        <Alert
+                            title="You must verify your email to comment"
+                            icon={<InfoIcon />}
+                        />
+                    </InertiaLink>
                 )}
             </Group>
         </Stack>

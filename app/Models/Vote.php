@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Vote extends Model
 {
+    protected $fillable = ['value', 'user_id'];
+
     public function comment()
     {
         return $this->belongsTo(Comment::class);

@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('comments', function (Blueprint $table) {
             $table->id();
-            $table->text('body');
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->text('body')->nullable();
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
             $table->foreignId('parent_id')->nullable()->constrained('comments')->onDelete('cascade');
             $table->morphs('commentable');
+            $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
 
             $table->index('parent_id');

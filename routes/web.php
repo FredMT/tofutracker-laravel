@@ -171,4 +171,14 @@ Route::get('/{type}/{id}/comments', [CommentController::class, 'index'])
     ->where('type', 'movie|tv|user')
     ->name('comments.index');
 
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::post('/{type}/{id}/comments', [CommentController::class, 'store'])
+        ->where('type', 'movie|tv|user')
+        ->name('comments.store');
+    Route::patch('/comments/{comment}', [CommentController::class, 'update'])
+        ->name('comments.update');
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])
+        ->name('comments.destroy');
+});
+
 require __DIR__.'/auth.php';

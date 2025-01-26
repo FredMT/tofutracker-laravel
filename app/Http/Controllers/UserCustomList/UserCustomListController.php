@@ -83,14 +83,14 @@ class UserCustomListController extends Controller
                     'poster_path' => $poster,
                     'poster_type' => $posterType,
                 ];
-            })->filter(fn($item) => ! is_null($item['poster_path']))->values();
+            })->filter(fn ($item) => ! is_null($item['poster_path']))->values();
 
-            $movieCount = $items->filter(fn($item) => $item->listable_type === Movie::class)->count();
+            $movieCount = $items->filter(fn ($item) => $item->listable_type === Movie::class)->count();
             $tvCount = $items->filter(
-                fn($item) => in_array($item->listable_type, [TvShow::class, TvSeason::class])
+                fn ($item) => in_array($item->listable_type, [TvShow::class, TvSeason::class])
             )->count();
             $animeCount = $items->filter(
-                fn($item) => in_array($item->listable_type, [AnimeMap::class, AnidbAnime::class])
+                fn ($item) => in_array($item->listable_type, [AnimeMap::class, AnidbAnime::class])
             )->count();
 
             return [
@@ -115,7 +115,7 @@ class UserCustomListController extends Controller
         $userData = [
             'id' => $user->id,
             'username' => $user->username,
-            'created_at' => 'Joined ' . $user->created_at->format('F Y'),
+            'created_at' => 'Joined '.$user->created_at->format('F Y'),
             'avatar' => $user->avatar,
             'banner' => $user->banner,
             'bio' => $user->bio,

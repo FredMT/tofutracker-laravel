@@ -11,7 +11,7 @@ class LikePolicy
      */
     public function toggle(?User $user): bool
     {
-        if (!$user) {
+        if (! $user) {
             return false;
         }
 

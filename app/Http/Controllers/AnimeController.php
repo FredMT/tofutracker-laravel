@@ -343,7 +343,7 @@ class AnimeController extends Controller
                         $minutes = $totalRuntime % 60;
 
                         $totalRuntime = $hours > 0
-                            ? "{$hours}h " . ($minutes > 0 ? "{$minutes}m" : '')
+                            ? "{$hours}h ".($minutes > 0 ? "{$minutes}m" : '')
                             : "{$minutes}m";
                     }
 

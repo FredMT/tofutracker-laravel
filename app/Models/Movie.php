@@ -291,8 +291,8 @@ class Movie extends Model
 
         // Get first non-empty certification
         $certification = collect($usReleases['release_dates'] ?? [])
-            ->map(fn($date) => $date['certification'] ?? '')
-            ->filter(fn($cert) => ! empty($cert))
+            ->map(fn ($date) => $date['certification'] ?? '')
+            ->filter(fn ($cert) => ! empty($cert))
             ->first();
 
         return $certification ?: null;
@@ -416,7 +416,7 @@ class Movie extends Model
         }
 
         $crewByJob = collect($this->data['credits']['crew'] ?? [])
-            ->filter(fn($crew) => in_array($crew['job'], [
+            ->filter(fn ($crew) => in_array($crew['job'], [
                 'Director',
                 'Original Story',
                 'Writer',
@@ -429,7 +429,7 @@ class Movie extends Model
         foreach ($crewByJob as $job => $members) {
             $key = match ($job) {
                 'Original Story' => 'original_stories',
-                default => strtolower($job) . 's'
+                default => strtolower($job).'s'
             };
             $details[$key] = $members->pluck('name')->implode(', ');
         }

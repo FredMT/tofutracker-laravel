@@ -69,7 +69,7 @@ class ListItemActivityHandler implements ActivityHandlerInterface
             throw new \InvalidArgumentException('This handler only supports UserCustomListItem models');
         }
 
-        if (!$subject->relationLoaded('listable')) {
+        if (! $subject->relationLoaded('listable')) {
             $subject->load('listable');
         }
 
@@ -174,11 +174,11 @@ class ListItemActivityHandler implements ActivityHandlerInterface
         return match ($item->listable_type) {
             'App\Models\Movie' => $item->listable->title ?? 'Unknown Movie',
             'App\Models\TvShow' => $item->listable->title ?? 'Unknown Show',
-            'App\Models\TvSeason' => $item->listable->show->title . " S{$item->listable->season_number}",
-            'App\Models\TvEpisode' => $item->listable->show->title . " S{$item->listable->season_number}E{$item->listable->episode_number}",
+            'App\Models\TvSeason' => $item->listable->show->title." S{$item->listable->season_number}",
+            'App\Models\TvEpisode' => $item->listable->show->title." S{$item->listable->season_number}E{$item->listable->episode_number}",
             'App\Models\Anime\AnimeMap' => $item->listable->title ?? 'Unknown Anime Collection',
             'App\Models\Anidb\AnidbAnime' => $item->listable->title ?? 'Unknown Anime',
-            'App\Models\Anime\AnimeEpisodeMapping' => $item->listable->anime->title . " Episode {$item->listable->episode_number}",
+            'App\Models\Anime\AnimeEpisodeMapping' => $item->listable->anime->title." Episode {$item->listable->episode_number}",
             default => 'Unknown Item'
         };
     }

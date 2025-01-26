@@ -4,12 +4,15 @@ import { useCommentStore } from "@/stores/commentStore";
 
 interface VoteButtonsProps {
     commentId: string;
-    initialPoints: number;
+    author: string | null;
 }
 
-export function VoteButtons({ commentId, initialPoints }: VoteButtonsProps) {
+export function VoteButtons({ commentId, author }: VoteButtonsProps) {
     const { vote, uiState } = useCommentStore();
     const voted = uiState.votes[commentId];
+
+    // Don't show vote buttons for deleted comments
+    if (author === null) return null;
 
     const handleVote = (direction: "up" | "down") => {
         if (voted === direction) {
