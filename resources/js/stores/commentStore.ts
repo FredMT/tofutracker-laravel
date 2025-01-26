@@ -16,9 +16,9 @@ interface CommentStore {
         commentableType: string,
         commentableId: string,
         content: string,
-        parentId: string | null
+        parentId: string | null,
+        username: string
     ) => Promise<void>;
-    addReply: (parentId: string, content: string) => void;
     editComment: (commentId: string, content: string) => void;
     deleteComment: (commentId: string) => void;
     setReplying: (commentId: string | null) => void;
@@ -46,12 +46,13 @@ export const useCommentStore = create<CommentStore>((set) => ({
         commentableType: string,
         commentableId: string,
         content: string,
-        parentId: string | null
+        parentId: string | null,
+        username: string
     ) => {
         const tempId = Math.random().toString();
         const tempComment = {
             id: tempId,
-            author: "Current User",
+            author: username,
             points: 1,
             timeAgo: "just now",
             content,
@@ -223,50 +224,6 @@ export const useCommentStore = create<CommentStore>((set) => ({
             throw error;
         }
     },
-
-    addReply: (parentId: string, content: string) =>
-        set((state) => {
-            const newCommentId = Math.random().toString();
-            const newComment: Comment = {
-                id: newCommentId,
-                author: "Current User", // TODO: Get from auth
-                points: 1, // Start with 1 point for auto-upvote
-                timeAgo: "just now",
-                content,
-                isEdited: false,
-                isDeleted: false,
-            };
-
-            const addReplyToComments = (comments: Comment[]): Comment[] => {
-                return comments.map((comment) => {
-                    if (comment.id === parentId) {
-                        return {
-                            ...comment,
-                            children: [...(comment.children || []), newComment],
-                        };
-                    }
-                    if (comment.children) {
-                        return {
-                            ...comment,
-                            children: addReplyToComments(comment.children),
-                        };
-                    }
-                    return comment;
-                });
-            };
-
-            return {
-                comments: addReplyToComments(state.comments),
-                uiState: {
-                    ...state.uiState,
-                    isReplying: null,
-                    votes: {
-                        ...state.uiState.votes,
-                        [newCommentId]: "up", // Auto-upvote
-                    },
-                },
-            };
-        }),
 
     editComment: async (commentId: string, content: string) => {
         // Optimistic update

@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Comment;
 
 use App\Http\Controllers\Controller;
+use App\Models\Anidb\AnidbAnime;
+use App\Models\Anime\AnimeMap;
 use App\Models\Comment;
 use App\Models\Movie;
+use App\Models\TvSeason;
 use App\Models\TvShow;
-use App\Models\UserActivity;
+use App\Models\User;
 use Carbon\CarbonInterface;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
@@ -20,7 +23,11 @@ class CommentController extends Controller
         $modelClass = match ($type) {
             'movie' => Movie::class,
             'tv' => TvShow::class,
-            'user' => UserActivity::class,
+            'tvseason' => TvSeason::class,
+            'animemovie' => AnidbAnime::class,
+            'animetv' => AnimeMap::class,
+            'animeseason' => AnidbAnime::class,
+            'user' => User::class,
         };
 
         $commentable = $modelClass::findOrFail($id);
@@ -51,7 +58,11 @@ class CommentController extends Controller
         $modelClass = match ($type) {
             'movie' => Movie::class,
             'tv' => TvShow::class,
-            'user' => UserActivity::class,
+            'tvseason' => TvSeason::class,
+            'animemovie' => AnidbAnime::class,
+            'animetv' => AnimeMap::class,
+            'animeseason' => AnidbAnime::class,
+            'user' => User::class,
         };
 
         $commentable = $modelClass::findOrFail($id);

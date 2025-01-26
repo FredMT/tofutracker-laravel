@@ -1,24 +1,29 @@
 import { useCommentStore } from "@/stores/commentStore";
-import { CommentEditor } from "./CommentEditor";
-import { CommentThread } from "./CommentThread";
 import { usePage } from "@inertiajs/react";
-import { useEffect } from "react";
-import { Comment } from "./types";
-import { Text, Stack, Title, Divider } from "@mantine/core";
+import { Stack, Text, Title } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { InfoIcon } from "lucide-react";
+import { useEffect } from "react";
+import { CommentEditor } from "./CommentEditor";
+import { CommentThread } from "./CommentThread";
+import { Auth } from "@/types";
+import { Comment } from "./types";
+import { ContentType } from "@/types";
 
 interface Props {
     comments: Comment[];
-    type: "movie" | "tv" | "user";
+    type: ContentType;
     data: {
-        id: string;
+        id?: string;
+        anidb_id?: string;
+        map_id?: string;
     };
+    auth: Auth;
     [key: string]: any;
 }
 
 export default function Comments() {
-    const { comments, type, data } = usePage<Props>().props;
+    const { comments, type, data, auth } = usePage<Props>().props;
     const {
         comments: storeComments,
         addComment,
@@ -29,9 +34,40 @@ export default function Comments() {
         setInitialComments(comments);
     }, [comments]);
 
+    const getContentId = () => {
+        switch (type) {
+            case "animemovie":
+                return data.anidb_id;
+            case "animetv":
+                return data.map_id;
+            default:
+                return data.id;
+        }
+    };
+
     const handleAddComment = async (content: string) => {
+        if (!auth.user) {
+            notifications.show({
+                title: "Error",
+                message: "You must be logged in to comment",
+                icon: <InfoIcon />,
+                color: "red",
+            });
+            return;
+        }
+
         try {
-            await addComment(type, data.id, content, null);
+            const contentId = getContentId();
+            if (!contentId) {
+                throw new Error("Content ID not found");
+            }
+            await addComment(
+                type,
+                contentId,
+                content,
+                null,
+                auth.user.username
+            );
         } catch (error) {
             notifications.show({
                 title: "Error",

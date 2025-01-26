@@ -12,12 +12,14 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Http\Controllers\Comment\CommentController;
 
 class TvSeasonController extends Controller
 {
     public function __construct(
         private readonly TvShowActions $tvShowActions,
-        private readonly TmdbService $tmdbService
+        private readonly TmdbService $tmdbService,
+        private readonly CommentController $commentController
     ) {}
 
     /**
@@ -35,6 +37,7 @@ class TvSeasonController extends Controller
                 return $season->filteredData;
             });
             $seasonId = $seasonData['id'];
+            $comments = $this->commentController->index('tvseason', $seasonId);
 
             $userLibrary = null;
             $userLists = null;
@@ -78,9 +81,10 @@ class TvSeasonController extends Controller
                 'user_lists' => $userLists,
                 'type' => 'tvseason',
                 'links' => $links,
+                'comments' => $comments,
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to retrieve TV season: '.$e->getMessage());
+            logger()->error('Failed to retrieve TV season: ' . $e->getMessage());
             logger()->error($e->getTraceAsString());
 
             return $this->tvShowActions->errorResponse($e);

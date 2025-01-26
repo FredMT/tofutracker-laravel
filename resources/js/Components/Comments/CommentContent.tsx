@@ -13,6 +13,8 @@ interface CommentContentProps
     isEditing?: boolean;
     onSaveEdit?: (content: string) => void;
     onCancelEdit?: () => void;
+    isEdited: boolean;
+    isDeleted: boolean;
 }
 
 export function CommentContent({

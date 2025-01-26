@@ -3,10 +3,23 @@ import { CommentContent } from "./CommentContent";
 import { CommentEditor } from "./CommentEditor";
 import { CommentThreadProps } from "./types";
 import { usePage } from "@inertiajs/react";
+import { ContentType, Auth } from "@/types";
+import { notifications } from "@mantine/notifications";
+import { InfoIcon } from "lucide-react";
+
+interface PageProps {
+    type: ContentType;
+    data: {
+        id?: string;
+        anidb_id?: string;
+        map_id?: string;
+    };
+    auth: Auth;
+    [key: string]: any;
+}
 
 export function CommentThread({ children, ...props }: CommentThreadProps) {
-    const { type, data } = usePage<{ type: string; data: { id: string } }>()
-        .props;
+    const { type, data, auth } = usePage<PageProps>().props;
     const {
         uiState,
         setReplying,
@@ -19,15 +32,61 @@ export function CommentThread({ children, ...props }: CommentThreadProps) {
     const isEditing = uiState.isEditing === props.id;
     const isCollapsed = uiState.isCollapsed.includes(props.id);
 
+    const getContentId = () => {
+        switch (type) {
+            case "animemovie":
+                return data.anidb_id;
+            case "animetv":
+                return data.map_id;
+            default:
+                return data.id;
+        }
+    };
+
     const handleReply = () => {
+        if (!auth.user) {
+            notifications.show({
+                title: "Error",
+                message: "You must be logged in to reply",
+                icon: <InfoIcon />,
+                color: "red",
+            });
+            return;
+        }
         setReplying(props.id);
     };
 
     const handleSaveReply = async (content: string) => {
+        if (!auth.user) {
+            notifications.show({
+                title: "Error",
+                message: "You must be logged in to reply",
+                icon: <InfoIcon />,
+                color: "red",
+            });
+            return;
+        }
+
         try {
-            await addComment(type, data.id, content, props.id);
+            const contentId = getContentId();
+            if (!contentId) {
+                throw new Error("Content ID not found");
+            }
+            await addComment(
+                type,
+                contentId,
+                content,
+                props.id,
+                auth.user.username
+            );
             setReplying(null);
         } catch (error) {
+            notifications.show({
+                title: "Error",
+                message: "Failed to add reply",
+                icon: <InfoIcon />,
+                color: "red",
+            });
             console.error("Failed to add reply:", error);
         }
     };
@@ -37,14 +96,39 @@ export function CommentThread({ children, ...props }: CommentThreadProps) {
     };
 
     const handleEdit = () => {
+        if (!auth.user) {
+            notifications.show({
+                title: "Error",
+                message: "You must be logged in to edit",
+                icon: <InfoIcon />,
+                color: "red",
+            });
+            return;
+        }
         setEditing(props.id);
     };
 
     const handleSaveEdit = async (content: string) => {
+        if (!auth.user) {
+            notifications.show({
+                title: "Error",
+                message: "You must be logged in to edit",
+                icon: <InfoIcon />,
+                color: "red",
+            });
+            return;
+        }
+
         try {
             await editComment(props.id, content);
             setEditing(null);
         } catch (error) {
+            notifications.show({
+                title: "Error",
+                message: "Failed to edit comment",
+                icon: <InfoIcon />,
+                color: "red",
+            });
             console.error("Failed to edit comment:", error);
         }
     };
@@ -79,7 +163,7 @@ export function CommentThread({ children, ...props }: CommentThreadProps) {
                     onSaveEdit={handleSaveEdit}
                     onCancelEdit={handleCancelEdit}
                 />
-                {isReplying && (
+                {isReplying && auth.user && (
                     <div className="mt-4">
                         <CommentEditor
                             onSave={handleSaveReply}
