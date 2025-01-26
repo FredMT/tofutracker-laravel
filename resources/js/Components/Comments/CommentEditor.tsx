@@ -4,8 +4,11 @@ import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import Superscript from "@tiptap/extension-superscript";
 import SubScript from "@tiptap/extension-subscript";
-import { Button, Group, Stack, Flex } from "@mantine/core";
+import { Button, Group, Stack, Flex, Alert } from "@mantine/core";
 import { useEffect, useState } from "react";
+import { usePage } from "@inertiajs/react";
+import { Auth } from "@/types";
+import { InfoIcon } from "lucide-react";
 
 interface CommentEditorProps {
     onSave: (content: string) => void;
@@ -20,6 +23,8 @@ export function CommentEditor({
     isReply = false,
     initialContent = "",
 }: CommentEditorProps) {
+    const { auth } = usePage<{ auth: Auth }>().props;
+    console.log(auth);
     const [isEmpty, setIsEmpty] = useState(true);
 
     const editor = useEditor({
@@ -89,9 +94,26 @@ export function CommentEditor({
                         Cancel
                     </Button>
                 )}
-                <Button onClick={handleSave} disabled={isEmpty}>
+                <Button
+                    onClick={handleSave}
+                    disabled={
+                        isEmpty || !auth.user || !auth.user.email_verified_at
+                    }
+                >
                     Save
                 </Button>
+                {!auth.user && (
+                    <Alert
+                        title="You must be logged in to comment"
+                        icon={<InfoIcon />}
+                    />
+                )}
+                {auth.user && !auth.user?.email_verified_at && (
+                    <Alert
+                        title="You must verify your email to comment"
+                        icon={<InfoIcon />}
+                    />
+                )}
             </Group>
         </Stack>
     );
