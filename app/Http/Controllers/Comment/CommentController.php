@@ -13,6 +13,7 @@ use App\Models\User;
 use Carbon\CarbonInterface;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
@@ -118,22 +119,23 @@ class CommentController extends Controller
     private function formatComments($comments)
     {
         return $comments->map(function ($comment) {
-            $data = [
-                'id' => (string) $comment->id,
-                'author' => $comment->user?->username,
-                'points' => $comment->points,
-                'timeAgo' => $comment->time_ago,
-                'content' => $comment->body,
-                'isEdited' => $comment->user_id !== null && $comment->created_at->ne($comment->updated_at),
-                'isDeleted' => $comment->user_id === null && $comment->deleted_at !== null,
-            ];
-
-            if ($comment->children->isNotEmpty()) {
-                $data['children'] = $this->formatComments($comment->children);
-            }
-
-            return $data;
+            return $this->formatComment($comment);
         });
+    }
+
+    private function formatComment($comment)
+    {
+        return [
+            'id' => (string) $comment->id,
+            'author' => $comment->user?->username,
+            'points' => $comment->votes->sum('value'),
+            'timeAgo' => $comment->created_at->diffForHumans(),
+            'content' => $comment->body,
+            'children' => $comment->children->map(fn($child) => $this->formatComment($child)),
+            'isEdited' => $comment->user_id !== null && $comment->created_at != $comment->updated_at,
+            'isDeleted' => $comment->user_id === null && $comment->deleted_at !== null,
+            'direction' => $comment->votes->where('user_id', Auth::id())->first()?->value ?? 0,
+        ];
     }
 
     public function destroy(Comment $comment)

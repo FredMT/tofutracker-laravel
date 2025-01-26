@@ -77,6 +77,7 @@ function Movie() {
                                 <RecommendedContent
                                     containerWidth={width * 0.95}
                                 />
+                                <Divider my={16} />
                                 <Comments />
                             </Box>
                         </Stack>
@@ -113,6 +114,7 @@ function Movie() {
                             />
                             <Divider my={16} />
                             <RecommendedContent containerWidth={width * 0.67} />
+                            <Divider my={16} />
                             <Comments />
                         </Box>
                     }

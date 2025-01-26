@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->text('body')->nullable();
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
-            $table->foreignId('parent_id')->nullable()->constrained('comments')->onDelete('cascade');
+            $table->foreignId('parent_id')->nullable();
             $table->morphs('commentable');
             $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
