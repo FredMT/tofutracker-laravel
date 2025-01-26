@@ -288,7 +288,13 @@ summary {
 Removes the default spacing and border for appropriate elements.
 */
 
-blockquote,
+blockquote {
+    padding: 1rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid #d1d5db;
+}
+
 dl,
 dd,
 h1,

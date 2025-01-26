@@ -40,7 +40,7 @@ class Comment extends Model
 
     public function children()
     {
-        return $this->hasManyOfDescendantsAndSelf(self::class)->whereDepth('>', 0);
+        return $this->hasManyOfDescendantsAndSelf(self::class);
     }
 
     public function getPointsAttribute()
