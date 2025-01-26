@@ -45,7 +45,7 @@ class CommentController extends Controller
     {
 
         $request->validate([
-            'body' => 'required|string|max:2000',
+            'body' => 'required|string|min:1|max:2000',
             'parent_id' => 'nullable|exists:comments,id',
         ]);
 
@@ -57,16 +57,14 @@ class CommentController extends Controller
 
         $commentable = $modelClass::findOrFail($id);
 
-        dd($commentable);
-
         $comment = $commentable->comments()->create([
             'body' => $request->body,
-            'user_id' => $request->user->id,
+            'user_id' => $request->user()->id,
             'parent_id' => $request->parent_id,
         ]);
 
         $comment->votes()->create([
-            'user_id' => $request->user->id,
+            'user_id' => $request->user()->id,
             'value' => 1,
         ]);
 
