@@ -21,6 +21,7 @@ import { RegularContentCredits } from "@/Components/Content/Shared/Regular/Regul
 import { RegularBannerImageContainer } from "@/Components/Content/Shared/Regular/RegularBannerImageContainer";
 import RegularPosterImage from "@/Components/Content/Shared/Regular/RegularPosterImage";
 import RecommendedContent from "@/Components/Content/Shared/RecommendedContent";
+import Comments from "@/Components/Comments/Comments";
 
 function Movie() {
     const { width } = useViewportSize();
@@ -111,6 +112,7 @@ function Movie() {
                             />
                             <Divider my={16} />
                             <RecommendedContent containerWidth={width * 0.67} />
+                            <Comments />
                         </Box>
                     }
                 />
