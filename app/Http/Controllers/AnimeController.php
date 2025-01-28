@@ -20,6 +20,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Http\Controllers\Comment\CommentController;
 
 class AnimeController extends Controller
 {
@@ -31,12 +32,15 @@ class AnimeController extends Controller
 
     private TmdbService $tmdbService;
 
-    public function __construct(GetTmdbData $getTmdbData, GetAnidbData $getAnidbData, GetAnimeTypeAction $getAnimeType, TmdbService $tmdbService)
+    private CommentController $commentController;
+
+    public function __construct(GetTmdbData $getTmdbData, GetAnidbData $getAnidbData, GetAnimeTypeAction $getAnimeType, TmdbService $tmdbService, CommentController $commentController)
     {
         $this->getTmdbData = $getTmdbData;
         $this->getAnidbData = $getAnidbData;
         $this->getAnimeType = $getAnimeType;
         $this->tmdbService = $tmdbService;
+        $this->commentController = $commentController;
     }
 
     public function show(Request $request, $accessId): Response
@@ -49,12 +53,15 @@ class AnimeController extends Controller
             $collectionName = $animeMap->collection_name ?? json_decode($tmdbData->getContent(), true)['data']['title'];
             $type = $this->getAnimeType->execute($accessId);
 
+
             // Get first entry from prequel_sequel_chains
             $firstChainEntry = null;
             if (! empty($anidbData['prequel_sequel_chains'])) {
                 $firstChain = array_values($anidbData['prequel_sequel_chains'])[0] ?? [];
                 $firstChainEntry = $firstChain[0] ?? null;
             }
+
+            $comments = $this->commentController->index($type, $type === 'animetv' ? $accessId : $firstChainEntry['id']);
 
             // Get user's anime library entry if it exists
             $userLibrary = null;
@@ -116,6 +123,7 @@ class AnimeController extends Controller
                 ],
                 'user_library' => $userLibrary,
                 'user_lists' => $userLists,
+                'comments' => $comments,
             ]);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             abort(400, 'Could not find this anime');
@@ -137,6 +145,7 @@ class AnimeController extends Controller
             }
 
             $this->checkAnimeType($seasonId);
+            $comments = $this->commentController->index('animeseason', $seasonId);
 
             $anime = AnidbAnime::with([
                 'characters.seiyuus',
@@ -446,6 +455,7 @@ class AnimeController extends Controller
                     'user_lists' => $userLists,
                     'type' => 'animeseason',
                     'links' => $links,
+                    'comments' => $comments,
                 ]
             );
         } catch (ModelNotFoundException $e) {

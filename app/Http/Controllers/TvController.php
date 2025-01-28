@@ -9,17 +9,20 @@ use App\Services\TmdbService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Http\Controllers\Comment\CommentController;
 
 class TvController extends Controller
 {
     public function __construct(
         private readonly TmdbService $tmdbService,
-        private TvShowActions $tvShowActions
+        private readonly TvShowActions $tvShowActions,
+        private readonly CommentController $commentController
     ) {}
 
     public function show(Request $request, string $id): Response
     {
         $tvShowData = $this->tvShowActions->fetchTvShow($id);
+        $comments = $this->commentController->index('tv', $id);
 
         $userLibrary = null;
         $userLists = null;
@@ -50,6 +53,7 @@ class TvController extends Controller
             'user_library' => $userLibrary,
             'user_lists' => $userLists,
             'type' => 'tv',
+            'comments' => $comments,
         ]);
     }
 }

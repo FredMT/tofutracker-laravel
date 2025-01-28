@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Activity;
 use App\Http\Controllers\Controller;
 use App\Models\UserActivity;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class ToggleActivityLikeController extends Controller
 {
@@ -15,7 +14,7 @@ class ToggleActivityLikeController extends Controller
 
         return back()->with([
             'liked' => $liked,
-            'likesCount' => $activity->likesCount()
+            'likesCount' => $activity->likesCount(),
         ]);
     }
 }

@@ -1,27 +1,94 @@
-import { useState } from "react";
+import { useCommentStore } from "@/stores/commentStore";
 import { CommentContent } from "./CommentContent";
 import { CommentEditor } from "./CommentEditor";
-import { CommentThreadProps, LINE_COLORS } from "./types";
-import { useCommentStore } from "@/stores/commentStore";
+import { CommentThreadProps } from "./types";
+import { usePage } from "@inertiajs/react";
+import { ContentType, Auth } from "@/types";
+import { notifications } from "@mantine/notifications";
+import { InfoIcon } from "lucide-react";
 
-export function CommentThread({
-    children,
-    onReply,
-    onEdit,
-    ...props
-}: CommentThreadProps) {
-    const { uiState, setReplying, setEditing, toggleCollapsed } =
-        useCommentStore();
+interface PageProps {
+    type: ContentType;
+    data: {
+        id?: string;
+        anidb_id?: string;
+        map_id?: string;
+    };
+    auth: Auth;
+    [key: string]: any;
+}
+
+export function CommentThread({ children, ...props }: CommentThreadProps) {
+    const { type, data, auth } = usePage<PageProps>().props;
+    const {
+        uiState,
+        setReplying,
+        setEditing,
+        toggleCollapsed,
+        addComment,
+        editComment,
+    } = useCommentStore();
     const isReplying = uiState.isReplying === props.id;
     const isEditing = uiState.isEditing === props.id;
     const isCollapsed = uiState.isCollapsed.includes(props.id);
 
+    const getContentId = () => {
+        switch (type) {
+            case "animemovie":
+                return data.anidb_id;
+            case "animetv":
+                return data.map_id;
+            default:
+                return data.id;
+        }
+    };
+
     const handleReply = () => {
+        if (!auth.user) {
+            notifications.show({
+                title: "Error",
+                message: "You must be logged in to reply",
+                icon: <InfoIcon />,
+                color: "red",
+            });
+            return;
+        }
         setReplying(props.id);
     };
 
-    const handleSaveReply = (content: string) => {
-        onReply(props.id, content);
+    const handleSaveReply = async (content: string) => {
+        if (!auth.user) {
+            notifications.show({
+                title: "Error",
+                message: "You must be logged in to reply",
+                icon: <InfoIcon />,
+                color: "red",
+            });
+            return;
+        }
+
+        try {
+            const contentId = getContentId();
+            if (!contentId) {
+                throw new Error("Content ID not found");
+            }
+            await addComment(
+                type,
+                contentId,
+                content,
+                props.id,
+                auth.user.username
+            );
+            setReplying(null);
+        } catch (error) {
+            notifications.show({
+                title: "Error",
+                message: "Failed to add reply",
+                icon: <InfoIcon />,
+                color: "red",
+            });
+            console.error("Failed to add reply:", error);
+        }
     };
 
     const handleCancelReply = () => {
@@ -29,11 +96,41 @@ export function CommentThread({
     };
 
     const handleEdit = () => {
+        if (!auth.user) {
+            notifications.show({
+                title: "Error",
+                message: "You must be logged in to edit",
+                icon: <InfoIcon />,
+                color: "red",
+            });
+            return;
+        }
         setEditing(props.id);
     };
 
-    const handleSaveEdit = (content: string) => {
-        onEdit(props.id, content);
+    const handleSaveEdit = async (content: string) => {
+        if (!auth.user) {
+            notifications.show({
+                title: "Error",
+                message: "You must be logged in to edit",
+                icon: <InfoIcon />,
+                color: "red",
+            });
+            return;
+        }
+
+        try {
+            await editComment(props.id, content);
+            setEditing(null);
+        } catch (error) {
+            notifications.show({
+                title: "Error",
+                message: "Failed to edit comment",
+                icon: <InfoIcon />,
+                color: "red",
+            });
+            console.error("Failed to edit comment:", error);
+        }
     };
 
     const handleCancelEdit = () => {
@@ -43,7 +140,7 @@ export function CommentThread({
     return (
         <div className="relative">
             <div
-                className={`absolute left-0 top-0 bottom-0 w-[3px] ${LINE_COLORS[0]} hover:bg-gray-300 transition-colors cursor-pointer`}
+                className={`absolute left-0 top-0 bottom-0 w-[3px] bg-gray-700 hover:bg-gray-300 transition-colors cursor-pointer`}
                 onClick={() => toggleCollapsed(props.id)}
                 role="button"
                 tabIndex={0}
@@ -66,7 +163,7 @@ export function CommentThread({
                     onSaveEdit={handleSaveEdit}
                     onCancelEdit={handleCancelEdit}
                 />
-                {isReplying && (
+                {isReplying && auth.user && (
                     <div className="mt-4">
                         <CommentEditor
                             onSave={handleSaveReply}
@@ -78,12 +175,7 @@ export function CommentThread({
                 {!isCollapsed && children && (
                     <div className="mt-2 space-y-6">
                         {children.map((child) => (
-                            <CommentThread
-                                key={child.id}
-                                {...child}
-                                onReply={onReply}
-                                onEdit={onEdit}
-                            />
+                            <CommentThread key={child.id} {...child} />
                         ))}
                     </div>
                 )}

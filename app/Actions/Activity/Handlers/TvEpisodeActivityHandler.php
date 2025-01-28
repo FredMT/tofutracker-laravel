@@ -94,7 +94,7 @@ class TvEpisodeActivityHandler implements TvActivityInterface
                 $metadata['user_tv_episode_ids'] = array_values(
                     array_filter(
                         $metadata['user_tv_episode_ids'] ?? [],
-                        fn($id) => $id !== $subject->id
+                        fn ($id) => $id !== $subject->id
                     )
                 );
 

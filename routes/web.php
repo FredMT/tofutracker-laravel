@@ -5,6 +5,7 @@ use App\Actions\Trending\GetTrendingGenresAndWatchProvidersAction;
 use App\Http\Controllers\Activity\ToggleActivityLikeController;
 use App\Http\Controllers\AnimeController;
 use App\Http\Controllers\Comment\CommentController;
+use App\Http\Controllers\Comment\VoteController;
 use App\Http\Controllers\List\ListBackdropsController;
 use App\Http\Controllers\List\ListBannerController;
 use App\Http\Controllers\List\ListBannerRemoveController;
@@ -170,5 +171,16 @@ Route::get('/list/{list}', [ListController::class, 'show'])->name('list.show');
 Route::get('/{type}/{id}/comments', [CommentController::class, 'index'])
     ->where('type', 'movie|tv|user')
     ->name('comments.index');
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::post('/{type}/{id}/comments', [CommentController::class, 'store'])
+        ->where('type', 'movie|tv|tvseason|animemovie|animetv|animeseason|user')
+        ->name('comments.store');
+    Route::patch('/comments/{comment}', [CommentController::class, 'update'])
+        ->name('comments.update');
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])
+        ->name('comments.destroy');
+    Route::post('/votes', [VoteController::class, 'store']);
+});
 
 require __DIR__.'/auth.php';

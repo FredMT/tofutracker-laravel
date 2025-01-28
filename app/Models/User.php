@@ -53,7 +53,6 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            '',
         ];
     }
 
@@ -80,10 +79,10 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasManyThrough(
             UserAnimeCollection::class,
             UserLibrary::class,
-            'user_id', // Foreign key on user_libraries table
-            'user_library_id', // Foreign key on user_anime_collections table
-            'id', // Local key on users table
-            'id'  // Local key on user_libraries table
+            'user_id',
+            'user_library_id',
+            'id',
+            'id'
         )->whereHas('userLibrary', function ($query) {
             $query->where('type', 'anime');
         });

@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class TvShow extends Model
 {
@@ -487,5 +488,10 @@ class TvShow extends Model
 
             return $startYear === $endYear ? $startYear : "{$startYear} - {$endYear}";
         });
+    }
+
+    public function comments(): MorphMany
+    {
+        return $this->morphMany(Comment::class, 'commentable');
     }
 }

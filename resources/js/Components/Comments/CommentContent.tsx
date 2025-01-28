@@ -6,13 +6,18 @@ import { CommentEditor } from "./CommentEditor";
 import { Comment } from "./types";
 
 interface CommentContentProps
-    extends Pick<Comment, "id" | "author" | "points" | "timeAgo" | "content"> {
+    extends Pick<
+        Comment,
+        "id" | "author" | "points" | "timeAgo" | "content" | "direction"
+    > {
     isCollapsed: boolean;
     onReply: () => void;
     onEdit: () => void;
     isEditing?: boolean;
     onSaveEdit?: (content: string) => void;
     onCancelEdit?: () => void;
+    isEdited: boolean;
+    isDeleted: boolean;
 }
 
 export function CommentContent({
@@ -32,7 +37,11 @@ export function CommentContent({
 
     return (
         <Group gap={8} wrap="nowrap" align="flex-start">
-            <VoteButtons commentId={id} initialPoints={props.points} />
+            <VoteButtons
+                commentId={id}
+                author={props.author}
+                direction={props.direction}
+            />
             <Stack gap={2} style={{ width: "100%" }}>
                 <CommentHeader {...props} />
                 {isEditing ? (
@@ -52,6 +61,7 @@ export function CommentContent({
                     commentId={id}
                     onReply={onReply}
                     onEdit={onEdit}
+                    authorUsername={props.author}
                 />
             </Stack>
         </Group>

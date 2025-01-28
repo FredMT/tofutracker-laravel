@@ -7,12 +7,13 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayo
 import ContentLayout from "@/Layouts/ContentLayout";
 import AnimeSeasonDetails from "@/Pages/AnimeSeasonDetails";
 import { Head, usePage } from "@inertiajs/react";
-import { Box, Space, Stack, Title } from "@mantine/core";
+import { Box, Divider, Space, Stack, Title } from "@mantine/core";
 import { useViewportSize } from "@mantine/hooks";
 import SeasonBreadcrumbs from "@/Components/Content/TV/Seasons/SeasonBreadcrumbs";
 import { AnimeSeason } from "@/types/animeseason";
 import AnimePosterImage from "@/Components/Content/Shared/Anime/AnimePosterImage";
 import { AnimeContentSummary } from "@/Components/Content/Shared/Regular/AnimeContentSummary";
+import Comments from "@/Components/Comments/Comments";
 
 function AnimeSeasonContent() {
     const { data } = usePage<{ data: AnimeSeason }>().props;
@@ -42,12 +43,13 @@ function AnimeSeasonContent() {
                             </Box>
                             <ContentActions />
                             <Box hiddenFrom="sm">
-                                <Stack mt={16}></Stack>
                                 <AnimeSeasonDetails />
                                 <AnimeContentEpisodes />
                                 <AnimeRelatedContent
                                     containerWidth={width * 0.95}
                                 />
+                                <Divider my={16} />
+                                <Comments />
                             </Box>
                         </Stack>
                     }
@@ -70,6 +72,8 @@ function AnimeSeasonContent() {
                             <AnimeRelatedContent
                                 containerWidth={width * 0.67}
                             />
+                            <Divider my={16} />
+                            <Comments />
                         </Box>
                     }
                 />

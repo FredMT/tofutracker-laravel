@@ -6,9 +6,11 @@ use App\Actions\Anime\GetAnimeEpisodes;
 use App\Models\Anime\AnimeChainEntry;
 use App\Models\Anime\AnimeMap;
 use App\Models\Anime\AnimeRelatedEntry;
+use App\Models\Comment;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Znck\Eloquent\Relations\BelongsToThrough;
 
 class AnidbAnime extends Model
@@ -48,7 +50,7 @@ class AnidbAnime extends Model
     protected function title(): Attribute
     {
         return Attribute::get(
-            fn () => $this->title_main
+            fn() => $this->title_main
         );
     }
 
@@ -179,7 +181,7 @@ class AnidbAnime extends Model
             return $mapId;
         }
 
-        throw new \Exception('Map ID not found for Anidb ID: '.$anidbId);
+        throw new \Exception('Map ID not found for Anidb ID: ' . $anidbId);
     }
 
     public function map()
@@ -202,5 +204,10 @@ class AnidbAnime extends Model
             })
             ->select('anime_maps.id as map_id')
             ->value('map_id');
+    }
+
+    public function comments(): MorphMany
+    {
+        return $this->morphMany(Comment::class, 'commentable');
     }
 }

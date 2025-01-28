@@ -1,21 +1,22 @@
 export interface Comment {
     id: string;
-    author: string;
+    author: string | null;
     points: number;
     timeAgo: string;
     content: string;
     children?: Comment[];
+    isEdited: boolean;
+    isDeleted: boolean;
+    direction: number;
 }
 
 export interface CommentThreadProps extends Comment {
-    onReply: (parentId: string, content: string) => void;
-    onEdit: (commentId: string, content: string) => void;
+    children?: Comment[];
 }
 
-export const LINE_COLORS = [
-    "bg-gray-700",
-    "bg-gray-600",
-    "bg-gray-500",
-    "bg-gray-400",
-    "bg-gray-300",
-] as const;
+export interface CommentUIState {
+    isReplying: string | null;
+    isEditing: string | null;
+    isCollapsed: string[];
+    votes: Record<string, "up" | "down" | null>;
+}

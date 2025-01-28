@@ -112,7 +112,7 @@ class UserActivity extends Model
     /**
      * Filter out hidden metadata keys.
      *
-     * @param array<string, mixed> $metadata
+     * @param  array<string, mixed>  $metadata
      * @return array<string, mixed>
      */
     protected function filterHiddenMetadata(array $metadata): array
