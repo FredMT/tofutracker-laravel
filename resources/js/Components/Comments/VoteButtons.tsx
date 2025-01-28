@@ -1,24 +1,40 @@
-import { ActionIcon, Flex, Text } from "@mantine/core";
-import { ArrowUpIcon, ArrowDownIcon } from "lucide-react";
 import { useCommentStore } from "@/stores/commentStore";
+import { ActionIcon, Flex } from "@mantine/core";
+import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
+import { useState } from "react";
 
 interface VoteButtonsProps {
     commentId: string;
     author: string | null;
+    direction: number;
 }
 
-export function VoteButtons({ commentId, author }: VoteButtonsProps) {
-    const { vote, uiState } = useCommentStore();
-    const voted = uiState.votes[commentId];
+export function VoteButtons({
+    commentId,
+    author,
+    direction: initialDirection,
+}: VoteButtonsProps) {
+    const vote = useCommentStore((state) => state.vote);
+    const currentVote = useCommentStore(
+        (state) => state.uiState.votes[commentId]
+    );
+    const [isVoting, setIsVoting] = useState(false);
 
-    // Don't show vote buttons for deleted comments
     if (author === null) return null;
 
-    const handleVote = (direction: "up" | "down") => {
-        if (voted === direction) {
-            vote(commentId, null);
-        } else {
-            vote(commentId, direction);
+    const handleVote = async (clickedDirection: "up" | "down") => {
+        if (isVoting) return;
+
+        try {
+            setIsVoting(true);
+            await vote(
+                commentId,
+                currentVote === clickedDirection ? null : clickedDirection
+            );
+        } catch (error) {
+            console.error("Failed to vote:", error);
+        } finally {
+            setIsVoting(false);
         }
     };
 
@@ -26,15 +42,17 @@ export function VoteButtons({ commentId, author }: VoteButtonsProps) {
         <Flex direction="column" align="center" gap="xs" maw={26}>
             <ActionIcon
                 onClick={() => handleVote("up")}
-                variant="subtle"
-                c={voted === "up" ? "blue" : "dimmed"}
+                variant="transparent"
+                c={currentVote === "up" ? "blue" : "dimmed"}
+                disabled={isVoting}
             >
                 <ArrowUpIcon className="h-4 w-4" />
             </ActionIcon>
             <ActionIcon
                 onClick={() => handleVote("down")}
-                variant="subtle"
-                c={voted === "down" ? "red" : "dimmed"}
+                variant="transparent"
+                c={currentVote === "down" ? "red" : "dimmed"}
+                disabled={isVoting}
             >
                 <ArrowDownIcon className="h-4 w-4" />
             </ActionIcon>

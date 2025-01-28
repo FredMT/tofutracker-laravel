@@ -5,6 +5,7 @@ use App\Actions\Trending\GetTrendingGenresAndWatchProvidersAction;
 use App\Http\Controllers\Activity\ToggleActivityLikeController;
 use App\Http\Controllers\AnimeController;
 use App\Http\Controllers\Comment\CommentController;
+use App\Http\Controllers\Comment\VoteController;
 use App\Http\Controllers\List\ListBackdropsController;
 use App\Http\Controllers\List\ListBannerController;
 use App\Http\Controllers\List\ListBannerRemoveController;
@@ -179,6 +180,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('comments.update');
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])
         ->name('comments.destroy');
+    Route::post('/votes', [VoteController::class, 'store']);
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

@@ -1,32 +1,7 @@
 import { create } from "zustand";
-import { Comment } from "../Components/Comments/types";
+import { Comment, CommentUIState } from "../Components/Comments/types";
 import axios from "axios";
-
-interface CommentUIState {
-    isReplying: string | null;
-    isEditing: string | null;
-    isCollapsed: string[];
-    votes: Record<string, "up" | "down" | null>;
-}
-
-interface CommentStore {
-    comments: Comment[];
-    uiState: CommentUIState;
-    addComment: (
-        commentableType: string,
-        commentableId: string,
-        content: string,
-        parentId: string | null,
-        username: string
-    ) => Promise<void>;
-    editComment: (commentId: string, content: string) => void;
-    deleteComment: (commentId: string) => void;
-    setReplying: (commentId: string | null) => void;
-    setEditing: (commentId: string | null) => void;
-    toggleCollapsed: (commentId: string) => void;
-    vote: (commentId: string, direction: "up" | "down" | null) => void;
-    setInitialComments: (comments: Comment[]) => void;
-}
+import { CommentStore } from "./types";
 
 export const useCommentStore = create<CommentStore>((set) => ({
     comments: [],
@@ -38,9 +13,35 @@ export const useCommentStore = create<CommentStore>((set) => ({
     },
 
     setInitialComments: (comments: Comment[]) =>
-        set(() => ({
-            comments,
-        })),
+        set((state) => {
+            // Initialize votes based on comment directions
+            const initialVotes = comments.reduce((acc, comment) => {
+                if (comment.direction === 1) {
+                    acc[comment.id] = "up";
+                } else if (comment.direction === -1) {
+                    acc[comment.id] = "down";
+                }
+                // Recursively process children
+                if (comment.children) {
+                    comment.children.forEach((child) => {
+                        if (child.direction === 1) {
+                            acc[child.id] = "up";
+                        } else if (child.direction === -1) {
+                            acc[child.id] = "down";
+                        }
+                    });
+                }
+                return acc;
+            }, {} as Record<string, "up" | "down" | null>);
+
+            return {
+                comments,
+                uiState: {
+                    ...state.uiState,
+                    votes: initialVotes,
+                },
+            };
+        }),
 
     addComment: async (
         commentableType: string,
@@ -59,6 +60,7 @@ export const useCommentStore = create<CommentStore>((set) => ({
             children: [],
             isEdited: false,
             isDeleted: false,
+            direction: 1,
         };
 
         // Optimistic update
@@ -402,46 +404,69 @@ export const useCommentStore = create<CommentStore>((set) => ({
             };
         }),
 
-    vote: (commentId: string, direction: "up" | "down" | null) =>
-        set((state) => {
-            const updatePointsInTree = (comments: Comment[]): Comment[] => {
-                return comments.map((comment) => {
-                    if (comment.id === commentId) {
-                        const currentVote = state.uiState.votes[commentId];
-                        let pointsDiff = 0;
+    vote: async (commentId: string, direction: "up" | "down" | null) => {
+        try {
+            const response = await axios.post("/votes", {
+                commentId,
+                direction:
+                    direction === "up" ? 1 : direction === "down" ? -1 : 0,
+            });
 
-                        // Remove previous vote if exists
-                        if (currentVote === "up") pointsDiff -= 1;
-                        if (currentVote === "down") pointsDiff += 1;
+            const serverDirection = response.data.direction;
+            const newDirection =
+                serverDirection === 1
+                    ? "up"
+                    : serverDirection === -1
+                    ? "down"
+                    : null;
 
-                        // Add new vote
-                        if (direction === "up") pointsDiff += 1;
-                        if (direction === "down") pointsDiff -= 1;
+            set((state) => {
+                let targetComment: Comment | null = null;
+                const findComment = (comments: Comment[]): Comment[] => {
+                    return comments.map((comment) => {
+                        if (comment.id === commentId) {
+                            targetComment = comment;
+                            const currentVote = state.uiState.votes[commentId];
+                            const pointsDiff =
+                                (currentVote === "up"
+                                    ? -1
+                                    : currentVote === "down"
+                                    ? 1
+                                    : 0) +
+                                (newDirection === "up"
+                                    ? 1
+                                    : newDirection === "down"
+                                    ? -1
+                                    : 0);
 
-                        return {
-                            ...comment,
-                            points: comment.points + pointsDiff,
-                        };
-                    }
-                    if (comment.children) {
-                        return {
-                            ...comment,
-                            children: updatePointsInTree(comment.children),
-                        };
-                    }
-                    return comment;
-                });
-            };
+                            return {
+                                ...comment,
+                                points: comment.points + pointsDiff,
+                            };
+                        }
+                        return comment.children
+                            ? {
+                                  ...comment,
+                                  children: findComment(comment.children),
+                              }
+                            : comment;
+                    });
+                };
 
-            return {
-                comments: updatePointsInTree(state.comments),
-                uiState: {
-                    ...state.uiState,
-                    votes: {
-                        ...state.uiState.votes,
-                        [commentId]: direction,
+                return {
+                    comments: findComment(state.comments),
+                    uiState: {
+                        ...state.uiState,
+                        votes: {
+                            ...state.uiState.votes,
+                            [commentId]: newDirection,
+                        },
                     },
-                },
-            };
-        }),
+                };
+            });
+        } catch (error) {
+            console.error("Failed to vote:", error);
+            throw error;
+        }
+    },
 }));
