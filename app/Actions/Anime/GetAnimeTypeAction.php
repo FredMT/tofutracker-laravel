@@ -4,7 +4,7 @@ namespace App\Actions\Anime;
 
 use App\Models\Anidb\AnidbAnime;
 use App\Models\Anime\AnimeMap;
-use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 
 class GetAnimeTypeAction
 {
@@ -12,10 +12,13 @@ class GetAnimeTypeAction
     {
         $animeMap = AnimeMap::where('id', $accessId)->firstOrFail();
 
-        $allIds = array_merge(
-            $animeMap->data['other_related_ids'],
-            Arr::flatten($animeMap->data['prequel_sequel_chains'])
-        );
+        // Get all anime IDs from chain entries and related entries
+        $allIds = Collection::make()
+            ->merge($animeMap->relatedEntries()->pluck('anime_id'))
+            ->merge($animeMap->chainEntries()->pluck('anime_id'))
+            ->unique()
+            ->values()
+            ->all();
 
         // If there's only one ID
         if (count($allIds) === 1) {
