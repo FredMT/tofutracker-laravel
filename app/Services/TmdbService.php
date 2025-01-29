@@ -16,17 +16,17 @@ class TmdbService
     public function __construct()
     {
         $this->client = Http::withHeaders([
-            'Authorization' => 'Bearer ' . config('services.tmdb.token'),
             'Accept' => 'application/json',
-        ])->baseUrl($this->baseUrl);
+        ])->baseUrl($this->baseUrl)->withQueryParameters([
+            'api_key' => config('services.tmdb.key')
+        ]);
     }
 
     public function getMovieBasic(string $id)
     {
         try {
             return Cache::remember("tmdb_movie_basic_{$id}", now()->addMonth(), function () use ($id) {
-                $response = Http::withToken(config('services.tmdb.token'))
-                    ->get("{$this->baseUrl}/movie/{$id}");
+                $response = $this->client->get("/movie/{$id}");
 
                 $movieData = $response->json();
 
@@ -50,8 +50,7 @@ class TmdbService
     {
         try {
             return Cache::remember("tmdb_tv_basic_{$id}", now()->addMonth(), function () use ($id) {
-                $response = Http::withToken(config('services.tmdb.token'))
-                    ->get("{$this->baseUrl}/tv/{$id}");
+                $response = $this->client->get("/tv/{$id}");
 
                 $tvData = $response->json();
 
@@ -74,12 +73,11 @@ class TmdbService
     public function getMovie(string $id): array
     {
         try {
-            $response = Http::withToken(config('services.tmdb.token'))
-                ->get("{$this->baseUrl}/movie/{$id}", [
-                    'append_to_response' => 'credits,external_ids,images,keywords,release_dates,similar,videos,translations,watch/providers,recommendations',
-                    'include_image_language' => 'en,null',
-                    'include_video_language' => 'en',
-                ]);
+            $response = $this->client->get("/movie/{$id}", [
+                'append_to_response' => 'credits,external_ids,images,keywords,release_dates,similar,videos,translations,watch/providers,recommendations',
+                'include_image_language' => 'en,null',
+                'include_video_language' => 'en',
+            ]);
 
             return [
                 'data' => $response->json(),
@@ -94,12 +92,11 @@ class TmdbService
     public function getMovieAnime(string $id): array
     {
         try {
-            $response = Http::withToken(config('services.tmdb.token'))
-                ->get("{$this->baseUrl}/movie/{$id}", [
-                    'append_to_response' => 'images,recommendations,videos,release_dates',
-                    'include_image_language' => 'en,null',
-                    'include_video_language' => 'en',
-                ]);
+            $response = $this->client->get("/movie/{$id}", [
+                'append_to_response' => 'images,recommendations,videos,release_dates',
+                'include_image_language' => 'en,null',
+                'include_video_language' => 'en',
+            ]);
 
             $data = $response->json();
 
@@ -128,14 +125,12 @@ class TmdbService
 
     public function getTv(string $id)
     {
-
         try {
-            $response = Http::withToken(config('services.tmdb.token'))
-                ->get("{$this->baseUrl}/tv/{$id}", [
-                    'append_to_response' => 'aggregate_credits,external_ids,images,keywords,content_ratings,similar,videos,translations,watch/providers,recommendations',
-                    'include_image_language' => 'en,null',
-                    'include_video_language' => 'en',
-                ]);
+            $response = $this->client->get("/tv/{$id}", [
+                'append_to_response' => 'aggregate_credits,external_ids,images,keywords,content_ratings,similar,videos,translations,watch/providers,recommendations',
+                'include_image_language' => 'en,null',
+                'include_video_language' => 'en',
+            ]);
 
             return [
                 'data' => $response->json(),
@@ -150,12 +145,11 @@ class TmdbService
     public function getTvAnime(string $id): array
     {
         try {
-            $response = Http::withToken(config('services.tmdb.token'))
-                ->get("{$this->baseUrl}/tv/{$id}", [
-                    'append_to_response' => 'images,recommendations,videos,content_ratings',
-                    'include_image_language' => 'en,null',
-                    'include_video_language' => 'en',
-                ]);
+            $response = $this->client->get("/tv/{$id}", [
+                'append_to_response' => 'images,recommendations,videos,content_ratings',
+                'include_image_language' => 'en,null',
+                'include_video_language' => 'en',
+            ]);
 
             $data = $response->json();
 
@@ -209,7 +203,6 @@ class TmdbService
 
     public function getSeason(int $tvShowId, int $seasonNumber)
     {
-
         try {
             $response = $this->client->get("/tv/{$tvShowId}/season/{$seasonNumber}", [
                 'language' => 'en-US',
@@ -307,10 +300,9 @@ class TmdbService
 
             $endpoint = $externalId->type === 'MOVIE' ? 'movie' : 'tv';
 
-            $response = $this->client
-                ->get("/{$endpoint}/{$externalId->themoviedb_id}/images", [
-                    'include_image_language' => 'en,null',
-                ]);
+            $response = $this->client->get("/{$endpoint}/{$externalId->themoviedb_id}/images", [
+                'include_image_language' => 'en,null',
+            ]);
 
             if (! $response->successful()) {
                 return null;
