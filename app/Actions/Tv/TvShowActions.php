@@ -39,9 +39,7 @@ class TvShowActions
             return $this->createTvShow($showData);
         }
 
-        // Use the already fetched show data to check etag
         if ($tvShow->etag !== $showData['etag']) {
-            // Queue show update with already fetched data
             UpdateTvShow::dispatch($tvShow, $showData)
                 ->afterCommit();
         }
@@ -65,7 +63,6 @@ class TvShowActions
         // Check if season needs update
         $latestSeasonData = $this->tmdbService->getSeason($tvShow->id, $seasonNumber);
         if ($season->etag !== $latestSeasonData['etag']) {
-            // Queue season update
             UpdateTvSeason::dispatch($season, $latestSeasonData)
                 ->afterCommit();
         }
@@ -93,7 +90,6 @@ class TvShowActions
             'etag' => $data['etag'],
         ]);
 
-        // Create seasons for the show
         foreach ($seasons as $seasonData) {
             $this->createTvSeason($tvShow, $seasonData['season_number']);
         }
@@ -124,7 +120,7 @@ class TvShowActions
 
         if (! empty($episodes)) {
             TvEpisode::insert(
-                collect($episodes)->map(fn ($episode) => [
+                collect($episodes)->map(fn($episode) => [
                     'id' => $episode['id'],
                     'show_id' => $tvShow->id,
                     'season_id' => $tvSeason->id,
@@ -141,28 +137,24 @@ class TvShowActions
     /**
      * Update TV show details
      */
-    public function updateTvShow(TvShow $tvShow, ?array $data = null): TvShow
+    public function updateTvShow(TvShow $tvShow, ?array $data = null, bool $checkETag = true): TvShow
     {
         try {
-            // If data is not provided, check if update is needed
             if (! $data) {
                 $tmdbService = app(TmdbService::class);
                 $response = $tmdbService->getTv($tvShow->id);
 
-                // Return early if no update needed
-                if ($tvShow->etag === $response['etag']) {
+                if ($checkETag && $tvShow->etag === $response['etag']) {
                     return $tvShow;
                 }
 
                 $data = $response;
             }
 
-            // Extract and remove seasons data to prevent duplication
             $showData = $data['data'];
             $seasons = $showData['seasons'] ?? [];
             unset($showData['seasons']);
 
-            // Update the show
             $tvShow->update([
                 'data' => $showData,
                 'etag' => $data['etag'],
@@ -173,7 +165,7 @@ class TvShowActions
                 $season = $tvShow->seasons()->firstWhere('season_number', $seasonData['season_number']);
 
                 if ($season) {
-                    $this->updateTvSeason($season);
+                    $this->updateTvSeason($season, null, $checkETag);
                 } else {
                     $this->createTvSeason($tvShow, $seasonData['season_number']);
                 }
@@ -181,7 +173,7 @@ class TvShowActions
 
             return $tvShow->refresh();
         } catch (\Exception $e) {
-            logger()->error('Error updating TV show: '.$e->getMessage());
+            logger()->error('Error updating TV show: ' . $e->getMessage());
             throw $e;
         }
     }
@@ -189,37 +181,31 @@ class TvShowActions
     /**
      * Update TV season details
      */
-    public function updateTvSeason(TvSeason $tvSeason, ?array $data = null): TvSeason
+    public function updateTvSeason(TvSeason $tvSeason, ?array $data = null, bool $checkETag = true): TvSeason
     {
         try {
-            // If data is not provided, check if update is needed
             if (! $data) {
                 $tmdbService = app(TmdbService::class);
                 $response = $tmdbService->getSeason($tvSeason->show_id, $tvSeason->season_number);
 
-                // Return early if no update needed
-                if ($tvSeason->etag === $response['etag']) {
+                if ($checkETag && $tvSeason->etag === $response['etag']) {
                     return $tvSeason;
                 }
 
                 $data = $response;
             }
 
-            // Extract and remove episodes data to prevent duplication
             $seasonData = $data['data'];
             $episodes = $seasonData['episodes'] ?? [];
             unset($seasonData['episodes']);
 
-            // Update the season
             $tvSeason->update([
                 'data' => $seasonData,
                 'etag' => $data['etag'],
             ]);
 
-            // Update or create episodes
             if (! empty($episodes)) {
-                // Prepare episodes data for bulk upsert
-                $episodesData = collect($episodes)->map(fn ($episode) => [
+                $episodesData = collect($episodes)->map(fn($episode) => [
                     'id' => $episode['id'],
                     'show_id' => $tvSeason->show_id,
                     'season_id' => $tvSeason->id,
@@ -228,17 +214,16 @@ class TvShowActions
                     'updated_at' => now(),
                 ])->all();
 
-                // Bulk upsert episodes
                 TvEpisode::upsert(
                     $episodesData,
-                    ['id'], // Unique key
-                    ['data', 'updated_at'] // Columns to update if record exists
+                    ['id'],
+                    ['data', 'updated_at']
                 );
             }
 
             return $tvSeason->refresh();
         } catch (\Exception $e) {
-            logger()->error('Error updating TV season: '.$e->getMessage());
+            logger()->error('Error updating TV season: ' . $e->getMessage());
             throw $e;
         }
     }

@@ -17,6 +17,7 @@ class UpdateOrCreateMovieData implements ShouldQueue
 
     public function __construct(
         public string $movieId,
+        public bool $checkETag = true
     ) {}
 
     public function handle(): void
@@ -26,7 +27,6 @@ class UpdateOrCreateMovieData implements ShouldQueue
 
             if (isset($response['data']['success']) && $response['data']['success'] === false) {
                 logger()->error("Failed to update movie {$this->movieId}: {$response['data']['status_message']}");
-
                 return;
             }
 
@@ -35,9 +35,7 @@ class UpdateOrCreateMovieData implements ShouldQueue
 
             $movie = Movie::find($this->movieId);
 
-            // Only update if etag is different or doesn't exist
-            if (! $movie || $movie->etag !== $etag) {
-
+            if (!$this->checkETag || !$movie || $movie->etag !== $etag) {
                 Movie::updateOrCreate(
                     ['id' => $this->movieId],
                     [
@@ -46,11 +44,13 @@ class UpdateOrCreateMovieData implements ShouldQueue
                     ]
                 );
 
-                $filteredData = $movie->filteredData;
-                Cache::put("movie.{$this->movieId}", $filteredData, now()->addHours(6));
+                $filteredData = $movie?->filteredData;
+                if ($filteredData) {
+                    Cache::put("movie.{$this->movieId}", $filteredData, now()->addHours(6));
+                }
             }
         } catch (\Exception $e) {
-            logger()->error("Error updating movie {$this->movieId}: ".$e->getMessage());
+            logger()->error("Error updating movie {$this->movieId}: " . $e->getMessage());
             throw $e;
         }
     }

@@ -16,12 +16,12 @@ class UpdateTvShow implements ShouldQueue
 
     public function __construct(
         private TvShow $show,
-        private array $data
+        private array $data,
+        private bool $checkETag = true
     ) {}
 
     public function handle(TvShowActions $actions): void
     {
-
-        $actions->updateTvShow($this->show, $this->data);
+        $actions->updateTvShow($this->show, $this->data, $this->checkETag);
     }
 }
