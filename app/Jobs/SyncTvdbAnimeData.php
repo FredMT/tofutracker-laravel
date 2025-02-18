@@ -32,10 +32,12 @@ class SyncTvdbAnimeData implements ShouldQueue
         try {
             $tvdbService->syncTvdbAnimeData($this->tvdbId);
         } catch (TvdbSyncException $e) {
-            logger()->error('Error syncing TVDB anime data: '.$e->getMessage());
+            \Sentry\captureException($e);
+            logger()->error('Error syncing TVDB anime data: ' . $e->getMessage());
         } catch (\Exception $e) {
             $this->fail($e);
-            logger()->error('Error syncing TVDB anime data: '.$e->getMessage());
+            \Sentry\captureException($e);
+            logger()->error('Error syncing TVDB anime data: ' . $e->getMessage());
         }
     }
 }

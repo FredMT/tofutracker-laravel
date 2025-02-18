@@ -1,16 +1,16 @@
-import {AnimeUserLibrary} from "@/types";
-import {WatchStatus} from "@/types/enums";
-import {useForm, usePage} from "@inertiajs/react";
-import {Select} from "@mantine/core";
-import {notifications} from "@mantine/notifications";
-import {Check, CircleAlertIcon} from "lucide-react";
-import {useEffect} from "react";
-import {Anime} from "@/types/anime";
+import { AnimeUserLibrary } from "@/types";
+import { WatchStatus } from "@/types/enums";
+import { useForm, usePage } from "@inertiajs/react";
+import { Select } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
+import { Check, CircleAlertIcon } from "lucide-react";
+import { useEffect } from "react";
+import { Anime } from "@/types/anime";
 
 type AnimeTvWatchStatus = {
     user_library: AnimeUserLibrary;
-    data: Anime
-}
+    data: Anime;
+};
 export default function AnimeTvWatchStatus() {
     const { user_library, data: content } = usePage<AnimeTvWatchStatus>().props;
     if (!content) return null;
@@ -39,7 +39,7 @@ export default function AnimeTvWatchStatus() {
             data.watch_status &&
             data.watch_status !== user_library?.collection.watch_status
         ) {
-            patch(route("animetv.library.update-status"), {
+            patch(route("anime.tv.library.update-status"), {
                 preserveScroll: true,
                 onSuccess: (res: any) => {
                     if (res.props.flash.success) {

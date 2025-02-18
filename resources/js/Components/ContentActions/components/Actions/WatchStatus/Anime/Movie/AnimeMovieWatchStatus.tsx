@@ -40,7 +40,7 @@ export default function AnimeMovieWatchStatus() {
             data.watch_status &&
             data.watch_status !== user_library?.collection.watch_status
         ) {
-            patch(route("animemovie.library.update-status"), {
+            patch(route("anime.movie.library.update-status"), {
                 preserveScroll: true,
                 onSuccess: (res: any) => {
                     if (res.props.flash.success) {

@@ -31,13 +31,13 @@ class UserAnimeEpisodeController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'tvdb_episode_id' => ['required', 'integer', 'exists:anime_episode_mappings,tvdb_episode_id'],
-            'anidb_id' => ['required', 'integer', 'exists:anidb_anime,id'],
-            'map_id' => ['required', 'integer', 'exists:anime_maps,id'],
-        ]);
 
         try {
+            $validated = $request->validate([
+                'tvdb_episode_id' => ['required', 'integer', 'exists:anime_episode_mappings,tvdb_episode_id'],
+                'anidb_id' => ['required', 'integer', 'exists:anidb_anime,id'],
+                'map_id' => ['required', 'integer', 'exists:anime_maps,id'],
+            ]);
 
             $existingEpisode = UserAnimeEpisode::query()
                 ->where('episode_id', $validated['tvdb_episode_id'])
@@ -74,12 +74,14 @@ class UserAnimeEpisodeController extends Controller
                     });
             });
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            \Sentry\captureException($e);
             return back()->with([
                 'success' => false,
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to add anime episode to library: '.$e->getMessage());
+            \Sentry\captureException($e);
+            logger()->error('Failed to add anime episode to library: ' . $e->getMessage());
             logger()->error($e->getTraceAsString());
 
             return back()->with([
@@ -129,7 +131,7 @@ class UserAnimeEpisodeController extends Controller
                 ]);
             });
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            logger()->error('Failed to remove anime episode from library model not found: '.$e->getMessage());
+            logger()->error('Failed to remove anime episode from library model not found: ' . $e->getMessage());
             logger()->error($e->getTraceAsString());
 
             return back()->with([
@@ -137,7 +139,7 @@ class UserAnimeEpisodeController extends Controller
                 'message' => 'Episode not found in your library.',
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to remove anime episode from library: '.$e->getMessage());
+            logger()->error('Failed to remove anime episode from library: ' . $e->getMessage());
             logger()->error($e->getTraceAsString());
 
             return back()->with([
