@@ -17,4 +17,9 @@ class Vote extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public static function getTotalScore(int $commentId): int
+    {
+        return static::where('comment_id', $commentId)->sum('value');
+    }
 }

@@ -17,7 +17,7 @@ class Comment extends Model
 
     protected $appends = ['points', 'time_ago'];
 
-    protected $fillable = ['body', 'parent_id', 'user_id', 'deleted_at'];
+    protected $fillable = ['body', 'parent_id', 'user_id', 'deleted_at', 'vote_milestone'];
 
     protected $casts = [
         'deleted_at' => 'datetime',
