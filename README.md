@@ -1,66 +1,85 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# TofuTracker.com
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+TofuTracker is the ultimate platform for tracking and discovering **movies**, **TV shows**, and **anime**. It unifies data from [AniDB](https://anidb.net), [TMDb](https://www.themoviedb.org), and [TVDB](https://thetvdb.com) into one beautiful, minimalistic interface.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Technology Stack & Architecture
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Frontend**: Built with [React](https://react.dev) to ensure a smooth, interactive experience and a perfectly responsive design across all device widths.
+- **Backend**: Powered by [Laravel](https://laravel.com) combined with [Inertia.js](https://inertiajs.com) for seamless server-driven single-page applications.
+- **Unified Data Sources**: Integrates information from AniDB, TMDb, and TVDB.
+- **Powerful Custom Backend Logic**: Powers the entire site, and manages the unique structure of anime season chains and other content relationships.
+- **Minimalistic UI**: Designed for simplicity and ease of use, with beautiful, responsive layouts.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Features
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 1. Comprehensive Search
+- **Movies**: Quickly search and retrieve detailed movie information.
+- **TV Shows**: Search for TV shows with access to season and episode details.
+- **Anime**: Find anime titles, with results separated into distinct collections that reflect the true season chains (including prequels, sequels, and spin-offs).
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### 2. Detailed Information Display
+- **Movies, TV Shows, & Anime**: View complete details pulled from unified APIs.
+- **TV & Anime**: Easily navigate through seasons and episodes.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 3. Custom Anime Collections
+- Anime is presented as a collection to handle unique season chains.
+- Uses custom backend logic to correctly link prequels, sequels, and spin-offs.
 
-## Laravel Sponsors
+### 4. User Profiles & Activity Tracking
+- **Personalized Profiles**: View your activity, which is separated into different lists for movies, TV, and anime.
+- **Custom Filtering**: Each list has advanced filtering logic, perfectly tailored to its content type.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 5. Interactive Community Features
+- **Reddit-Style Comments**: Comment on movies, TV shows, TV seasons, anime movies, anime collections, and anime seasons.
+- **Voting System**: Vote on comments to promote community engagement.
 
-### Premium Partners
+### 6. Dynamic Homepage
+- **Genre Browsing**: Discover content by genre.
+- **Trending Content**: See the most trending movies, TV shows, and anime based on streaming providers like Netflix, Disney, HBO Max, Crunchyroll, Paramount, and more.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### 7. Viewing Status Management
+- **Status Options**:
+  - **COMPLETED**
+  - **PLANNING**
+  - **WATCHING**
+  - **REWATCHING**
+  - **ONHOLD**
+  - **DROPPED**
+- Easily manage and display your viewing progress.
 
-## Contributing
+### 8. Custom Lists
+- **Unlimited Items**: Create lists without limits.
+- **Beautiful Format**: Each list features its own banner and layout.
+- **Detailed Stats**: Displays total items (with breakdowns for movies, TV, and anime), average rating, and total runtime.
+- **Advanced Filtering & Sorting**: Filter and sort by genres, release date, rating, and more.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-## Code of Conduct
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Unique Selling Point
 
-## Security Vulnerabilities
+TofuTracker is the first website to programmatically separate anime seasons into their own chains. This allows users to fully understand the relationships between anime seasons, from prequels and sequels to spin-offs, creating an unmatched tracking experience.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+## Future Enhancements
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- **Friends and notifications**: Integrate more social features.
+- **Calendar and schedule**: Integrate calendar options. 
+- **Improved Analytics**: Deeper insights into user activity and content trends.
+
+---
+
+## Screenshots
+
+![Homepage](https://github.com/user-attachments/assets/2e8e0550-d475-4362-82a6-2f319c08ab91)
+![search](https://github.com/user-attachments/assets/ed8b3319-8d93-4baa-8367-643ea88506da)
+![Movie](https://github.com/user-attachments/assets/2b031cdd-53e8-47d4-a454-0bb3852f6a58)
+![TV Show](https://github.com/user-attachments/assets/f0f8e739-58d9-4cf2-afc5-c33e8d28205d)
+![TV Season](https://github.com/user-attachments/assets/92b3721f-553d-42bb-9249-9e4f325f80aa)
+![Anime Collection](https://github.com/user-attachments/assets/cde8a8dc-e287-40f2-a6c0-6f8af4f5736b)
+![Anime Season](https://github.com/user-attachments/assets/4d88fc4c-77a8-44ba-8831-d88196d5df3f)
+![User Profile Custom List page](https://github.com/user-attachments/assets/dfa096dd-8a0c-445f-9dee-4b7b193588ad)
