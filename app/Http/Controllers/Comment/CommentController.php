@@ -2,118 +2,93 @@
 
 namespace App\Http\Controllers\Comment;
 
+use App\Actions\Comments\CreateCommentAction;
+use App\Actions\Comments\DeleteCommentAction;
+use App\Actions\Comments\FetchCommentsAction;
+use App\Actions\Comments\UpdateCommentAction;
 use App\Http\Controllers\Controller;
+use App\Models\Comment;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
+
 use App\Models\Anidb\AnidbAnime;
 use App\Models\Anime\AnimeMap;
-use App\Models\Comment;
 use App\Models\Movie;
 use App\Models\TvSeason;
 use App\Models\TvShow;
 use App\Models\User;
 use Carbon\CarbonInterface;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
     use AuthorizesRequests;
 
+    public function __construct(
+        private readonly FetchCommentsAction $fetchCommentsAction,
+        private readonly CreateCommentAction $createCommentAction,
+        private readonly UpdateCommentAction $updateCommentAction,
+        private readonly DeleteCommentAction $deleteCommentAction,
+    ) {}
+
     public function index(string $type, string $id)
     {
-        $modelClass = match ($type) {
-            'movie' => Movie::class,
-            'tv' => TvShow::class,
-            'tvseason' => TvSeason::class,
-            'animemovie' => AnidbAnime::class,
-            'animetv' => AnimeMap::class,
-            'animeseason' => AnidbAnime::class,
-            'user' => User::class,
-        };
-
-        $commentable = $modelClass::findOrFail($id);
-
-        $comments = Comment::with(['user', 'votes'])
-            ->where('commentable_type', $modelClass)
-            ->where('commentable_id', $commentable->id)
-            ->treeOf(function ($query) use ($modelClass, $commentable) {
-                $query->whereNull('parent_id')
-                    ->where('commentable_type', $modelClass)
-                    ->where('commentable_id', $commentable->id);
-            })
-            ->breadthFirst()
-            ->orderBy('created_at', 'desc')
-            ->get()
-            ->toTree();
-
-        return $this->formatComments($comments);
+        try {
+            $comments = $this->fetchCommentsAction->execute($type, $id);
+            return $comments;
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => 'Resource not found'], Response::HTTP_NOT_FOUND);
+        } catch (\Exception $e) {
+            report($e);
+            return response()->json(
+                ['error' => 'Failed to fetch comments'],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
     }
 
-    public function store(Request $request, string $type, string $id)
+    public function store(Request $request, string $type, string $id): JsonResponse
     {
-        $request->validate([
-            'body' => 'required|string|min:1|max:2000',
-            'parent_id' => 'nullable|exists:comments,id',
-        ]);
+        try {
+            $validated = $request->validate([
+                'body' => 'required|string|min:1|max:2000',
+                'parent_id' => 'nullable|exists:comments,id',
+            ]);
 
-        $modelClass = match ($type) {
-            'movie' => Movie::class,
-            'tv' => TvShow::class,
-            'tvseason' => TvSeason::class,
-            'animemovie' => AnidbAnime::class,
-            'animetv' => AnimeMap::class,
-            'animeseason' => AnidbAnime::class,
-            'user' => User::class,
-        };
-
-        $commentable = $modelClass::findOrFail($id);
-
-        $comment = $commentable->comments()->create([
-            'body' => $request->body,
-            'user_id' => $request->user()->id,
-            'parent_id' => $request->parent_id,
-        ]);
-
-        $comment->votes()->create([
-            'user_id' => $request->user()->id,
-            'value' => 1,
-        ]);
-
-        return response()->json([
-            'comment' => [
-                'id' => (string) $comment->id,
-                'author' => $comment->user?->username,
-                'points' => 1,
-                'timeAgo' => 'just now',
-                'content' => $comment->body,
-                'children' => [],
-                'isEdited' => false,
-                'isDeleted' => false,
-            ],
-        ]);
+            $result = $this->createCommentAction->execute($validated, $type, $id, $request->user());
+            return response()->json($result, Response::HTTP_CREATED);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => 'Resource not found'], Response::HTTP_NOT_FOUND);
+        } catch (\Exception $e) {
+            report($e);
+            return response()->json(
+                ['error' => 'Failed to create comment'],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
     }
 
-    public function update(Request $request, Comment $comment)
+    public function update(Request $request, Comment $comment): JsonResponse
     {
-        $this->authorize('update', $comment);
+        try {
+            $this->authorize('update', $comment);
 
-        $validated = $request->validate([
-            'body' => 'required|string|min:1|max:2000',
-        ]);
+            $validated = $request->validate([
+                'body' => 'required|string|min:1|max:2000',
+            ]);
 
-        $comment->update(['body' => $validated['body']]);
-
-        $comment->refresh();
-
-        return response()->json([
-            'id' => (string) $comment->id,
-            'author' => $comment->user?->username,
-            'points' => $comment->votes->sum('value'),
-            'timeAgo' => $comment->updated_at->diffForHumans(now(), CarbonInterface::DIFF_RELATIVE_TO_NOW, true),
-            'content' => $comment->body,
-            'isEdited' => true,
-            'isDeleted' => false,
-        ]);
+            $result = $this->updateCommentAction->execute($comment, $validated);
+            return response()->json($result);
+        } catch (\Exception $e) {
+            report($e);
+            return response()->json(
+                ['error' => 'Failed to update comment'],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
     }
 
     private function formatComments($comments)
@@ -138,26 +113,19 @@ class CommentController extends Controller
         ];
     }
 
-    public function destroy(Comment $comment)
+    public function destroy(Comment $comment): JsonResponse
     {
-        $this->authorize('delete', $comment);
+        try {
+            $this->authorize('delete', $comment);
 
-        // Delete associated votes
-        $comment->votes()->delete();
-
-        // Soft delete the comment
-        $comment->update([
-            'user_id' => null,
-            'body' => '[deleted]',
-            'deleted_at' => now(),
-        ]);
-
-        return response()->json([
-            'id' => (string) $comment->id,
-            'author' => null,
-            'content' => '[deleted]',
-            'isEdited' => false,
-            'isDeleted' => true,
-        ]);
+            $result = $this->deleteCommentAction->execute($comment);
+            return response()->json($result);
+        } catch (\Exception $e) {
+            report($e);
+            return response()->json(
+                ['error' => 'Failed to delete comment'],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
     }
 }
