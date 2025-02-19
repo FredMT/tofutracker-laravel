@@ -2,36 +2,21 @@
 
 namespace App\Http\Controllers\UserTv;
 
-use App\Actions\Tv\Plays\DeleteUserTvSeasonPlayAction;
-use App\Enums\MediaType;
+use App\Actions\UserController\Tv\TvSeason\DeleteUserTvSeasonAction;
+use App\Actions\UserController\Tv\TvSeason\RateUserTvSeasonAction;
+use App\Actions\UserController\Tv\TvSeason\StoreUserTvSeasonAction;
+use App\Actions\UserController\Tv\TvSeason\UpdateWatchStatusUserTvSeasonAction;
 use App\Enums\WatchStatus;
 use App\Http\Controllers\Controller;
-use App\Models\UserLibrary;
-use App\Models\UserTv\UserTvSeason;
-use App\Models\UserTv\UserTvShow;
-use App\Pipeline\Shared\UpdateShowStatus;
-use App\Pipeline\TV\EnsureUserTvLibrary;
-use App\Pipeline\TV\EnsureUserTvShow;
-use App\Pipeline\UserTvSeason\CreateUserTvSeason;
-use App\Pipeline\UserTvSeason\InitializeShowStatus;
-use App\Pipeline\UserTvSeason\UpdateWatchStatus;
-use App\Pipeline\UserTvSeason\ValidateSeasonRelations;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Pipeline;
 use Illuminate\Validation\Rule;
 
 class UserTvSeasonController extends Controller
 {
     use AuthorizesRequests;
 
-    public function __construct(
-        private readonly DeleteUserTvSeasonPlayAction $deleteTvSeasonPlay
-    ) {}
-
-    public function store(Request $request)
+    public function store(Request $request, StoreUserTvSeasonAction $storeSeason)
     {
         $validated = $request->validate([
             'show_id' => ['required', 'integer'],
@@ -39,26 +24,14 @@ class UserTvSeasonController extends Controller
         ]);
 
         try {
-            return DB::transaction(function () use ($validated, $request) {
-                return Pipeline::send([
-                    'user' => $request->user(),
-                    'validated' => $validated,
-                ])
-                    ->through([
-                        ValidateSeasonRelations::class,
-                        EnsureUserTvLibrary::class,
-                        InitializeShowStatus::class,
-                        CreateUserTvSeason::class,
-                    ])
-                    ->then(function ($payload) {
-                        return back()->with([
-                            'success' => true,
-                            'message' => "Season '{$payload['season_title']}' added to {$payload['show_title']} in your library",
-                        ]);
-                    });
-            });
+            $payload = $storeSeason->execute($validated, $request->user());
+
+            return back()->with([
+                'success' => true,
+                'message' => "Season '{$payload['season_title']}' added to {$payload['show_title']} in your library",
+            ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to add season to library: '.$e->getMessage());
+            logger()->error('Failed to add season to library: ' . $e->getMessage());
 
             return back()->with([
                 'success' => false,
@@ -67,7 +40,7 @@ class UserTvSeasonController extends Controller
         }
     }
 
-    public function destroy(Request $request)
+    public function destroy(Request $request, DeleteUserTvSeasonAction $deleteSeason)
     {
         $validated = $request->validate([
             'show_id' => ['required', 'integer'],
@@ -75,26 +48,12 @@ class UserTvSeasonController extends Controller
         ]);
 
         try {
-            return DB::transaction(function () use ($validated, $request) {
-                $season = UserTvSeason::where([
-                    'user_id' => $request->user()->id,
-                    'season_id' => $validated['season_id'],
-                    'show_id' => $validated['show_id'],
-                ])->firstOrFail();
+            $deleteSeason->execute($request->user()->id, $validated);
 
-                $this->authorize('delete', $season);
-
-                // Delete all plays and activities first
-                $this->deleteTvSeasonPlay->execute($season);
-
-                // Then delete the season
-                $season->delete();
-
-                return back()->with([
-                    'success' => true,
-                    'message' => 'Season removed from your library',
-                ]);
-            });
+            return back()->with([
+                'success' => true,
+                'message' => 'Season removed from your library',
+            ]);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return back()->with([
                 'success' => false,
@@ -106,7 +65,7 @@ class UserTvSeasonController extends Controller
                 'message' => 'You are not authorized to remove this season',
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to remove season from library: '.$e->getMessage());
+            logger()->error('Failed to remove season from library: ' . $e->getMessage());
 
             return back()->with([
                 'success' => false,
@@ -115,82 +74,28 @@ class UserTvSeasonController extends Controller
         }
     }
 
-    public function update(Request $request)
+    public function rate(Request $request, RateUserTvSeasonAction $rateSeason)
     {
         $validated = $request->validate([
-            'show_id' => ['required', 'integer'],
-            'season_id' => ['required', 'integer'],
+            'show_id' => ['required', 'integer', 'exists:tv_shows,id'],
+            'season_id' => ['required', 'integer', 'exists:tv_seasons,id'],
             'rating' => ['required', 'numeric', 'min:1', 'max:10'],
         ]);
 
         try {
-            return DB::transaction(function () use ($validated, $request) {
-                // Try to find existing user season entry
-                $userSeason = UserTvSeason::where([
-                    'user_id' => $request->user()->id,
-                    'season_id' => $validated['season_id'],
-                    'show_id' => $validated['show_id'],
-                ])->first();
+            $result = $rateSeason->execute($request->user()->id, $validated);
 
-                // If season exists, check authorization and update
-                if ($userSeason) {
-                    $this->authorize('update', $userSeason);
-
-                    // Check if trying to update to the same rating
-                    if ((float) $validated['rating'] === (float) $userSeason->rating) {
-                        return back()->with([
-                            'success' => false,
-                            'message' => "Season already has a rating of {$userSeason->rating}",
-                        ]);
-                    }
-
-                    $userSeason->update(['rating' => $validated['rating']]);
-
-                    return back()->with([
-                        'success' => true,
-                        'message' => 'Season rating updated successfully',
-                    ]);
-                }
-
-                // If season doesn't exist, create new entries
-                // First, ensure user has a TV library
-                $userLibrary = UserLibrary::firstOrCreate([
-                    'user_id' => $request->user()->id,
-                    'type' => MediaType::TV,
-                ]);
-
-                // Then, ensure user has a TV show entry
-                $userShow = UserTvShow::firstOrCreate(
-                    [
-                        'user_id' => $request->user()->id,
-                        'show_id' => $validated['show_id'],
-                    ],
-                    [
-                        'user_library_id' => $userLibrary->id,
-                    ]
-                );
-
-                // Finally, create the season entry with the rating
-                UserTvSeason::create([
-                    'user_id' => $request->user()->id,
-                    'user_tv_show_id' => $userShow->id,
-                    'show_id' => $validated['show_id'],
-                    'season_id' => $validated['season_id'],
-                    'rating' => $validated['rating'],
-                ]);
-
-                return back()->with([
-                    'success' => true,
-                    'message' => 'Season added to library with rating',
-                ]);
-            });
+            return back()->with([
+                'success' => $result['success'],
+                'message' => $result['message'],
+            ]);
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             return back()->with([
                 'success' => false,
                 'message' => 'You are not authorized to update this season',
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to update season rating: '.$e->getMessage());
+            logger()->error('Failed to update season rating: ' . $e->getMessage());
 
             return back()->with([
                 'success' => false,
@@ -199,65 +104,28 @@ class UserTvSeasonController extends Controller
         }
     }
 
-    public function watch_status(Request $request)
+    public function watch_status(Request $request, UpdateWatchStatusUserTvSeasonAction $updateWatchStatus)
     {
         $validated = $request->validate([
-            'show_id' => ['required', 'integer'],
-            'season_id' => ['required', 'integer'],
+            'show_id' => ['required', 'integer', 'exists:tv_shows,id'],
+            'season_id' => ['required', 'integer', 'exists:tv_seasons,id'],
             'watch_status' => ['required', Rule::enum(WatchStatus::class)],
         ]);
 
         try {
-            return DB::transaction(function () use ($validated, $request) {
-                // Try to find existing user season entry
-                $userSeason = UserTvSeason::where([
-                    'user_id' => $request->user()->id,
-                    'season_id' => $validated['season_id'],
-                    'show_id' => $validated['show_id'],
-                ])->first();
+            $result = $updateWatchStatus->execute($request->user()->id, $validated);
 
-                // Check gate authorization
-                if (! Gate::allows('update-season-watch-status', $userSeason)) {
-                    throw new \Illuminate\Auth\Access\AuthorizationException;
-                }
-
-                // Check if trying to update to the same status
-                if ($userSeason && $userSeason->watch_status === WatchStatus::from($validated['watch_status'])) {
-                    return back()->with([
-                        'success' => false,
-                        'message' => "Season is already marked as {$validated['watch_status']}",
-                    ]);
-                }
-
-                return Pipeline::send([
-                    'user' => $request->user(),
-                    'validated' => $validated,
-                    'user_season' => $userSeason,
-                ])
-                    ->through([
-                        ValidateSeasonRelations::class,
-                        EnsureUserTvLibrary::class,
-                        EnsureUserTvShow::class,
-                        CreateUserTvSeason::class,
-                        UpdateWatchStatus::class,
-                        UpdateShowStatus::class,
-                    ])
-                    ->then(function ($payload) {
-                        $status = $payload['validated']['watch_status'];
-
-                        return back()->with([
-                            'success' => true,
-                            'message' => "Season marked as $status",
-                        ]);
-                    });
-            });
+            return back()->with([
+                'success' => $result['success'],
+                'message' => $result['message'],
+            ]);
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             return back()->with([
                 'success' => false,
                 'message' => 'You are not authorized to update this season',
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to update season watch status: '.$e->getMessage());
+            logger()->error('Failed to update season watch status: ' . $e->getMessage());
 
             return back()->with([
                 'success' => false,

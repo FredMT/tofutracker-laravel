@@ -103,7 +103,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('tv/season/library')->name('tv.season.library.')->group(function () {
         Route::post('/', [UserTvSeasonController::class, 'store'])->name('store');
         Route::delete('/', [UserTvSeasonController::class, 'destroy'])->name('destroy');
-        Route::post('/rate', [UserTvSeasonController::class, 'update'])->name('rate');
+        Route::post('/rate', [UserTvSeasonController::class, 'rate'])->name('rate');
         Route::patch('/status', [UserTvSeasonController::class, 'watch_status'])->name('update-status');
     });
 

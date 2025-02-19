@@ -7,14 +7,14 @@ use App\Models\TvShow;
 use App\Models\UserActivity;
 use App\Models\UserTv\UserTvSeason;
 
-class ManageTvSeasonWatchActivityAction
+class ManageTvSeasonUserActivityAction
 {
     public function execute(UserTvSeason $userSeason, ?array $additionalMetadata = null): UserActivity
     {
         $show = TvShow::find($userSeason->show_id);
         $season = TvSeason::find($userSeason->season_id);
 
-        if (!$show || !$season) {
+        if (! $show || ! $season) {
             throw new \Exception('Show or season not found');
         }
 
@@ -56,11 +56,12 @@ class ManageTvSeasonWatchActivityAction
 
     private function generateDescription(?TvShow $show, ?TvSeason $season): string
     {
-        if (!$show) {
+        if (! $show) {
             return 'Completed TV season';
         }
 
         $seasonTitle = $season?->title ? " {$season->title}" : '';
+
         return "Completed {$show->title}{$seasonTitle}";
     }
 }
