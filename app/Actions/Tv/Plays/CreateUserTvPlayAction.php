@@ -2,14 +2,14 @@
 
 namespace App\Actions\Tv\Plays;
 
-use App\Actions\Activity\CreateUserActivityAction;
+use App\Actions\Activity\ManageTvEpisodeWatchActivityAction;
 use App\Models\UserTv\UserTvEpisode;
 use App\Models\UserTv\UserTvPlay;
 
 class CreateUserTvPlayAction
 {
     public function __construct(
-        private readonly CreateUserActivityAction $createActivity
+        private readonly ManageTvEpisodeWatchActivityAction $manageActivity
     ) {}
 
     public function execute(UserTvEpisode $episode, ?\DateTime $watchedAt = null): UserTvPlay
@@ -28,19 +28,6 @@ class CreateUserTvPlayAction
             'playable_type' => get_class($episode),
             'watched_at' => $watchedAt ?? now(),
         ]);
-
-        $this->createActivity->execute(
-            userId: $episode->user_id,
-            activityType: 'tv_watch',
-            subject: $episode,
-            metadata: [
-                'user_tv_show_id' => $episode->userTvSeason->user_tv_show_id,
-                'user_tv_season_id' => $episode->user_tv_season_id,
-                'show_id' => $episode->show_id,
-                'season_id' => $episode->season_id,
-                'episode_id' => $episode->episode_id,
-            ]
-        );
 
         return $play;
     }

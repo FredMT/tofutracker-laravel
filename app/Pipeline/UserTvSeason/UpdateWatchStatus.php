@@ -23,7 +23,7 @@ class UpdateWatchStatus
     public function __invoke($payload, Closure $next)
     {
         $watchStatus = WatchStatus::from($payload['validated']['watch_status']);
-        $userSeason = $payload['user_season'] ?? null;
+
 
         // If status is COMPLETED, we need to create all episodes and plays
         if ($watchStatus === WatchStatus::COMPLETED) {

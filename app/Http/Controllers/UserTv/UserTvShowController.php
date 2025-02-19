@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\UserTv;
 
+use App\Actions\Activity\ManageTvWatchActivityAction;
 use App\Actions\Tv\Plays\CreateUserTvShowPlayAction;
 use App\Actions\Tv\Plays\DeleteUserTvShowPlayAction;
 use App\Enums\WatchStatus;
@@ -15,6 +16,7 @@ use App\Pipeline\UserTvShow\CreateUserTvShow;
 use App\Pipeline\UserTvShow\CreateUserTvShowForRating;
 use App\Pipeline\UserTvShow\CreateUserTvShowWithStatus;
 use App\Pipeline\UserTvShow\EnsureShowExists;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -25,7 +27,8 @@ class UserTvShowController extends Controller
 {
     public function __construct(
         private readonly DeleteUserTvShowPlayAction $deleteTvShowPlay,
-        private readonly CreateUserTvShowPlayAction $createTvShowPlay
+        private readonly CreateUserTvShowPlayAction $createTvShowPlay,
+        private readonly ManageTvWatchActivityAction $manageActivity
     ) {}
 
     public function store(Request $request)
@@ -53,7 +56,7 @@ class UserTvShowController extends Controller
                     });
             });
         } catch (\Exception $e) {
-            logger()->error('Failed to add show to library: '.$e->getMessage());
+            logger()->error('Failed to add show to library: ' . $e->getMessage());
 
             return back()->with([
                 'success' => false,
@@ -76,13 +79,11 @@ class UserTvShowController extends Controller
                 ])->firstOrFail();
 
                 if (Gate::denies('delete-tv-show', $userShow)) {
-                    throw new \Illuminate\Auth\Access\AuthorizationException('You do not own this TV show.');
+                    throw new AuthorizationException('You do not own this TV show.');
                 }
 
-                // Delete all plays and activities first
                 $this->deleteTvShowPlay->execute($userShow);
-
-                // Then delete the show
+                $this->manageActivity->delete($userShow);
                 $userShow->delete();
 
                 return back()->with([
@@ -95,13 +96,13 @@ class UserTvShowController extends Controller
                 'success' => false,
                 'message' => 'Show not found in your library',
             ]);
-        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+        } catch (AuthorizationException $e) {
             return back()->with([
                 'success' => false,
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to remove show from library: '.$e->getMessage());
+            logger()->error('Failed to remove show from library: ' . $e->getMessage());
 
             return back()->with([
                 'success' => false,
@@ -126,7 +127,7 @@ class UserTvShowController extends Controller
                 ])->first();
 
                 if (Gate::denies('rate-tv-show', $userShow)) {
-                    throw new \Illuminate\Auth\Access\AuthorizationException('You do not own this TV show.');
+                    throw new AuthorizationException('You do not own this TV show.');
                 }
 
                 // If show exists, check if trying to update to the same rating
@@ -164,13 +165,13 @@ class UserTvShowController extends Controller
                     'message' => 'Show rating updated successfully',
                 ]);
             });
-        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+        } catch (AuthorizationException $e) {
             return back()->with([
                 'success' => false,
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to rate show: '.$e->getMessage());
+            logger()->error('Failed to rate show: ' . $e->getMessage());
 
             return back()->with([
                 'success' => false,
@@ -182,7 +183,7 @@ class UserTvShowController extends Controller
     public function watch_status(Request $request)
     {
         $validated = $request->validate([
-            'show_id' => ['required', 'integer'],
+            'show_id' => ['required', 'integer', 'exists:tv_shows,id'],
             'watch_status' => ['required', Rule::enum(WatchStatus::class)],
         ]);
 
@@ -194,10 +195,9 @@ class UserTvShowController extends Controller
                 ])->first();
 
                 if (Gate::denies('update-tv-show-status', $userShow)) {
-                    throw new \Illuminate\Auth\Access\AuthorizationException('You do not own this TV show.');
+                    throw new AuthorizationException('You do not own this TV show.');
                 }
 
-                // If show exists
                 if ($userShow) {
                     $watchStatus = WatchStatus::from($validated['watch_status']);
 
@@ -209,13 +209,12 @@ class UserTvShowController extends Controller
                         ]);
                     }
 
-                    // If marking as completed
                     if ($watchStatus === WatchStatus::COMPLETED) {
-                        // Update status first
                         $userShow->update(['watch_status' => $watchStatus]);
 
-                        // Create play record and activity
                         $this->createTvShowPlay->execute($userShow);
+
+                        $this->manageActivity->execute($userShow);
 
                         return back()->with([
                             'success' => true,
@@ -223,7 +222,6 @@ class UserTvShowController extends Controller
                         ]);
                     }
 
-                    // For other statuses
                     $userShow->update(['watch_status' => $watchStatus]);
 
                     return back()->with([
@@ -232,27 +230,23 @@ class UserTvShowController extends Controller
                     ]);
                 }
 
-                // If show doesn't exist
                 $watchStatus = WatchStatus::from($validated['watch_status']);
 
                 if ($watchStatus === WatchStatus::COMPLETED) {
-                    // Create show and complete everything
                     $result = Pipeline::send([
                         'user' => $request->user(),
-                        'library' => $request->user()->library,
                         'validated' => $validated,
                     ])
                         ->through([
+                            EnsureUserLibrary::class,
                             EnsureShowExists::class,
                             CreateUserTvShowWithStatus::class,
                             CompleteShow::class,
                         ])
                         ->thenReturn();
 
-                    // Create play record and activity for the new show
-                    if (isset($result['user_show'])) {
-                        $this->createTvShowPlay->execute($result['user_show']);
-                    }
+                    $this->createTvShowPlay->execute($result['user_show']);
+                    $this->manageActivity->execute($result['user_show']);
 
                     return back()->with([
                         'success' => true,
@@ -277,13 +271,15 @@ class UserTvShowController extends Controller
                         ]);
                     });
             });
-        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+        } catch (AuthorizationException $e) {
+            \Sentry\captureException($e);
             return back()->with([
                 'success' => false,
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to update show watch status: '.$e->getTraceAsString());
+            \Sentry\captureException($e);
+            logger()->error('Failed to update show watch status: ' . $e->getTraceAsString());
 
             return back()->with([
                 'success' => false,

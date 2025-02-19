@@ -96,15 +96,6 @@ class CompleteShow
                 ->update(['watch_status' => WatchStatus::COMPLETED]);
         }
 
-        // Add play record for show if not exists
-        UserTvPlay::firstOrCreate([
-            'user_id' => $user->id,
-            'user_tv_show_id' => $userShow->id,
-            'playable_type' => get_class($userShow),
-            'playable_id' => $userShow->id,
-            'watched_at' => now(),
-        ]);
-
         return $next($payload);
     }
 }
