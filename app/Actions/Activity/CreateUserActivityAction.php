@@ -26,7 +26,6 @@ class CreateUserActivityAction
             $this->handlers = [
                 new AnimeActivityHandler,
                 new MovieActivityHandler,
-                new TvActivityHandler,
                 new ListItemActivityHandler,
                 new UserCustomListActivityHandler,
             ];

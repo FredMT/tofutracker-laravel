@@ -22,6 +22,7 @@ import { RegularBannerImageContainer } from "@/Components/Content/Shared/Regular
 import RegularPosterImage from "@/Components/Content/Shared/Regular/RegularPosterImage";
 import RecommendedContent from "@/Components/Content/Shared/RecommendedContent";
 import Comments from "@/Components/Comments/Comments";
+import Trailer from "@/Components/Content/TV/Trailer";
 
 function Movie() {
     const { width } = useViewportSize();
@@ -51,7 +52,12 @@ function Movie() {
                                 <Space h={16} />
                                 <RegularContentSummary />
                             </Box>
-                            <ContentActions />
+                            <Stack>
+                                {data.trailer && (
+                                    <Trailer trailer={data.trailer} />
+                                )}
+                                <ContentActions />
+                            </Stack>
                             <Box hiddenFrom="sm">
                                 <ContentDetails />
                                 <Divider my="md" />

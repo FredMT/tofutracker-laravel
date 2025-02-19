@@ -120,6 +120,7 @@ class AnimeController extends Controller
                     'collection_name' => $collectionName,
                     'map_id' => $firstChainEntry ? $firstChainEntry['map_id'] : $accessId,
                     'anidb_id' => $firstChainEntry ? $firstChainEntry['id'] : null,
+                    'trailer' => $animeMap->trailer,
                 ],
                 'user_library' => $userLibrary,
                 'user_lists' => $userLists,

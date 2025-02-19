@@ -1,9 +1,12 @@
+import { Trailer } from "@/types";
+
 export interface Anime {
     tmdbData: TmdbData;
     anidbData: AnidbData;
     collection_name: string;
     map_id: number;
     anidb_id: number;
+    trailer: Trailer | null;
 }
 
 export interface BaseCharacter {

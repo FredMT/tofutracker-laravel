@@ -291,8 +291,8 @@ class Movie extends Model
 
         // Get first non-empty certification
         $certification = collect($usReleases['release_dates'] ?? [])
-            ->map(fn ($date) => $date['certification'] ?? '')
-            ->filter(fn ($cert) => ! empty($cert))
+            ->map(fn($date) => $date['certification'] ?? '')
+            ->filter(fn($cert) => ! empty($cert))
             ->first();
 
         return $certification ?: null;
@@ -390,6 +390,7 @@ class Movie extends Model
                 })() : null,
                 'status' => $data['status'],
                 'tagline' => $data['tagline'],
+                'trailer' => $this->trailer,
                 'vote_average' => $data['vote_average'],
                 'vote_count' => $data['vote_count'],
                 'genres' => $this->genres,
@@ -416,7 +417,7 @@ class Movie extends Model
         }
 
         $crewByJob = collect($this->data['credits']['crew'] ?? [])
-            ->filter(fn ($crew) => in_array($crew['job'], [
+            ->filter(fn($crew) => in_array($crew['job'], [
                 'Director',
                 'Original Story',
                 'Writer',
@@ -429,7 +430,7 @@ class Movie extends Model
         foreach ($crewByJob as $job => $members) {
             $key = match ($job) {
                 'Original Story' => 'original_stories',
-                default => strtolower($job).'s'
+                default => strtolower($job) . 's'
             };
             $details[$key] = $members->pluck('name')->implode(', ');
         }
@@ -487,5 +488,30 @@ class Movie extends Model
     public function comments(): MorphMany
     {
         return $this->morphMany(Comment::class, 'commentable');
+    }
+
+    public function trailer(): Attribute
+    {
+        return Attribute::get(function () {
+            $videos = collect($this->data['videos']['results'] ?? []);
+
+            $trailer = $videos
+                ->filter(function ($video) {
+                    return $video['site'] === 'YouTube' &&
+                        $video['type'] === 'Trailer' &&
+                        $video['official'] === true;
+                })
+                ->sortByDesc('published_at')
+                ->first();
+
+            if (!$trailer) {
+                return null;
+            }
+
+            return [
+                'link' => "https://www.youtube.com/embed/{$trailer['key']}",
+                'name' => $trailer['name']
+            ];
+        });
     }
 }
