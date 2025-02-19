@@ -2,59 +2,30 @@
 
 namespace App\Http\Controllers\UserTv;
 
-use App\Actions\Activity\ManageTvWatchActivityAction;
-use App\Actions\Tv\Plays\CreateUserTvShowPlayAction;
-use App\Actions\Tv\Plays\DeleteUserTvShowPlayAction;
+use App\Actions\UserController\Tv\TvShow\CreateUserTvShowAction;
+use App\Actions\UserController\Tv\TvShow\DeleteUserTvShowAction;
+use App\Actions\UserController\Tv\TvShow\RateUserTvShowAction;
+use App\Actions\UserController\Tv\TvShow\UpdateStatusUserTvShowAction;
 use App\Enums\WatchStatus;
 use App\Http\Controllers\Controller;
-use App\Models\UserTv\UserTvShow;
-use App\Pipeline\TV\EnsureUserTvLibrary;
-use App\Pipeline\UserMovie\EnsureUserLibrary;
-use App\Pipeline\UserTvEpisode\EnsureTvShowExists;
-use App\Pipeline\UserTvShow\CompleteShow;
-use App\Pipeline\UserTvShow\CreateUserTvShow;
-use App\Pipeline\UserTvShow\CreateUserTvShowForRating;
-use App\Pipeline\UserTvShow\CreateUserTvShowWithStatus;
-use App\Pipeline\UserTvShow\EnsureShowExists;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Pipeline;
 use Illuminate\Validation\Rule;
 
 class UserTvShowController extends Controller
 {
-    public function __construct(
-        private readonly DeleteUserTvShowPlayAction $deleteTvShowPlay,
-        private readonly CreateUserTvShowPlayAction $createTvShowPlay,
-        private readonly ManageTvWatchActivityAction $manageActivity
-    ) {}
-
-    public function store(Request $request)
+    public function store(Request $request, CreateUserTvShowAction $createUserTvShow)
     {
         $validated = $request->validate([
-            'show_id' => ['required', 'integer'],
+            'show_id' => ['required', 'integer', 'exists:tv_shows,id'],
         ]);
 
         try {
-            return DB::transaction(function () use ($validated, $request) {
-                return Pipeline::send([
-                    'user' => $request->user(),
-                    'validated' => $validated,
-                ])
-                    ->through([
-                        EnsureTvShowExists::class,
-                        EnsureUserTvLibrary::class,
-                        CreateUserTvShow::class,
-                    ])
-                    ->then(function ($payload) {
-                        return back()->with([
-                            'success' => true,
-                            'message' => "Show '{$payload['show_title']}' added to your library",
-                        ]);
-                    });
-            });
+            $payload = $createUserTvShow->execute($validated, $request->user());
+
+            return back()->with([
+                'success' => true,
+                'message' => "Show '{$payload['show_title']}' added to your library",
+            ]);
         } catch (\Exception $e) {
             logger()->error('Failed to add show to library: ' . $e->getMessage());
 
@@ -65,38 +36,25 @@ class UserTvShowController extends Controller
         }
     }
 
-    public function destroy(Request $request)
+    public function destroy(Request $request, DeleteUserTvShowAction $deleteShow)
     {
         $validated = $request->validate([
-            'show_id' => ['required', 'integer'],
+            'show_id' => ['required', 'integer', 'exists:tv_shows,id'],
         ]);
 
         try {
-            return DB::transaction(function () use ($validated, $request) {
-                $userShow = UserTvShow::where([
-                    'user_id' => $request->user()->id,
-                    'show_id' => $validated['show_id'],
-                ])->firstOrFail();
+            $deleteShow->execute($request->user()->id, $validated);
 
-                if (Gate::denies('delete-tv-show', $userShow)) {
-                    throw new AuthorizationException('You do not own this TV show.');
-                }
-
-                $this->deleteTvShowPlay->execute($userShow);
-                $this->manageActivity->delete($userShow);
-                $userShow->delete();
-
-                return back()->with([
-                    'success' => true,
-                    'message' => 'Show removed from your library',
-                ]);
-            });
+            return back()->with([
+                'success' => true,
+                'message' => 'Show removed from your library',
+            ]);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return back()->with([
                 'success' => false,
                 'message' => 'Show not found in your library',
             ]);
-        } catch (AuthorizationException $e) {
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             return back()->with([
                 'success' => false,
                 'message' => $e->getMessage(),
@@ -111,7 +69,7 @@ class UserTvShowController extends Controller
         }
     }
 
-    public function rate(Request $request)
+    public function rate(Request $request, RateUserTvShowAction $rateShow)
     {
         $validated = $request->validate([
             'show_id' => ['required', 'integer'],
@@ -119,68 +77,28 @@ class UserTvShowController extends Controller
         ]);
 
         try {
-            return DB::transaction(function () use ($validated, $request) {
-                // Try to find existing user show entry
-                $userShow = UserTvShow::where([
-                    'user_id' => $request->user()->id,
-                    'show_id' => $validated['show_id'],
-                ])->first();
+            $result = $rateShow->execute($request->user(), $validated);
 
-                if (Gate::denies('rate-tv-show', $userShow)) {
-                    throw new AuthorizationException('You do not own this TV show.');
-                }
-
-                // If show exists, check if trying to update to the same rating
-                if ($userShow && (float) $validated['rating'] === (float) $userShow->rating) {
-                    return back()->with([
-                        'success' => false,
-                        'message' => "Show already has a rating of {$userShow->rating}",
-                    ]);
-                }
-
-                if (! $userShow) {
-                    // If show doesn't exist, create new entries
-                    return Pipeline::send([
-                        'user' => $request->user(),
-                        'validated' => $validated,
-                    ])
-                        ->through([
-                            EnsureTvShowExists::class,
-                            EnsureUserTvLibrary::class,
-                            CreateUserTvShowForRating::class,
-                        ])
-                        ->then(function ($payload) {
-                            return back()->with([
-                                'success' => true,
-                                'message' => "Show '{$payload['show_title']}' rated successfully",
-                            ]);
-                        });
-                }
-
-                // Update the rating
-                $userShow->update(['rating' => $validated['rating']]);
-
-                return back()->with([
-                    'success' => true,
-                    'message' => 'Show rating updated successfully',
-                ]);
-            });
-        } catch (AuthorizationException $e) {
+            return back()->with([
+                'success' => true,
+                'message' => $result['message'],
+            ]);
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             return back()->with([
                 'success' => false,
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to rate show: ' . $e->getMessage());
+            \Sentry\captureException($e);
 
             return back()->with([
                 'success' => false,
-                'message' => 'An error occurred while rating show',
+                'message' => 'An error occurred while updating show rating',
             ]);
         }
     }
 
-    public function watch_status(Request $request)
+    public function watch_status(Request $request, UpdateStatusUserTvShowAction $updateStatus)
     {
         $validated = $request->validate([
             'show_id' => ['required', 'integer', 'exists:tv_shows,id'],
@@ -188,91 +106,15 @@ class UserTvShowController extends Controller
         ]);
 
         try {
-            return DB::transaction(function () use ($validated, $request) {
-                $userShow = UserTvShow::where([
-                    'user_id' => $request->user()->id,
-                    'show_id' => $validated['show_id'],
-                ])->first();
+            $result = $updateStatus->execute($request->user(), $validated);
 
-                if (Gate::denies('update-tv-show-status', $userShow)) {
-                    throw new AuthorizationException('You do not own this TV show.');
-                }
-
-                if ($userShow) {
-                    $watchStatus = WatchStatus::from($validated['watch_status']);
-
-                    // Prevent updating to same status
-                    if ($userShow->watch_status === $watchStatus) {
-                        return back()->with([
-                            'success' => false,
-                            'message' => "Show already has watch status of {$watchStatus->value}",
-                        ]);
-                    }
-
-                    if ($watchStatus === WatchStatus::COMPLETED) {
-                        $userShow->update(['watch_status' => $watchStatus]);
-
-                        $this->createTvShowPlay->execute($userShow);
-
-                        $this->manageActivity->execute($userShow);
-
-                        return back()->with([
-                            'success' => true,
-                            'message' => 'Show marked as completed',
-                        ]);
-                    }
-
-                    $userShow->update(['watch_status' => $watchStatus]);
-
-                    return back()->with([
-                        'success' => true,
-                        'message' => 'Show watch status updated',
-                    ]);
-                }
-
-                $watchStatus = WatchStatus::from($validated['watch_status']);
-
-                if ($watchStatus === WatchStatus::COMPLETED) {
-                    $result = Pipeline::send([
-                        'user' => $request->user(),
-                        'validated' => $validated,
-                    ])
-                        ->through([
-                            EnsureUserLibrary::class,
-                            EnsureShowExists::class,
-                            CreateUserTvShowWithStatus::class,
-                            CompleteShow::class,
-                        ])
-                        ->thenReturn();
-
-                    $this->createTvShowPlay->execute($result['user_show']);
-                    $this->manageActivity->execute($result['user_show']);
-
-                    return back()->with([
-                        'success' => true,
-                        'message' => "Show '{$result['show_title']}' added and marked as completed",
-                    ]);
-                }
-
-                // For other statuses, just create the show
-                return Pipeline::send([
-                    'user' => $request->user(),
-                    'validated' => $validated,
-                ])
-                    ->through([
-                        EnsureUserLibrary::class,
-                        EnsureShowExists::class,
-                        CreateUserTvShowWithStatus::class,
-                    ])
-                    ->then(function ($payload) {
-                        return back()->with([
-                            'success' => true,
-                            'message' => "Show '{$payload['show_title']}' added with status {$payload['watch_status']->value}",
-                        ]);
-                    });
-            });
-        } catch (AuthorizationException $e) {
+            return back()->with([
+                'success' => $result['success'],
+                'message' => $result['message'],
+            ]);
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             \Sentry\captureException($e);
+
             return back()->with([
                 'success' => false,
                 'message' => $e->getMessage(),

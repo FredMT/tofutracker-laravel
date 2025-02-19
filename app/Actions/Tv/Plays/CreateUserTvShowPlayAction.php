@@ -2,7 +2,7 @@
 
 namespace App\Actions\Tv\Plays;
 
-use App\Actions\Activity\ManageTvWatchActivityAction;
+use App\Actions\Activity\ManageTvShowWatchActivityAction;
 use App\Models\UserTv\UserTvPlay;
 use App\Models\UserTv\UserTvShow;
 

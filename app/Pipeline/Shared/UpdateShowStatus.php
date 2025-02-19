@@ -2,7 +2,7 @@
 
 namespace App\Pipeline\Shared;
 
-use App\Actions\Activity\ManageTvWatchActivityAction;
+use App\Actions\Activity\ManageTvShowWatchActivityAction;
 use App\Actions\Tv\Plays\CreateUserTvShowPlayAction;
 use App\Enums\WatchStatus;
 use App\Models\TvSeason;
@@ -14,7 +14,7 @@ class UpdateShowStatus
 {
     public function __construct(
         private readonly CreateUserTvShowPlayAction $createTvShowPlay,
-        private readonly ManageTvWatchActivityAction $manageActivity
+        private readonly ManageTvShowWatchActivityAction $manageActivity
     ) {}
 
     public function __invoke($payload, Closure $next)

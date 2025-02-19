@@ -6,7 +6,7 @@ use App\Models\TvShow;
 use App\Models\UserActivity;
 use App\Models\UserTv\UserTvShow;
 
-class ManageTvWatchActivityAction
+class ManageTvShowWatchActivityAction
 {
     public function execute(UserTvShow $userShow, ?array $additionalMetadata = null): UserActivity
     {
