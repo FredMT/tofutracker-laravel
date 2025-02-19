@@ -3,12 +3,13 @@
 namespace App\Actions\UserController\Tv\TvSeason;
 
 use App\Enums\WatchStatus;
+use App\Models\User;
 use App\Models\UserTv\UserTvSeason;
 use App\Pipeline\Shared\UpdateShowStatus;
 use App\Pipeline\TV\EnsureUserTvLibrary;
 use App\Pipeline\TV\EnsureUserTvShow;
 use App\Pipeline\UserTvSeason\CreateUserTvSeason;
-use App\Pipeline\UserTvSeason\UpdateWatchStatus;
+use App\Pipeline\UserTvSeason\UpdateEpisodesAndWatchStatus;
 use App\Pipeline\UserTvSeason\ValidateSeasonRelations;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -16,12 +17,12 @@ use Illuminate\Support\Facades\Pipeline;
 
 class UpdateWatchStatusUserTvSeasonAction
 {
-    public function execute(int $userId, array $validated): array
+    public function execute(User $user, array $validated): array
     {
-        return DB::transaction(function () use ($userId, $validated) {
+        return DB::transaction(function () use ($user, $validated) {
             // Try to find existing user season entry
             $userSeason = UserTvSeason::where([
-                'user_id' => $userId,
+                'user_id' => $user->id,
                 'season_id' => $validated['season_id'],
                 'show_id' => $validated['show_id'],
             ])->first();
@@ -39,8 +40,8 @@ class UpdateWatchStatusUserTvSeasonAction
                 ];
             }
 
-            $result = Pipeline::send([
-                'user_id' => $userId,
+            Pipeline::send([
+                'user' => $user,
                 'validated' => $validated,
                 'user_season' => $userSeason,
             ])
@@ -49,7 +50,7 @@ class UpdateWatchStatusUserTvSeasonAction
                     EnsureUserTvLibrary::class,
                     EnsureUserTvShow::class,
                     CreateUserTvSeason::class,
-                    UpdateWatchStatus::class,
+                    UpdateEpisodesAndWatchStatus::class,
                     UpdateShowStatus::class,
                 ])
                 ->thenReturn();

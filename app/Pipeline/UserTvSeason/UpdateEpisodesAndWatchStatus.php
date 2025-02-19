@@ -6,7 +6,7 @@ use App\Actions\UserController\Tv\TvSeason\CreateCompletedEpisodesAction;
 use App\Enums\WatchStatus;
 use Closure;
 
-class UpdateWatchStatus
+class UpdateEpisodesAndWatchStatus
 {
     public function __construct(
         private readonly CreateCompletedEpisodesAction $createCompletedEpisodes

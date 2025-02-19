@@ -113,7 +113,7 @@ class UserTvSeasonController extends Controller
         ]);
 
         try {
-            $result = $updateWatchStatus->execute($request->user()->id, $validated);
+            $result = $updateWatchStatus->execute($request->user(), $validated);
 
             return back()->with([
                 'success' => $result['success'],
