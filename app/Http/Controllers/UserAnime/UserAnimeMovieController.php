@@ -73,8 +73,7 @@ class UserAnimeMovieController extends Controller
                     });
             });
         } catch (\Exception $e) {
-            logger()->error('Failed to add anime movie to library: '.$e->getMessage());
-            logger()->error($e->getTraceAsString());
+            \Sentry\captureException($e);
 
             return back()->with([
                 'success' => false,
@@ -141,8 +140,7 @@ class UserAnimeMovieController extends Controller
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to remove anime from library: '.$e->getMessage());
-            logger()->error($e->getTraceAsString());
+            \Sentry\captureException($e);
 
             return back()->with([
                 'success' => false,
@@ -225,8 +223,7 @@ class UserAnimeMovieController extends Controller
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to rate anime: '.$e->getMessage());
-            logger()->error($e->getTraceAsString());
+            \Sentry\captureException($e);
 
             return back()->with([
                 'success' => false,
@@ -267,8 +264,7 @@ class UserAnimeMovieController extends Controller
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to update anime watch status: '.$e->getMessage());
-            logger()->error($e->getTraceAsString());
+            \Sentry\captureException($e);
 
             return back()->with([
                 'success' => false,

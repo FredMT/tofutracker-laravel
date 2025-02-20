@@ -89,8 +89,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('movies/library')->name('movie.library.')->group(function () {
         Route::post('/store', [UserMovieController::class, 'store'])->name('store');
         Route::delete('/delete', [UserMovieController::class, 'destroy'])->name('destroy');
-        Route::patch('/status', [UserMovieController::class, 'watch_status'])->name('update-status');
         Route::post('/rate', [UserMovieController::class, 'rate'])->name('rate');
+        Route::patch('/status', [UserMovieController::class, 'watch_status'])->name('update-status');
     });
 
     // TV Episode Routes
@@ -109,53 +109,53 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // TV Show Library Routes
     Route::prefix('tv/show/library')->name('tv.library.')->group(function () {
-        Route::post('/', [UserTvShowController::class, 'store'])->name('store');
-        Route::delete('/', [UserTvShowController::class, 'destroy'])->name('destroy');
+        Route::post('/store', [UserTvShowController::class, 'store'])->name('store');
+        Route::delete('/delete', [UserTvShowController::class, 'destroy'])->name('destroy');
         Route::post('/rate', [UserTvShowController::class, 'rate'])->name('rate');
         Route::patch('/status', [UserTvShowController::class, 'watch_status'])->name('update-status');
     });
 
     // Anime Movie Library Routes
     Route::prefix('anime/movie/library')->name('anime.movie.library.')->group(function () {
-        Route::post('/', [UserAnimeMovieController::class, 'store'])->name('store');
-        Route::delete('/', [UserAnimeMovieController::class, 'destroy'])->name('destroy');
+        Route::post('/store', [UserAnimeMovieController::class, 'store'])->name('store');
+        Route::delete('/delete', [UserAnimeMovieController::class, 'destroy'])->name('destroy');
         Route::post('/rate', [UserAnimeMovieController::class, 'rate'])->name('rate');
         Route::patch('/status', [UserAnimeMovieController::class, 'watch_status'])->name('update-status');
     });
 
     // Anime TV Library Routes
     Route::prefix('anime/tv/library')->name('anime.tv.library.')->group(function () {
-        Route::post('/', [UserAnimeTvController::class, 'store'])->name('store');
-        Route::delete('/', [UserAnimeTvController::class, 'destroy'])->name('destroy');
+        Route::post('/store', [UserAnimeTvController::class, 'store'])->name('store');
+        Route::delete('/delete', [UserAnimeTvController::class, 'destroy'])->name('destroy');
         Route::post('/rate', [UserAnimeTvController::class, 'rate'])->name('rate');
         Route::patch('/status', [UserAnimeTvController::class, 'watch_status'])->name('update-status');
     });
 
     // Anime Season Library Routes
     Route::prefix('anime/season/library')->name('anime.season.library.')->group(function () {
-        Route::post('/', [UserAnimeSeasonController::class, 'store'])->name('store');
-        Route::delete('/', [UserAnimeSeasonController::class, 'destroy'])->name('destroy');
+        Route::post('/store', [UserAnimeSeasonController::class, 'store'])->name('store');
+        Route::delete('/delete', [UserAnimeSeasonController::class, 'destroy'])->name('destroy');
         Route::post('/rate', [UserAnimeSeasonController::class, 'rate'])->name('rate');
         Route::patch('/status', [UserAnimeSeasonController::class, 'watch_status'])->name('update-status');
     });
 
     // Anime Episode Library Routes
     Route::prefix('anime/episode/library')->name('anime.episode.')->group(function () {
-        Route::post('/', [UserAnimeEpisodeController::class, 'store'])->name('store');
-        Route::delete('/', [UserAnimeEpisodeController::class, 'destroy'])->name('destroy');
+        Route::post('/store', [UserAnimeEpisodeController::class, 'store'])->name('store');
+        Route::delete('/delete', [UserAnimeEpisodeController::class, 'destroy'])->name('destroy');
     });
 });
 
 
 // User List Routes
 Route::prefix('user/lists')->name('user.lists.')->group(function () {
-    Route::post('/', [UserCustomListController::class, 'store'])->name('store');
+    Route::post('/store', [UserCustomListController::class, 'store'])->name('store');
     Route::patch('/{list}', [UserCustomListController::class, 'update'])->name('update');
     Route::delete('/{username}/{list}', [UserCustomListController::class, 'destroy'])->name('destroy');
 
     // List Items Management
     Route::prefix('items')->name('items.')->group(function () {
-        Route::post('/', [UserCustomListItemController::class, 'store'])->name('store');
+        Route::post('/store', [UserCustomListItemController::class, 'store'])->name('store');
         Route::delete('/{list_id}/remove', [UserCustomListItemController::class, 'destroy'])->name('destroy');
     });
 });
