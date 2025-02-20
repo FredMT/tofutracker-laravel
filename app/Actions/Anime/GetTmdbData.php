@@ -12,13 +12,9 @@ use Illuminate\Support\Facades\Cache;
 
 class GetTmdbData
 {
-    private TmdbService $tmdbService;
-
-    private GetMostCommonTmdbId $getMostCommonTmdbId;
-
     public function __construct(
-        TmdbService $tmdbService,
-        GetMostCommonTmdbId $getMostCommonTmdbId
+        private TmdbService $tmdbService,
+        private GetMostCommonTmdbId $getMostCommonTmdbId
     ) {
         $this->tmdbService = $tmdbService;
         $this->getMostCommonTmdbId = $getMostCommonTmdbId;
@@ -26,7 +22,7 @@ class GetTmdbData
 
     public function execute($accessId): JsonResponse
     {
-        return Cache::remember('tmdb_data_'.$accessId, now()->addMonth(), function () use ($accessId) {
+        return Cache::remember('tmdb_data_' . $accessId, now()->addMonth(), function () use ($accessId) {
             $result = $this->getMostCommonTmdbId->execute($accessId);
 
             if (isset($result['most_common_tmdb_id']) && isset($result['tmdb_type'])) {

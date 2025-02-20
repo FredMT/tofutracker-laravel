@@ -87,10 +87,10 @@ Route::post('/activity/{activity}/like', ToggleActivityLikeController::class)
 Route::middleware(['auth', 'verified'])->group(function () {
     // Movie Library Routes
     Route::prefix('movies/library')->name('movie.library.')->group(function () {
-        Route::post('/{movie_id}', [UserMovieController::class, 'store'])->name('store');
-        Route::delete('/{movie_id}', [UserMovieController::class, 'destroy'])->name('destroy');
-        Route::patch('/status/{movie_id}', [UserMovieController::class, 'update'])->name('update-status');
-        Route::post('/rating/{movie_id}', [UserMovieController::class, 'rate'])->name('rate');
+        Route::post('/store', [UserMovieController::class, 'store'])->name('store');
+        Route::delete('/delete', [UserMovieController::class, 'destroy'])->name('destroy');
+        Route::patch('/status', [UserMovieController::class, 'watch_status'])->name('update-status');
+        Route::post('/rate', [UserMovieController::class, 'rate'])->name('rate');
     });
 
     // TV Episode Routes
@@ -101,8 +101,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // TV Season Library Routes
     Route::prefix('tv/season/library')->name('tv.season.library.')->group(function () {
-        Route::post('/', [UserTvSeasonController::class, 'store'])->name('store');
-        Route::delete('/', [UserTvSeasonController::class, 'destroy'])->name('destroy');
+        Route::post('/store', [UserTvSeasonController::class, 'store'])->name('store');
+        Route::delete('/delete', [UserTvSeasonController::class, 'destroy'])->name('destroy');
         Route::post('/rate', [UserTvSeasonController::class, 'rate'])->name('rate');
         Route::patch('/status', [UserTvSeasonController::class, 'watch_status'])->name('update-status');
     });

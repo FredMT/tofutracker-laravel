@@ -2,16 +2,23 @@
 
 namespace App\Pipeline\UserMovie\Rate;
 
+use App\Actions\Activity\ManageMovieWatchActivityAction;
 use App\Enums\MediaType;
 use App\Enums\WatchStatus;
 use App\Models\UserLibrary;
 use App\Models\UserMovie\UserMovie;
 use App\Models\UserMovie\UserMoviePlay;
 use Closure;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Gate;
 
-class UpdateOrCreateUserMovie
+class UpdateOrCreateUserMovieWithRating
 {
+    public function __construct(private ManageMovieWatchActivityAction $manageMovieWatchActivityAction)
+    {
+        $this->manageMovieWatchActivityAction = $manageMovieWatchActivityAction;
+    }
+
     public function handle($payload, Closure $next)
     {
         $userMovie = UserMovie::where([
@@ -22,13 +29,9 @@ class UpdateOrCreateUserMovie
         if ($userMovie) {
             // Check if user can rate this movie
             if (Gate::denies('rate-movie', $userMovie)) {
-                return back()->with([
-                    'success' => false,
-                    'message' => 'You are not authorized to rate this movie',
-                ]);
+                throw new AuthorizationException('You are not authorized to rate this movie');
             }
 
-            // If movie exists, just update the rating
             $userMovie->update([
                 'rating' => $payload['validated']['rating'],
             ]);
@@ -55,10 +58,9 @@ class UpdateOrCreateUserMovie
                 'movie_id' => $payload['validated']['movie_id'],
                 'watched_at' => now(),
             ]);
+
+            $this->manageMovieWatchActivityAction->execute($userMovie);
         }
-
-        $payload['user_movie'] = $userMovie;
-
         return $next($payload);
     }
 }

@@ -4,7 +4,7 @@ import { Stack } from "@mantine/core";
 import AddSeasonToLibrary from "./Actions/AddToLibrary/Tv/Season/AddSeasonToLibrary";
 import RemoveSeasonFromLibrary from "./Actions/RemoveFromLibrary/Tv/Season/RemoveSeasonFromLibrary";
 import { RateContent } from "./Rating/RateContent";
-import { WatchStatusSelect } from "@/Components/ContentActions/components/Actions/WatchStatus/Movie/WatchStatus";
+import { WatchStatusSelect } from "@/Components/ContentActions/components/Actions/WatchStatus/Movie/MovieWatchStatusSelect";
 import ManageCustomList from "./Actions/ManageCustomList/ManageCustomList";
 
 type TvSeasonActionsProps = {

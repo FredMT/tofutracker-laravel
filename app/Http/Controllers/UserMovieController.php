@@ -2,16 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Movie\Plays\CreateUserMoviePlayAction;
-use App\Actions\Movie\Plays\DeleteUserMoviePlayAction;
-use App\Enums\MediaType;
+use App\Actions\Movie\DeleteUserMovieAction;
+use App\Actions\UserController\Movie\StoreUserMovie;
+use App\Actions\UserController\Movie\UpdateUserMovieStatusAction;
 use App\Enums\WatchStatus;
-use App\Models\UserLibrary;
 use App\Models\UserMovie\UserMovie;
-use App\Pipeline\UserMovie\CreateUserMovie;
-use App\Pipeline\UserMovie\CreateUserMoviePlay;
-use App\Pipeline\UserMovie\EnsureMovieExists;
-use App\Pipeline\UserMovie\EnsureUserLibrary;
+use App\Pipeline\UserMovie\Rate\UpdateOrCreateUserMovieWithRating;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Pipeline;
@@ -19,12 +15,8 @@ use Illuminate\Validation\Rule;
 
 class UserMovieController extends Controller
 {
-    public function __construct(
-        private readonly CreateUserMoviePlayAction $createMoviePlay,
-        private readonly DeleteUserMoviePlayAction $deleteMoviePlay,
-    ) {}
 
-    public function store(Request $request)
+    public function store(Request $request, StoreUserMovie $storeUserMovie)
     {
         if ($request->user()->cannot('create', UserMovie::class)) {
             return back()->with([
@@ -34,31 +26,13 @@ class UserMovieController extends Controller
         }
 
         $validated = $request->validate([
-            'movie_id' => ['required', 'integer'],
+            'movie_id' => ['required', 'integer', 'exists:movies,id'],
         ]);
 
         try {
-            return DB::transaction(function () use ($validated, $request) {
-                return Pipeline::send([
-                    'user' => $request->user(),
-                    'validated' => $validated,
-                ])
-                    ->through([
-                        EnsureMovieExists::class,
-                        EnsureUserLibrary::class,
-                        CreateUserMovie::class,
-                        CreateUserMoviePlay::class,
-                    ])
-                    ->then(function ($payload) {
-                        return back()->with([
-                            'success' => true,
-                            'message' => "{$payload['movie_title']} added to library",
-                        ]);
-                    });
-            });
+            return $storeUserMovie->execute($validated, request()->user());
         } catch (\Exception $e) {
-            logger()->error('Failed to add movie to library: '.$e->getMessage());
-
+            \Sentry\captureException($e);
             return back()->with([
                 'success' => false,
                 'message' => 'An error occurred while adding movie to library',
@@ -66,80 +40,25 @@ class UserMovieController extends Controller
         }
     }
 
-    public function update(Request $request, $movieId)
+    public function watch_status(Request $request, UpdateUserMovieStatusAction $updateUserMovieStatusAction)
     {
         $validated = $request->validate([
+            'movie_id' => ['required', 'integer', 'exists:movies,id'],
             'watch_status' => ['sometimes', Rule::enum(WatchStatus::class)],
         ]);
 
         try {
-            return DB::transaction(function () use ($validated, $request, $movieId) {
-                $userMovie = UserMovie::where([
-                    'user_id' => $request->user()->id,
-                    'movie_id' => $movieId,
-                ])->first();
+            $result = $updateUserMovieStatusAction->execute(
+                $request->user(),
+                $validated
+            );
 
-                // Check authorization
-                if ($userMovie && $request->user()->cannot('update', $userMovie)) {
-                    return back()->with([
-                        'success' => false,
-                        'message' => 'You are not authorized to update this movie',
-                    ]);
-                }
-
-                // Check if trying to update to the same watch status
-                if (
-                    isset($validated['watch_status']) &&
-                    $userMovie &&
-                    WatchStatus::from($validated['watch_status']) === $userMovie->watch_status
-                ) {
-                    return back()->with([
-                        'success' => false,
-                        'message' => "Movie is already marked as {$userMovie->watch_status->value}",
-                    ]);
-                }
-
-                if (! $userMovie) {
-                    // Create new movie entry
-                    $userLibrary = UserLibrary::firstOrCreate([
-                        'user_id' => $request->user()->id,
-                        'type' => MediaType::MOVIE,
-                    ]);
-
-                    $userMovie = UserMovie::create([
-                        'user_id' => $request->user()->id,
-                        'movie_id' => $movieId,
-                        'user_library_id' => $userLibrary->id,
-                        'watch_status' => $validated['watch_status'] ?? WatchStatus::COMPLETED,
-                    ]);
-
-                    // Create a play record if status is COMPLETED
-                    if (($validated['watch_status'] ?? WatchStatus::COMPLETED) === WatchStatus::COMPLETED) {
-                        $this->createMoviePlay->execute($userMovie);
-                    }
-                } else {
-                    // Update existing movie
-                    $oldStatus = $userMovie->watch_status;
-                    $newStatus = WatchStatus::from($validated['watch_status']);
-
-                    $userMovie->update([
-                        'watch_status' => $newStatus,
-                    ]);
-
-                    // Create a play record if status changed to COMPLETED
-                    if ($oldStatus !== WatchStatus::COMPLETED && $newStatus === WatchStatus::COMPLETED) {
-                        $this->createMoviePlay->execute($userMovie);
-                    }
-                }
-
-                return back()->with([
-                    'success' => true,
-                    'message' => 'Movie status updated successfully',
-                ]);
-            });
+            return back()->with([
+                'success' => $result['success'],
+                'message' => $result['message'],
+            ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to update movie: '.$e->getMessage());
-
+            \Sentry\captureException($e);
             return back()->with([
                 'success' => false,
                 'message' => 'An error occurred while updating movie',
@@ -147,69 +66,77 @@ class UserMovieController extends Controller
         }
     }
 
-    public function destroy(Request $request, $movieId)
+    public function rate(Request $request)
     {
+        $validated = $request->validate([
+            'rating' => ['required', 'numeric', 'min:1', 'max:10'],
+            'movie_id' => ['required', 'integer', 'exists:movies,id'],
+        ]);
+
         try {
-            return DB::transaction(function () use ($request, $movieId) {
+            Pipeline::send([
+                'user' => $request->user(),
+                'validated' => $validated,
+            ])->through([
+                UpdateOrCreateUserMovieWithRating::class,
+            ])->thenReturn();
+
+            return back()->with([
+                'success' => true,
+                'message' => 'Successfully rated movie',
+            ]);
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return back()->with([
+                'success' => false,
+                'message' => 'You are not authorized to rate this movie',
+            ]);
+        } catch (\Exception $e) {
+            \Sentry\captureException($e);
+            return back()->with([
+                'success' => false,
+                'message' => 'An error occurred while rating the movie',
+            ]);
+        }
+    }
+
+    public function destroy(Request $request, DeleteUserMovieAction $deleteUserMovie)
+    {
+        $validated = $request->validate([
+            'movie_id' => ['required', 'integer', 'exists:movies,id'],
+        ]);
+
+        try {
+            return DB::transaction(function () use ($request, $validated, $deleteUserMovie) {
                 $userMovie = UserMovie::where([
                     'user_id' => $request->user()->id,
-                    'movie_id' => $movieId,
-                ])->first();
-
-                if (! $userMovie) {
-                    return back()->with([
-                        'success' => false,
-                        'message' => 'Movie not found in your library',
-                    ]);
-                }
+                    'movie_id' => $validated['movie_id'],
+                ])->firstOrFail();
 
                 if ($request->user()->cannot('delete', $userMovie)) {
-                    return back()->with([
+                    return back()->withErrors([
                         'success' => false,
                         'message' => 'You are not authorized to delete this movie',
                     ]);
                 }
 
-                // Delete play records and activities
-                $this->deleteMoviePlay->execute($userMovie);
-
-                // Delete the movie
-                $userMovie->delete();
+                $deleteUserMovie->execute($userMovie);
 
                 return back()->with([
                     'success' => true,
                     'message' => 'Movie removed from library',
                 ]);
             });
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return back()->withErrors([
+                'success' => false,
+                'message' => 'Movie not found in your library',
+            ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to remove movie from library: '.$e->getMessage());
-
-            return back()->with([
+            \Sentry\captureException($e);
+            return back()->withErrors([
                 'success' => false,
                 'message' => 'An error occurred while removing movie from library',
             ]);
         }
-    }
-
-    public function rate(Request $request, $movieId)
-    {
-        $validated = $request->validate([
-            'rating' => ['required', 'numeric', 'min:1', 'max:10'],
-        ]);
-
-        $validated['movie_id'] = $movieId;
-
-        return Pipeline::send([
-            'user' => $request->user(),
-            'validated' => $validated,
-        ])->through([
-            \App\Pipeline\UserMovie\Rate\EnsureMovieExists::class,
-            \App\Pipeline\UserMovie\Rate\UpdateOrCreateUserMovie::class,
-        ])->then(function ($payload) {
-            return back()->with([
-                'success' => true,
-                'message' => 'Successfully rated movie',
-            ]);
-        });
     }
 }

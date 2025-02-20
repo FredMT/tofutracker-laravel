@@ -12,7 +12,7 @@ type WatchStatusSelectProps = {
     user_library: BaseUserLibrary;
 };
 
-export function MovieWatchStatusSelect() {
+export function WatchStatusSelect() {
     const {
         type,
         data: content,
@@ -50,37 +50,32 @@ export function MovieWatchStatusSelect() {
             data.watch_status &&
             data.watch_status !== user_library?.watch_status
         ) {
-            patch(
-                route(
-                    type === "movie"
-                        ? "movie.watch_status"
-                        : "tv.season.watch_status"
-                ),
-                {
-                    preserveScroll: true,
-                    onSuccess: (res: any) => {
-                        if (res.props.flash.success) {
-                            notifications.show({
-                                color: "teal",
-                                title: "Success",
-                                message: res.props.flash.message,
-                                icon: <Check size={18} />,
-                                autoClose: 3000,
-                            });
-                        }
-                        if (!res.props.flash.success) {
-                            notifications.show({
-                                color: "red",
-                                icon: <CircleAlertIcon size={18} />,
-                                title: "Error",
-                                message:
-                                    res.props.flash.message ||
-                                    "An error occurred",
-                                autoClose: 3000,
-                            });
-                        }
-                    },
-                    onError: (res: any) => {
+            const route_name = `${
+                type === "tvseason" ? "tv.season" : type
+            }.library.update-status`;
+            const route_params =
+                type === "movie"
+                    ? { movie_id: content.id }
+                    : type === "tvseason"
+                    ? {
+                          show_id: content.show_id,
+                          season_id: content.id,
+                      }
+                    : {};
+
+            patch(route(route_name, route_params), {
+                preserveScroll: true,
+                onSuccess: (res: any) => {
+                    if (res.props.flash.success) {
+                        notifications.show({
+                            color: "teal",
+                            title: "Success",
+                            message: res.props.flash.message,
+                            icon: <Check size={18} />,
+                            autoClose: 3000,
+                        });
+                    }
+                    if (!res.props.flash.success) {
                         notifications.show({
                             color: "red",
                             icon: <CircleAlertIcon size={18} />,
@@ -89,9 +84,18 @@ export function MovieWatchStatusSelect() {
                                 res.props.flash.message || "An error occurred",
                             autoClose: 3000,
                         });
-                    },
-                }
-            );
+                    }
+                },
+                onError: (res: any) => {
+                    notifications.show({
+                        color: "red",
+                        icon: <CircleAlertIcon size={18} />,
+                        title: "Error",
+                        message: res.props.flash.message || "An error occurred",
+                        autoClose: 3000,
+                    });
+                },
+            });
         }
     }, [data.watch_status]);
 
