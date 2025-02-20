@@ -48,7 +48,7 @@ class UserTvSeasonController extends Controller
         ]);
 
         try {
-            $deleteSeason->execute($request->user()->id, $validated);
+            $deleteSeason->execute($request->user(), $validated);
 
             return back()->with([
                 'success' => true,
@@ -83,7 +83,7 @@ class UserTvSeasonController extends Controller
         ]);
 
         try {
-            $result = $rateSeason->execute($request->user()->id, $validated);
+            $result = $rateSeason->execute($request->user(), $validated);
 
             return back()->with([
                 'success' => $result['success'],

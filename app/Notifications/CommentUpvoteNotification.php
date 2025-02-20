@@ -22,6 +22,13 @@ class CommentUpvoteNotification extends Notification implements ShouldQueue
         return 'vote_milestone';
     }
 
+    public function viaQueues()
+    {
+        return [
+            'database' => 'notifications',
+        ];
+    }
+
     private const MILESTONE_SCORES = [2, 10, 25, 50, 100, 500, 1000];
 
     /**

@@ -2,7 +2,7 @@
 
 namespace App\Actions\UserController\Tv\TvSeason;
 
-use App\Pipeline\Shared\UpdateShowStatus;
+use App\Models\User;
 use App\Pipeline\TV\EnsureUserTvLibrary;
 use App\Pipeline\UserTvSeason\CreateUserTvSeason;
 use App\Pipeline\UserTvSeason\InitializeShowStatus;
@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Pipeline;
 
 class StoreUserTvSeasonAction
 {
-    public function execute(array $validated, $user): array
+    public function execute(array $validated, User $user): array
     {
         return DB::transaction(function () use ($validated, $user) {
             return Pipeline::send([

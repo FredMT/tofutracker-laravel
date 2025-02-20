@@ -21,6 +21,13 @@ class CommentReplyNotification extends Notification implements ShouldQueue
         return 'reply';
     }
 
+    public function viaQueues()
+    {
+        return [
+            'database' => 'notifications',
+        ];
+    }
+
     /**
      * Create a new notification instance.
      */

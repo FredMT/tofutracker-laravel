@@ -22,9 +22,7 @@ class ProcessCommentVoteMilestoneJob implements ShouldQueue
      */
     public function __construct(
         private readonly Comment $comment
-    ) {
-        $this->onQueue('notifications');
-    }
+    ) {}
 
     /**
      * Execute the job.

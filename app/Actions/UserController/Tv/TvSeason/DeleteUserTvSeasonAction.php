@@ -3,6 +3,7 @@
 namespace App\Actions\UserController\Tv\TvSeason;
 
 use App\Actions\Activity\ManageTvSeasonUserActivityAction;
+use App\Models\User;
 use App\Models\UserTv\UserTvPlay;
 use App\Models\UserTv\UserTvSeason;
 use Illuminate\Support\Facades\DB;
@@ -14,11 +15,11 @@ class DeleteUserTvSeasonAction
         private readonly ManageTvSeasonUserActivityAction $manageActivity
     ) {}
 
-    public function execute(int $userId, array $validated): void
+    public function execute(User $user, array $validated): void
     {
-        DB::transaction(function () use ($userId, $validated) {
+        DB::transaction(function () use ($user, $validated) {
             $season = UserTvSeason::where([
-                'user_id' => $userId,
+                'user_id' => $user->id,
                 'season_id' => $validated['season_id'],
                 'show_id' => $validated['show_id'],
             ])->firstOrFail();
