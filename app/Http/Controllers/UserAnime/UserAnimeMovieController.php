@@ -2,79 +2,30 @@
 
 namespace App\Http\Controllers\UserAnime;
 
-use App\Actions\Anime\Plays\CreateUserAnimePlayAction;
-use App\Actions\Anime\Plays\DeleteUserAnimePlayAction;
+use App\Actions\UserController\Anime\AnimeMovie\DeleteAnimeMovieAction;
+use App\Actions\UserController\Anime\AnimeMovie\RateAnimeMovieAction;
+use App\Actions\UserController\Anime\AnimeMovie\StoreAnimeMovieAction;
+use App\Actions\UserController\Anime\AnimeMovie\UpdateWatchStatusAnimeMovieAction;
 use App\Enums\WatchStatus;
 use App\Http\Controllers\Controller;
-use App\Models\Anidb\AnidbAnime;
-use App\Models\UserAnime\UserAnime;
-use App\Pipeline\UserAnime\CreateUserAnimeCollection;
-use App\Pipeline\UserAnime\CreateUserAnimeMovie;
-use App\Pipeline\UserAnime\CreateUserAnimeMoviePlay;
-use App\Pipeline\UserAnime\EnsureUserAnimeLibrary;
-use App\Pipeline\UserAnimeMovie\CreateNewUserAnimeMovie;
-use App\Pipeline\UserAnimeMovie\EnsureUserAnimeMovieLibrary;
-use App\Pipeline\UserAnimeMovie\UpdateExistingUserAnimeMovie;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Pipeline;
 use Illuminate\Validation\Rule;
 
 class UserAnimeMovieController extends Controller
 {
-    protected CreateUserAnimePlayAction $createPlayAction;
-
-    protected DeleteUserAnimePlayAction $deletePlayAction;
-
-    public function __construct(
-        CreateUserAnimePlayAction $createPlayAction,
-        DeleteUserAnimePlayAction $deletePlayAction
-    ) {
-        $this->createPlayAction = $createPlayAction;
-        $this->deletePlayAction = $deletePlayAction;
-    }
-
-    public function store(Request $request)
+    public function store(Request $request, StoreAnimeMovieAction $storeAction)
     {
         $validated = $request->validate([
             'anidb_id' => ['required', 'integer', 'exists:anidb_anime,id'],
             'map_id' => ['required', 'integer', 'exists:anime_maps,id'],
         ]);
 
-        $anime = AnidbAnime::findOrFail($validated['anidb_id']);
-        $mapId = $anime->map();
-
-        if ($mapId !== $validated['map_id']) {
-            return back()->with([
-                'success' => false,
-                'message' => 'Invalid map ID for this anime.',
-            ]);
-        }
-
         try {
-            return DB::transaction(function () use ($validated, $request) {
-                return Pipeline::send([
-                    'user' => $request->user(),
-                    'validated' => $validated,
-                ])
-                    ->through([
-                        EnsureUserAnimeLibrary::class,
-                        CreateUserAnimeCollection::class,
-                        CreateUserAnimeMovie::class,
-                        CreateUserAnimeMoviePlay::class,
-                    ])
-                    ->then(function () {
-                        return back()->with([
-                            'success' => true,
-                            'message' => 'Anime movie added to your library',
-                        ]);
-                    });
-            });
+            $result = $storeAction->execute($validated, $request->user());
+            return back()->with($result);
         } catch (\Exception $e) {
             \Sentry\captureException($e);
-
             return back()->with([
                 'success' => false,
                 'message' => 'An error occurred while adding anime movie to library',
@@ -82,7 +33,7 @@ class UserAnimeMovieController extends Controller
         }
     }
 
-    public function destroy(Request $request)
+    public function destroy(Request $request, DeleteAnimeMovieAction $deleteAction)
     {
         $validated = $request->validate([
             'anidb_id' => ['required', 'integer', 'exists:anidb_anime,id'],
@@ -90,58 +41,15 @@ class UserAnimeMovieController extends Controller
         ]);
 
         try {
-            return DB::transaction(function () use ($validated, $request) {
-                // Verify map_id is related to anidb_id
-                $anime = AnidbAnime::findOrFail($validated['anidb_id']);
-                $mapId = $anime->map();
-
-                if ($mapId !== $validated['map_id']) {
-                    return back()->with([
-                        'success' => false,
-                        'message' => 'Invalid map ID for this anime.',
-                    ]);
-                }
-
-                // Find the user's anime entry, scoped to the authenticated user
-                $userAnime = UserAnime::whereHas('collection', function ($query) use ($validated, $request) {
-                    $query->where('map_id', $validated['map_id'])
-                        ->whereHas('userLibrary', function ($query) use ($request) {
-                            $query->where('user_id', $request->user()->id);
-                        });
-                })
-                    ->where('anidb_id', $validated['anidb_id'])
-                    ->first();
-
-                if (! $userAnime) {
-                    return back()->with([
-                        'success' => false,
-                        'message' => 'Anime not found in your library.',
-                    ]);
-                }
-
-                if (Gate::denies('delete-anime', $userAnime)) {
-                    throw new \Illuminate\Auth\Access\AuthorizationException('You do not own this anime.');
-                }
-
-                $collection = $userAnime->collection;
-
-                $this->deletePlayAction->executeMultiple([$userAnime, $collection]);
-
-                $collection->delete();
-
-                return back()->with([
-                    'success' => true,
-                    'message' => 'Anime removed from your library.',
-                ]);
-            });
-        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            $result = $deleteAction->execute($validated, $request->user());
+            return back()->with($result);
+        } catch (AuthorizationException $e) {
             return back()->with([
                 'success' => false,
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
             \Sentry\captureException($e);
-
             return back()->with([
                 'success' => false,
                 'message' => 'An error occurred while removing anime from library.',
@@ -149,7 +57,7 @@ class UserAnimeMovieController extends Controller
         }
     }
 
-    public function rate(Request $request)
+    public function rate(Request $request, RateAnimeMovieAction $rateAction)
     {
         $validated = $request->validate([
             'anidb_id' => ['required', 'integer', 'exists:anidb_anime,id'],
@@ -158,73 +66,15 @@ class UserAnimeMovieController extends Controller
         ]);
 
         try {
-            return DB::transaction(function () use ($validated, $request) {
-
-                $anime = AnidbAnime::findOrFail($validated['anidb_id']);
-                $mapId = $anime->map();
-
-                if ($mapId !== (int) $validated['map_id']) {
-                    return back()->with([
-                        'success' => false,
-                        'message' => 'Invalid map ID for this anime.',
-                    ]);
-                }
-
-                // Find existing anime entry
-                $userAnime = UserAnime::whereHas('collection', function ($query) use ($validated, $request) {
-                    $query->where('map_id', $validated['map_id'])
-                        ->whereHas('userLibrary', function ($query) use ($request) {
-                            $query->where('user_id', $request->user()->id);
-                        });
-                })
-                    ->where('anidb_id', $validated['anidb_id'])
-                    ->first();
-
-                // If no existing entry, create new one with rating
-                if (! $userAnime) {
-                    // Authorize creating new entry with rating
-                    if (Gate::denies('rate-anime', null)) {
-                        throw new \Illuminate\Auth\Access\AuthorizationException('You are not authorized to rate this anime.');
-                    }
-
-                    return Pipeline::send([
-                        'user' => $request->user(),
-                        'validated' => $validated,
-                    ])
-                        ->through([
-                            EnsureUserAnimeLibrary::class,
-                            CreateUserAnimeCollection::class,
-                            CreateUserAnimeMovie::class,
-                            CreateUserAnimeMoviePlay::class,
-                        ])
-                        ->then(function ($payload) {
-                            return back()->with([
-                                'success' => true,
-                                'message' => 'Anime movie added to your library with rating',
-                            ]);
-                        });
-                }
-
-                // Authorize updating existing entry
-                if (Gate::denies('rate-anime', $userAnime)) {
-                    throw new \Illuminate\Auth\Access\AuthorizationException('You do not own this anime.');
-                }
-
-                $userAnime->update(['rating' => $validated['rating']]);
-
-                return back()->with([
-                    'success' => true,
-                    'message' => 'Anime rating updated.',
-                ]);
-            });
-        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            $result = $rateAction->execute($validated, $request->user());
+            return back()->with($result);
+        } catch (AuthorizationException $e) {
             return back()->with([
                 'success' => false,
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
             \Sentry\captureException($e);
-
             return back()->with([
                 'success' => false,
                 'message' => 'An error occurred while rating anime.',
@@ -232,7 +82,7 @@ class UserAnimeMovieController extends Controller
         }
     }
 
-    public function watch_status(Request $request)
+    public function watch_status(Request $request, UpdateWatchStatusAnimeMovieAction $updateWatchStatusAction)
     {
         $validated = $request->validate([
             'anidb_id' => ['required', 'integer', 'exists:anidb_anime,id'],
@@ -241,23 +91,8 @@ class UserAnimeMovieController extends Controller
         ]);
 
         try {
-            return DB::transaction(function () use ($validated, $request) {
-                return Pipeline::send([
-                    'user' => $request->user(),
-                    'validated' => $validated,
-                ])
-                    ->through([
-                        EnsureUserAnimeMovieLibrary::class,
-                        UpdateExistingUserAnimeMovie::class,
-                        CreateNewUserAnimeMovie::class,
-                    ])
-                    ->then(function ($payload) {
-                        return back()->with([
-                            'success' => true,
-                            'message' => 'Anime watch status updated successfully',
-                        ]);
-                    });
-            });
+            $result = $updateWatchStatusAction->execute($validated, $request->user());
+            return back()->with($result);
         } catch (AuthorizationException $e) {
             return back()->with([
                 'success' => false,
@@ -265,7 +100,6 @@ class UserAnimeMovieController extends Controller
             ]);
         } catch (\Exception $e) {
             \Sentry\captureException($e);
-
             return back()->with([
                 'success' => false,
                 'message' => 'An error occurred while updating anime watch status',

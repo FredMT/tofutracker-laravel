@@ -2,10 +2,12 @@
 
 namespace App\Actions\UserController\Tv\TvSeason;
 
-use App\Actions\Activity\CreateUserActivityAction;
+use App\Actions\Activity\ManageTvEpisodeWatchActivityAction;
 use App\Actions\Tv\Plays\CreateUserTvSeasonPlayAction;
 use App\Enums\WatchStatus;
 use App\Models\TvEpisode;
+use App\Models\TvSeason;
+use App\Models\TvShow;
 use App\Models\UserActivity;
 use App\Models\UserTv\UserTvEpisode;
 use App\Models\UserTv\UserTvPlay;
@@ -14,11 +16,19 @@ class CreateCompletedEpisodesAction
 {
     public function __construct(
         private readonly CreateUserTvSeasonPlayAction $createTvSeasonPlay,
-        private readonly CreateUserActivityAction $createActivity
+        private readonly ManageTvEpisodeWatchActivityAction $manageActivity
     ) {}
 
     public function execute(array $data): array
     {
+        // Load show and season data
+        $show = TvShow::find($data['show_id']);
+        $season = TvSeason::find($data['season_id']);
+
+        if (!$show || !$season) {
+            throw new \Exception('Show or season not found');
+        }
+
         $episodes = TvEpisode::where([
             'show_id' => $data['show_id'],
             'season_id' => $data['season_id'],
@@ -26,10 +36,6 @@ class CreateCompletedEpisodesAction
 
         $createdEpisodes = [];
         $episodeIds = [];
-
-        // Find existing episode activity for this season
-        $existingActivity = $this->findExistingActivity($data['user_id'], $data['user_season_id']);
-        $existingEpisodeIds = $existingActivity?->metadata['user_tv_episode_ids'] ?? [];
 
         // Create/update all episodes as completed
         foreach ($episodes as $episode) {
@@ -49,33 +55,7 @@ class CreateCompletedEpisodesAction
             $createdEpisodes[] = $userEpisode;
             $episodeIds[] = $userEpisode->id;
 
-            $this->createPlayRecordIfNeeded($userEpisode, $data, $existingEpisodeIds);
-        }
-
-        if (!empty($createdEpisodes)) {
-            $this->handleActivityCreation($existingActivity, $createdEpisodes, $episodeIds, $data);
-            $this->createTvSeasonPlay->execute($data['user_season']);
-        }
-
-        return [
-            'created_episodes' => $createdEpisodes,
-            'episode_ids' => $episodeIds,
-        ];
-    }
-
-    private function findExistingActivity(int $userId, int $userSeasonId): ?UserActivity
-    {
-        return UserActivity::where('activity_type', 'tv_watch')
-            ->where('user_id', $userId)
-            ->whereJsonContains('metadata->user_tv_season_id', $userSeasonId)
-            ->where('subject_type', UserTvEpisode::class)
-            ->latest('occurred_at')
-            ->first();
-    }
-
-    private function createPlayRecordIfNeeded(UserTvEpisode $userEpisode, array $data, array $existingEpisodeIds): void
-    {
-        if (!in_array($userEpisode->id, $existingEpisodeIds)) {
+            // Create play record for each episode
             UserTvPlay::firstOrCreate(
                 [
                     'user_id' => $data['user_id'],
@@ -88,48 +68,50 @@ class CreateCompletedEpisodesAction
                 ['watched_at' => now()]
             );
         }
-    }
 
-    private function handleActivityCreation(?UserActivity $existingActivity, array $createdEpisodes, array $episodeIds, array $data): void
-    {
-        $firstEpisode = $createdEpisodes[0];
+        if (!empty($createdEpisodes)) {
+            // Find existing activity for this season
+            $existingActivity = UserActivity::where('activity_type', 'tv_watch')
+                ->where('user_id', $data['user_id'])
+                ->whereJsonContains('metadata->user_tv_season_id', $data['user_season_id'])
+                ->latest('occurred_at')
+                ->first();
 
-        if ($existingActivity) {
-            $this->updateExistingActivity($existingActivity, $firstEpisode, $episodeIds);
-        } else {
-            $this->createNewActivity($firstEpisode, $data, $episodeIds);
+            if ($existingActivity) {
+                // Update existing activity with all episodes
+                $metadata = $existingActivity->metadata;
+                $metadata['user_tv_episode_ids'] = array_values(array_unique(
+                    array_merge($metadata['user_tv_episode_ids'] ?? [], $episodeIds)
+                ));
+                $metadata['count'] = count($metadata['user_tv_episode_ids']);
+
+                $existingActivity->update([
+                    'metadata' => $metadata,
+                    'description' => "Watched {$metadata['count']} episodes of {$show->title} {$season->title}",
+                    'occurred_at' => now(),
+                ]);
+            } else {
+                // Create a single activity for all episodes watched
+                $this->manageActivity->execute($createdEpisodes[0], [
+                    'user_tv_show_id' => $data['show']->id,
+                    'user_tv_season_id' => $data['user_season_id'],
+                    'show_id' => $data['show_id'],
+                    'season_id' => $data['season_id'],
+                    'user_tv_episode_ids' => $episodeIds,
+                    'count' => count($episodeIds),
+                    'season_title' => "{$show->title} {$season->title}",
+                    'season_link' => "/tv/{$show->id}/season/{$season->season_number}",
+                    'poster_path' => $season->poster,
+                    'poster_from' => 'tmdb',
+                ]);
+            }
+
+            $this->createTvSeasonPlay->execute($data['user_season']);
         }
-    }
 
-    private function updateExistingActivity(UserActivity $activity, UserTvEpisode $firstEpisode, array $episodeIds): void
-    {
-        $metadata = $activity->metadata;
-        $metadata['user_tv_episode_ids'] = array_values(array_unique($episodeIds));
-        $metadata['count'] = count($metadata['user_tv_episode_ids']);
-        $metadata['episode_id'] = $firstEpisode->episode_id;
-
-        $activity->update([
-            'metadata' => $metadata,
-            'description' => "Watched {$metadata['count']} episodes of {$firstEpisode->userTvSeason->show->title} {$firstEpisode->userTvSeason->season->title}",
-            'occurred_at' => now(),
-        ]);
-    }
-
-    private function createNewActivity(UserTvEpisode $firstEpisode, array $data, array $episodeIds): void
-    {
-        $this->createActivity->execute(
-            userId: $data['user_id'],
-            activityType: 'tv_watch',
-            subject: $firstEpisode,
-            metadata: [
-                'user_tv_show_id' => $firstEpisode->userTvSeason->user_tv_show_id,
-                'user_tv_season_id' => $firstEpisode->user_tv_season_id,
-                'show_id' => $firstEpisode->show_id,
-                'season_id' => $firstEpisode->season_id,
-                'episode_id' => $firstEpisode->episode_id,
-                'user_tv_episode_ids' => $episodeIds,
-                'count' => count($episodeIds),
-            ]
-        );
+        return [
+            'created_episodes' => $createdEpisodes,
+            'episode_ids' => $episodeIds,
+        ];
     }
 }

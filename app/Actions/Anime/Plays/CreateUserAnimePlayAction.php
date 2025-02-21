@@ -2,7 +2,7 @@
 
 namespace App\Actions\Anime\Plays;
 
-use App\Actions\Activity\CreateUserActivityAction;
+use App\Actions\Activity\ManageAnimePlayActivityAction;
 use App\Models\Anidb\AnidbAnime;
 use App\Models\UserAnime\UserAnime;
 use App\Models\UserAnime\UserAnimeEpisode;
@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 class CreateUserAnimePlayAction
 {
     public function __construct(
-        private readonly CreateUserActivityAction $createActivity
+        private readonly ManageAnimePlayActivityAction $manageActivity
     ) {}
 
     public function execute(Model $playable, ?\DateTime $watchedAt = null): UserAnimePlay
@@ -29,9 +29,8 @@ class CreateUserAnimePlayAction
 
         if ($playable instanceof UserAnimeEpisode && $playable->userAnime?->user) {
             $anime = AnidbAnime::find($playable->userAnime->anidb_id);
-            $this->createActivity->execute(
+            $this->manageActivity->createActivity(
                 userId: $playable->userAnime->user->id,
-                activityType: 'anime_watch',
                 subject: $playable,
                 metadata: [
                     'user_anime_id' => $playable->userAnime->id,
@@ -48,9 +47,8 @@ class CreateUserAnimePlayAction
             );
         } elseif ($playable instanceof UserAnime) {
             $anime = AnidbAnime::find($playable->anidb_id);
-            $this->createActivity->execute(
+            $this->manageActivity->createActivity(
                 userId: $playable->user->id,
-                activityType: 'anime_watch',
                 subject: $playable,
                 metadata: [
                     'user_anime_id' => $playable->id,

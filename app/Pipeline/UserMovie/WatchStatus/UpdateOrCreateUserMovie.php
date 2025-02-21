@@ -34,7 +34,7 @@ class UpdateOrCreateUserMovie
 
         $userMovie = UserMovie::create([
             'user_id' => $payload['user']->id,
-            'movie_id' => $payload['movie_id'],
+            'movie_id' => $payload['validated']['movie_id'],
             'user_library_id' => $userLibrary->id,
             'watch_status' => $payload['validated']['watch_status'],
         ]);

@@ -90,10 +90,14 @@ class ManageTvEpisodeWatchActivityAction
         ?TvSeason $season,
         ?array $additionalMetadata
     ): UserActivity {
-        $episodeIds = [$userEpisode->id];
-        $count = 1;
+        $episodeIds = $additionalMetadata['user_tv_episode_ids'] ?? [$userEpisode->id];
+        $count = $additionalMetadata['count'] ?? 1;
 
-        $metadata = array_merge($additionalMetadata ?? [], [
+        // Get season title from additional metadata or generate it
+        $seasonTitle = $additionalMetadata['season_title'] ?? ($show && $season ? "{$show->title} {$season->title}" : '');
+        $seasonLink = $additionalMetadata['season_link'] ?? ($show && $season ? "/tv/{$show->id}/season/{$season->season_number}" : '');
+
+        $defaultMetadata = [
             'poster_path' => $userEpisode->episode->poster,
             'poster_from' => 'tmdb',
             'user_tv_show_id' => $userEpisode->userTvSeason->user_tv_show_id,
@@ -103,10 +107,13 @@ class ManageTvEpisodeWatchActivityAction
             'episode_id' => $userEpisode->episode_id,
             'user_tv_episode_ids' => $episodeIds,
             'count' => $count,
-            'season_title' => "{$show->title} {$season->title}",
-            'season_link' => "/tv/{$show->id}/season/{$season->season_number}",
+            'season_title' => $seasonTitle,
+            'season_link' => $seasonLink,
             'type' => 'tv_episode',
-        ]);
+        ];
+
+        // Merge with additional metadata, giving precedence to additional metadata
+        $metadata = array_merge($defaultMetadata, $additionalMetadata ?? []);
 
         return UserActivity::create([
             'user_id' => $userEpisode->user_id,

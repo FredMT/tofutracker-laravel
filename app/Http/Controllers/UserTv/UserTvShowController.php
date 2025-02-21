@@ -77,11 +77,11 @@ class UserTvShowController extends Controller
         ]);
 
         try {
-            $result = $rateShow->execute($request->user(), $validated);
+            $rateShow->execute($request->user(), $validated);
 
             return back()->with([
                 'success' => true,
-                'message' => $result['message'],
+                'message' => 'Successfully rated show',
             ]);
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             return back()->with([
