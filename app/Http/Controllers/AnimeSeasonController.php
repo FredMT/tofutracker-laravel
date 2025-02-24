@@ -44,7 +44,7 @@ class AnimeSeasonController extends Controller
         } catch (ModelNotFoundException $e) {
             abort(404, 'Anime not found');
         } catch (\Exception $e) {
-            \Sentry\captureException($e);
+            logger()->error($e);
             abort(500, 'An error occurred while fetching anime data');
         }
     }

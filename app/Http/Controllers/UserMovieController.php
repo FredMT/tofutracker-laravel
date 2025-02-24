@@ -31,7 +31,7 @@ class UserMovieController extends Controller
         try {
             return $storeUserMovie->execute($validated, request()->user());
         } catch (\Exception $e) {
-            \Sentry\captureException($e);
+            logger()->error($e);
 
             return back()->with([
                 'success' => false,
@@ -58,7 +58,7 @@ class UserMovieController extends Controller
                 'message' => $result['message'],
             ]);
         } catch (\Exception $e) {
-            \Sentry\captureException($e);
+            logger()->error($e);
 
             return back()->with([
                 'success' => false,
@@ -92,7 +92,7 @@ class UserMovieController extends Controller
                 'message' => 'You are not authorized to rate this movie',
             ]);
         } catch (\Exception $e) {
-            \Sentry\captureException($e);
+            logger()->error($e);
 
             return back()->with([
                 'success' => false,
@@ -134,7 +134,7 @@ class UserMovieController extends Controller
                 'message' => 'Movie not found in your library',
             ]);
         } catch (\Exception $e) {
-            \Sentry\captureException($e);
+            logger()->error($e);
 
             return back()->withErrors([
                 'success' => false,

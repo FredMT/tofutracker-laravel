@@ -102,7 +102,7 @@ class UserCustomListItemController extends Controller
             return back()->with(['success' => true, 'message' => 'Item added to list successfully']);
         } catch (\Exception $e) {
             logger()->error($e->getMessage());
-            \Sentry\captureException($e);
+            logger()->error($e);
 
             return back()->with(['success' => false, 'message' => 'Failed to add item to list']);
         }
@@ -139,7 +139,7 @@ class UserCustomListItemController extends Controller
             return back()->with(['success' => true, 'message' => 'Item removed from list successfully']);
         } catch (\Exception $e) {
             logger()->error($e->getMessage());
-            \Sentry\captureException($e);
+            logger()->error($e);
 
             return back()->with(['success' => false, 'message' => 'Failed to remove item from list']);
         }

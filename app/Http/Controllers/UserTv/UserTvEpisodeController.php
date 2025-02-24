@@ -25,7 +25,7 @@ class UserTvEpisodeController extends Controller
                 'message' => "Episode '{$payload['episode_title']}' added to {$payload['show_title']} in your library",
             ]);
         } catch (\Exception $e) {
-            \Sentry\captureException($e);
+            logger()->error($e);
 
             return back()->with([
                 'success' => false,
@@ -60,7 +60,7 @@ class UserTvEpisodeController extends Controller
                 'message' => 'You are not authorized to remove this episode',
             ]);
         } catch (\Exception $e) {
-            \Sentry\captureException($e);
+            logger()->error($e);
 
             return back()->with([
                 'success' => false,

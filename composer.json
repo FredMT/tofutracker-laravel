@@ -20,7 +20,6 @@
         "opcodesio/log-viewer": "^3.12",
         "predis/predis": "^2.3",
         "resend/resend-laravel": "^0.15.0",
-        "sentry/sentry-laravel": "^4.10",
         "staudenmeir/belongs-to-through": "^2.16",
         "staudenmeir/laravel-adjacency-list": "^1.23",
         "tightenco/ziggy": "^2.0"

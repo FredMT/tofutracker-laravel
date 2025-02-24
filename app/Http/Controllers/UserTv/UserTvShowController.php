@@ -27,7 +27,7 @@ class UserTvShowController extends Controller
                 'message' => "Show '{$payload['show_title']}' added to your library",
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to add show to library: '.$e->getMessage());
+            logger()->error('Failed to add show to library: ' . $e->getMessage());
 
             return back()->with([
                 'success' => false,
@@ -60,7 +60,7 @@ class UserTvShowController extends Controller
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to remove show from library: '.$e->getMessage());
+            logger()->error('Failed to remove show from library: ' . $e->getMessage());
 
             return back()->with([
                 'success' => false,
@@ -89,7 +89,7 @@ class UserTvShowController extends Controller
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
-            \Sentry\captureException($e);
+            logger()->error($e);
 
             return back()->with([
                 'success' => false,
@@ -113,15 +113,15 @@ class UserTvShowController extends Controller
                 'message' => $result['message'],
             ]);
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
-            \Sentry\captureException($e);
+            logger()->error($e);
 
             return back()->with([
                 'success' => false,
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
-            \Sentry\captureException($e);
-            logger()->error('Failed to update show watch status: '.$e->getTraceAsString());
+            logger()->error($e);
+            logger()->error('Failed to update show watch status: ' . $e->getTraceAsString());
 
             return back()->with([
                 'success' => false,

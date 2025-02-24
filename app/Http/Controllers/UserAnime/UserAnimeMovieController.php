@@ -26,7 +26,7 @@ class UserAnimeMovieController extends Controller
 
             return back()->with($result);
         } catch (\Exception $e) {
-            \Sentry\captureException($e);
+            logger()->error($e);
 
             return back()->with([
                 'success' => false,
@@ -52,7 +52,7 @@ class UserAnimeMovieController extends Controller
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
-            \Sentry\captureException($e);
+            logger()->error($e);
 
             return back()->with([
                 'success' => false,
@@ -79,7 +79,7 @@ class UserAnimeMovieController extends Controller
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
-            \Sentry\captureException($e);
+            logger()->error($e);
 
             return back()->with([
                 'success' => false,
@@ -106,7 +106,7 @@ class UserAnimeMovieController extends Controller
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
-            \Sentry\captureException($e);
+            logger()->error($e);
 
             return back()->with([
                 'success' => false,
