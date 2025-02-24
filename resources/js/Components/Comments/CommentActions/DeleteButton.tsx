@@ -1,6 +1,6 @@
 import { Button, Modal, Text, Group, Stack } from "@mantine/core";
 import { Trash2Icon } from "lucide-react";
-import { useCommentStore } from "@/stores/commentStore";
+import { useCommentStore } from "@/Components/Comments/store/commentStore";
 import { useState } from "react";
 import { usePage } from "@inertiajs/react";
 import { Auth } from "@/types";

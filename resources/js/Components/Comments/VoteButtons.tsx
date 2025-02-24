@@ -1,4 +1,4 @@
-import { useCommentStore } from "@/stores/commentStore";
+import { useCommentStore } from "@/Components/Comments/store/commentStore";
 import { ActionIcon, Flex } from "@mantine/core";
 import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
 import { useState } from "react";

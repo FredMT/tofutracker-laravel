@@ -1,4 +1,4 @@
-import { useCommentStore } from "@/stores/commentStore";
+import { useCommentStore } from "@/Components/Comments/store/commentStore";
 import { CommentContent } from "./CommentContent";
 import { CommentEditor } from "./CommentEditor";
 import { CommentThreadProps } from "./types";
@@ -6,6 +6,8 @@ import { usePage } from "@inertiajs/react";
 import { ContentType, Auth } from "@/types";
 import { notifications } from "@mantine/notifications";
 import { InfoIcon } from "lucide-react";
+import { useComments } from "./hooks/useComments";
+import React from "react";
 
 interface PageProps {
     type: ContentType;
@@ -20,28 +22,17 @@ interface PageProps {
 
 export function CommentThread({ children, ...props }: CommentThreadProps) {
     const { type, data, auth } = usePage<PageProps>().props;
-    const {
-        uiState,
-        setReplying,
-        setEditing,
-        toggleCollapsed,
-        addComment,
-        editComment,
-    } = useCommentStore();
+    const { uiState, setReplying, setEditing, toggleCollapsed } =
+        useCommentStore();
+    const { handleAddComment, handleEditComment } = useComments(
+        type,
+        data,
+        auth
+    );
+
     const isReplying = uiState.isReplying === props.id;
     const isEditing = uiState.isEditing === props.id;
     const isCollapsed = uiState.isCollapsed.includes(props.id);
-
-    const getContentId = () => {
-        switch (type) {
-            case "animemovie":
-                return data.anidb_id;
-            case "animetv":
-                return data.map_id;
-            default:
-                return data.id;
-        }
-    };
 
     const handleReply = () => {
         if (!auth.user) {
@@ -57,38 +48,8 @@ export function CommentThread({ children, ...props }: CommentThreadProps) {
     };
 
     const handleSaveReply = async (content: string) => {
-        if (!auth.user) {
-            notifications.show({
-                title: "Error",
-                message: "You must be logged in to reply",
-                icon: <InfoIcon />,
-                color: "red",
-            });
-            return;
-        }
-
-        try {
-            const contentId = getContentId();
-            if (!contentId) {
-                throw new Error("Content ID not found");
-            }
-            await addComment(
-                type,
-                contentId,
-                content,
-                props.id,
-                auth.user.username
-            );
-            setReplying(null);
-        } catch (error) {
-            notifications.show({
-                title: "Error",
-                message: "Failed to add reply",
-                icon: <InfoIcon />,
-                color: "red",
-            });
-            console.error("Failed to add reply:", error);
-        }
+        await handleAddComment(content, props.id);
+        setReplying(null);
     };
 
     const handleCancelReply = () => {
@@ -109,28 +70,8 @@ export function CommentThread({ children, ...props }: CommentThreadProps) {
     };
 
     const handleSaveEdit = async (content: string) => {
-        if (!auth.user) {
-            notifications.show({
-                title: "Error",
-                message: "You must be logged in to edit",
-                icon: <InfoIcon />,
-                color: "red",
-            });
-            return;
-        }
-
-        try {
-            await editComment(props.id, content);
-            setEditing(null);
-        } catch (error) {
-            notifications.show({
-                title: "Error",
-                message: "Failed to edit comment",
-                icon: <InfoIcon />,
-                color: "red",
-            });
-            console.error("Failed to edit comment:", error);
-        }
+        await handleEditComment(props.id, content);
+        setEditing(null);
     };
 
     const handleCancelEdit = () => {

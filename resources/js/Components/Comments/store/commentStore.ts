@@ -1,7 +1,7 @@
 import { create } from "zustand";
-import { Comment, CommentUIState } from "../Components/Comments/types";
 import axios from "axios";
-import { CommentStore } from "./types";
+import { CommentStore } from "@/stores/types";
+import { Comment } from "@/Components/Comments/types";
 
 export const useCommentStore = create<CommentStore>((set) => ({
     comments: [],
