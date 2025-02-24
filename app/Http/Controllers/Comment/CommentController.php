@@ -29,9 +29,7 @@ class CommentController extends Controller
     public function index(string $type, string $id)
     {
         try {
-            $comments = $this->fetchCommentsAction->execute($type, $id);
-
-            return $comments;
+            return $this->fetchCommentsAction->execute($type, $id);
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Resource not found'], Response::HTTP_NOT_FOUND);
         } catch (\Exception $e) {
@@ -87,28 +85,6 @@ class CommentController extends Controller
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
-    }
-
-    private function formatComments($comments)
-    {
-        return $comments->map(function ($comment) {
-            return $this->formatComment($comment);
-        });
-    }
-
-    private function formatComment($comment)
-    {
-        return [
-            'id' => (string) $comment->id,
-            'author' => $comment->user?->username,
-            'points' => $comment->votes->sum('value'),
-            'timeAgo' => $comment->created_at->diffForHumans(),
-            'content' => $comment->body,
-            'children' => $comment->children->map(fn ($child) => $this->formatComment($child)),
-            'isEdited' => $comment->user_id !== null && $comment->created_at != $comment->updated_at,
-            'isDeleted' => $comment->user_id === null && $comment->deleted_at !== null,
-            'direction' => $comment->votes->where('user_id', Auth::id())->first()?->value ?? 0,
-        ];
     }
 
     public function destroy(Comment $comment): JsonResponse

@@ -71,9 +71,7 @@ class CreateCommentAction
         if ($parentId) {
             $parentComment = Comment::find($parentId);
             if (
-                $parentComment &&
-                $parentComment->user &&
-                $parentComment->user->id !== $comment->user_id
+                $parentComment && $parentComment->user->id !== $comment->user_id
             ) {
                 $parentComment->user->notify(new CommentReplyNotification($comment, $parentComment));
             }
