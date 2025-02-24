@@ -12,13 +12,9 @@ use Illuminate\Support\Facades\Cache;
 
 class GetTmdbData
 {
-    private TmdbService $tmdbService;
-
-    private GetMostCommonTmdbId $getMostCommonTmdbId;
-
     public function __construct(
-        TmdbService $tmdbService,
-        GetMostCommonTmdbId $getMostCommonTmdbId
+        private TmdbService $tmdbService,
+        private GetMostCommonTmdbId $getMostCommonTmdbId
     ) {
         $this->tmdbService = $tmdbService;
         $this->getMostCommonTmdbId = $getMostCommonTmdbId;

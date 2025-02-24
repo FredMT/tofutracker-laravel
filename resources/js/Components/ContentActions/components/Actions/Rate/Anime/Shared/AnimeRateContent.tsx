@@ -1,13 +1,13 @@
-import {DesktopRating} from "@/Components/Content/Shared/DesktopRating";
-import {MobileRating} from "@/Components/Content/Shared/MobileRating";
+import { DesktopRating } from "@/Components/Content/Shared/DesktopRating";
+import { MobileRating } from "@/Components/Content/Shared/MobileRating";
 import useForm from "@/hooks/useForm";
-import {AnimeType, AnimeUserLibrary} from "@/types";
-import {Anime} from "@/types/anime";
-import {usePage} from "@inertiajs/react";
-import {Button} from "@mantine/core";
-import {useDisclosure, useMediaQuery} from "@mantine/hooks";
-import {notifications} from "@mantine/notifications";
-import {Check, CircleAlertIcon, Star} from "lucide-react";
+import { AnimeType, AnimeUserLibrary } from "@/types";
+import { Anime } from "@/types/anime";
+import { usePage } from "@inertiajs/react";
+import { Button } from "@mantine/core";
+import { useDisclosure, useMediaQuery } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
+import { Check, CircleAlertIcon, Star } from "lucide-react";
 
 export default function AnimeRateContent() {
     const {
@@ -42,19 +42,37 @@ export default function AnimeRateContent() {
     };
 
     const submit = () => {
-        post(route(`${type}.library.rate`, getRouteParams()), {
-            preserveScroll: true,
-            onSuccess: (res: any) => {
-                if (res.props.flash.success) {
-                    notifications.show({
-                        color: "teal",
-                        title: "Success",
-                        message: res?.props?.flash?.message,
-                        icon: <Check size={18} />,
-                        autoClose: 3000,
-                    });
-                }
-                if (!res.props.flash.success) {
+        post(
+            route(
+                `${
+                    type === "animemovie" ? "anime.movie" : "anime.tv"
+                }.library.rate`,
+                getRouteParams()
+            ),
+            {
+                preserveScroll: true,
+                onSuccess: (res: any) => {
+                    if (res.props.flash.success) {
+                        notifications.show({
+                            color: "teal",
+                            title: "Success",
+                            message: res?.props?.flash?.message,
+                            icon: <Check size={18} />,
+                            autoClose: 3000,
+                        });
+                    }
+                    if (!res.props.flash.success) {
+                        notifications.show({
+                            color: "red",
+                            icon: <CircleAlertIcon size={18} />,
+                            title: "Error",
+                            message:
+                                res.props.flash.message || "An error occurred",
+                            autoClose: 3000,
+                        });
+                    }
+                },
+                onError: (res: any) => {
                     notifications.show({
                         color: "red",
                         icon: <CircleAlertIcon size={18} />,
@@ -62,18 +80,9 @@ export default function AnimeRateContent() {
                         message: res.props.flash.message || "An error occurred",
                         autoClose: 3000,
                     });
-                }
-            },
-            onError: (res: any) => {
-                notifications.show({
-                    color: "red",
-                    icon: <CircleAlertIcon size={18} />,
-                    title: "Error",
-                    message: res.props.flash.message || "An error occurred",
-                    autoClose: 3000,
-                });
-            },
-        });
+                },
+            }
+        );
     };
 
     const RatingComponent = isMobile ? MobileRating : DesktopRating;

@@ -120,7 +120,7 @@ class TvShowActions
 
         if (! empty($episodes)) {
             TvEpisode::insert(
-                collect($episodes)->map(fn($episode) => [
+                collect($episodes)->map(fn ($episode) => [
                     'id' => $episode['id'],
                     'show_id' => $tvShow->id,
                     'season_id' => $tvSeason->id,
@@ -173,7 +173,7 @@ class TvShowActions
 
             return $tvShow->refresh();
         } catch (\Exception $e) {
-            logger()->error('Error updating TV show: ' . $e->getMessage());
+            logger()->error('Error updating TV show: '.$e->getMessage());
             throw $e;
         }
     }
@@ -205,7 +205,7 @@ class TvShowActions
             ]);
 
             if (! empty($episodes)) {
-                $episodesData = collect($episodes)->map(fn($episode) => [
+                $episodesData = collect($episodes)->map(fn ($episode) => [
                     'id' => $episode['id'],
                     'show_id' => $tvSeason->show_id,
                     'season_id' => $tvSeason->id,
@@ -223,7 +223,7 @@ class TvShowActions
 
             return $tvSeason->refresh();
         } catch (\Exception $e) {
-            logger()->error('Error updating TV season: ' . $e->getMessage());
+            logger()->error('Error updating TV season: '.$e->getMessage());
             throw $e;
         }
     }

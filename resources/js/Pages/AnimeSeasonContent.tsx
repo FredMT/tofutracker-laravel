@@ -14,6 +14,7 @@ import { AnimeSeason } from "@/types/animeseason";
 import AnimePosterImage from "@/Components/Content/Shared/Anime/AnimePosterImage";
 import { AnimeContentSummary } from "@/Components/Content/Shared/Regular/AnimeContentSummary";
 import Comments from "@/Components/Comments/Comments";
+import { AnimeContentCredits } from "@/Components/Content/Shared/Anime/AnimeContentCredits";
 
 function AnimeSeasonContent() {
     const { data } = usePage<{ data: AnimeSeason }>().props;
@@ -44,6 +45,9 @@ function AnimeSeasonContent() {
                             <ContentActions />
                             <Box hiddenFrom="sm">
                                 <AnimeSeasonDetails />
+                                <AnimeContentCredits
+                                    containerWidth={width * 0.95}
+                                />
                                 <AnimeContentEpisodes />
                                 <AnimeRelatedContent
                                     containerWidth={width * 0.95}
@@ -67,6 +71,9 @@ function AnimeSeasonContent() {
                                 <Space h={16} />
                                 <AnimeSeasonDetails />
                             </Stack>
+                            <AnimeContentCredits
+                                containerWidth={width * 0.67}
+                            />
                             <AnimeContentEpisodes />
                             <Space h={16} />
                             <AnimeRelatedContent

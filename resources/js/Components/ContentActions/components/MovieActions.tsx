@@ -1,6 +1,6 @@
 import AddToLibrary from "@/Components/ContentActions/components/Actions/AddToLibrary/Movie/AddToLibrary";
 import RemoveFromLibrary from "@/Components/ContentActions/components/Actions/RemoveFromLibrary/Movie/RemoveFromLibrary";
-import { WatchStatusSelect } from "@/Components/ContentActions/components/Actions/WatchStatus/Movie/WatchStatus";
+import { WatchStatusSelect } from "@/Components/ContentActions/components/Actions/WatchStatus/Movie/MovieWatchStatusSelect";
 import { RateContent } from "@/Components/ContentActions/components/Rating/RateContent";
 import { PageProps } from "@/types";
 import { usePage } from "@inertiajs/react";

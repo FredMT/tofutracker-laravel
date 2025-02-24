@@ -2,13 +2,13 @@
 
 namespace App\Actions\Comments;
 
+use App\Models\Anidb\AnidbAnime;
+use App\Models\Anime\AnimeMap;
 use App\Models\Comment;
 use App\Models\Movie;
 use App\Models\TvSeason;
 use App\Models\TvShow;
 use App\Models\User;
-use App\Models\Anidb\AnidbAnime;
-use App\Models\Anime\AnimeMap;
 use App\Notifications\CommentReplyNotification;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;

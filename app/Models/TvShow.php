@@ -353,6 +353,7 @@ class TvShow extends Model
                 ),
                 'in_production' => $data['in_production'] ?? false,
                 'type' => $data['type'] ?? null,
+                'trailer' => $this->trailer,
                 'number_of_episodes' => $data['number_of_episodes'] ?? null,
                 'number_of_seasons' => $data['number_of_seasons'] ?? null,
             ];
@@ -493,5 +494,30 @@ class TvShow extends Model
     public function comments(): MorphMany
     {
         return $this->morphMany(Comment::class, 'commentable');
+    }
+
+    public function trailer(): Attribute
+    {
+        return Attribute::get(function () {
+            $videos = collect($this->data['videos']['results'] ?? []);
+
+            $trailer = $videos
+                ->filter(function ($video) {
+                    return $video['site'] === 'YouTube' &&
+                        $video['type'] === 'Trailer' &&
+                        $video['official'] === true;
+                })
+                ->sortByDesc('published_at')
+                ->first();
+
+            if (! $trailer) {
+                return null;
+            }
+
+            return [
+                'link' => "https://www.youtube.com/embed/{$trailer['key']}",
+                'name' => $trailer['name'],
+            ];
+        });
     }
 }

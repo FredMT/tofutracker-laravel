@@ -13,7 +13,7 @@ function RemoveShowFromLibrary() {
     });
 
     function handleRemove() {
-        remove(route("tv.show.library.destroy"), {
+        remove(route("tv.library.destroy"), {
             preserveScroll: true,
             onSuccess: (res: any) => {
                 stack.closeAll();

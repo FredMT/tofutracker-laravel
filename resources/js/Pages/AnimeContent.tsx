@@ -21,6 +21,7 @@ import { Anime } from "@/types/anime";
 import { AnimeContentSummary } from "@/Components/Content/Shared/Regular/AnimeContentSummary";
 import AnimePosterImage from "@/Components/Content/Shared/Anime/AnimePosterImage";
 import Comments from "@/Components/Comments/Comments";
+import Trailer from "@/Components/Content/TV/Trailer";
 
 function AnimeContent() {
     const { width } = useViewportSize();
@@ -48,7 +49,12 @@ function AnimeContent() {
                                 <Space h={16} />
                                 <AnimeContentSummary />
                             </Box>
-                            <ContentActions />
+                            <Stack>
+                                {data.trailer && (
+                                    <Trailer trailer={data.trailer} />
+                                )}
+                                <ContentActions />
+                            </Stack>
                             <Box hiddenFrom="sm">
                                 <Stack mt={16}>
                                     <Title order={3}>Overview</Title>

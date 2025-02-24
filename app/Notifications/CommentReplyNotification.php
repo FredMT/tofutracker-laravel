@@ -2,10 +2,10 @@
 
 namespace App\Notifications;
 
+use App\Models\Comment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
-use App\Models\Comment;
 
 class CommentReplyNotification extends Notification implements ShouldQueue
 {
@@ -13,12 +13,17 @@ class CommentReplyNotification extends Notification implements ShouldQueue
 
     /**
      * Get the notification's database type.
-     *
-     * @return string
      */
     public function databaseType(object $notifiable): string
     {
         return 'reply';
+    }
+
+    public function viaQueues()
+    {
+        return [
+            'database' => 'notifications',
+        ];
     }
 
     /**
@@ -49,7 +54,7 @@ class CommentReplyNotification extends Notification implements ShouldQueue
         return [
             'comment_id' => strval($this->parentComment->id),
             'replier_username' => $this->reply->user->username,
-            'reply_id' => strval($this->reply->id)
+            'reply_id' => strval($this->reply->id),
         ];
     }
 }

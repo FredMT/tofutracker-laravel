@@ -1,7 +1,15 @@
-import {Carousel} from "@mantine/carousel";
-import {Container, ContainerProps, Group, Menu, Space, Stack, Title,} from "@mantine/core";
-import {useMediaQuery} from "@mantine/hooks";
-import {ChevronDown} from "lucide-react";
+import { Carousel } from "@mantine/carousel";
+import {
+    Container,
+    ContainerProps,
+    Group,
+    Menu,
+    Space,
+    Stack,
+    Title,
+} from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
+import { ChevronDown } from "lucide-react";
 import React from "react";
 import classes from "./WelcomeCustomCarousel.module.css";
 import WelcomeCarouselCard from "./WelcomeCarouselCard";
@@ -97,7 +105,7 @@ export function WelcomeCustomCarouselContent({
     return (
         <Stack gap="xs">
             <Group>
-                <Menu shadow="md">
+                <Menu shadow="md" position="bottom-end" width={175}>
                     <Menu.Target>
                         <Group gap="xs" style={{ cursor: "pointer" }}>
                             {isMobile ? (

@@ -1,11 +1,11 @@
-import {useForm, usePage} from "@inertiajs/react";
-import {Button} from "@mantine/core";
-import {notifications} from "@mantine/notifications";
-import {Check, CircleAlertIcon, PlusCircle} from "lucide-react";
-import {TvShow} from "@/types";
+import { useForm, usePage } from "@inertiajs/react";
+import { Button } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
+import { Check, CircleAlertIcon, PlusCircle } from "lucide-react";
+import { TvShow } from "@/types";
 
 function AddShowToLibrary() {
-    const {data: content} = usePage<{ data: TvShow }>().props
+    const { data: content } = usePage<{ data: TvShow }>().props;
     if (!content) return null;
 
     const { post, processing } = useForm({
@@ -13,7 +13,7 @@ function AddShowToLibrary() {
     });
 
     function handleAdd() {
-        post(route("tv.show.library.store"), {
+        post(route("tv.library.store"), {
             preserveScroll: true,
             onSuccess: (res: any) => {
                 if (res.props.flash?.success) {

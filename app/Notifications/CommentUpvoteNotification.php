@@ -2,10 +2,10 @@
 
 namespace App\Notifications;
 
+use App\Models\Comment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
-use App\Models\Comment;
 use Illuminate\Support\Facades\DB;
 
 class CommentUpvoteNotification extends Notification implements ShouldQueue
@@ -14,12 +14,17 @@ class CommentUpvoteNotification extends Notification implements ShouldQueue
 
     /**
      * Get the notification's database type.
-     *
-     * @return string
      */
     public function databaseType(object $notifiable): string
     {
         return 'vote_milestone';
+    }
+
+    public function viaQueues()
+    {
+        return [
+            'database' => 'notifications',
+        ];
     }
 
     private const MILESTONE_SCORES = [2, 10, 25, 50, 100, 500, 1000];
@@ -38,7 +43,7 @@ class CommentUpvoteNotification extends Notification implements ShouldQueue
     public function shouldSend(object $notifiable, string $channel): bool
     {
         // Only send if it's a milestone score
-        if (!in_array($this->milestone, self::MILESTONE_SCORES)) {
+        if (! in_array($this->milestone, self::MILESTONE_SCORES)) {
             return false;
         }
 
@@ -50,7 +55,7 @@ class CommentUpvoteNotification extends Notification implements ShouldQueue
             ->whereRaw("(data::jsonb->>'score_milestone')::text = ?", [strval($this->milestone)])
             ->exists();
 
-        return !$existingNotification;
+        return ! $existingNotification;
     }
 
     /**

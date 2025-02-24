@@ -16,7 +16,7 @@ class CreateUserMovie
                 'movie_id' => $payload['validated']['movie_id'],
             ],
             [
-                'user_library_id' => $payload['user_library']->id,
+                'user_library_id' => $payload['library']->id,
                 'watch_status' => $payload['validated']['watch_status'] ?? WatchStatus::COMPLETED,
                 'rating' => $payload['validated']['rating'] ?? null,
             ]

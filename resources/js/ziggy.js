@@ -206,11 +206,11 @@ const Ziggy = {
             uri: "anime/movie/library",
             methods: ["DELETE"],
         },
-        "animemovie.library.rate": {
+        "anime.movie.library.rate": {
             uri: "anime/movie/library/rate",
             methods: ["POST"],
         },
-        "animemovie.library.update-status": {
+        "anime.movie.library.update-status": {
             uri: "anime/movie/library/status",
             methods: ["PATCH"],
         },

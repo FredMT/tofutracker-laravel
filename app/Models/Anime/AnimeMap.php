@@ -106,4 +106,11 @@ class AnimeMap extends Model
     {
         return $this->morphMany(Comment::class, 'commentable');
     }
+
+    public function trailer(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->getTmdbModel()->trailer;
+        });
+    }
 }

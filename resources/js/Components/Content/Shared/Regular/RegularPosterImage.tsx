@@ -1,11 +1,11 @@
-import {Image} from "@mantine/core";
+import { Box, Image } from "@mantine/core";
 import classes from "../styles/PosterImage.module.css";
-import {usePage} from "@inertiajs/react";
-import {RegularContentDataType} from "@/types";
+import { usePage } from "@inertiajs/react";
+import { RegularContentDataType } from "@/types";
+import Trailer from "@/Components/Content/TV/Trailer";
 
 export default function RegularPosterImage() {
-
-    const {data} = usePage<{ data: RegularContentDataType}>().props;
+    const { data } = usePage<{ data: RegularContentDataType }>().props;
 
     return (
         <div className={classes.posterWrapper}>

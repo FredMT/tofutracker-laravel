@@ -9,107 +9,98 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Collection;
 
 class CreateTvdbAnimeSeasonJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $tries = 3;
+    public int $tries = 3;
 
-    public $maxExceptions = 3;
+    public int $maxExceptions = 3;
 
-    public $timeout = 300;
+    public int $timeout = 300;
 
-    protected const BATCH_SIZE = 100;
+    private array $seasonData;
 
-    protected $seasonData;
+    private Collection $episodes;
 
-    protected $episodes;
-
-    public function __construct($completeData)
+    public function __construct(object $TVDBSeasonAndEpisodeData)
     {
-        $this->seasonData = [
-            'id' => $completeData->data->id,
-            'slug' => $completeData->data->slug,
-            'status' => [
-                'name' => $completeData->data->status->name,
-                'recordType' => $completeData->data->status->recordType,
-                'keepUpdated' => $completeData->data->status->keepUpdated,
-            ],
-            'lastUpdated' => $completeData->data->lastUpdated,
-            'averageRuntime' => $completeData->data->averageRuntime,
-        ];
-
-        $this->episodes = collect($completeData->data->episodes)->map(function ($episode) {
-            return [
-                'id' => $episode->id,
-                'is_movie' => $episode->isMovie,
-                'name' => $episode->name,
-                'aired' => $episode->aired,
-                'runtime' => $episode->runtime,
-                'overview' => $episode->overview,
-                'image' => $episode->image,
-                'number' => $episode->number,
-                'absolute_number' => $episode->absoluteNumber,
-                'season_number' => $episode->seasonNumber,
-                'last_updated' => $episode->lastUpdated,
-                'finale_type' => $episode->finaleType,
-                'year' => $episode->year ?? null,
-            ];
-        })->all();
+        $this->seasonData = $this->extractSeasonData($TVDBSeasonAndEpisodeData);
+        $this->episodes = collect($TVDBSeasonAndEpisodeData->data->episodes)->map(fn ($episode) => $this->extractEpisodeData($episode));
     }
 
-    public function handle()
+    public function handle(): void
     {
-        logger()->info('Starting creation of new TVDB anime season', [
-            'slug' => $this->seasonData['slug'],
-            'episode_count' => count($this->episodes),
-        ]);
+        try {
 
-        $season = TvdbAnimeSeason::create([
-            'id' => $this->seasonData['id'],
-            'slug' => $this->seasonData['slug'],
-            'status_name' => $this->seasonData['status']['name'],
-            'status_record_type' => $this->seasonData['status']['recordType'],
-            'status_keep_updated' => $this->seasonData['status']['keepUpdated'],
-            'last_updated' => $this->seasonData['lastUpdated'],
-            'average_runtime' => $this->seasonData['averageRuntime'],
-            'last_fetched_at' => now(),
-        ]);
+            $season = $this->createSeason();
+            $this->insertEpisodes($season->id);
+        } catch (\Throwable $exception) {
+            $this->failed($exception);
+        }
+    }
 
-        foreach (array_chunk($this->episodes, self::BATCH_SIZE) as $index => $chunk) {
+    private function extractSeasonData(object $data): array
+    {
+        return [
+            'id' => $data->data->id,
+            'slug' => $data->data->slug,
+            'status_name' => $data->data->status->name,
+            'status_record_type' => $data->data->status->recordType,
+            'status_keep_updated' => $data->data->status->keepUpdated,
+            'last_updated' => $data->data->lastUpdated,
+            'average_runtime' => $data->data->averageRuntime,
+        ];
+    }
+
+    private function extractEpisodeData(object $episode): array
+    {
+        return [
+            'id' => $episode->id,
+            'is_movie' => $episode->isMovie,
+            'name' => $episode->name,
+            'aired' => $episode->aired,
+            'runtime' => $episode->runtime,
+            'overview' => $episode->overview,
+            'image' => $episode->image,
+            'number' => $episode->number,
+            'absolute_number' => $episode->absoluteNumber,
+            'season_number' => $episode->seasonNumber,
+            'last_updated' => $episode->lastUpdated,
+            'finale_type' => $episode->finaleType,
+            'year' => $episode->year ?? null,
+        ];
+    }
+
+    private function createSeason(): TvdbAnimeSeason
+    {
+        return TvdbAnimeSeason::create(array_merge($this->seasonData, ['last_fetched_at' => now()]));
+    }
+
+    private function insertEpisodes(int $seasonId): void
+    {
+        $this->episodes->chunk(100)->each(function ($chunk, $index) use ($seasonId) {
             try {
-                logger()->info('Processing episode chunk', [
-                    'season_id' => $season->id,
-                    'chunk_number' => $index + 1,
-                    'chunk_size' => count($chunk),
-                ]);
 
-                $episodesData = array_map(function ($episode) use ($season) {
-                    return array_merge($episode, ['series_id' => $season->id]);
-                }, $chunk);
-
+                $episodesData = $chunk->map(fn ($episode) => array_merge($episode, ['series_id' => $seasonId]))->toArray();
                 TvdbAnimeEpisode::insert($episodesData);
             } catch (\Exception $e) {
-                logger()->error('Error processing episode chunk', [
-                    'season_id' => $season->id,
-                    'chunk_number' => $index + 1,
+                logger()->error('Error inserting episodes', [
+                    'season_id' => $seasonId,
                     'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
                 ]);
                 throw $e;
             }
-        }
-
-        logger()->info('Completed creation of TVDB anime season and episodes', [
-            'season_id' => $season->id,
-            'total_episodes' => count($this->episodes),
-        ]);
+        });
     }
 
-    public function failed(\Throwable $exception)
+    public function failed(\Throwable $exception): void
     {
         logger()->error('Failed to create TVDB anime season', [
-            'slug' => $this->seasonData['slug'],
+            'slug' => $this->seasonData['slug'] ?? 'Unknown',
             'error' => $exception->getMessage(),
             'trace' => $exception->getTraceAsString(),
         ]);

@@ -2,51 +2,29 @@
 
 namespace App\Http\Controllers\UserAnime;
 
-use App\Actions\Anime\Plays\DeleteUserAnimeCollectionPlayAction;
-use App\Enums\MediaType;
+use App\Actions\UserController\Anime\AnimeTv\DestroyAnimeTvAction;
+use App\Actions\UserController\Anime\AnimeTv\RateAnimeTvAction;
+use App\Actions\UserController\Anime\AnimeTv\StoreAnimeTvAction;
+use App\Actions\UserController\Anime\AnimeTv\UpdateWatchStatusAnimeTvAction;
 use App\Enums\WatchStatus;
 use App\Http\Controllers\Controller;
-use App\Models\UserAnime\UserAnimeCollection;
-use App\Models\UserLibrary;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
 class UserAnimeTvController extends Controller
 {
-    public function __construct(
-        private readonly DeleteUserAnimeCollectionPlayAction $deleteAnimeCollectionPlay
-    ) {}
-
-    public function store(Request $request)
+    public function store(Request $request, StoreAnimeTvAction $storeAction)
     {
         $validated = $request->validate([
             'map_id' => ['required', 'integer', 'exists:anime_maps,id'],
         ]);
 
         try {
-            return DB::transaction(function () use ($validated, $request) {
-                // Get or create user's anime library
-                $library = UserLibrary::firstOrCreate([
-                    'user_id' => $request->user()->id,
-                    'type' => MediaType::ANIME,
-                ]);
+            $result = $storeAction->execute($validated, $request->user());
 
-                // Create collection for the TV show
-                UserAnimeCollection::create([
-                    'user_library_id' => $library->id,
-                    'map_id' => $validated['map_id'],
-                    'watch_status' => WatchStatus::WATCHING,
-                ]);
-
-                return back()->with([
-                    'success' => true,
-                    'message' => 'Anime TV show added to your library',
-                ]);
-            });
+            return back()->with($result);
         } catch (\Exception $e) {
             logger()->error('Failed to add anime TV show to library: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
@@ -61,7 +39,7 @@ class UserAnimeTvController extends Controller
     /**
      * Remove an anime TV show from the user's library.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request, DestroyAnimeTvAction $destroyAction): RedirectResponse
     {
         $validated = $request->validate([
             'map_id' => ['required', 'integer', 'exists:anime_maps,id'],
@@ -69,36 +47,9 @@ class UserAnimeTvController extends Controller
         ]);
 
         try {
-            return DB::transaction(function () use ($validated, $request): RedirectResponse {
-                // Find the collection
-                $collection = UserAnimeCollection::where('map_id', $validated['map_id'])
-                    ->whereHas('userLibrary', function ($query) use ($request) {
-                        $query->where('user_id', $request->user()->id);
-                    })
-                    ->first();
+            $result = $destroyAction->execute($validated, $request->user());
 
-                if (! $collection) {
-                    return back()->with([
-                        'success' => false,
-                        'message' => 'Anime collection not found in your library.',
-                    ]);
-                }
-
-                if (Gate::denies('delete-anime-collection', $collection)) {
-                    throw new AuthorizationException('You do not own this anime.');
-                }
-
-                // Delete all plays and activities first
-                $this->deleteAnimeCollectionPlay->execute($collection);
-
-                // Then delete the collection
-                $collection->delete();
-
-                return back()->with([
-                    'success' => true,
-                    'message' => 'Anime removed from your library.',
-                ]);
-            });
+            return back()->with($result);
         } catch (AuthorizationException $e) {
             return back()->with([
                 'success' => false,
@@ -118,7 +69,7 @@ class UserAnimeTvController extends Controller
     /**
      * Rate an anime TV show in the user's library.
      */
-    public function rate(Request $request): RedirectResponse
+    public function rate(Request $request, RateAnimeTvAction $rateAction): RedirectResponse
     {
         $validated = $request->validate([
             'map_id' => ['required', 'integer', 'exists:anime_maps,id'],
@@ -126,50 +77,9 @@ class UserAnimeTvController extends Controller
         ]);
 
         try {
-            return DB::transaction(function () use ($validated, $request): RedirectResponse {
-                // Find existing collection
-                $collection = UserAnimeCollection::where('map_id', $validated['map_id'])
-                    ->whereHas('userLibrary', function ($query) use ($request) {
-                        $query->where('user_id', $request->user()->id);
-                    })
-                    ->first();
+            $result = $rateAction->execute($validated, $request->user());
 
-                // If no collection exists, create new one with rating
-                if (! $collection) {
-                    if (Gate::denies('rate-anime-collection', null)) {
-                        throw new AuthorizationException('You are not authorized to rate this anime.');
-                    }
-
-                    $library = UserLibrary::firstOrCreate([
-                        'user_id' => $request->user()->id,
-                        'type' => MediaType::ANIME,
-                    ]);
-
-                    $collection = UserAnimeCollection::create([
-                        'user_library_id' => $library->id,
-                        'map_id' => $validated['map_id'],
-                        'rating' => $validated['rating'],
-                        'watch_status' => WatchStatus::WATCHING,
-                    ]);
-
-                    return back()->with([
-                        'success' => true,
-                        'message' => 'Anime TV show added to your library with rating',
-                    ]);
-                }
-
-                // Authorize updating existing collection
-                if (Gate::denies('rate-anime-collection', $collection)) {
-                    throw new AuthorizationException('You do not own this anime.');
-                }
-
-                $collection->update(['rating' => $validated['rating']]);
-
-                return back()->with([
-                    'success' => true,
-                    'message' => 'Anime rating updated.',
-                ]);
-            });
+            return back()->with($result);
         } catch (AuthorizationException $e) {
             return back()->with([
                 'success' => false,
@@ -189,7 +99,7 @@ class UserAnimeTvController extends Controller
     /**
      * Update watch status for an anime TV show.
      */
-    public function watch_status(Request $request): RedirectResponse
+    public function watch_status(Request $request, UpdateWatchStatusAnimeTvAction $updateWatchStatusAction): RedirectResponse
     {
         $validated = $request->validate([
             'map_id' => ['required', 'integer', 'exists:anime_maps,id'],
@@ -197,48 +107,9 @@ class UserAnimeTvController extends Controller
         ]);
 
         try {
-            return DB::transaction(function () use ($validated, $request): RedirectResponse {
-                // Find existing collection
-                $collection = UserAnimeCollection::where('map_id', $validated['map_id'])
-                    ->whereHas('userLibrary', function ($query) use ($request) {
-                        $query->where('user_id', $request->user()->id);
-                    })
-                    ->first();
+            $result = $updateWatchStatusAction->execute($validated, $request->user());
 
-                // If no collection exists, create new one with watch status
-                if (! $collection) {
-                    if (Gate::denies('update-anime-collection-status', null)) {
-                        throw new AuthorizationException('You are not authorized to create this anime collection.');
-                    }
-
-                    $library = UserLibrary::firstOrCreate([
-                        'user_id' => $request->user()->id,
-                        'type' => MediaType::ANIME,
-                    ]);
-
-                    $collection = UserAnimeCollection::create([
-                        'user_library_id' => $library->id,
-                        'map_id' => $validated['map_id'],
-                        'watch_status' => $validated['watch_status'],
-                    ]);
-
-                    return back()->with([
-                        'success' => true,
-                        'message' => 'Anime TV show added to your library with watch status',
-                    ]);
-                }
-
-                if (Gate::denies('update-anime-collection-status', $collection)) {
-                    throw new AuthorizationException('You do not own this anime.');
-                }
-
-                $collection->update(['watch_status' => $validated['watch_status']]);
-
-                return back()->with([
-                    'success' => true,
-                    'message' => 'Anime watch status updated.',
-                ]);
-            });
+            return back()->with($result);
         } catch (AuthorizationException $e) {
             return back()->with([
                 'success' => false,

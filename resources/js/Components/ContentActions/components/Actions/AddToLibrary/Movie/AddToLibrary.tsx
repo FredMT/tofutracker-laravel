@@ -1,18 +1,18 @@
-import {useForm, usePage} from "@inertiajs/react";
-import {Button} from "@mantine/core";
-import {notifications} from "@mantine/notifications";
-import {Check, CircleAlertIcon, PlusCircle} from "lucide-react";
-import {Movie} from "@/types";
+import { useForm, usePage } from "@inertiajs/react";
+import { Button } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
+import { Check, CircleAlertIcon, PlusCircle } from "lucide-react";
+import { Movie } from "@/types";
 
 function AddToLibrary() {
-    const {type, data} = usePage<{type: "movie", data: Movie}>().props
+    const { type, data } = usePage<{ type: "movie"; data: Movie }>().props;
 
     const { post, processing } = useForm({
         movie_id: data.id,
     });
 
     const handleAdd = () => {
-        post(route(`${type}.library.store`, { movie_id: data.id }), {
+        post(route(`${type}.library.store`), {
             preserveScroll: true,
             onSuccess: (res: any) => {
                 if (res.props.flash.success) {

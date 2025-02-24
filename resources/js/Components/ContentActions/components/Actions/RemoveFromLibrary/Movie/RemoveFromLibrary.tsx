@@ -13,7 +13,7 @@ function RemoveFromLibrary() {
     });
 
     function handleRemove() {
-        remove(route(`${type}.library.destroy`, { movie_id: data.id }), {
+        remove(route(`${type}.library.destroy`), {
             preserveScroll: true,
             onSuccess: (res: any) => {
                 stack.closeAll();

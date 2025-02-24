@@ -3,11 +3,8 @@
 namespace App\Actions\Activity;
 
 use App\Actions\Activity\Handlers\ActivityHandlerInterface;
-use App\Actions\Activity\Handlers\AnimeActivityHandler;
-use App\Actions\Activity\Handlers\ListItemActivityHandler;
-use App\Actions\Activity\Handlers\MovieActivityHandler;
-use App\Actions\Activity\Handlers\TvActivityHandler;
 use App\Actions\Activity\Handlers\UserCustomListActivityHandler;
+use App\Actions\Activity\Handlers\UserCustomListItemActivityHandler;
 use App\Models\UserActivity;
 use Illuminate\Database\Eloquent\Model;
 
@@ -24,10 +21,7 @@ class CreateUserActivityAction
 
         if (empty($handlers)) {
             $this->handlers = [
-                new AnimeActivityHandler,
-                new MovieActivityHandler,
-                new TvActivityHandler,
-                new ListItemActivityHandler,
+                new UserCustomListItemActivityHandler,
                 new UserCustomListActivityHandler,
             ];
         }

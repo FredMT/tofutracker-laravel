@@ -5,10 +5,10 @@ namespace App\Http\Controllers\UserAnime;
 use App\Actions\Anime\Plays\DeleteUserAnimePlayAction;
 use App\Http\Controllers\Controller;
 use App\Models\UserAnime\UserAnimeEpisode;
+use App\Pipeline\Shared\MediaLibraryPipeline;
 use App\Pipeline\UserAnimeEpisode\CreateUserAnimeEpisodeAndPlay;
 use App\Pipeline\UserAnimeEpisode\CreateUserAnimeEpisodeAnime;
 use App\Pipeline\UserAnimeEpisode\CreateUserAnimeEpisodeCollection;
-use App\Pipeline\UserAnimeEpisode\EnsureUserAnimeEpisodeLibrary;
 use App\Pipeline\UserAnimeEpisode\UpdateUserAnimeEpisodeStatus;
 use App\Pipeline\UserAnimeSeason\UpdateUserAnimeCollectionWatchStatus;
 use Illuminate\Http\RedirectResponse;
@@ -19,25 +19,18 @@ use Illuminate\Support\Facades\Pipeline;
 
 class UserAnimeEpisodeController extends Controller
 {
-    protected DeleteUserAnimePlayAction $deletePlayAction;
-
-    public function __construct(DeleteUserAnimePlayAction $deletePlayAction)
-    {
-        $this->deletePlayAction = $deletePlayAction;
-    }
-
     /**
      * Store or destroy an anime episode in the user's library.
      */
     public function store(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'tvdb_episode_id' => ['required', 'integer', 'exists:anime_episode_mappings,tvdb_episode_id'],
-            'anidb_id' => ['required', 'integer', 'exists:anidb_anime,id'],
-            'map_id' => ['required', 'integer', 'exists:anime_maps,id'],
-        ]);
 
         try {
+            $validated = $request->validate([
+                'tvdb_episode_id' => ['required', 'integer', 'exists:anime_episode_mappings,tvdb_episode_id'],
+                'anidb_id' => ['required', 'integer', 'exists:anidb_anime,id'],
+                'map_id' => ['required', 'integer', 'exists:anime_maps,id'],
+            ]);
 
             $existingEpisode = UserAnimeEpisode::query()
                 ->where('episode_id', $validated['tvdb_episode_id'])
@@ -59,7 +52,7 @@ class UserAnimeEpisodeController extends Controller
                     'validated' => $validated,
                 ])
                     ->through([
-                        EnsureUserAnimeEpisodeLibrary::class,
+                        MediaLibraryPipeline::anime(),
                         CreateUserAnimeEpisodeCollection::class,
                         CreateUserAnimeEpisodeAnime::class,
                         CreateUserAnimeEpisodeAndPlay::class,
@@ -74,11 +67,14 @@ class UserAnimeEpisodeController extends Controller
                     });
             });
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            \Sentry\captureException($e);
+
             return back()->with([
                 'success' => false,
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
+            \Sentry\captureException($e);
             logger()->error('Failed to add anime episode to library: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
 
@@ -92,14 +88,14 @@ class UserAnimeEpisodeController extends Controller
     /**
      * Delete an anime episode and its related play records from the user's library.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request, DeleteUserAnimePlayAction $deletePlayAction): RedirectResponse
     {
         $validated = $request->validate([
             'tvdb_episode_id' => ['required', 'integer', 'exists:anime_episode_mappings,tvdb_episode_id'],
         ]);
 
         try {
-            return DB::transaction(function () use ($request, $validated): RedirectResponse {
+            return DB::transaction(function () use ($request, $validated, $deletePlayAction): RedirectResponse {
                 $episode = UserAnimeEpisode::query()
                     ->where('episode_id', $validated['tvdb_episode_id'])
                     ->whereHas('userAnime.collection.userLibrary', function ($query) use ($request) {
@@ -119,7 +115,7 @@ class UserAnimeEpisodeController extends Controller
                 }
 
                 // Delete play records
-                $this->deletePlayAction->execute($episode);
+                $deletePlayAction->execute($episode);
 
                 $episode->delete();
 

@@ -1,7 +1,7 @@
-import {Anime} from "@/types/anime";
-import {Config} from "ziggy-js";
-import {WatchStatus} from "./enums";
-import {AnimeSeason} from "@/types/animeseason";
+import { Anime } from "@/types/anime";
+import { Config } from "ziggy-js";
+import { WatchStatus } from "./enums";
+import { AnimeSeason } from "@/types/animeseason";
 
 export interface Auth {
     user: User | null;
@@ -142,6 +142,7 @@ export type Movie = BaseContent & {
     release_date: string;
     runtime: string;
     details: MovieDetails;
+    trailer: Trailer | null;
 };
 
 // TV-specific content
@@ -156,7 +157,13 @@ export type TvShow = BaseContent & {
     type: string;
     number_of_episodes: number;
     number_of_seasons: number;
+    trailer: Trailer | null;
 };
+
+interface Trailer {
+    link: string;
+    name: string;
+}
 
 interface Genre {
     id: number;

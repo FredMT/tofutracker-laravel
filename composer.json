@@ -20,7 +20,6 @@
         "opcodesio/log-viewer": "^3.12",
         "predis/predis": "^2.3",
         "resend/resend-laravel": "^0.15.0",
-        "salsify/json-streaming-parser": "^8.3",
         "sentry/sentry-laravel": "^4.10",
         "staudenmeir/belongs-to-through": "^2.16",
         "staudenmeir/laravel-adjacency-list": "^1.23",
@@ -68,7 +67,7 @@
         ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",
-            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite"
+            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --timeout=0\" \"php artisan queue:listen --queue=notifications --timeout=0\" \"npm run dev\" \"php artisan schedule:run\" --names=server,queue,notificationqueue,vite,schedule"
         ]
     },
     "extra": {

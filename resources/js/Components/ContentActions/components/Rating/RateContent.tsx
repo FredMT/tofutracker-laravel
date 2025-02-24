@@ -1,24 +1,23 @@
+import { DesktopRating } from "@/Components/Content/Shared/DesktopRating";
+import { MobileRating } from "@/Components/Content/Shared/MobileRating";
 import useForm from "@/hooks/useForm";
-import {BaseUserLibrary, RegularContentDataType, RegularType} from "@/types";
-import {usePage} from "@inertiajs/react";
-import {Button} from "@mantine/core";
-import {useDisclosure, useMediaQuery} from "@mantine/hooks";
-import {notifications} from "@mantine/notifications";
-import {Check, CircleAlertIcon, Star} from "lucide-react";
-import {DesktopRating} from "../../../Content/Shared/DesktopRating";
-import {MobileRating} from "../../../Content/Shared/MobileRating";
+import { BaseUserLibrary, RegularContentDataType, RegularType } from "@/types";
+import { usePage } from "@inertiajs/react";
+import { Button } from "@mantine/core";
+import { useDisclosure, useMediaQuery } from "@mantine/hooks";
+import { notifications } from "@mantine/notifications";
+import { Check, CircleAlertIcon, Star } from "lucide-react";
 
 export function RateContent() {
-    const { user_library } = usePage<{user_library: BaseUserLibrary}>().props;
-    const {type, data: content} = usePage<{type: RegularType, data: RegularContentDataType}>().props
+    const { user_library } = usePage<{ user_library: BaseUserLibrary }>().props;
+    const { type, data: content } = usePage<{
+        type: RegularType;
+        data: RegularContentDataType;
+    }>().props;
     const [opened, { open, close }] = useDisclosure(false);
     const isMobile = useMediaQuery("(max-width: 50em)");
 
-    const { data, setData, post, processing } = useForm({
-        rating: user_library?.rating ?? 0,
-    });
-
-    const getRouteParams = () => {
+    const getIDFields = () => {
         switch (type) {
             case "movie":
                 return { movie_id: content.id };
@@ -32,20 +31,38 @@ export function RateContent() {
         }
     };
 
+    const { data, setData, post, processing } = useForm({
+        ...getIDFields(),
+        rating: user_library?.rating ?? 0,
+    });
+
     const submit = () => {
-        post(route(`${type}.library.rate`, getRouteParams()), {
-            preserveScroll: true,
-            onSuccess: (res: any) => {
-                if (res.props.flash.success) {
-                    notifications.show({
-                        color: "teal",
-                        title: "Success",
-                        message: res?.props?.flash?.message,
-                        icon: <Check size={18} />,
-                        autoClose: 3000,
-                    });
-                }
-                if (!res.props.flash.success) {
+        post(
+            route(`${type === "tvseason" ? "tv.season" : type}.library.rate`),
+            {
+                preserveScroll: true,
+                onSuccess: (res: any) => {
+                    if (res.props.flash.success) {
+                        notifications.show({
+                            color: "teal",
+                            title: "Success",
+                            message: res?.props?.flash?.message,
+                            icon: <Check size={18} />,
+                            autoClose: 3000,
+                        });
+                    }
+                    if (!res.props.flash.success) {
+                        notifications.show({
+                            color: "red",
+                            icon: <CircleAlertIcon size={18} />,
+                            title: "Error",
+                            message:
+                                res.props.flash.message || "An error occurred",
+                            autoClose: 3000,
+                        });
+                    }
+                },
+                onError: (res: any) => {
                     notifications.show({
                         color: "red",
                         icon: <CircleAlertIcon size={18} />,
@@ -53,18 +70,9 @@ export function RateContent() {
                         message: res.props.flash.message || "An error occurred",
                         autoClose: 3000,
                     });
-                }
-            },
-            onError: (res: any) => {
-                notifications.show({
-                    color: "red",
-                    icon: <CircleAlertIcon size={18} />,
-                    title: "Error",
-                    message: res.props.flash.message || "An error occurred",
-                    autoClose: 3000,
-                });
-            },
-        });
+                },
+            }
+        );
     };
 
     const RatingComponent = isMobile ? MobileRating : DesktopRating;

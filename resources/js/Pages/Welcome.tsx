@@ -2,15 +2,15 @@ import DiscoverWatchProviders from "@/Components/Welcome/DiscoverWatchProvider";
 import TrendingSection from "@/Components/Welcome/TrendingSection";
 import WelcomeCarouselSlide from "@/Components/Welcome/WelcomeCarouselSlide";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
-import {Head, usePage} from "@inertiajs/react";
-import {Carousel} from "@mantine/carousel";
-import {Space} from "@mantine/core";
+import { Head, usePage } from "@inertiajs/react";
+import { Carousel } from "@mantine/carousel";
+import { Space } from "@mantine/core";
 import Autoplay from "embla-carousel-autoplay";
-import {useRef} from "react";
+import { useRef } from "react";
 import DiscoverByGenre from "@/Components/Welcome/DiscoverByGenre";
 import ResponsiveContainer from "@/Components/ResponsiveContainer";
-import {TrendingContent} from "@/types/trending";
-import {GenresAndWatchProvidersHomepage} from "@/types/genresandwatchprovidershomepage";
+import { TrendingContent } from "@/types/trending";
+import { GenresAndWatchProvidersHomepage } from "@/types/genresandwatchprovidershomepage";
 
 interface MediaItem {
     title: string;
@@ -77,6 +77,7 @@ function Welcome() {
     return (
         <>
             <Head title="Welcome" />
+            <Space h={64} />
             <div style={{ position: "relative" }}>
                 <Carousel
                     height={540}

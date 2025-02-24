@@ -4,6 +4,7 @@ use App\Actions\Trending\GetTrendingAction;
 use App\Actions\Trending\GetTrendingGenresAndWatchProvidersAction;
 use App\Http\Controllers\Activity\ToggleActivityLikeController;
 use App\Http\Controllers\AnimeController;
+use App\Http\Controllers\AnimeSeasonController;
 use App\Http\Controllers\Comment\CommentController;
 use App\Http\Controllers\Comment\VoteController;
 use App\Http\Controllers\List\ListBackdropsController;
@@ -50,32 +51,34 @@ Route::get('/me', function () {
     return redirect()->route('user.profile', ['username' => Auth::user()->username]);
 })->name('me');
 
-Route::get('/user/{username}/movies', [UserController::class, 'showMovies'])
-    ->name('user.movies');
-Route::get('/user/{username}/tv', [UserController::class, 'showTv'])
-    ->name('user.tv');
-Route::get('/user/{username}/anime', [UserController::class, 'showAnime'])
-    ->name('user.anime');
-Route::get('/user/{username}/lists', [UserCustomListController::class, 'index'])
-    ->name('user.lists.index');
-Route::get('/user/{username}/lists/{list}', [UserCustomListController::class, 'show'])
-    ->name('user.lists.show');
-Route::get('/user/{username}', [UserController::class, 'show'])->name('user.profile');
+Route::prefix('user/{username}')->name('user.')->group(function () {
+    Route::get('/', [UserController::class, 'show'])->name('profile');
+    Route::get('/movies', [UserController::class, 'showMovies'])->name('movies');
+    Route::get('/tv', [UserController::class, 'showTv'])->name('tv');
+    Route::get('/anime', [UserController::class, 'showAnime'])->name('anime');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/settings', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/settings', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/settings', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::post('/settings/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
-    Route::post('/settings/banner', [ProfileController::class, 'updateBanner'])->name('profile.banner');
-    Route::patch('/settings/bio', [ProfileController::class, 'updateBio'])->name('profile.bio');
+    Route::prefix('lists')->name('lists.')->group(function () {
+        Route::get('/', [UserCustomListController::class, 'index'])->name('index');
+        Route::get('/{list}', [UserCustomListController::class, 'show'])->name('show');
+    });
+});
 
-    Route::post('/list/{list}/banner', ListBannerController::class)->name('list.banner.update');
-    Route::post('/list/{list}/banner/tmdb', ListBannerTmdbController::class)->name('list.banner.tmdb.update');
-    Route::delete('/list/{list}/banner', ListBannerRemoveController::class)->name('list.banner.remove');
-    Route::get('/list/{list}/backdrops', ListBackdropsController::class)->name('list.backdrops');
-    Route::post('/list/{list}/remove-items', ListRemoveItemsController::class)->name('list.removeItems');
-    Route::post('/list/{list}/order', ListUpdateOrderController::class)->name('list.updateOrder');
+Route::middleware('auth')->prefix('settings')->name('profile.')->group(function () {
+    Route::get('/', [ProfileController::class, 'edit'])->name('edit');
+    Route::patch('/', [ProfileController::class, 'update'])->name('update');
+    Route::delete('/', [ProfileController::class, 'destroy'])->name('destroy');
+    Route::post('/avatar', [ProfileController::class, 'updateAvatar'])->name('avatar');
+    Route::post('/banner', [ProfileController::class, 'updateBanner'])->name('banner');
+    Route::patch('/bio', [ProfileController::class, 'updateBio'])->name('bio');
+});
+
+Route::middleware('auth')->prefix('list/{list}')->name('list.')->group(function () {
+    Route::post('/banner', ListBannerController::class)->name('banner.update');
+    Route::post('/banner/tmdb', ListBannerTmdbController::class)->name('banner.tmdb.update');
+    Route::delete('/banner', ListBannerRemoveController::class)->name('banner.remove');
+    Route::get('/backdrops', ListBackdropsController::class)->name('backdrops');
+    Route::post('/remove-items', ListRemoveItemsController::class)->name('removeItems');
+    Route::post('/order', ListUpdateOrderController::class)->name('updateOrder');
 });
 
 Route::post('/activity/{activity}/like', ToggleActivityLikeController::class)
@@ -83,67 +86,78 @@ Route::post('/activity/{activity}/like', ToggleActivityLikeController::class)
     ->middleware(['auth', 'verified']);
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::post('/movies/library/{movie_id}', [UserMovieController::class, 'store'])
-        ->name('movie.library.store');
+    // Movie Library Routes
+    Route::prefix('movies/library')->name('movie.library.')->group(function () {
+        Route::post('/store', [UserMovieController::class, 'store'])->name('store');
+        Route::delete('/delete', [UserMovieController::class, 'destroy'])->name('destroy');
+        Route::post('/rate', [UserMovieController::class, 'rate'])->name('rate');
+        Route::patch('/status', [UserMovieController::class, 'watch_status'])->name('update-status');
+    });
 
-    Route::delete('/movies/library/{movie_id}', [UserMovieController::class, 'destroy'])
-        ->name('movie.library.destroy');
-    Route::patch('/movie/library/status/{movie_id}', [UserMovieController::class, 'update'])
-        ->name('movie.library.update-status');
-    Route::post('/movie/library/rating/{movie_id}', [UserMovieController::class, 'rate'])
-        ->name('movie.library.rate');
+    // TV Episode Routes
+    Route::prefix('tv/episode')->name('tv.episode.')->group(function () {
+        Route::post('/{episode_id}', [UserTvEpisodeController::class, 'store'])->name('store');
+        Route::delete('/{episode_id}', [UserTvEpisodeController::class, 'destroy'])->name('destroy');
+    });
 
-    Route::post('/tv/episode/{episode_id}', [UserTvEpisodeController::class, 'store'])
-        ->name('tv.episode.store');
-    Route::delete('/tv/episode/{episode_id}', [UserTvEpisodeController::class, 'destroy'])
-        ->name('tv.episode.destroy');
+    // TV Season Library Routes
+    Route::prefix('tv/season/library')->name('tv.season.library.')->group(function () {
+        Route::post('/store', [UserTvSeasonController::class, 'store'])->name('store');
+        Route::delete('/delete', [UserTvSeasonController::class, 'destroy'])->name('destroy');
+        Route::post('/rate', [UserTvSeasonController::class, 'rate'])->name('rate');
+        Route::patch('/status', [UserTvSeasonController::class, 'watch_status'])->name('update-status');
+    });
 
-    Route::post('/tv/season/library', [UserTvSeasonController::class, 'store'])->name('tv.season.library.store');
-    Route::delete('/tv/season/library', [UserTvSeasonController::class, 'destroy'])->name('tv.season.library.destroy');
-    Route::post('/tv/season/library/rate', [UserTvSeasonController::class, 'update'])->name('tvseason.library.rate');
-    Route::patch('/tv/season/library/status', [UserTvSeasonController::class, 'watch_status'])->name('tvseason.library.update-status');
+    // TV Show Library Routes
+    Route::prefix('tv/show/library')->name('tv.library.')->group(function () {
+        Route::post('/store', [UserTvShowController::class, 'store'])->name('store');
+        Route::delete('/delete', [UserTvShowController::class, 'destroy'])->name('destroy');
+        Route::post('/rate', [UserTvShowController::class, 'rate'])->name('rate');
+        Route::patch('/status', [UserTvShowController::class, 'watch_status'])->name('update-status');
+    });
 
-    Route::post('/tv/show/library', [UserTvShowController::class, 'store'])->name('tv.show.library.store');
-    Route::delete('/tv/show/library', [UserTvShowController::class, 'destroy'])->name('tv.show.library.destroy');
-    Route::post('/tv/show/library/rate', [UserTvShowController::class, 'rate'])->name('tv.library.rate');
-    Route::patch('/tv/show/library/status', [UserTvShowController::class, 'watch_status'])->name('tv.library.update-status');
+    // Anime Movie Library Routes
+    Route::prefix('anime/movie/library')->name('anime.movie.library.')->group(function () {
+        Route::post('/store', [UserAnimeMovieController::class, 'store'])->name('store');
+        Route::delete('/delete', [UserAnimeMovieController::class, 'destroy'])->name('destroy');
+        Route::post('/rate', [UserAnimeMovieController::class, 'rate'])->name('rate');
+        Route::patch('/status', [UserAnimeMovieController::class, 'watch_status'])->name('update-status');
+    });
 
-    Route::post('/anime/movie/library', [UserAnimeMovieController::class, 'store'])->name('anime.movie.library.store');
-    Route::delete('/anime/movie/library', [UserAnimeMovieController::class, 'destroy'])->name('anime.movie.library.destroy');
-    Route::post('/anime/movie/library/rate', [UserAnimeMovieController::class, 'rate'])
-        ->name('animemovie.library.rate');
-    Route::patch('/anime/movie/library/status', [UserAnimeMovieController::class, 'watch_status'])->name('animemovie.library.update-status');
+    // Anime TV Library Routes
+    Route::prefix('anime/tv/library')->name('anime.tv.library.')->group(function () {
+        Route::post('/store', [UserAnimeTvController::class, 'store'])->name('store');
+        Route::delete('/delete', [UserAnimeTvController::class, 'destroy'])->name('destroy');
+        Route::post('/rate', [UserAnimeTvController::class, 'rate'])->name('rate');
+        Route::patch('/status', [UserAnimeTvController::class, 'watch_status'])->name('update-status');
+    });
 
-    Route::post('/anime/tv/library', [UserAnimeTvController::class, 'store'])->name('anime.tv.library.store');
-    Route::delete('/anime/tv/library', [UserAnimeTvController::class, 'destroy'])->name('anime.tv.library.destroy');
-    Route::post('/anime/tv/library/rate', [UserAnimeTvController::class, 'rate'])
-        ->name('animetv.library.rate');
-    Route::patch('/anime/tv/library/status', [UserAnimeTvController::class, 'watch_status'])->name('animetv.library.update-status');
+    // Anime Season Library Routes
+    Route::prefix('anime/season/library')->name('anime.season.library.')->group(function () {
+        Route::post('/store', [UserAnimeSeasonController::class, 'store'])->name('store');
+        Route::delete('/delete', [UserAnimeSeasonController::class, 'destroy'])->name('destroy');
+        Route::post('/rate', [UserAnimeSeasonController::class, 'rate'])->name('rate');
+        Route::patch('/status', [UserAnimeSeasonController::class, 'watch_status'])->name('update-status');
+    });
 
-    Route::post('/anime/season/library', [UserAnimeSeasonController::class, 'store'])->name('anime.season.library.store');
-    Route::delete('/anime/season/library', [UserAnimeSeasonController::class, 'destroy'])->name('anime.season.library.destroy');
-    Route::post('/anime/season/library/rate', [UserAnimeSeasonController::class, 'rate'])
-        ->name('anime.season.library.rate');
-    Route::patch('/anime/season/library/status', [UserAnimeSeasonController::class, 'watch_status'])->name('anime.season.library.update-status');
+    // Anime Episode Library Routes
+    Route::prefix('anime/episode/library')->name('anime.episode.')->group(function () {
+        Route::post('/store', [UserAnimeEpisodeController::class, 'store'])->name('store');
+        Route::delete('/delete', [UserAnimeEpisodeController::class, 'destroy'])->name('destroy');
+    });
+});
 
-    Route::post('/anime/episode/library', [UserAnimeEpisodeController::class, 'store'])->name('anime.episode.store');
-    Route::delete('/anime/episode/library', [UserAnimeEpisodeController::class, 'destroy'])
-        ->name('anime.episode.destroy');
+// User List Routes
+Route::prefix('user/lists')->name('user.lists.')->group(function () {
+    Route::post('/store', [UserCustomListController::class, 'store'])->name('store');
+    Route::patch('/{list}', [UserCustomListController::class, 'update'])->name('update');
+    Route::delete('/{username}/{list}', [UserCustomListController::class, 'destroy'])->name('destroy');
 
-    Route::post('/user/lists', [UserCustomListController::class, 'store'])
-        ->name('user.lists.store');
-    Route::patch('/user/lists/{list}', [UserCustomListController::class, 'update'])
-        ->name('user.lists.update');
-
-    // List items management routes
-    Route::post('/user/list-items', [UserCustomListItemController::class, 'store'])
-        ->name('user.lists.items.store');
-    Route::delete('/user/list-items/{list_id}/remove', [UserCustomListItemController::class, 'destroy'])
-        ->name('user.lists.items.destroy');
-
-    // List management routes
-    Route::delete('/user/lists/{username}/{list}', [UserCustomListController::class, 'destroy'])
-        ->name('user.lists.destroy');
+    // List Items Management
+    Route::prefix('items')->name('items.')->group(function () {
+        Route::post('/store', [UserCustomListItemController::class, 'store'])->name('store');
+        Route::delete('/{list_id}/remove', [UserCustomListItemController::class, 'destroy'])->name('destroy');
+    });
 });
 
 Route::get('/movie/{id}', [MovieController::class, 'show'])
@@ -161,7 +175,7 @@ Route::get('/tv/{id}/season/{seasonNumber}', [TvSeasonController::class, 'show']
     ->name('tv.season.show');
 
 Route::get('/anime/{id}', [AnimeController::class, 'show'])->name('anime.show');
-Route::get('/anime/{id}/season/{seasonId}', [AnimeController::class, 'showSeason'])->name('anime.season.show');
+Route::get('/anime/{id}/season/{seasonId}', [AnimeSeasonController::class, 'show'])->name('anime.season.show');
 
 Route::get('/search', [SearchController::class, 'search'])->name('search');
 Route::get('/quicksearch', QuickSearchController::class)->name('quicksearch');

@@ -4,10 +4,18 @@ namespace App\Actions\Activity\Handlers;
 
 use App\Models\UserActivity;
 use App\Models\UserCustomList\UserCustomList;
+use App\Repositories\UserActivityRepository;
 use Illuminate\Database\Eloquent\Model;
 
 class UserCustomListActivityHandler implements ActivityHandlerInterface
 {
+    private UserActivityRepository $activityRepository;
+
+    public function __construct()
+    {
+        $this->activityRepository = new UserActivityRepository;
+    }
+
     public function canHandle(Model $subject): bool
     {
         return $subject instanceof UserCustomList;
@@ -15,34 +23,21 @@ class UserCustomListActivityHandler implements ActivityHandlerInterface
 
     public function createActivity(int $userId, string $activityType, Model $subject, ?array $metadata = null): UserActivity
     {
-        $description = match ($activityType) {
-            'custom_list_created' => "Created a new list: {$subject->title}",
-            default => "List activity: {$subject->title}"
-        };
+        if (! $this->canHandle($subject)) {
+            throw new \InvalidArgumentException('This handler only supports UserCustomList models');
+        }
 
-        return UserActivity::create([
-            'user_id' => $userId,
-            'activity_type' => $activityType,
-            'subject_type' => UserCustomList::class,
-            'subject_id' => $subject->id,
-            'description' => $description,
-            'metadata' => array_merge($metadata ?? [], [
-                'list_id' => $subject->id,
-                'list_title' => $subject->title,
-            ]),
-            'occurred_at' => now(),
-        ]);
+        return $this->activityRepository->createCustomListActivity($userId, $activityType, $subject, $metadata);
     }
 
     public function deleteActivity(Model $subject): void
     {
-        UserActivity::where(function ($query) use ($subject) {
-            $query->where(function ($q) use ($subject) {
-                $q->where('subject_type', UserCustomList::class)
-                    ->where('subject_id', $subject->id);
-            })->orWhere(function ($q) use ($subject) {
-                $q->whereJsonContains('metadata->list_id', $subject->id);
-            });
-        })->delete();
+        if (! $this->canHandle($subject)) {
+            throw new \InvalidArgumentException('This handler only supports UserCustomList models');
+        }
+
+        $this->activityRepository->deleteByMetadataContains([
+            'activity_type' => ['custom_list_created', 'list_item_add'],
+        ], 'list_id', $subject->id);
     }
 }

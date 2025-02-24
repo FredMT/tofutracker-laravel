@@ -50,7 +50,7 @@ class AnidbAnime extends Model
     protected function title(): Attribute
     {
         return Attribute::get(
-            fn() => $this->title_main
+            fn () => $this->title_main
         );
     }
 
@@ -144,6 +144,34 @@ class AnidbAnime extends Model
         return app(GetAnimeEpisodes::class)->execute($this->id);
     }
 
+    public function mainCharacters(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->characters()
+                ->where('character_type', 'main character in')
+                ->whereNotNull('picture')
+                ->where('name', '!=', "\n")
+                ->whereHas('seiyuus', function ($query) {
+                    $query->whereNotNull('picture');
+                })
+                ->get();
+        });
+    }
+
+    public function otherCharacters(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->characters()
+                ->where('character_type', '!=', 'main character in')
+                ->whereNotNull('picture')
+                ->where('name', '!=', "\n")
+                ->whereHas('seiyuus', function ($query) {
+                    $query->whereNotNull('picture');
+                })
+                ->get();
+        });
+    }
+
     public function relatedEntries(): HasMany
     {
         return $this->hasMany(AnimeRelatedEntry::class, 'anime_id');
@@ -181,7 +209,7 @@ class AnidbAnime extends Model
             return $mapId;
         }
 
-        throw new \Exception('Map ID not found for Anidb ID: ' . $anidbId);
+        throw new \Exception('Map ID not found for Anidb ID: '.$anidbId);
     }
 
     public function map()
@@ -209,5 +237,33 @@ class AnidbAnime extends Model
     public function comments(): MorphMany
     {
         return $this->morphMany(Comment::class, 'commentable');
+    }
+
+    public function mainEpisodes(): array
+    {
+        try {
+            $episodes = $this->mappedEpisodes();
+
+            return $episodes['mainEpisodes'] ?? [];
+        } catch (\Exception $e) {
+            logger()->error('Failed to get main episodes for anime: '.$this->id);
+            logger()->error($e->getMessage());
+
+            return [];
+        }
+    }
+
+    public function specialEpisodes(): array
+    {
+        try {
+            $episodes = $this->mappedEpisodes();
+
+            return $episodes['specialEpisodes'] ?? [];
+        } catch (\Exception $e) {
+            logger()->error('Failed to get special episodes for anime: '.$this->id);
+            logger()->error($e->getMessage());
+
+            return [];
+        }
     }
 }
