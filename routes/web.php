@@ -4,6 +4,7 @@ use App\Actions\Trending\GetTrendingAction;
 use App\Actions\Trending\GetTrendingGenresAndWatchProvidersAction;
 use App\Http\Controllers\Activity\ToggleActivityLikeController;
 use App\Http\Controllers\AnimeController;
+use App\Http\Controllers\AnimeSeasonController;
 use App\Http\Controllers\Comment\CommentController;
 use App\Http\Controllers\Comment\VoteController;
 use App\Http\Controllers\List\ListBackdropsController;
@@ -175,7 +176,7 @@ Route::get('/tv/{id}/season/{seasonNumber}', [TvSeasonController::class, 'show']
     ->name('tv.season.show');
 
 Route::get('/anime/{id}', [AnimeController::class, 'show'])->name('anime.show');
-Route::get('/anime/{id}/season/{seasonId}', [AnimeController::class, 'showSeason'])->name('anime.season.show');
+Route::get('/anime/{id}/season/{seasonId}', [AnimeSeasonController::class, 'show'])->name('anime.season.show');
 
 Route::get('/search', [SearchController::class, 'search'])->name('search');
 Route::get('/quicksearch', QuickSearchController::class)->name('quicksearch');

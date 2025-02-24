@@ -19,13 +19,6 @@ use Illuminate\Support\Facades\Pipeline;
 
 class UserAnimeEpisodeController extends Controller
 {
-    protected DeleteUserAnimePlayAction $deletePlayAction;
-
-    public function __construct(DeleteUserAnimePlayAction $deletePlayAction)
-    {
-        $this->deletePlayAction = $deletePlayAction;
-    }
-
     /**
      * Store or destroy an anime episode in the user's library.
      */
@@ -94,14 +87,14 @@ class UserAnimeEpisodeController extends Controller
     /**
      * Delete an anime episode and its related play records from the user's library.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request, DeleteUserAnimePlayAction $deletePlayAction): RedirectResponse
     {
         $validated = $request->validate([
             'tvdb_episode_id' => ['required', 'integer', 'exists:anime_episode_mappings,tvdb_episode_id'],
         ]);
 
         try {
-            return DB::transaction(function () use ($request, $validated): RedirectResponse {
+            return DB::transaction(function () use ($request, $validated, $deletePlayAction): RedirectResponse {
                 $episode = UserAnimeEpisode::query()
                     ->where('episode_id', $validated['tvdb_episode_id'])
                     ->whereHas('userAnime.collection.userLibrary', function ($query) use ($request) {
@@ -121,7 +114,7 @@ class UserAnimeEpisodeController extends Controller
                 }
 
                 // Delete play records
-                $this->deletePlayAction->execute($episode);
+                $deletePlayAction->execute($episode);
 
                 $episode->delete();
 

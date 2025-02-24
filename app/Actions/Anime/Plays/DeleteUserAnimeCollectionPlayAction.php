@@ -2,20 +2,13 @@
 
 namespace App\Actions\Anime\Plays;
 
-use App\Actions\Activity\CreateUserActivityAction;
 use App\Models\UserActivity;
 use App\Models\UserAnime\UserAnimeCollection;
 
 class DeleteUserAnimeCollectionPlayAction
 {
-    public function __construct(
-        private readonly CreateUserActivityAction $createActivity
-    ) {}
-
     public function execute(UserAnimeCollection $collection): void
     {
-
-        // Delete all activities related to this collection
         UserActivity::where('activity_type', 'anime_watch')
             ->where('user_id', $collection->userLibrary->user_id)
             ->where(function ($query) use ($collection) {
@@ -26,8 +19,5 @@ class DeleteUserAnimeCollectionPlayAction
                     });
             })
             ->delete();
-
-        // Delete collection activities
-        $this->createActivity->deleteForSubject($collection);
     }
 }

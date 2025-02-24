@@ -6,7 +6,7 @@ use App\Models\UserActivity;
 use App\Models\UserCustomList\UserCustomListItem;
 use Illuminate\Database\Eloquent\Model;
 
-class ListItemActivityHandler implements ActivityHandlerInterface
+class UserCustomListItemActivityHandler implements ActivityHandlerInterface
 {
     public function canHandle(Model $subject): bool
     {
