@@ -31,18 +31,9 @@ class CreateTvdbAnimeSeasonJob implements ShouldQueue
     public function handle(): void
     {
         try {
-            logger()->info('Starting TVDB anime season creation', [
-                'slug' => $this->seasonData['slug'],
-                'episode_count' => $this->episodes->count(),
-            ]);
 
             $season = $this->createSeason();
             $this->insertEpisodes($season->id);
-
-            logger()->info('Successfully created TVDB anime season', [
-                'season_id' => $season->id,
-                'total_episodes' => $this->episodes->count(),
-            ]);
         } catch (\Throwable $exception) {
             $this->failed($exception);
         }

@@ -27,17 +27,10 @@ class CommentController extends Controller
 {
     use AuthorizesRequests;
 
-    public function __construct(
-        private readonly FetchCommentsAction $fetchCommentsAction,
-        private readonly CreateCommentAction $createCommentAction,
-        private readonly UpdateCommentAction $updateCommentAction,
-        private readonly DeleteCommentAction $deleteCommentAction,
-    ) {}
-
-    public function index(string $type, string $id)
+    public function index(string $type, string $id, FetchCommentsAction $fetchCommentsAction)
     {
         try {
-            $comments = $this->fetchCommentsAction->execute($type, $id);
+            $comments = $fetchCommentsAction->execute($type, $id);
             return $comments;
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Resource not found'], Response::HTTP_NOT_FOUND);
@@ -50,7 +43,7 @@ class CommentController extends Controller
         }
     }
 
-    public function store(Request $request, string $type, string $id): JsonResponse
+    public function store(Request $request, string $type, string $id, CreateCommentAction $createCommentAction): JsonResponse
     {
         try {
             $validated = $request->validate([
@@ -58,7 +51,7 @@ class CommentController extends Controller
                 'parent_id' => 'nullable|exists:comments,id',
             ]);
 
-            $result = $this->createCommentAction->execute($validated, $type, $id, $request->user());
+            $result = $createCommentAction->execute($validated, $type, $id, $request->user());
             return response()->json($result, Response::HTTP_CREATED);
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Resource not found'], Response::HTTP_NOT_FOUND);
@@ -71,7 +64,7 @@ class CommentController extends Controller
         }
     }
 
-    public function update(Request $request, Comment $comment): JsonResponse
+    public function update(Request $request, Comment $comment, UpdateCommentAction $updateCommentAction): JsonResponse
     {
         try {
             $this->authorize('update', $comment);
@@ -80,7 +73,7 @@ class CommentController extends Controller
                 'body' => 'required|string|min:1|max:2000',
             ]);
 
-            $result = $this->updateCommentAction->execute($comment, $validated);
+            $result = $updateCommentAction->execute($comment, $validated);
             return response()->json($result);
         } catch (\Exception $e) {
             report($e);
@@ -113,12 +106,12 @@ class CommentController extends Controller
         ];
     }
 
-    public function destroy(Comment $comment): JsonResponse
+    public function destroy(Comment $comment, DeleteCommentAction $deleteCommentAction): JsonResponse
     {
         try {
             $this->authorize('delete', $comment);
 
-            $result = $this->deleteCommentAction->execute($comment);
+            $result = $deleteCommentAction->execute($comment);
             return response()->json($result);
         } catch (\Exception $e) {
             report($e);
