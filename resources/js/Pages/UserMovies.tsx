@@ -3,28 +3,20 @@ import FilterMobile from "@/Components/UserProfile/Filter/FilterMobile";
 import FilterSearchInput from "@/Components/UserProfile/Filter/FilterSearchInput";
 import UserMovieLayout from "@/Components/UserProfile/UserMovieLayout";
 import UserMovieSection from "@/Components/UserProfile/UserMovieSection";
-import {useFilterStore} from "@/hooks/useFilterStore";
+import { useFilterStore } from "@/hooks/useFilterStore";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
 import UserProfileLayout from "@/Layouts/UserProfileLayout";
-import {PageProps} from "@/types/userMovies";
-import {Head} from "@inertiajs/react";
-import {Box, Space, Stack, Title} from "@mantine/core";
-import {useEffect} from "react";
+import { PageProps } from "@/types/userMovies";
+import { Head } from "@inertiajs/react";
+import { Box, Space, Stack, Title } from "@mantine/core";
+import { useEffect } from "react";
 
 function UserMovies({ userData, filters }: PageProps) {
     const filterStore = useFilterStore();
 
     useEffect(() => {
         if (filters) {
-            filterStore.setStatus(filters.status || null);
-            filterStore.setTitle(filters.title || null);
-            filterStore.setDateRange([
-                filters.from_date ? new Date(filters.from_date) : null,
-                filters.to_date ? new Date(filters.to_date) : null,
-            ]);
-            filterStore.setGenres(
-                filters.genres ? filters.genres.split(",").map(Number) : []
-            );
+            filterStore.initializeFromFilters(filters);
         }
     }, []);
 

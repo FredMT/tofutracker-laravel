@@ -30,15 +30,7 @@ function UserTv({ userData, filters, shows, messages }: Props) {
 
     useEffect(() => {
         if (filters) {
-            filterStore.setStatus(filters.status || null);
-            filterStore.setTitle(filters.title || null);
-            filterStore.setDateRange([
-                filters.from_date ? new Date(filters.from_date) : null,
-                filters.to_date ? new Date(filters.to_date) : null,
-            ]);
-            filterStore.setGenres(
-                filters.genres ? filters.genres.split(",").map(Number) : []
-            );
+            filterStore.initializeFromFilters(filters);
         }
     }, []);
 

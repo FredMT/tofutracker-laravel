@@ -1,12 +1,12 @@
-import {useFilterStore} from "@/hooks/useFilterStore";
-import {Button, Group, Select} from "@mantine/core";
-import {DatePickerInput, DatesProvider} from "@mantine/dates";
+import { useFilterStore } from "@/hooks/useFilterStore";
+import { Button, Group, Select } from "@mantine/core";
+import { DatePickerInput, DatesProvider } from "@mantine/dates";
 import FilterSearchInput from "./FilterSearchInput";
-import {useMediaQuery} from "@mantine/hooks";
-import {WatchStatusDisplay} from "@/types/enums";
+import { useMediaQuery } from "@mantine/hooks";
+import { WatchStatusDisplay } from "@/types/enums";
 import dayjs from "dayjs";
-import {router, usePage} from "@inertiajs/react";
-import {PageProps, UserTvGenre} from "@/types/userTv";
+import { router, usePage } from "@inertiajs/react";
+import { PageProps, UserTvGenre } from "@/types/userTv";
 
 interface FilterButtonGroupProps {
     contentType: "movies" | "tv" | "anime";
@@ -19,30 +19,9 @@ export default function FilterButtonGroup({
     const filterStore = useFilterStore();
     const isMobile = useMediaQuery("(max-width: 640px)");
 
-    const hasActiveFilters = Boolean(
-        filterStore.title ||
-            filterStore.genres.length > 0 ||
-            filterStore.status ||
-            filterStore.fromDate ||
-            filterStore.toDate
-    );
-
-    const hasUrlFilters = Boolean(
-        filters.title ||
-            filters.genres ||
-            filters.status ||
-            filters.from_date ||
-            filters.to_date
-    );
-
-    const hasFilterChanges =
-        filterStore.title !== (filters.title || null) ||
-        filterStore.status !== (filters.status || null) ||
-        filterStore.genres.join(",") !== (filters.genres || "") ||
-        dayjs(filterStore.fromDate).format("YYYY-MM-DD") !==
-            (filters.from_date || "") ||
-        dayjs(filterStore.toDate).format("YYYY-MM-DD") !==
-            (filters.to_date || "");
+    const hasActiveFilters = filterStore.hasActiveFilters();
+    const hasUrlFilters = filterStore.hasUrlFilters(filters);
+    const hasFilterChanges = filterStore.hasFilterChanges(filters);
 
     const handleGenreChange = (value: string | null) => {
         filterStore.setGenres(value ? [parseInt(value)] : []);
@@ -53,49 +32,11 @@ export default function FilterButtonGroup({
     };
 
     const handleApplyFilters = () => {
-        const params = new URLSearchParams();
-
-        if (filterStore.title) {
-            params.append("title", filterStore.title);
-        }
-
-        if (filterStore.genres.length > 0) {
-            params.append("genres", filterStore.genres.join(","));
-        }
-
-        if (filterStore.status) {
-            params.append("status", filterStore.status);
-        }
-
-        if (filterStore.fromDate) {
-            params.append(
-                "from_date",
-                dayjs(filterStore.fromDate).format("YYYY-MM-DD")
-            );
-        }
-
-        if (filterStore.toDate) {
-            params.append(
-                "to_date",
-                dayjs(filterStore.toDate).format("YYYY-MM-DD")
-            );
-        }
-
-        router.get(
-            `/user/${userData.username}/${contentType}`,
-            Object.fromEntries(params)
-        );
+        filterStore.applyFilters(userData.username, contentType);
     };
 
     const handleClearFilters = () => {
-        filterStore.setGenres([]);
-        filterStore.setStatus(null);
-        filterStore.setDateRange([null, null]);
-        filterStore.setTitle(null);
-
-        if (hasUrlFilters) {
-            router.get(`/user/${userData.username}/${contentType}`);
-        }
+        filterStore.clearFilters(userData.username, contentType);
     };
 
     const genreData = genres.map((genre: UserTvGenre) => ({

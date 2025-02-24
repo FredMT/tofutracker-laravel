@@ -1,12 +1,12 @@
 import FilterButtonGroup from "@/Components/UserProfile/Filter/FilterButtonGroup";
 import AnimeCard from "@/Components/Shared/UserAnime/AnimeCard";
-import {useFilterStore} from "@/hooks/useFilterStore";
+import { useFilterStore } from "@/hooks/useFilterStore";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
 import UserProfileLayout from "@/Layouts/UserProfileLayout";
-import {UserAnimePageProps} from "@/types/userAnime";
-import {Head} from "@inertiajs/react";
-import {Alert, Flex, Group, Space, Stack, Title,} from "@mantine/core";
-import {useEffect} from "react";
+import { UserAnimePageProps } from "@/types/userAnime";
+import { Head } from "@inertiajs/react";
+import { Alert, Flex, Group, Space, Stack, Title } from "@mantine/core";
+import { useEffect } from "react";
 
 function UserAnime({
     userData,
@@ -18,15 +18,7 @@ function UserAnime({
 
     useEffect(() => {
         if (filters) {
-            filterStore.setStatus(filters.status || null);
-            filterStore.setTitle(filters.title || null);
-            filterStore.setDateRange([
-                filters.from_date ? new Date(filters.from_date) : null,
-                filters.to_date ? new Date(filters.to_date) : null,
-            ]);
-            filterStore.setGenres(
-                filters.genres ? filters.genres.split(",").map(Number) : []
-            );
+            filterStore.initializeFromFilters(filters);
         }
     }, []);
 
