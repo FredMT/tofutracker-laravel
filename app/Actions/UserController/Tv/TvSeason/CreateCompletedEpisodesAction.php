@@ -11,12 +11,14 @@ use App\Models\TvShow;
 use App\Models\UserActivity;
 use App\Models\UserTv\UserTvEpisode;
 use App\Models\UserTv\UserTvPlay;
+use App\Repositories\UserActivityRepository;
 
 class CreateCompletedEpisodesAction
 {
     public function __construct(
         private readonly CreateUserTvSeasonPlayAction $createTvSeasonPlay,
-        private readonly ManageTvEpisodeWatchActivityAction $manageActivity
+        private readonly ManageTvEpisodeWatchActivityAction $manageActivity,
+        private readonly UserActivityRepository $activityRepository
     ) {}
 
     public function execute(array $data): array
@@ -71,11 +73,13 @@ class CreateCompletedEpisodesAction
 
         if (! empty($createdEpisodes)) {
             // Find existing activity for this season
-            $existingActivity = UserActivity::where('activity_type', 'tv_watch')
-                ->where('user_id', $data['user_id'])
-                ->whereJsonContains('metadata->user_tv_season_id', $data['user_season_id'])
-                ->latest('occurred_at')
-                ->first();
+            $existingActivity = $this->activityRepository->findRecentActivityByType(
+                $data['user_id'],
+                'tv_watch',
+                UserTvEpisode::class,
+                null,
+                [['metadata->user_tv_season_id', $data['user_season_id']]]
+            );
 
             if ($existingActivity) {
                 // Update existing activity with all episodes
@@ -85,7 +89,7 @@ class CreateCompletedEpisodesAction
                 ));
                 $metadata['count'] = count($metadata['user_tv_episode_ids']);
 
-                $existingActivity->update([
+                $this->activityRepository->updateActivity($existingActivity, [
                     'metadata' => $metadata,
                     'description' => "Watched {$metadata['count']} episodes of {$show->title} {$season->title}",
                     'occurred_at' => now(),

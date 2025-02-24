@@ -4,10 +4,18 @@ namespace App\Actions\Activity\Handlers;
 
 use App\Models\UserActivity;
 use App\Models\UserCustomList\UserCustomListItem;
+use App\Repositories\UserActivityRepository;
 use Illuminate\Database\Eloquent\Model;
 
 class UserCustomListItemActivityHandler implements ActivityHandlerInterface
 {
+    private UserActivityRepository $activityRepository;
+
+    public function __construct()
+    {
+        $this->activityRepository = new UserActivityRepository();
+    }
+
     public function canHandle(Model $subject): bool
     {
         return $subject instanceof UserCustomListItem;
@@ -29,96 +37,32 @@ class UserCustomListItemActivityHandler implements ActivityHandlerInterface
 
     public function createActivity(int $userId, string $activityType, Model $subject, ?array $metadata = null): UserActivity
     {
-        if (! $this->canHandle($subject)) {
+        if (!$this->canHandle($subject)) {
             throw new \InvalidArgumentException('This handler only supports UserCustomListItem models');
         }
 
-        $recentActivity = $this->findRecentActivity($userId, $subject->custom_list_id);
+        $recentActivity = $this->activityRepository->findRecentActivityByType(
+            $userId,
+            'list_item_add',
+            UserCustomListItem::class,
+            null,
+            [['metadata->list_id', $subject->custom_list_id]]
+        );
 
         if ($recentActivity) {
             return $this->updateActivity($recentActivity, $subject, $metadata);
         }
 
-        return UserActivity::create([
-            'user_id' => $userId,
-            'activity_type' => $activityType,
-            'subject_type' => get_class($subject),
-            'subject_id' => $subject->id,
-            'metadata' => array_merge($metadata ?? [], [
-                'list_id' => $subject->custom_list_id,
-                'list_title' => $subject->customList->title,
-                'items' => [
-                    [
-                        'id' => $subject->listable_id,
-                        'type' => $this->getItemType($subject->listable),
-                        'title' => $this->getTitleFromListable($subject),
-                        'link' => $this->generateItemLink($subject->listable),
-                        'poster_path' => $subject->listable->poster ?? null,
-                        'poster_type' => $this->getPosterType($subject->listable_type),
-                    ],
-                ],
-            ]),
-            'description' => $this->generateDescription($subject),
-            'occurred_at' => now(),
-        ]);
+        return $this->createNewActivity($userId, $activityType, $subject, $metadata);
     }
 
     public function deleteActivity(Model $subject): void
     {
-        if (! $this->canHandle($subject)) {
+        if (!$this->canHandle($subject)) {
             throw new \InvalidArgumentException('This handler only supports UserCustomListItem models');
         }
 
-        if (! $subject->relationLoaded('listable')) {
-            $subject->load('listable');
-        }
-
-        $activities = UserActivity::where('activity_type', 'list_item_add')
-            ->where(function ($query) use ($subject) {
-                $query->whereJsonContains('metadata->list_id', $subject->custom_list_id)
-                    ->orWhere(function ($q) use ($subject) {
-                        $q->where('subject_type', UserCustomListItem::class)
-                            ->where('subject_id', $subject->id);
-                    });
-            })
-            ->where('occurred_at', '>=', now()->subHour())
-            ->get();
-
-        foreach ($activities as $activity) {
-            $metadata = $activity->metadata;
-            $items = collect($metadata['items'] ?? []);
-
-            $itemExists = $items->contains(function ($item) use ($subject) {
-                return $item['id'] == $subject->listable_id && $item['type'] == $this->getItemType($subject->listable);
-            });
-
-            if (! $itemExists) {
-                continue;
-            }
-
-            $updatedItems = $items->reject(function ($item) use ($subject) {
-                return $item['id'] == $subject->listable_id && $item['type'] == $this->getItemType($subject->listable);
-            })->values()->all();
-
-            if (empty($updatedItems)) {
-                $activity->delete();
-            } else {
-                $metadata['items'] = $updatedItems;
-                $activity->metadata = $metadata;
-                $activity->description = $this->generateBatchDescription($updatedItems, $subject->customList->title);
-                $activity->save();
-            }
-        }
-    }
-
-    private function findRecentActivity(int $userId, int $listId): ?UserActivity
-    {
-        return UserActivity::where('user_id', $userId)
-            ->where('activity_type', 'list_item_add')
-            ->whereJsonContains('metadata->list_id', $listId)
-            ->where('occurred_at', '>=', now()->subHour())
-            ->latest('occurred_at')
-            ->first();
+        $this->activityRepository->deleteCustomListItemActivity($subject);
     }
 
     private function updateActivity(UserActivity $activity, UserCustomListItem $newItem, ?array $metadata): UserActivity
@@ -137,17 +81,43 @@ class UserCustomListItemActivityHandler implements ActivityHandlerInterface
 
         $existingMetadata['items'] = $items;
 
-        $activity->metadata = $existingMetadata;
-        $activity->description = $this->generateBatchDescription($items, $newItem->customList->title);
-        $activity->save();
+        return $this->activityRepository->updateActivity($activity, [
+            'metadata' => $existingMetadata,
+            'description' => $this->generateBatchDescription($items, $newItem->customList->title),
+        ]);
+    }
 
-        return $activity;
+    private function createNewActivity(int $userId, string $activityType, UserCustomListItem $item, ?array $metadata): UserActivity
+    {
+        $metadata = array_merge($metadata ?? [], [
+            'list_id' => $item->custom_list_id,
+            'list_title' => $item->customList->title,
+            'items' => [
+                [
+                    'id' => $item->listable_id,
+                    'type' => $this->getItemType($item->listable),
+                    'title' => $this->getTitleFromListable($item),
+                    'link' => $this->generateItemLink($item->listable),
+                    'poster_path' => $item->listable->poster ?? null,
+                    'poster_type' => $this->getPosterType($item->listable_type),
+                ],
+            ],
+        ]);
+
+        return $this->activityRepository->create([
+            'user_id' => $userId,
+            'activity_type' => $activityType,
+            'subject_type' => get_class($item),
+            'subject_id' => $item->id,
+            'metadata' => $metadata,
+            'description' => $this->generateDescription($item),
+            'occurred_at' => now(),
+        ]);
     }
 
     private function generateDescription(UserCustomListItem $item): string
     {
         $title = $this->getTitleFromListable($item);
-
         return "Added {$title} to {$item->customList->title}";
     }
 
@@ -174,11 +144,11 @@ class UserCustomListItemActivityHandler implements ActivityHandlerInterface
         return match ($item->listable_type) {
             'App\Models\Movie' => $item->listable->title ?? 'Unknown Movie',
             'App\Models\TvShow' => $item->listable->title ?? 'Unknown Show',
-            'App\Models\TvSeason' => $item->listable->show->title." S{$item->listable->season_number}",
-            'App\Models\TvEpisode' => $item->listable->show->title." S{$item->listable->season_number}E{$item->listable->episode_number}",
+            'App\Models\TvSeason' => $item->listable->show->title . " S{$item->listable->season_number}",
+            'App\Models\TvEpisode' => $item->listable->show->title . " S{$item->listable->season_number}E{$item->listable->episode_number}",
             'App\Models\Anime\AnimeMap' => $item->listable->title ?? 'Unknown Anime Collection',
             'App\Models\Anidb\AnidbAnime' => $item->listable->title ?? 'Unknown Anime',
-            'App\Models\Anime\AnimeEpisodeMapping' => $item->listable->anime->title." Episode {$item->listable->episode_number}",
+            'App\Models\Anime\AnimeEpisodeMapping' => $item->listable->anime->title . " Episode {$item->listable->episode_number}",
             default => 'Unknown Item'
         };
     }

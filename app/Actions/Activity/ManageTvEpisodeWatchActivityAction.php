@@ -6,129 +6,45 @@ use App\Models\TvSeason;
 use App\Models\TvShow;
 use App\Models\UserActivity;
 use App\Models\UserTv\UserTvEpisode;
+use App\Repositories\UserActivityRepository;
 
 class ManageTvEpisodeWatchActivityAction
 {
+    private UserActivityRepository $activityRepository;
+
+    public function __construct()
+    {
+        $this->activityRepository = new UserActivityRepository();
+    }
+
     public function execute(UserTvEpisode $userEpisode, ?array $additionalMetadata = null): UserActivity
     {
         $show = TvShow::find($userEpisode->show_id);
         $season = TvSeason::find($userEpisode->season_id);
 
-        // Check for recent activity within the last hour
-        $recentActivity = $this->findRecentActivity($userEpisode);
+        $recentActivity = $this->activityRepository->findRecentActivityByType(
+            $userEpisode->user_id,
+            'tv_watch',
+            UserTvEpisode::class,
+            null,
+            [['metadata->user_tv_season_id', $userEpisode->user_tv_season_id]]
+        );
 
         if ($recentActivity) {
-            return $this->updateExistingActivity($recentActivity, $userEpisode, $show, $season);
+            return $this->activityRepository->updateTvEpisodeActivity($recentActivity, $userEpisode, $show, $season);
         }
 
-        return $this->createNewActivity($userEpisode, $show, $season, $additionalMetadata);
+        return $this->activityRepository->createTvEpisodeWatchActivity($userEpisode, $show, $season, $additionalMetadata);
     }
 
     public function delete(UserTvEpisode $userEpisode): void
     {
-        UserActivity::where('activity_type', 'tv_watch')
-            ->where('user_id', $userEpisode->user_id)
-            ->whereJsonContains('metadata->user_tv_episode_ids', $userEpisode->id)
-            ->each(function ($activity) use ($userEpisode) {
-                $metadata = $activity->metadata;
-                $metadata['user_tv_episode_ids'] = array_values(
-                    array_filter(
-                        $metadata['user_tv_episode_ids'] ?? [],
-                        fn ($id) => $id !== $userEpisode->id
-                    )
-                );
-                $metadata['count'] = count($metadata['user_tv_episode_ids']);
-
-                if ($metadata['count'] === 0) {
-                    $activity->delete();
-                } else {
-                    $show = TvShow::find($metadata['show_id']);
-                    $season = TvSeason::find($metadata['season_id']);
-                    $activity->update([
-                        'metadata' => $metadata,
-                        'description' => $this->generateDescription($show, $season, $metadata['count']),
-                    ]);
-                }
-            });
-    }
-
-    private function findRecentActivity(UserTvEpisode $userEpisode): ?UserActivity
-    {
-        return UserActivity::where('activity_type', 'tv_watch')
-            ->where('user_id', $userEpisode->user_id)
-            ->where('subject_type', UserTvEpisode::class)
-            ->whereJsonContains('metadata->user_tv_season_id', $userEpisode->user_tv_season_id)
-            ->latest('occurred_at')
-            ->first();
-    }
-
-    private function updateExistingActivity(
-        UserActivity $activity,
-        UserTvEpisode $userEpisode,
-        ?TvShow $show,
-        ?TvSeason $season
-    ): UserActivity {
-        $metadata = $activity->metadata;
-        $episodeIds = $metadata['user_tv_episode_ids'] ?? [];
-        $episodeIds[] = $userEpisode->id;
-        $metadata['user_tv_episode_ids'] = array_values(array_unique($episodeIds));
-        $metadata['count'] = count($metadata['user_tv_episode_ids']);
-        $metadata['episode_id'] = $userEpisode->episode_id;
-
-        $activity->update([
-            'metadata' => $metadata,
-            'description' => $this->generateDescription($show, $season, $metadata['count']),
-            'occurred_at' => now(),
-        ]);
-
-        return $activity;
-    }
-
-    private function createNewActivity(
-        UserTvEpisode $userEpisode,
-        ?TvShow $show,
-        ?TvSeason $season,
-        ?array $additionalMetadata
-    ): UserActivity {
-        $episodeIds = $additionalMetadata['user_tv_episode_ids'] ?? [$userEpisode->id];
-        $count = $additionalMetadata['count'] ?? 1;
-
-        // Get season title from additional metadata or generate it
-        $seasonTitle = $additionalMetadata['season_title'] ?? ($show && $season ? "{$show->title} {$season->title}" : '');
-        $seasonLink = $additionalMetadata['season_link'] ?? ($show && $season ? "/tv/{$show->id}/season/{$season->season_number}" : '');
-
-        $defaultMetadata = [
-            'poster_path' => $userEpisode->episode->poster,
-            'poster_from' => 'tmdb',
-            'user_tv_show_id' => $userEpisode->userTvSeason->user_tv_show_id,
-            'user_tv_season_id' => $userEpisode->user_tv_season_id,
-            'show_id' => $show?->id,
-            'season_id' => $userEpisode->season_id,
-            'episode_id' => $userEpisode->episode_id,
-            'user_tv_episode_ids' => $episodeIds,
-            'count' => $count,
-            'season_title' => $seasonTitle,
-            'season_link' => $seasonLink,
-            'type' => 'tv_episode',
-        ];
-
-        // Merge with additional metadata, giving precedence to additional metadata
-        $metadata = array_merge($defaultMetadata, $additionalMetadata ?? []);
-
-        return UserActivity::create([
-            'user_id' => $userEpisode->user_id,
-            'activity_type' => 'tv_watch',
-            'subject_type' => UserTvEpisode::class,
-            'subject_id' => $userEpisode->id,
-            'metadata' => $metadata,
-            'description' => $this->generateDescription($show, $season, $count),
-            'occurred_at' => now(),
-        ]);
+        $this->activityRepository->deleteTvEpisodeActivity($userEpisode);
     }
 
     private function generateDescription(?TvShow $show, ?TvSeason $season, int $count): string
     {
-        if (! $show) {
+        if (!$show) {
             return 'Watched TV episode';
         }
 
