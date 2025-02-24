@@ -19,10 +19,17 @@ class CommentController extends Controller
 {
     use AuthorizesRequests;
 
-    public function index(string $type, string $id, FetchCommentsAction $fetchCommentsAction)
+    public function __construct(
+        private readonly FetchCommentsAction $fetchCommentsAction,
+        private readonly CreateCommentAction $createCommentAction,
+        private readonly UpdateCommentAction $updateCommentAction,
+        private readonly DeleteCommentAction $deleteCommentAction
+    ) {}
+
+    public function index(string $type, string $id)
     {
         try {
-            $comments = $fetchCommentsAction->execute($type, $id);
+            $comments = $this->fetchCommentsAction->execute($type, $id);
 
             return $comments;
         } catch (ModelNotFoundException $e) {
@@ -37,7 +44,7 @@ class CommentController extends Controller
         }
     }
 
-    public function store(Request $request, string $type, string $id, CreateCommentAction $createCommentAction): JsonResponse
+    public function store(Request $request, string $type, string $id): JsonResponse
     {
         try {
             $validated = $request->validate([
@@ -45,7 +52,7 @@ class CommentController extends Controller
                 'parent_id' => 'nullable|exists:comments,id',
             ]);
 
-            $result = $createCommentAction->execute($validated, $type, $id, $request->user());
+            $result = $this->createCommentAction->execute($validated, $type, $id, $request->user());
 
             return response()->json($result, Response::HTTP_CREATED);
         } catch (ModelNotFoundException $e) {
@@ -60,7 +67,7 @@ class CommentController extends Controller
         }
     }
 
-    public function update(Request $request, Comment $comment, UpdateCommentAction $updateCommentAction): JsonResponse
+    public function update(Request $request, Comment $comment): JsonResponse
     {
         try {
             $this->authorize('update', $comment);
@@ -69,7 +76,7 @@ class CommentController extends Controller
                 'body' => 'required|string|min:1|max:2000',
             ]);
 
-            $result = $updateCommentAction->execute($comment, $validated);
+            $result = $this->updateCommentAction->execute($comment, $validated);
 
             return response()->json($result);
         } catch (\Exception $e) {
@@ -97,19 +104,19 @@ class CommentController extends Controller
             'points' => $comment->votes->sum('value'),
             'timeAgo' => $comment->created_at->diffForHumans(),
             'content' => $comment->body,
-            'children' => $comment->children->map(fn ($child) => $this->formatComment($child)),
+            'children' => $comment->children->map(fn($child) => $this->formatComment($child)),
             'isEdited' => $comment->user_id !== null && $comment->created_at != $comment->updated_at,
             'isDeleted' => $comment->user_id === null && $comment->deleted_at !== null,
             'direction' => $comment->votes->where('user_id', Auth::id())->first()?->value ?? 0,
         ];
     }
 
-    public function destroy(Comment $comment, DeleteCommentAction $deleteCommentAction): JsonResponse
+    public function destroy(Comment $comment): JsonResponse
     {
         try {
             $this->authorize('delete', $comment);
 
-            $result = $deleteCommentAction->execute($comment);
+            $result = $this->deleteCommentAction->execute($comment);
 
             return response()->json($result);
         } catch (\Exception $e) {
