@@ -3,7 +3,7 @@
 namespace App\Actions\UserController\Anime\AnimeSeason;
 
 use App\Models\UserAnime\UserAnime;
-use App\Pipeline\UserAnime\EnsureUserAnimeLibrary;
+use App\Pipeline\Shared\MediaLibraryPipeline;
 use App\Pipeline\UserAnimeSeason\CreateUserAnimeSeasonEpisodes;
 use App\Pipeline\UserAnimeSeason\CreateUserAnimeSeasonWatchStatusCollection;
 use App\Pipeline\UserAnimeSeason\UpdateUserAnimeCollectionWatchStatus;
@@ -43,7 +43,7 @@ class UpdateWatchStatusAnimeSeasonAction
                 'season' => $season,
             ])
                 ->through([
-                    EnsureUserAnimeLibrary::class,
+                    MediaLibraryPipeline::anime(),
                     CreateUserAnimeSeasonWatchStatusCollection::class,
                     UpdateUserAnimeSeasonWatchStatus::class,
                     CreateUserAnimeSeasonEpisodes::class,

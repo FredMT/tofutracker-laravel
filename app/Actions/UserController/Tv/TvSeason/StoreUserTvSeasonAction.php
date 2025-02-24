@@ -3,7 +3,7 @@
 namespace App\Actions\UserController\Tv\TvSeason;
 
 use App\Models\User;
-use App\Pipeline\TV\EnsureUserTvLibrary;
+use App\Pipeline\Shared\MediaLibraryPipeline;
 use App\Pipeline\UserTvSeason\CreateUserTvSeason;
 use App\Pipeline\UserTvSeason\InitializeShowStatus;
 use App\Pipeline\UserTvSeason\ValidateSeasonRelations;
@@ -21,7 +21,7 @@ class StoreUserTvSeasonAction
             ])
                 ->through([
                     ValidateSeasonRelations::class,
-                    EnsureUserTvLibrary::class,
+                    MediaLibraryPipeline::tv(),
                     InitializeShowStatus::class,
                     CreateUserTvSeason::class,
                 ])

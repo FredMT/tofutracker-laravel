@@ -2,8 +2,8 @@
 
 namespace App\Actions\UserController\Tv\TvEpisodes;
 
+use App\Pipeline\Shared\MediaLibraryPipeline;
 use App\Pipeline\Shared\UpdateShowStatus;
-use App\Pipeline\TV\EnsureUserTvLibrary;
 use App\Pipeline\TV\EnsureUserTvShow;
 use App\Pipeline\UserTvEpisode\CreateUserTvEpisode;
 use App\Pipeline\UserTvEpisode\CreateUserTvEpisodePlay;
@@ -27,7 +27,7 @@ class StoreUserTvEpisodeAction
                 ->through([
                     ValidateEpisodeRelations::class,
                     EnsureTvShowExists::class,
-                    EnsureUserTvLibrary::class,
+                    MediaLibraryPipeline::tv(),
                     EnsureUserTvShow::class,
                     EnsureUserTvSeason::class,
                     CreateUserTvEpisode::class,

@@ -4,10 +4,10 @@ namespace App\Actions\UserController\Anime\AnimeMovie;
 
 use App\Models\Anidb\AnidbAnime;
 use App\Models\UserAnime\UserAnime;
+use App\Pipeline\Shared\MediaLibraryPipeline;
 use App\Pipeline\UserAnime\CreateUserAnimeCollection;
 use App\Pipeline\UserAnime\CreateUserAnimeMovie;
 use App\Pipeline\UserAnime\CreateUserAnimeMoviePlay;
-use App\Pipeline\UserAnime\EnsureUserAnimeLibrary;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -50,7 +50,7 @@ class RateAnimeMovieAction
                     'validated' => $validated,
                 ])
                     ->through([
-                        EnsureUserAnimeLibrary::class,
+                        MediaLibraryPipeline::anime(),
                         CreateUserAnimeCollection::class,
                         CreateUserAnimeMovie::class,
                         CreateUserAnimeMoviePlay::class,

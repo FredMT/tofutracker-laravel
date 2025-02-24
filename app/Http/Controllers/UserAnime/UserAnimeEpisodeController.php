@@ -5,10 +5,10 @@ namespace App\Http\Controllers\UserAnime;
 use App\Actions\Anime\Plays\DeleteUserAnimePlayAction;
 use App\Http\Controllers\Controller;
 use App\Models\UserAnime\UserAnimeEpisode;
+use App\Pipeline\Shared\MediaLibraryPipeline;
 use App\Pipeline\UserAnimeEpisode\CreateUserAnimeEpisodeAndPlay;
 use App\Pipeline\UserAnimeEpisode\CreateUserAnimeEpisodeAnime;
 use App\Pipeline\UserAnimeEpisode\CreateUserAnimeEpisodeCollection;
-use App\Pipeline\UserAnimeEpisode\EnsureUserAnimeEpisodeLibrary;
 use App\Pipeline\UserAnimeEpisode\UpdateUserAnimeEpisodeStatus;
 use App\Pipeline\UserAnimeSeason\UpdateUserAnimeCollectionWatchStatus;
 use Illuminate\Http\RedirectResponse;
@@ -52,7 +52,7 @@ class UserAnimeEpisodeController extends Controller
                     'validated' => $validated,
                 ])
                     ->through([
-                        EnsureUserAnimeEpisodeLibrary::class,
+                        MediaLibraryPipeline::anime(),
                         CreateUserAnimeEpisodeCollection::class,
                         CreateUserAnimeEpisodeAnime::class,
                         CreateUserAnimeEpisodeAndPlay::class,

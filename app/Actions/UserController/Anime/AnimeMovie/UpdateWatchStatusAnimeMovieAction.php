@@ -2,8 +2,8 @@
 
 namespace App\Actions\UserController\Anime\AnimeMovie;
 
+use App\Pipeline\Shared\MediaLibraryPipeline;
 use App\Pipeline\UserAnimeMovie\CreateNewUserAnimeMovie;
-use App\Pipeline\UserAnimeMovie\EnsureUserAnimeMovieLibrary;
 use App\Pipeline\UserAnimeMovie\UpdateExistingUserAnimeMovie;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Pipeline;
@@ -18,7 +18,7 @@ class UpdateWatchStatusAnimeMovieAction
                 'validated' => $validated,
             ])
                 ->through([
-                    EnsureUserAnimeMovieLibrary::class,
+                    MediaLibraryPipeline::anime(),
                     UpdateExistingUserAnimeMovie::class,
                     CreateNewUserAnimeMovie::class,
                 ])

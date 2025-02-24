@@ -4,7 +4,7 @@ namespace App\Actions\UserController\Tv\TvSeason;
 
 use App\Models\User;
 use App\Models\UserTv\UserTvSeason;
-use App\Pipeline\TV\EnsureUserTvLibrary;
+use App\Pipeline\Shared\MediaLibraryPipeline;
 use App\Pipeline\TV\EnsureUserTvShow;
 use App\Pipeline\UserTvSeason\CreateUserTvSeasonWithRating;
 use App\Pipeline\UserTvSeason\ValidateSeasonRelations;
@@ -46,46 +46,17 @@ class RateUserTvSeasonAction
                 ];
             }
 
-            /*
-            Pipeline variables = user, validated, season, tv_show, show_title, season_title, library, show, user_season
-            */
             Pipeline::send([
                 'user' => $user,
                 'validated' => $validated,
             ])
                 ->through([
                     ValidateSeasonRelations::class,
-                    EnsureUserTvLibrary::class,
+                    MediaLibraryPipeline::tv(),
                     EnsureUserTvShow::class,
                     CreateUserTvSeasonWithRating::class,
                 ])
                 ->thenReturn();
-            // // If season doesn't exist, create new entries
-            // // First, ensure user has a TV library
-            // $userLibrary = UserLibrary::firstOrCreate([
-            //     'user_id' => $userId,
-            //     'type' => MediaType::TV,
-            // ]);
-
-            // // Then, ensure user has a TV show entry
-            // $userShow = UserTvShow::firstOrCreate(
-            //     [
-            //         'user_id' => $userId,
-            //         'show_id' => $validated['show_id'],
-            //     ],
-            //     [
-            //         'user_library_id' => $userLibrary->id,
-            //     ]
-            // );
-
-            // // Finally, create the season entry with the rating
-            // UserTvSeason::create([
-            //     'user_id' => $userId,
-            //     'user_tv_show_id' => $userShow->id,
-            //     'show_id' => $validated['show_id'],
-            //     'season_id' => $validated['season_id'],
-            //     'rating' => $validated['rating'],
-            // ]);
 
             return [
                 'success' => true,

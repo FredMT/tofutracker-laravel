@@ -2,7 +2,7 @@
 
 namespace App\Actions\UserController\Anime\AnimeSeason;
 
-use App\Pipeline\UserAnime\EnsureUserAnimeLibrary;
+use App\Pipeline\Shared\MediaLibraryPipeline;
 use App\Pipeline\UserAnimeSeason\CreateUserAnimeSeason;
 use App\Pipeline\UserAnimeSeason\CreateUserAnimeSeasonCollection;
 use App\Pipeline\UserAnimeSeason\UpdateUserAnimeCollectionWatchStatus;
@@ -19,7 +19,7 @@ class StoreAnimeSeasonAction
                 'validated' => $validated,
             ])
                 ->through([
-                    EnsureUserAnimeLibrary::class,
+                    MediaLibraryPipeline::anime(),
                     CreateUserAnimeSeasonCollection::class,
                     CreateUserAnimeSeason::class,
                     UpdateUserAnimeCollectionWatchStatus::class,

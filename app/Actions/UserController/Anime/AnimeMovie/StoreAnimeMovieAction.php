@@ -3,10 +3,10 @@
 namespace App\Actions\UserController\Anime\AnimeMovie;
 
 use App\Models\Anidb\AnidbAnime;
+use App\Pipeline\Shared\MediaLibraryPipeline;
 use App\Pipeline\UserAnime\CreateUserAnimeCollection;
 use App\Pipeline\UserAnime\CreateUserAnimeMovie;
 use App\Pipeline\UserAnime\CreateUserAnimeMoviePlay;
-use App\Pipeline\UserAnime\EnsureUserAnimeLibrary;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Pipeline;
 
@@ -30,7 +30,7 @@ class StoreAnimeMovieAction
                 'validated' => $validated,
             ])
                 ->through([
-                    EnsureUserAnimeLibrary::class,
+                    MediaLibraryPipeline::anime(),
                     CreateUserAnimeCollection::class,
                     CreateUserAnimeMovie::class,
                     CreateUserAnimeMoviePlay::class,

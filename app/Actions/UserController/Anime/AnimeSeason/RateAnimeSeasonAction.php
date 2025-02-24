@@ -3,7 +3,7 @@
 namespace App\Actions\UserController\Anime\AnimeSeason;
 
 use App\Models\UserAnime\UserAnime;
-use App\Pipeline\UserAnime\EnsureUserAnimeLibrary;
+use App\Pipeline\Shared\MediaLibraryPipeline;
 use App\Pipeline\UserAnimeSeason\CreateUserAnimeSeason;
 use App\Pipeline\UserAnimeSeason\CreateUserAnimeSeasonCollection;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -34,7 +34,7 @@ class RateAnimeSeasonAction
                     'validated' => $validated,
                 ])
                     ->through([
-                        EnsureUserAnimeLibrary::class,
+                        MediaLibraryPipeline::anime(),
                         CreateUserAnimeSeasonCollection::class,
                         CreateUserAnimeSeason::class,
                     ])

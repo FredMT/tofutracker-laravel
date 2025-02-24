@@ -2,7 +2,7 @@
 
 namespace App\Actions\UserController\Tv\TvShow;
 
-use App\Pipeline\TV\EnsureUserTvLibrary;
+use App\Pipeline\Shared\MediaLibraryPipeline;
 use App\Pipeline\UserTvEpisode\EnsureTvShowExists;
 use App\Pipeline\UserTvShow\CreateUserTvShow;
 use Illuminate\Support\Facades\DB;
@@ -19,7 +19,7 @@ class CreateUserTvShowAction
             ])
                 ->through([
                     EnsureTvShowExists::class,
-                    EnsureUserTvLibrary::class,
+                    MediaLibraryPipeline::tv(),
                     CreateUserTvShow::class,
                 ])
                 ->thenReturn();

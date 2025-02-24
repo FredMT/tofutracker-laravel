@@ -4,7 +4,6 @@ namespace App\Actions\UserController\Tv\TvShow;
 
 use App\Models\User;
 use App\Models\UserTv\UserTvShow;
-use App\Pipeline\TV\EnsureUserTvLibrary;
 use App\Pipeline\UserTvEpisode\EnsureTvShowExists;
 use App\Pipeline\UserTvShow\CreateUserTvShowForRating;
 use Illuminate\Support\Facades\DB;
@@ -39,7 +38,7 @@ class RateUserTvShowAction
                 ])
                     ->through([
                         EnsureTvShowExists::class,
-                        EnsureUserTvLibrary::class,
+                        MediaLibraryPipeline::tv(),
                         CreateUserTvShowForRating::class,
                     ])
                     ->thenReturn();

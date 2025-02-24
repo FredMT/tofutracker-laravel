@@ -14,7 +14,7 @@ class ManageTvEpisodeWatchActivityAction
 
     public function __construct()
     {
-        $this->activityRepository = new UserActivityRepository();
+        $this->activityRepository = new UserActivityRepository;
     }
 
     public function execute(UserTvEpisode $userEpisode, ?array $additionalMetadata = null): UserActivity
@@ -40,17 +40,5 @@ class ManageTvEpisodeWatchActivityAction
     public function delete(UserTvEpisode $userEpisode): void
     {
         $this->activityRepository->deleteTvEpisodeActivity($userEpisode);
-    }
-
-    private function generateDescription(?TvShow $show, ?TvSeason $season, int $count): string
-    {
-        if (!$show) {
-            return 'Watched TV episode';
-        }
-
-        $seasonTitle = $season?->title ? " {$season->title}" : '';
-        $episodeText = $count === 1 ? '1 episode' : "{$count} episodes";
-
-        return "Watched {$episodeText} of {$show->title}{$seasonTitle}";
     }
 }

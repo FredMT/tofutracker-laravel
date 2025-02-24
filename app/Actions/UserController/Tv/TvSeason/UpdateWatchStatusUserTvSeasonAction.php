@@ -5,8 +5,8 @@ namespace App\Actions\UserController\Tv\TvSeason;
 use App\Enums\WatchStatus;
 use App\Models\User;
 use App\Models\UserTv\UserTvSeason;
+use App\Pipeline\Shared\MediaLibraryPipeline;
 use App\Pipeline\Shared\UpdateShowStatus;
-use App\Pipeline\TV\EnsureUserTvLibrary;
 use App\Pipeline\TV\EnsureUserTvShow;
 use App\Pipeline\UserTvSeason\CreateUserTvSeason;
 use App\Pipeline\UserTvSeason\UpdateEpisodesAndWatchStatus;
@@ -47,7 +47,7 @@ class UpdateWatchStatusUserTvSeasonAction
             ])
                 ->through([
                     ValidateSeasonRelations::class,
-                    EnsureUserTvLibrary::class,
+                    MediaLibraryPipeline::tv(),
                     EnsureUserTvShow::class,
                     CreateUserTvSeason::class,
                     UpdateEpisodesAndWatchStatus::class,

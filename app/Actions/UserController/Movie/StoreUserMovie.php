@@ -4,10 +4,10 @@ namespace App\Actions\UserController\Movie;
 
 use App\Models\Movie;
 use App\Models\User;
+use App\Pipeline\Shared\MediaLibraryPipeline;
 use App\Pipeline\UserMovie\CreateUserMovie;
 use App\Pipeline\UserMovie\CreateUserMoviePlay;
 use App\Pipeline\UserMovie\CreateUserMovieWatchActivity;
-use App\Pipeline\UserMovie\EnsureUserLibrary;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Pipeline;
 
@@ -24,7 +24,7 @@ class StoreUserMovie
                 'title' => $title,
             ])
                 ->through([
-                    EnsureUserLibrary::class,
+                    MediaLibraryPipeline::movie(),
                     CreateUserMovie::class,
                     CreateUserMoviePlay::class,
                     CreateUserMovieWatchActivity::class,

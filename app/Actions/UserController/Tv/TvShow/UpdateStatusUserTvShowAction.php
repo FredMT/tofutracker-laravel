@@ -7,7 +7,7 @@ use App\Actions\Tv\Plays\CreateUserTvShowPlayAction;
 use App\Enums\WatchStatus;
 use App\Models\User;
 use App\Models\UserTv\UserTvShow;
-use App\Pipeline\UserMovie\EnsureUserLibrary;
+use App\Pipeline\Shared\MediaLibraryPipeline;
 use App\Pipeline\UserTvShow\CompleteShow;
 use App\Pipeline\UserTvShow\CreateUserTvShowWithStatus;
 use App\Pipeline\UserTvShow\EnsureShowExists;
@@ -81,7 +81,7 @@ class UpdateStatusUserTvShowAction
                 'validated' => $validated,
             ])
                 ->through([
-                    EnsureUserLibrary::class,
+                    MediaLibraryPipeline::tv(),
                     EnsureShowExists::class,
                     CreateUserTvShowWithStatus::class,
                     CompleteShow::class,
@@ -103,7 +103,7 @@ class UpdateStatusUserTvShowAction
             'validated' => $validated,
         ])
             ->through([
-                EnsureUserLibrary::class,
+                MediaLibraryPipeline::tv(),
                 EnsureShowExists::class,
                 CreateUserTvShowWithStatus::class,
             ])
