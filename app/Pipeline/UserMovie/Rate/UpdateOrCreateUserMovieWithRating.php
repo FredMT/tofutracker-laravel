@@ -61,6 +61,7 @@ class UpdateOrCreateUserMovieWithRating
 
             $this->manageMovieWatchActivityAction->execute($userMovie);
         }
+
         return $next($payload);
     }
 }

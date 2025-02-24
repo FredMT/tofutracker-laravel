@@ -15,14 +15,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-use App\Models\Anidb\AnidbAnime;
-use App\Models\Anime\AnimeMap;
-use App\Models\Movie;
-use App\Models\TvSeason;
-use App\Models\TvShow;
-use App\Models\User;
-use Carbon\CarbonInterface;
-
 class CommentController extends Controller
 {
     use AuthorizesRequests;
@@ -31,11 +23,13 @@ class CommentController extends Controller
     {
         try {
             $comments = $fetchCommentsAction->execute($type, $id);
+
             return $comments;
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Resource not found'], Response::HTTP_NOT_FOUND);
         } catch (\Exception $e) {
             report($e);
+
             return response()->json(
                 ['error' => 'Failed to fetch comments'],
                 Response::HTTP_INTERNAL_SERVER_ERROR
@@ -52,11 +46,13 @@ class CommentController extends Controller
             ]);
 
             $result = $createCommentAction->execute($validated, $type, $id, $request->user());
+
             return response()->json($result, Response::HTTP_CREATED);
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Resource not found'], Response::HTTP_NOT_FOUND);
         } catch (\Exception $e) {
             report($e);
+
             return response()->json(
                 ['error' => 'Failed to create comment'],
                 Response::HTTP_INTERNAL_SERVER_ERROR
@@ -74,9 +70,11 @@ class CommentController extends Controller
             ]);
 
             $result = $updateCommentAction->execute($comment, $validated);
+
             return response()->json($result);
         } catch (\Exception $e) {
             report($e);
+
             return response()->json(
                 ['error' => 'Failed to update comment'],
                 Response::HTTP_INTERNAL_SERVER_ERROR
@@ -99,7 +97,7 @@ class CommentController extends Controller
             'points' => $comment->votes->sum('value'),
             'timeAgo' => $comment->created_at->diffForHumans(),
             'content' => $comment->body,
-            'children' => $comment->children->map(fn($child) => $this->formatComment($child)),
+            'children' => $comment->children->map(fn ($child) => $this->formatComment($child)),
             'isEdited' => $comment->user_id !== null && $comment->created_at != $comment->updated_at,
             'isDeleted' => $comment->user_id === null && $comment->deleted_at !== null,
             'direction' => $comment->votes->where('user_id', Auth::id())->first()?->value ?? 0,
@@ -112,9 +110,11 @@ class CommentController extends Controller
             $this->authorize('delete', $comment);
 
             $result = $deleteCommentAction->execute($comment);
+
             return response()->json($result);
         } catch (\Exception $e) {
             report($e);
+
             return response()->json(
                 ['error' => 'Failed to delete comment'],
                 Response::HTTP_INTERNAL_SERVER_ERROR

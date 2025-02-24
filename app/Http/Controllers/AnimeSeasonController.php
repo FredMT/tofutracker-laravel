@@ -13,9 +13,9 @@ use Inertia\Response;
 class AnimeSeasonController extends Controller
 {
     public function __construct(
-        private AnimeSeasonControllerAction     $action,
+        private AnimeSeasonControllerAction $action,
         private AnimeSeasonControllerRepository $repository,
-        private CommentController               $commentController
+        private CommentController $commentController
     ) {
         $this->action = $action;
         $this->repository = $repository;

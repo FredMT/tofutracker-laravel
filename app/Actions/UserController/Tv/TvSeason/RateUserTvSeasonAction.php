@@ -26,8 +26,8 @@ class RateUserTvSeasonAction
 
             // If season exists, check authorization and update
             if ($userSeason) {
-                if (!Gate::allows('update', $userSeason)) {
-                    throw new \Illuminate\Auth\Access\AuthorizationException();
+                if (! Gate::allows('update', $userSeason)) {
+                    throw new \Illuminate\Auth\Access\AuthorizationException;
                 }
 
                 // Check if trying to update to the same rating

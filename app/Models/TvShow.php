@@ -510,13 +510,13 @@ class TvShow extends Model
                 ->sortByDesc('published_at')
                 ->first();
 
-            if (!$trailer) {
+            if (! $trailer) {
                 return null;
             }
 
             return [
                 'link' => "https://www.youtube.com/embed/{$trailer['key']}",
-                'name' => $trailer['name']
+                'name' => $trailer['name'],
             ];
         });
     }

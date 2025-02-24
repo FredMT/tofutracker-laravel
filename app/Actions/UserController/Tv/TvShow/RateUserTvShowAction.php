@@ -4,8 +4,8 @@ namespace App\Actions\UserController\Tv\TvShow;
 
 use App\Models\User;
 use App\Models\UserTv\UserTvShow;
-use App\Pipeline\UserTvEpisode\EnsureTvShowExists;
 use App\Pipeline\TV\EnsureUserTvLibrary;
+use App\Pipeline\UserTvEpisode\EnsureTvShowExists;
 use App\Pipeline\UserTvShow\CreateUserTvShowForRating;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -32,7 +32,7 @@ class RateUserTvShowAction
                 ];
             }
 
-            if (!$userShow) {
+            if (! $userShow) {
                 return Pipeline::send([
                     'user' => $user,
                     'validated' => $validated,

@@ -27,11 +27,13 @@ class ManageAnimePlayActivityAction
     {
         if ($subject instanceof UserAnimeEpisode) {
             $this->deleteEpisodeActivity($subject);
+
             return;
         }
 
         if ($subject instanceof UserAnime) {
             $this->deleteAnimeActivity($subject);
+
             return;
         }
 
@@ -55,7 +57,7 @@ class ManageAnimePlayActivityAction
             'map_id' => $anime?->map(),
             'anime_title' => $anime?->title,
             'anime_link' => $anime ? "/anime/{$anime->map()}/season/{$anime->id}" : null,
-            'type' => 'anime_episode'
+            'type' => 'anime_episode',
         ]);
 
         return UserActivity::create([
@@ -81,7 +83,7 @@ class ManageAnimePlayActivityAction
             'poster_from' => 'anidb',
             'anime_title' => $anime?->title,
             'anime_link' => $anime ? "/anime/{$anime->map()}/season/{$anime->id}" : null,
-            'type' => 'anime_season'
+            'type' => 'anime_season',
         ]);
 
         return UserActivity::create([
@@ -106,7 +108,7 @@ class ManageAnimePlayActivityAction
                 $metadata['user_anime_episode_ids'] = array_values(
                     array_filter(
                         $metadata['user_anime_episode_ids'] ?? [],
-                        fn($id) => $id !== $episode->id
+                        fn ($id) => $id !== $episode->id
                     )
                 );
 
@@ -133,7 +135,7 @@ class ManageAnimePlayActivityAction
 
     private function findRecentBatch(int $userId, ?int $userAnimeId): ?UserActivity
     {
-        if (!$userAnimeId) {
+        if (! $userAnimeId) {
             return null;
         }
 
@@ -165,20 +167,20 @@ class ManageAnimePlayActivityAction
 
     private function generateEpisodeDescription(array $metadata): string
     {
-        if (!isset($metadata['anidb_id'])) {
+        if (! isset($metadata['anidb_id'])) {
             return 'Watched anime';
         }
 
         try {
             $anime = AnidbAnime::find($metadata['anidb_id']);
-            if (!$anime) {
+            if (! $anime) {
                 return 'Watched anime';
             }
 
             $count = $metadata['count'] ?? 1;
 
-            return 'Watched ' .
-                ($count === 1 ? '1 episode' : "{$count} episodes") .
+            return 'Watched '.
+                ($count === 1 ? '1 episode' : "{$count} episodes").
                 " of {$anime->title}";
         } catch (\Exception $e) {
             return 'Watched anime';
@@ -187,7 +189,7 @@ class ManageAnimePlayActivityAction
 
     private function generateAnimeDescription(?AnidbAnime $anime): string
     {
-        if (!$anime) {
+        if (! $anime) {
             return 'Watched anime';
         }
 

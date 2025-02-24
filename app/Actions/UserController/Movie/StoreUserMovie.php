@@ -17,6 +17,7 @@ class StoreUserMovie
     {
         return DB::transaction(function () use ($validated, $user) {
             $title = Movie::find($validated['movie_id'])->title;
+
             return Pipeline::send([
                 'user' => $user,
                 'validated' => $validated,

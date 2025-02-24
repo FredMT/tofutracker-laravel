@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Actions\Controller\Anime\AnimeControllerAction;
 use App\Repositories\Anime\AnimeControllerRepository;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 

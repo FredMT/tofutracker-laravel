@@ -43,7 +43,7 @@ class DeleteAnimeMovieAction
                 ->where('anidb_id', $validated['anidb_id'])
                 ->first();
 
-            if (!$userAnime) {
+            if (! $userAnime) {
                 return [
                     'success' => false,
                     'message' => 'Anime not found in your library.',

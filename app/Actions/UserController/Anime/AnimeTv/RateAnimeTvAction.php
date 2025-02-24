@@ -23,7 +23,7 @@ class RateAnimeTvAction
                 ->first();
 
             // If no collection exists, create new one with rating
-            if (!$collection) {
+            if (! $collection) {
                 if (Gate::denies('rate-anime-collection', null)) {
                     throw new AuthorizationException('You are not authorized to rate this anime.');
                 }

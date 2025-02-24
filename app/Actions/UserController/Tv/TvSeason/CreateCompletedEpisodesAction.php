@@ -25,7 +25,7 @@ class CreateCompletedEpisodesAction
         $show = TvShow::find($data['show_id']);
         $season = TvSeason::find($data['season_id']);
 
-        if (!$show || !$season) {
+        if (! $show || ! $season) {
             throw new \Exception('Show or season not found');
         }
 
@@ -69,7 +69,7 @@ class CreateCompletedEpisodesAction
             );
         }
 
-        if (!empty($createdEpisodes)) {
+        if (! empty($createdEpisodes)) {
             // Find existing activity for this season
             $existingActivity = UserActivity::where('activity_type', 'tv_watch')
                 ->where('user_id', $data['user_id'])

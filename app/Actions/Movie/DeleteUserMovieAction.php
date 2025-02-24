@@ -15,8 +15,7 @@ class DeleteUserMovieAction
     /**
      * Delete a user movie record and associated play records and activities.
      *
-     * @param UserMovie $userMovie The user movie record to delete.
-     * @return void
+     * @param  UserMovie  $userMovie  The user movie record to delete.
      */
     public function execute(UserMovie $userMovie): void
     {

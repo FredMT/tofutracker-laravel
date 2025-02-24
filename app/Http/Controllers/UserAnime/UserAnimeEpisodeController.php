@@ -68,13 +68,14 @@ class UserAnimeEpisodeController extends Controller
             });
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
             \Sentry\captureException($e);
+
             return back()->with([
                 'success' => false,
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
             \Sentry\captureException($e);
-            logger()->error('Failed to add anime episode to library: ' . $e->getMessage());
+            logger()->error('Failed to add anime episode to library: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
 
             return back()->with([
@@ -124,7 +125,7 @@ class UserAnimeEpisodeController extends Controller
                 ]);
             });
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            logger()->error('Failed to remove anime episode from library model not found: ' . $e->getMessage());
+            logger()->error('Failed to remove anime episode from library model not found: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
 
             return back()->with([
@@ -132,7 +133,7 @@ class UserAnimeEpisodeController extends Controller
                 'message' => 'Episode not found in your library.',
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to remove anime episode from library: ' . $e->getMessage());
+            logger()->error('Failed to remove anime episode from library: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
 
             return back()->with([

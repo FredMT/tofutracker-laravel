@@ -15,7 +15,6 @@ use Illuminate\Validation\Rule;
 
 class UserMovieController extends Controller
 {
-
     public function store(Request $request, StoreUserMovie $storeUserMovie)
     {
         if ($request->user()->cannot('create', UserMovie::class)) {
@@ -33,6 +32,7 @@ class UserMovieController extends Controller
             return $storeUserMovie->execute($validated, request()->user());
         } catch (\Exception $e) {
             \Sentry\captureException($e);
+
             return back()->with([
                 'success' => false,
                 'message' => 'An error occurred while adding movie to library',
@@ -59,6 +59,7 @@ class UserMovieController extends Controller
             ]);
         } catch (\Exception $e) {
             \Sentry\captureException($e);
+
             return back()->with([
                 'success' => false,
                 'message' => 'An error occurred while updating movie',
@@ -92,6 +93,7 @@ class UserMovieController extends Controller
             ]);
         } catch (\Exception $e) {
             \Sentry\captureException($e);
+
             return back()->with([
                 'success' => false,
                 'message' => 'An error occurred while rating the movie',
@@ -133,6 +135,7 @@ class UserMovieController extends Controller
             ]);
         } catch (\Exception $e) {
             \Sentry\captureException($e);
+
             return back()->withErrors([
                 'success' => false,
                 'message' => 'An error occurred while removing movie from library',

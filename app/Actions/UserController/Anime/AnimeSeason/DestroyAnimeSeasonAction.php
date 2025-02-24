@@ -24,7 +24,7 @@ class DestroyAnimeSeasonAction
                 })
                 ->first();
 
-            if (!$season) {
+            if (! $season) {
                 return [
                     'success' => false,
                     'message' => 'Anime season not found in your library.',

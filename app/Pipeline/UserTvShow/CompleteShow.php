@@ -100,7 +100,6 @@ class CompleteShow
     }
 }
 
-
 // class CompleteShow
 // {
 //     public function handle(array $payload, Closure $next)

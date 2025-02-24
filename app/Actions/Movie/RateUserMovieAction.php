@@ -37,6 +37,7 @@ class RateUserMovieAction
         }
 
         $userMovie->update(['rating' => $rating]);
+
         return $userMovie;
     }
 

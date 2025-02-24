@@ -28,7 +28,7 @@ class UpdateWatchStatusUserTvSeasonAction
             ])->first();
 
             // Check gate authorization
-            if (!Gate::allows('update-season-watch-status', $userSeason)) {
+            if (! Gate::allows('update-season-watch-status', $userSeason)) {
                 throw new \Illuminate\Auth\Access\AuthorizationException;
             }
 

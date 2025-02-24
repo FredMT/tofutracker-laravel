@@ -34,7 +34,7 @@ class ManageTvEpisodeWatchActivityAction
                 $metadata['user_tv_episode_ids'] = array_values(
                     array_filter(
                         $metadata['user_tv_episode_ids'] ?? [],
-                        fn($id) => $id !== $userEpisode->id
+                        fn ($id) => $id !== $userEpisode->id
                     )
                 );
                 $metadata['count'] = count($metadata['user_tv_episode_ids']);
@@ -128,7 +128,7 @@ class ManageTvEpisodeWatchActivityAction
 
     private function generateDescription(?TvShow $show, ?TvSeason $season, int $count): string
     {
-        if (!$show) {
+        if (! $show) {
             return 'Watched TV episode';
         }
 

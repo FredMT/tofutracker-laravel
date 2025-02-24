@@ -6,10 +6,7 @@ use App\Actions\Anime\GetAnidbData;
 use App\Actions\Anime\GetAnimeTypeAction;
 use App\Actions\Anime\GetTmdbData;
 use App\Http\Controllers\Comment\CommentController;
-use App\Models\Anime\AnimeMap;
-use App\Models\UserAnime\UserAnimeCollection;
 use App\Repositories\Anime\AnimeControllerRepository;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AnimeControllerAction
@@ -49,7 +46,7 @@ class AnimeControllerAction
 
     public function getUserContent(int $accessId): array
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return [
                 'library' => null,
                 'lists' => null,
@@ -65,7 +62,7 @@ class AnimeControllerAction
     private function processUserLibrary(int $accessId): ?array
     {
         $userAnimeCollection = $this->repository->getUserAnimeCollection($accessId);
-        if (!$userAnimeCollection) {
+        if (! $userAnimeCollection) {
             return null;
         }
 

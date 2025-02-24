@@ -39,7 +39,7 @@ class RateAnimeMovieAction
                 ->first();
 
             // If no existing entry, create new one with rating
-            if (!$userAnime) {
+            if (! $userAnime) {
                 // Authorize creating new entry with rating
                 if (Gate::denies('rate-anime', null)) {
                     throw new AuthorizationException('You are not authorized to rate this anime.');

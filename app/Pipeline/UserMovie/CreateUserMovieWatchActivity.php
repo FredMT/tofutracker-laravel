@@ -14,6 +14,7 @@ class CreateUserMovieWatchActivity
     public function handle($payload, Closure $next)
     {
         $this->manageActivity->execute($payload['user_movie']);
+
         return $next($payload);
     }
 }

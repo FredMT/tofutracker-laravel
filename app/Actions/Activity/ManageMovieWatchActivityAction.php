@@ -83,7 +83,7 @@ class ManageMovieWatchActivityAction
 
     private function generateDescription(?Movie $movie): string
     {
-        if (!$movie) {
+        if (! $movie) {
             return 'Watched movie';
         }
 

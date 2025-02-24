@@ -47,7 +47,7 @@ class TvSeason extends Model
 
     public function seasonNumber(): Attribute
     {
-        return Attribute::get(fn() => $this->data['season_number'] ?? null);
+        return Attribute::get(fn () => $this->data['season_number'] ?? null);
     }
 
     public function show(): BelongsTo
@@ -165,9 +165,9 @@ class TvSeason extends Model
             if ($totalMinutes >= 60) {
                 $hours = floor($totalMinutes / 60);
                 $minutes = $totalMinutes % 60;
-                $runtime = $hours . 'h' . ($minutes > 0 ? ' ' . $minutes . 'm' : '');
+                $runtime = $hours.'h'.($minutes > 0 ? ' '.$minutes.'m' : '');
             } elseif ($totalMinutes > 0) {
-                $runtime = $totalMinutes . 'm';
+                $runtime = $totalMinutes.'m';
             }
 
             // Get show data from parent relationship
@@ -176,7 +176,7 @@ class TvSeason extends Model
             return [
                 'id' => $data['id'],
                 'show_id' => $show->id,
-                'title' => $show->data['name'] . ' - ' . $data['name'],
+                'title' => $show->data['name'].' - '.$data['name'],
                 'type' => 'tvseason',
                 'overview' => $this->getOverview(),
                 'season_number' => $data['season_number'],

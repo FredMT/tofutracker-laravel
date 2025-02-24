@@ -24,7 +24,7 @@ class DestroyAnimeTvAction
                 })
                 ->first();
 
-            if (!$collection) {
+            if (! $collection) {
                 return [
                     'success' => false,
                     'message' => 'Anime collection not found in your library.',

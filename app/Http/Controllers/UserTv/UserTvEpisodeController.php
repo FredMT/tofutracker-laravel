@@ -7,7 +7,6 @@ use App\Actions\UserController\Tv\TvEpisodes\StoreUserTvEpisodeAction;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-
 class UserTvEpisodeController extends Controller
 {
     public function store(Request $request, StoreUserTvEpisodeAction $storeEpisode)
@@ -62,6 +61,7 @@ class UserTvEpisodeController extends Controller
             ]);
         } catch (\Exception $e) {
             \Sentry\captureException($e);
+
             return back()->with([
                 'success' => false,
                 'message' => 'An error occurred while removing episode from library',

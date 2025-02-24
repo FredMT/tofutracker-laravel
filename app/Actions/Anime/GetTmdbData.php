@@ -22,7 +22,7 @@ class GetTmdbData
 
     public function execute($accessId): JsonResponse
     {
-        return Cache::remember('tmdb_data_' . $accessId, now()->addMonth(), function () use ($accessId) {
+        return Cache::remember('tmdb_data_'.$accessId, now()->addMonth(), function () use ($accessId) {
             $result = $this->getMostCommonTmdbId->execute($accessId);
 
             if (isset($result['most_common_tmdb_id']) && isset($result['tmdb_type'])) {

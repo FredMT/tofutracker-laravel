@@ -16,16 +16,19 @@ class CreateTvdbAnimeSeasonJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $tries = 3;
+
     public int $maxExceptions = 3;
+
     public int $timeout = 300;
 
     private array $seasonData;
+
     private Collection $episodes;
 
     public function __construct(object $TVDBSeasonAndEpisodeData)
     {
         $this->seasonData = $this->extractSeasonData($TVDBSeasonAndEpisodeData);
-        $this->episodes = collect($TVDBSeasonAndEpisodeData->data->episodes)->map(fn($episode) => $this->extractEpisodeData($episode));
+        $this->episodes = collect($TVDBSeasonAndEpisodeData->data->episodes)->map(fn ($episode) => $this->extractEpisodeData($episode));
     }
 
     public function handle(): void
@@ -81,7 +84,7 @@ class CreateTvdbAnimeSeasonJob implements ShouldQueue
         $this->episodes->chunk(100)->each(function ($chunk, $index) use ($seasonId) {
             try {
 
-                $episodesData = $chunk->map(fn($episode) => array_merge($episode, ['series_id' => $seasonId]))->toArray();
+                $episodesData = $chunk->map(fn ($episode) => array_merge($episode, ['series_id' => $seasonId]))->toArray();
                 TvdbAnimeEpisode::insert($episodesData);
             } catch (\Exception $e) {
                 logger()->error('Error inserting episodes', [

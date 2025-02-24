@@ -147,7 +147,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 });
 
-
 // User List Routes
 Route::prefix('user/lists')->name('user.lists.')->group(function () {
     Route::post('/store', [UserCustomListController::class, 'store'])->name('store');
@@ -198,4 +197,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/votes', [VoteController::class, 'store']);
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

@@ -33,7 +33,7 @@ class ProcessCommentVoteMilestoneJob implements ShouldQueue
 
         // Find the highest milestone reached
         $milestone = collect(self::VOTE_MILESTONES)
-            ->filter(fn($milestone) => $totalScore >= $milestone)
+            ->filter(fn ($milestone) => $totalScore >= $milestone)
             ->last();
 
         // Only update if milestone changed
@@ -45,14 +45,14 @@ class ProcessCommentVoteMilestoneJob implements ShouldQueue
         $this->comment->update(['vote_milestone' => $milestone]);
 
         // Only notify if it's a new milestone and higher than the previous one
-        if ($milestone && (!$this->comment->vote_milestone || $milestone >= $this->comment->vote_milestone)) {
+        if ($milestone && (! $this->comment->vote_milestone || $milestone >= $this->comment->vote_milestone)) {
             $this->notifyMilestoneReached($milestone);
         }
     }
 
     private function notifyMilestoneReached(int $milestone): void
     {
-        if (!$this->comment->user) {
+        if (! $this->comment->user) {
             return;
         }
 

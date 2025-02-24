@@ -24,7 +24,7 @@ class RateAnimeSeasonAction
                 ->first();
 
             // If no season exists, create new one with rating
-            if (!$season) {
+            if (! $season) {
                 if (Gate::denies('rate-anime', null)) {
                     throw new AuthorizationException('You are not authorized to rate this anime season.');
                 }

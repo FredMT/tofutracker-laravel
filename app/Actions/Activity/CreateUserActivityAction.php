@@ -3,8 +3,8 @@
 namespace App\Actions\Activity;
 
 use App\Actions\Activity\Handlers\ActivityHandlerInterface;
-use App\Actions\Activity\Handlers\UserCustomListItemActivityHandler;
 use App\Actions\Activity\Handlers\UserCustomListActivityHandler;
+use App\Actions\Activity\Handlers\UserCustomListItemActivityHandler;
 use App\Models\UserActivity;
 use Illuminate\Database\Eloquent\Model;
 

@@ -197,7 +197,7 @@ class AnimeSeasonControllerAction
         $tmdbImages = $this->repository->getTmdbImages($seasonId);
 
         return [
-            'links' => array_values(array_filter($combinedLinks, fn($link) => ! is_null($link['identifier']))),
+            'links' => array_values(array_filter($combinedLinks, fn ($link) => ! is_null($link['identifier']))),
             'videos' => $videos,
             'backdrop_path' => $tmdbImages['backdrop_path'] ?? null,
             'logo_path' => $tmdbImages['logo_path'] ?? null,
@@ -237,7 +237,7 @@ class AnimeSeasonControllerAction
         $minutes = $totalMinutes % 60;
 
         return $hours > 0
-            ? "{$hours}h " . ($minutes > 0 ? "{$minutes}m" : '')
+            ? "{$hours}h ".($minutes > 0 ? "{$minutes}m" : '')
             : "{$minutes}m";
     }
 

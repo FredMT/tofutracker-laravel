@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Tv\TvShowActions;
+use App\Http\Controllers\Comment\CommentController;
 use App\Models\TvSeason;
 use App\Models\TvShow;
 use App\Models\UserTv\UserTvSeason;
@@ -12,7 +13,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 use Inertia\Response;
-use App\Http\Controllers\Comment\CommentController;
 
 class TvSeasonController extends Controller
 {
@@ -84,7 +84,7 @@ class TvSeasonController extends Controller
                 'comments' => $comments,
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to retrieve TV season: ' . $e->getMessage());
+            logger()->error('Failed to retrieve TV season: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
 
             return $this->tvShowActions->errorResponse($e);

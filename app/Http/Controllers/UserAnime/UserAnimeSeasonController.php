@@ -27,9 +27,10 @@ class UserAnimeSeasonController extends Controller
 
         try {
             $result = $storeAction->execute($validated, $request->user());
+
             return back()->with($result);
         } catch (\Exception $e) {
-            logger()->error('Failed to add anime season to library: ' . $e->getMessage());
+            logger()->error('Failed to add anime season to library: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
 
             return back()->with([
@@ -50,6 +51,7 @@ class UserAnimeSeasonController extends Controller
 
         try {
             $result = $destroyAction->execute($validated, $request->user());
+
             return back()->with($result);
         } catch (AuthorizationException $e) {
             return back()->with([
@@ -57,7 +59,7 @@ class UserAnimeSeasonController extends Controller
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to remove anime season from library: ' . $e->getMessage());
+            logger()->error('Failed to remove anime season from library: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
 
             return back()->with([
@@ -80,6 +82,7 @@ class UserAnimeSeasonController extends Controller
 
         try {
             $result = $rateAction->execute($validated, $request->user());
+
             return back()->with($result);
         } catch (AuthorizationException $e) {
             return back()->with([
@@ -87,7 +90,7 @@ class UserAnimeSeasonController extends Controller
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to rate anime season: ' . $e->getMessage());
+            logger()->error('Failed to rate anime season: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
 
             return back()->with([
@@ -110,6 +113,7 @@ class UserAnimeSeasonController extends Controller
 
         try {
             $result = $updateWatchStatusAction->execute($validated, $request->user());
+
             return back()->with($result);
         } catch (AuthorizationException $e) {
             return back()->with([
@@ -117,7 +121,7 @@ class UserAnimeSeasonController extends Controller
                 'message' => $e->getMessage(),
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to update anime season watch status: ' . $e->getMessage());
+            logger()->error('Failed to update anime season watch status: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
 
             return back()->with([

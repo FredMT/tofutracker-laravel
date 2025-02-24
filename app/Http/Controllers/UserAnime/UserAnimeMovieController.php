@@ -23,9 +23,11 @@ class UserAnimeMovieController extends Controller
 
         try {
             $result = $storeAction->execute($validated, $request->user());
+
             return back()->with($result);
         } catch (\Exception $e) {
             \Sentry\captureException($e);
+
             return back()->with([
                 'success' => false,
                 'message' => 'An error occurred while adding anime movie to library',
@@ -42,6 +44,7 @@ class UserAnimeMovieController extends Controller
 
         try {
             $result = $deleteAction->execute($validated, $request->user());
+
             return back()->with($result);
         } catch (AuthorizationException $e) {
             return back()->with([
@@ -50,6 +53,7 @@ class UserAnimeMovieController extends Controller
             ]);
         } catch (\Exception $e) {
             \Sentry\captureException($e);
+
             return back()->with([
                 'success' => false,
                 'message' => 'An error occurred while removing anime from library.',
@@ -67,6 +71,7 @@ class UserAnimeMovieController extends Controller
 
         try {
             $result = $rateAction->execute($validated, $request->user());
+
             return back()->with($result);
         } catch (AuthorizationException $e) {
             return back()->with([
@@ -75,6 +80,7 @@ class UserAnimeMovieController extends Controller
             ]);
         } catch (\Exception $e) {
             \Sentry\captureException($e);
+
             return back()->with([
                 'success' => false,
                 'message' => 'An error occurred while rating anime.',
@@ -92,6 +98,7 @@ class UserAnimeMovieController extends Controller
 
         try {
             $result = $updateWatchStatusAction->execute($validated, $request->user());
+
             return back()->with($result);
         } catch (AuthorizationException $e) {
             return back()->with([
@@ -100,6 +107,7 @@ class UserAnimeMovieController extends Controller
             ]);
         } catch (\Exception $e) {
             \Sentry\captureException($e);
+
             return back()->with([
                 'success' => false,
                 'message' => 'An error occurred while updating anime watch status',

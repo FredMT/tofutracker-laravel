@@ -8,7 +8,6 @@ use App\Enums\WatchStatus;
 use App\Models\UserLibrary;
 use App\Models\UserMovie\UserMovie;
 use App\Models\UserMovie\UserMoviePlay;
-use Closure;
 
 class UpdateOrCreateUserMovie
 {
@@ -18,7 +17,7 @@ class UpdateOrCreateUserMovie
 
     public function handle($payload)
     {
-        if (!$payload['user_movie']) {
+        if (! $payload['user_movie']) {
             return $this->createNewMovie($payload);
         }
 

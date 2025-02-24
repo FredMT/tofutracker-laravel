@@ -4,8 +4,8 @@ namespace App\Repositories\Anime;
 
 use App\Models\Anime\AnimeMap;
 use App\Models\UserAnime\UserAnimeCollection;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class AnimeControllerRepository
 {
@@ -27,7 +27,7 @@ class AnimeControllerRepository
                     'anidb_id',
                     'is_movie',
                     'rating',
-                    'watch_status'
+                    'watch_status',
                 ]);
             }])
             ->first();
@@ -55,6 +55,7 @@ class AnimeControllerRepository
         }
 
         $firstChain = array_values($prequelSequelChains)[0] ?? [];
+
         return $firstChain[0] ?? null;
     }
 }

@@ -22,7 +22,7 @@ class UpdateWatchStatusAnimeTvAction
                 ->first();
 
             // If no collection exists, create new one with watch status
-            if (!$collection) {
+            if (! $collection) {
                 if (Gate::denies('update-anime-collection-status', null)) {
                     throw new AuthorizationException('You are not authorized to create this anime collection.');
                 }

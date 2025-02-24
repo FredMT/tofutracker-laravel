@@ -3,8 +3,6 @@
 namespace App\Pipeline\UserTvEpisode;
 
 use App\Actions\Activity\ManageTvEpisodeWatchActivityAction;
-use App\Actions\Tv\Plays\CreateUserTvPlayAction;
-use App\Enums\WatchStatus;
 use Closure;
 
 class CreateUserTvEpisodeWatchActivity
@@ -26,6 +24,7 @@ class CreateUserTvEpisodeWatchActivity
                 'episode_id' => $episode->episode_id,
             ]
         );
+
         return $next($payload);
     }
 }

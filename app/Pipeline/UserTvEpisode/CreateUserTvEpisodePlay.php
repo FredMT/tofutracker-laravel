@@ -3,7 +3,6 @@
 namespace App\Pipeline\UserTvEpisode;
 
 use App\Actions\Tv\Plays\CreateUserTvPlayAction;
-use App\Enums\WatchStatus;
 use Closure;
 
 class CreateUserTvEpisodePlay
@@ -15,6 +14,7 @@ class CreateUserTvEpisodePlay
     public function __invoke($payload, Closure $next)
     {
         $this->createTvPlay->execute($payload['episode']);
+
         return $next($payload);
     }
 }

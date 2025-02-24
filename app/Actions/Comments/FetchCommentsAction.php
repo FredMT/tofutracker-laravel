@@ -2,16 +2,16 @@
 
 namespace App\Actions\Comments;
 
+use App\Models\Anidb\AnidbAnime;
+use App\Models\Anime\AnimeMap;
 use App\Models\Comment;
 use App\Models\Movie;
 use App\Models\TvSeason;
 use App\Models\TvShow;
 use App\Models\User;
-use App\Models\Anidb\AnidbAnime;
-use App\Models\Anime\AnimeMap;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class FetchCommentsAction
 {
@@ -53,7 +53,7 @@ class FetchCommentsAction
 
     private function formatComments(Collection $comments): Collection
     {
-        return $comments->map(fn($comment) => $this->formatComment($comment));
+        return $comments->map(fn ($comment) => $this->formatComment($comment));
     }
 
     private function formatComment($comment): array
@@ -64,7 +64,7 @@ class FetchCommentsAction
             'points' => $comment->votes->sum('value'),
             'timeAgo' => $comment->created_at->diffForHumans(),
             'content' => $comment->body,
-            'children' => $comment->children->map(fn($child) => $this->formatComment($child)),
+            'children' => $comment->children->map(fn ($child) => $this->formatComment($child)),
             'isEdited' => $comment->user_id !== null && $comment->created_at != $comment->updated_at,
             'isDeleted' => $comment->user_id === null && $comment->deleted_at !== null,
             'direction' => $comment->votes->where('user_id', Auth::id())->first()?->value ?? 0,

@@ -31,7 +31,7 @@ class UserTvSeasonController extends Controller
                 'message' => "Season '{$payload['season_title']}' added to {$payload['show_title']} in your library",
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to add season to library: ' . $e->getMessage());
+            logger()->error('Failed to add season to library: '.$e->getMessage());
 
             return back()->with([
                 'success' => false,
@@ -65,7 +65,7 @@ class UserTvSeasonController extends Controller
                 'message' => 'You are not authorized to remove this season',
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to remove season from library: ' . $e->getMessage());
+            logger()->error('Failed to remove season from library: '.$e->getMessage());
 
             return back()->with([
                 'success' => false,
@@ -95,7 +95,7 @@ class UserTvSeasonController extends Controller
                 'message' => 'You are not authorized to update this season',
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to update season rating: ' . $e->getMessage());
+            logger()->error('Failed to update season rating: '.$e->getMessage());
 
             return back()->with([
                 'success' => false,
@@ -125,7 +125,7 @@ class UserTvSeasonController extends Controller
                 'message' => 'You are not authorized to update this season',
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to update season watch status: ' . $e->getMessage());
+            logger()->error('Failed to update season watch status: '.$e->getMessage());
 
             return back()->with([
                 'success' => false,

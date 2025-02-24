@@ -24,8 +24,8 @@ class DeleteUserTvSeasonAction
                 'show_id' => $validated['show_id'],
             ])->firstOrFail();
 
-            if (!Gate::allows('delete', $season)) {
-                throw new \Illuminate\Auth\Access\AuthorizationException();
+            if (! Gate::allows('delete', $season)) {
+                throw new \Illuminate\Auth\Access\AuthorizationException;
             }
 
             UserTvPlay::where('user_tv_season_id', $season->id)->delete();
