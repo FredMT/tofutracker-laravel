@@ -2,23 +2,21 @@
 
 namespace App\Repositories;
 
-use App\Models\UserActivity;
-use App\Models\Movie;
-use App\Models\TvShow;
-use App\Models\TvSeason;
 use App\Models\Anidb\AnidbAnime;
+use App\Models\Movie;
+use App\Models\TvSeason;
+use App\Models\TvShow;
+use App\Models\UserActivity;
 use App\Models\UserAnime\UserAnime;
-use App\Models\UserAnime\UserAnimeEpisode;
 use App\Models\UserAnime\UserAnimeCollection;
+use App\Models\UserAnime\UserAnimeEpisode;
 use App\Models\UserCustomList\UserCustomList;
 use App\Models\UserCustomList\UserCustomListItem;
 use App\Models\UserMovie\UserMovie;
 use App\Models\UserTv\UserTvEpisode;
 use App\Models\UserTv\UserTvSeason;
 use App\Models\UserTv\UserTvShow;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
 
 class UserActivityRepository
 {
@@ -91,6 +89,7 @@ class UserActivityRepository
     public function updateActivity(UserActivity $activity, array $attributes): UserActivity
     {
         $activity->update($attributes);
+
         return $activity;
     }
 
@@ -192,7 +191,7 @@ class UserActivityRepository
         ]);
 
         $description = $show
-            ? "Completed {$show->title}" . ($season?->title ? " {$season->title}" : '')
+            ? "Completed {$show->title}".($season?->title ? " {$season->title}" : '')
             : 'Completed TV season';
 
         return $this->create([
@@ -325,7 +324,7 @@ class UserActivityRepository
 
     private function generateTvEpisodeDescription(?TvShow $show, ?TvSeason $season, int $count): string
     {
-        if (!$show) {
+        if (! $show) {
             return 'Watched TV episode';
         }
 
@@ -337,20 +336,20 @@ class UserActivityRepository
 
     private function generateAnimeEpisodeDescription(array $metadata): string
     {
-        if (!isset($metadata['anidb_id'])) {
+        if (! isset($metadata['anidb_id'])) {
             return 'Watched anime';
         }
 
         try {
             $anime = AnidbAnime::find($metadata['anidb_id']);
-            if (!$anime) {
+            if (! $anime) {
                 return 'Watched anime';
             }
 
             $count = $metadata['count'] ?? 1;
 
-            return 'Watched ' .
-                ($count === 1 ? '1 episode' : "{$count} episodes") .
+            return 'Watched '.
+                ($count === 1 ? '1 episode' : "{$count} episodes").
                 " of {$anime->title}";
         } catch (\Exception $e) {
             return 'Watched anime';
@@ -403,7 +402,7 @@ class UserActivityRepository
                 $metadata['user_anime_episode_ids'] = array_values(
                     array_filter(
                         $metadata['user_anime_episode_ids'] ?? [],
-                        fn($id) => $id !== $episode->id
+                        fn ($id) => $id !== $episode->id
                     )
                 );
                 $metadata['count'] = count($metadata['user_anime_episode_ids']);
@@ -429,7 +428,7 @@ class UserActivityRepository
                 $metadata['user_tv_episode_ids'] = array_values(
                     array_filter(
                         $metadata['user_tv_episode_ids'] ?? [],
-                        fn($id) => $id !== $userEpisode->id
+                        fn ($id) => $id !== $userEpisode->id
                     )
                 );
                 $metadata['count'] = count($metadata['user_tv_episode_ids']);
@@ -449,7 +448,7 @@ class UserActivityRepository
 
     public function deleteCustomListItemActivity(UserCustomListItem $subject): void
     {
-        if (!$subject->relationLoaded('listable')) {
+        if (! $subject->relationLoaded('listable')) {
             $subject->load('listable');
         }
 
@@ -471,7 +470,7 @@ class UserActivityRepository
                     return $item['id'] == $subject->listable_id && $item['type'] == $this->getItemType($subject->listable);
                 });
 
-                if (!$itemExists) {
+                if (! $itemExists) {
                     return;
                 }
 

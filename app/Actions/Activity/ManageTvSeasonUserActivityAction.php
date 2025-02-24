@@ -14,7 +14,7 @@ class ManageTvSeasonUserActivityAction
 
     public function __construct()
     {
-        $this->activityRepository = new UserActivityRepository();
+        $this->activityRepository = new UserActivityRepository;
     }
 
     public function execute(UserTvSeason $userSeason, ?array $additionalMetadata = null): UserActivity

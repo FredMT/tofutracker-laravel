@@ -8,7 +8,6 @@ use App\Enums\WatchStatus;
 use App\Models\TvEpisode;
 use App\Models\TvSeason;
 use App\Models\TvShow;
-use App\Models\UserActivity;
 use App\Models\UserTv\UserTvEpisode;
 use App\Models\UserTv\UserTvPlay;
 use App\Repositories\UserActivityRepository;

@@ -13,7 +13,7 @@ class UserCustomListActivityHandler implements ActivityHandlerInterface
 
     public function __construct()
     {
-        $this->activityRepository = new UserActivityRepository();
+        $this->activityRepository = new UserActivityRepository;
     }
 
     public function canHandle(Model $subject): bool
@@ -23,7 +23,7 @@ class UserCustomListActivityHandler implements ActivityHandlerInterface
 
     public function createActivity(int $userId, string $activityType, Model $subject, ?array $metadata = null): UserActivity
     {
-        if (!$this->canHandle($subject)) {
+        if (! $this->canHandle($subject)) {
             throw new \InvalidArgumentException('This handler only supports UserCustomList models');
         }
 
@@ -32,7 +32,7 @@ class UserCustomListActivityHandler implements ActivityHandlerInterface
 
     public function deleteActivity(Model $subject): void
     {
-        if (!$this->canHandle($subject)) {
+        if (! $this->canHandle($subject)) {
             throw new \InvalidArgumentException('This handler only supports UserCustomList models');
         }
 

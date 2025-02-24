@@ -13,14 +13,14 @@ class ManageTvShowWatchActivityAction
 
     public function __construct()
     {
-        $this->activityRepository = new UserActivityRepository();
+        $this->activityRepository = new UserActivityRepository;
     }
 
     public function execute(UserTvShow $userShow, ?array $additionalMetadata = null): UserActivity
     {
         $show = TvShow::find($userShow->show_id);
 
-        if (!$show) {
+        if (! $show) {
             throw new \Exception('Show not found');
         }
 
@@ -31,7 +31,7 @@ class ManageTvShowWatchActivityAction
     {
         // Delete all activities where:
         // 1. Activity is for this user
-        // 2. Activity type is tv_watch 
+        // 2. Activity type is tv_watch
         // 3. Either:
         //    a. Subject is the show itself
         //    b. Subject is a season of the show (metadata->show_id matches)

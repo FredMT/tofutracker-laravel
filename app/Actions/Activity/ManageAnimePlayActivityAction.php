@@ -2,7 +2,6 @@
 
 namespace App\Actions\Activity;
 
-use App\Models\Anidb\AnidbAnime;
 use App\Models\UserActivity;
 use App\Models\UserAnime\UserAnime;
 use App\Models\UserAnime\UserAnimeEpisode;
@@ -15,7 +14,7 @@ class ManageAnimePlayActivityAction
 
     public function __construct()
     {
-        $this->activityRepository = new UserActivityRepository();
+        $this->activityRepository = new UserActivityRepository;
     }
 
     public function createActivity(int $userId, Model $subject, ?array $metadata = null): UserActivity
@@ -35,11 +34,13 @@ class ManageAnimePlayActivityAction
     {
         if ($subject instanceof UserAnimeEpisode) {
             $this->deleteEpisodeActivity($subject);
+
             return;
         }
 
         if ($subject instanceof UserAnime) {
             $this->deleteAnimeActivity($subject);
+
             return;
         }
 

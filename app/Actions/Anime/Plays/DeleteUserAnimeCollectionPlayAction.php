@@ -2,7 +2,6 @@
 
 namespace App\Actions\Anime\Plays;
 
-use App\Models\UserActivity;
 use App\Models\UserAnime\UserAnimeCollection;
 use App\Repositories\UserActivityRepository;
 
@@ -12,7 +11,7 @@ class DeleteUserAnimeCollectionPlayAction
 
     public function __construct()
     {
-        $this->activityRepository = new UserActivityRepository();
+        $this->activityRepository = new UserActivityRepository;
     }
 
     public function execute(UserAnimeCollection $collection): void

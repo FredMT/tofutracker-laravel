@@ -13,7 +13,7 @@ class ManageMovieWatchActivityAction
 
     public function __construct()
     {
-        $this->activityRepository = new UserActivityRepository();
+        $this->activityRepository = new UserActivityRepository;
     }
 
     public function execute(UserMovie $userMovie, ?array $additionalMetadata = null): UserActivity
