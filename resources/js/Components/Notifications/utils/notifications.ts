@@ -5,6 +5,7 @@ import type {
     ReplyNotification,
     WebsocketNotification,
     NotificationData,
+    VoteMilestoneNotification,
 } from "@/Components/Notifications/types/notifications";
 
 /**
@@ -15,12 +16,20 @@ export function normalizeNotificationType(
 ): NotificationSimpleType | string {
     // Handle undefined or null type
     if (!type) {
-        console.warn("Received notification with undefined or null type");
         return "unknown";
     }
 
     try {
         if (type.includes("\\")) {
+            // Map specific notification types to their simple forms
+            if (type === "App\\Notifications\\CommentUpvoteNotification") {
+                return "vote_milestone";
+            }
+            if (type === "App\\Notifications\\CommentReplyNotification") {
+                return "reply";
+            }
+
+            // Fallback to extracting from class name
             const normalizedType = type
                 .split("\\")
                 .pop()
@@ -47,6 +56,16 @@ export function isReplyNotification(
 }
 
 /**
+ * Type guard to check if a notification is a vote milestone notification
+ */
+export function isVoteMilestoneNotification(
+    notification: Notification
+): notification is VoteMilestoneNotification {
+    const type = normalizeNotificationType(notification.type);
+    return type === "vote_milestone";
+}
+
+/**
  * Gets notification data regardless of the notification structure
  */
 export function getNotificationData(
@@ -59,7 +78,9 @@ export function getNotificationData(
 
     // If it's a websocket notification with direct properties
     const websocketNotification = notification as WebsocketNotification;
-    return {
+
+    // Create a data object with all possible properties
+    const data: NotificationData = {
         comment_id: websocketNotification.comment_id,
         reply_id: websocketNotification.reply_id,
         link: websocketNotification.link,
@@ -67,6 +88,8 @@ export function getNotificationData(
         content: websocketNotification.content,
         score_milestone: websocketNotification.score_milestone,
     };
+
+    return data;
 }
 
 /**
@@ -92,7 +115,9 @@ export function getNotificationUserInfo(notification: Notification) {
 /**
  * Gets a human-readable content string for a notification
  */
-export const getHumanReadableNotificationContent = (notification: Notification) => {
+export const getHumanReadableNotificationContent = (
+    notification: Notification
+) => {
     const type = normalizeNotificationType(notification.type);
     const data = getNotificationData(notification);
 

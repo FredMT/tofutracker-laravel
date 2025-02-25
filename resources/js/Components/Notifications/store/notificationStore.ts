@@ -27,7 +27,6 @@ const normalizeNotification = (notification: Notification): Notification => {
             type: normalizeNotificationType(notification.type),
         };
     } catch (error) {
-        console.error("Error normalizing notification:", error);
         return notification;
     }
 };
@@ -39,7 +38,6 @@ const removeDuplicates = (notifications: Notification[]): Notification[] => {
     const seen = new Set<string>();
     return notifications.filter((notification) => {
         if (!notification.id) {
-            console.warn("Notification without ID detected", notification);
             return false;
         }
         if (seen.has(notification.id)) {
@@ -151,9 +149,6 @@ export const useNotificationStore = create<NotificationStore>((set, get) => ({
                 (websocketNotification: WebsocketNotification) => {
                     try {
                         if (!websocketNotification) {
-                            console.warn(
-                                "Received empty notification from websocket"
-                            );
                             return;
                         }
 

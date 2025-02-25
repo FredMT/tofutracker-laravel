@@ -52,7 +52,6 @@ export function CommentEditor({
                 editor.commands.clearContent();
             } catch (err) {
                 setError("Failed to save comment. Please try again.");
-                console.error("Error saving comment:", err);
             } finally {
                 setIsSubmitting(false);
             }
