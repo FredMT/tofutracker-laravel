@@ -15,12 +15,45 @@ use Illuminate\Support\Facades\Auth;
 
 class FetchCommentsAction
 {
-    public function execute(string $type, string $id): array
+    public function execute(string $type, string $id, ?string $parentId = null, ?string $showCommentId = null): array
     {
         $modelClass = $this->getModelClass($type);
-
         $commentable = $modelClass::findOrFail($id);
 
+        // If showCommentId is provided but parentId is not, use showCommentId as parentId
+        if ($showCommentId && !$parentId) {
+            $parentId = $showCommentId;
+        }
+
+        // If parentId is provided, fetch only that specific comment thread
+        if ($parentId) {
+            $parentComment = Comment::with(['user', 'votes'])
+                ->where('commentable_type', $modelClass)
+                ->where('commentable_id', $commentable->id)
+                ->where('id', $parentId)
+                ->first();
+
+            if (!$parentComment) {
+                return [];
+            }
+
+            $comments = Comment::with(['user', 'votes'])
+                ->where('commentable_type', $modelClass)
+                ->where('commentable_id', $commentable->id)
+                ->treeOf(function ($query) use ($parentComment) {
+                    $query->where('id', $parentComment->id);
+                })
+                ->breadthFirst()
+                ->get()
+                ->toTree();
+
+            return [
+                'comments' => $this->formatComments($comments)->all(),
+                'showCommentId' => $showCommentId
+            ];
+        }
+
+        // Default behavior: fetch all comments
         $comments = Comment::with(['user', 'votes'])
             ->where('commentable_type', $modelClass)
             ->where('commentable_id', $commentable->id)
@@ -34,7 +67,10 @@ class FetchCommentsAction
             ->get()
             ->toTree();
 
-        return $this->formatComments($comments)->all();
+        return [
+            'comments' => $this->formatComments($comments)->all(),
+            'showCommentId' => null
+        ];
     }
 
     private function getModelClass(string $type): string
@@ -53,7 +89,7 @@ class FetchCommentsAction
 
     private function formatComments(Collection $comments): Collection
     {
-        return $comments->map(fn ($comment) => $this->formatComment($comment));
+        return $comments->map(fn($comment) => $this->formatComment($comment));
     }
 
     private function formatComment($comment): array
@@ -64,7 +100,7 @@ class FetchCommentsAction
             'points' => $comment->votes->sum('value'),
             'timeAgo' => $comment->created_at->diffForHumans(),
             'content' => $comment->body,
-            'children' => $comment->children->map(fn ($child) => $this->formatComment($child)),
+            'children' => $comment->children->map(fn($child) => $this->formatComment($child)),
             'isEdited' => $comment->user_id !== null && $comment->created_at != $comment->updated_at,
             'isDeleted' => $comment->user_id === null && $comment->deleted_at !== null,
             'direction' => $comment->votes->where('user_id', Auth::id())->first()?->value ?? 0,

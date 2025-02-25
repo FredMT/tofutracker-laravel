@@ -1,9 +1,9 @@
 import { Group, Stack } from "@mantine/core";
-import { CommentHeader } from "./CommentHeader";
-import { VoteButtons } from "./VoteButtons";
-import { CommentActions } from "./CommentActions";
-import { CommentEditor } from "./CommentEditor";
-import { Comment } from "./types";
+import { CommentHeader } from "@/Components/Comments/CommentHeader";
+import { VoteButtons } from "@/Components/Comments/VoteButtons";
+import { CommentActions } from "@/Components/Comments/CommentActions";
+import { Comment } from "@/Components/Comments/types";
+import { CommentEditor } from "@/Components/Comments/CommentEditor";
 
 interface CommentContentProps
     extends Pick<

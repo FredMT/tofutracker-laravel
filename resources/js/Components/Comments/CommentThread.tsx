@@ -1,13 +1,17 @@
 import { useCommentStore } from "@/Components/Comments/store/commentStore";
-import { CommentContent } from "./CommentContent";
-import { CommentEditor } from "./CommentEditor";
-import { CommentThreadProps } from "./types";
 import { usePage } from "@inertiajs/react";
 import { ContentType, Auth } from "@/types";
 import { notifications } from "@mantine/notifications";
 import { InfoIcon } from "lucide-react";
-import { useComments } from "./hooks/useComments";
-import React from "react";
+import { CommentContent } from "@/Components/Comments/CommentContent";
+import { CommentEditor } from "@/Components/Comments/CommentEditor";
+import { CommentThreadProps } from "@/Components/Comments/types";
+import { useComments } from "@/Components/Comments/hooks/useComments";
+import { useSearchParams } from "@/hooks/useSearchParams";
+import { useRef, useEffect } from "react";
+import { useScrollIntoView } from "@mantine/hooks";
+import styles from "./styles/Comments.module.css";
+import { clsx } from "clsx";
 
 interface PageProps {
     type: ContentType;
@@ -20,7 +24,15 @@ interface PageProps {
     [key: string]: any;
 }
 
-export function CommentThread({ children, ...props }: CommentThreadProps) {
+interface ExtendedCommentThreadProps extends CommentThreadProps {
+    isHighlighted?: boolean;
+}
+
+export function CommentThread({
+    children,
+    isHighlighted = false,
+    ...props
+}: ExtendedCommentThreadProps) {
     const { type, data, auth } = usePage<PageProps>().props;
     const { uiState, setReplying, setEditing, toggleCollapsed } =
         useCommentStore();
@@ -29,10 +41,36 @@ export function CommentThread({ children, ...props }: CommentThreadProps) {
         data,
         auth
     );
+    const { getParam } = useSearchParams();
+    const showCommentId = getParam("showCommentId");
+
+    // Setup scroll into view hook
+    const { scrollIntoView, targetRef } = useScrollIntoView<HTMLDivElement>({
+        offset: 60,
+        duration: 500,
+    });
 
     const isReplying = uiState.isReplying === props.id;
     const isEditing = uiState.isEditing === props.id;
     const isCollapsed = uiState.isCollapsed.includes(props.id);
+
+    // Scroll into view when highlighted
+    useEffect(() => {
+        if (isHighlighted && targetRef.current) {
+            scrollIntoView({ alignment: "center" });
+
+            // Add highlight class
+            const element = targetRef.current;
+            element.classList.add(styles.highlightComment);
+
+            // Remove highlight class after animation
+            const timer = setTimeout(() => {
+                element.classList.remove(styles.highlightComment);
+            }, 3000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [isHighlighted, scrollIntoView]);
 
     const handleReply = () => {
         if (!auth.user) {
@@ -79,9 +117,18 @@ export function CommentThread({ children, ...props }: CommentThreadProps) {
     };
 
     return (
-        <div className="relative">
+        <div
+            className={styles.commentThread}
+            id={`comment-${props.id}`}
+            ref={isHighlighted ? targetRef : undefined}
+        >
             <div
-                className={`absolute left-0 top-0 bottom-0 w-[3px] bg-gray-700 hover:bg-gray-300 transition-colors cursor-pointer`}
+                className={clsx(
+                    styles.commentBar,
+                    isHighlighted
+                        ? styles.commentBarHighlighted
+                        : styles.commentBarNormal
+                )}
                 onClick={() => toggleCollapsed(props.id)}
                 role="button"
                 tabIndex={0}
@@ -92,9 +139,9 @@ export function CommentThread({ children, ...props }: CommentThreadProps) {
                     }
                 }}
             >
-                <div className="absolute inset-0 w-6 -left-3" />
+                <div className={styles.commentBarControl} />
             </div>
-            <div className="pl-4">
+            <div className={styles.commentContent}>
                 <CommentContent
                     {...props}
                     isCollapsed={isCollapsed}
@@ -114,9 +161,13 @@ export function CommentThread({ children, ...props }: CommentThreadProps) {
                     </div>
                 )}
                 {!isCollapsed && children && (
-                    <div className="mt-2 space-y-6">
+                    <div className={styles.childComments}>
                         {children.map((child) => (
-                            <CommentThread key={child.id} {...child} />
+                            <CommentThread
+                                key={child.id}
+                                {...child}
+                                isHighlighted={child.id === showCommentId}
+                            />
                         ))}
                     </div>
                 )}

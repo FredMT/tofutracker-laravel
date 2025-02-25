@@ -1,5 +1,5 @@
+import { CommentEditor } from "@/Components/Comments/CommentEditor";
 import { Title, Stack } from "@mantine/core";
-import { CommentEditor } from "./CommentEditor";
 
 interface CommentCreatorProps {
     onAddComment: (content: string) => Promise<void>;

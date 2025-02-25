@@ -25,7 +25,7 @@ class MovieController extends Controller
         $userLibraryData = null;
         $userLists = null;
         $existingMovie = Movie::find($id);
-        $comments = $this->commentController->index('movie', $id);
+        $comments = $this->commentController->index($request, 'movie', $id);
 
         if ($request->user()) {
             $userLibraryData = UserMovie::where([

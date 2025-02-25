@@ -25,10 +25,13 @@ class CommentController extends Controller
         private readonly DeleteCommentAction $deleteCommentAction
     ) {}
 
-    public function index(string $type, string $id)
+    public function index(Request $request, string $type, string $id)
     {
         try {
-            return $this->fetchCommentsAction->execute($type, $id);
+            $parentId = $request->query('parentId');
+            $showCommentId = $request->query('showCommentId');
+
+            return $this->fetchCommentsAction->execute($type, $id, $parentId, $showCommentId);
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Resource not found'], Response::HTTP_NOT_FOUND);
         } catch (\Exception $e) {

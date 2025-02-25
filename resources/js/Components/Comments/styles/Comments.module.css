@@ -1,0 +1,58 @@
+.highlightComment {
+    animation: highlightPulse 3s ease-in-out;
+}
+
+@keyframes highlightPulse {
+    0% {
+        background-color: rgba(59, 130, 246, 0.1);
+    }
+    50% {
+        background-color: rgba(59, 130, 246, 0.2);
+    }
+    100% {
+        background-color: transparent;
+    }
+}
+
+.commentThread {
+    position: relative;
+}
+
+.commentBar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    transition: background-color 0.2s;
+}
+
+.commentBar:hover {
+    background-color: var(--mantine-color-gray-3);
+}
+
+.commentBarHighlighted {
+    background-color: var(--mantine-color-blue-6);
+}
+
+.commentBarNormal {
+    background-color: var(--mantine-color-gray-7);
+}
+
+.commentBarControl {
+    position: absolute;
+    inset: 0;
+    width: 6px;
+    left: -3px;
+}
+
+.commentContent {
+    padding-left: 1rem;
+}
+
+.childComments {
+    margin-top: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
