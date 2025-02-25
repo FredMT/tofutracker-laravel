@@ -5,6 +5,7 @@ namespace App\Notifications;
 use App\Models\Comment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\DB;
 
@@ -65,7 +66,7 @@ class CommentUpvoteNotification extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['database', 'broadcast'];
     }
 
     /**
@@ -78,6 +79,28 @@ class CommentUpvoteNotification extends Notification implements ShouldQueue
         return [
             'comment_id' => (string) $this->comment->id,
             'score_milestone' => (string) $this->milestone,
+            'link' => $this->generateLink(),
         ];
+    }
+
+    public function toBroadcast(object $notifiable): BroadcastMessage
+    {
+        return new BroadcastMessage([
+            'comment_id' => (string) $this->comment->id,
+            'score_milestone' => (string) $this->milestone,
+            'link' => $this->generateLink(),
+        ]);
+    }
+
+    private function generateLink(): string
+    {
+        $type = strtolower(class_basename($this->comment->commentable_type));
+        $url = "/{$type}/{$this->comment->commentable_id}?showCommentId={$this->comment->id}";
+
+        if ($this->comment->parent_id) {
+            $url .= "&parentId={$this->comment->parent_id}";
+        }
+
+        return $url;
     }
 }

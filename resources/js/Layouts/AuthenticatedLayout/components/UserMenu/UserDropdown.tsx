@@ -1,5 +1,5 @@
 import { Link, usePage } from "@inertiajs/react";
-import { Avatar, Group, Menu, Text } from "@mantine/core";
+import { Avatar, Group, Image, Menu, Text } from "@mantine/core";
 import styles from "../../AuthenticatedLayout.module.css";
 import { Auth, PageProps } from "@/types";
 
@@ -22,7 +22,14 @@ export default function UserDropdown() {
                                     src={`https://images.tofutracker.com/${auth.user.avatar}`}
                                     alt="Avatar"
                                     size="sm"
-                                />
+                                >
+                                    <Image
+                                        src={`https://api.dicebear.com/9.x/open-peeps/svg?seed=tofutracker-${auth.user.username}`}
+                                        alt="Avatar"
+                                        width={20}
+                                        height={20}
+                                    />
+                                </Avatar>
                                 <Text c="white" size="sm">
                                     {auth.user.username}
                                 </Text>

@@ -99,13 +99,7 @@ export type PageProps<
     flash?: FlashMessage;
     ziggy: Config & { location: string };
     user_library: ContentTypeToLibrary<T> | null;
-} & (
-        | { type: "movie" }
-        | { type: "tv" }
-        | { type: "tvseason" }
-        | { type: "animetv" }
-        | { type: "animemovie" }
-    );
+};
 
 interface BaseContent {
     id: number;

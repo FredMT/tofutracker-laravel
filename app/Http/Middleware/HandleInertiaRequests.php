@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
@@ -35,14 +36,22 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
-            'ziggy' => fn () => [
+            'ziggy' => fn() => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
             'flash' => [
-                'success' => fn () => $request->session()->get('success'),
-                'message' => fn () => $request->session()->get('message'),
+                'success' => fn() => $request->session()->get('success'),
+                'message' => fn() => $request->session()->get('message'),
             ],
+            'notifications' => Auth::user()?->notifications->take(5)->map(function ($notification) {
+                return array_merge([
+                    'id' => $notification->id,
+                    'type' => $notification->type,
+                    'created_at' => $notification->created_at,
+                    'read_at' => $notification->read_at
+                ], $notification->data);
+            }) ?? [],
         ];
     }
 }

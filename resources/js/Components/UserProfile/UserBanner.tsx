@@ -1,7 +1,7 @@
 import ResponsiveContainer from "@/Components/ResponsiveContainer";
-import {Alert, Avatar, Image, Text} from "@mantine/core";
+import { Alert, Avatar, Image, Text } from "@mantine/core";
 import classes from "./UserBanner.module.css";
-import {Link, usePage} from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 
 interface UserData {
     id: number;
@@ -58,7 +58,14 @@ export function UserBanner() {
                                 boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
                             }}
                             variant="transparent"
-                        />
+                        >
+                            <Image
+                                src={`https://api.dicebear.com/9.x/open-peeps/svg?seed=tofutracker-${userData.username}`}
+                                alt="Avatar"
+                                width={20}
+                                height={20}
+                            />
+                        </Avatar>
                     </div>
                 </ResponsiveContainer>
             </div>

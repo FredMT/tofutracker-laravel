@@ -15,6 +15,7 @@ use App\Http\Controllers\List\ListController;
 use App\Http\Controllers\List\ListRemoveItemsController;
 use App\Http\Controllers\List\ListUpdateOrderController;
 use App\Http\Controllers\MovieController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Search\QuickSearchController;
 use App\Http\Controllers\Search\SearchController;
@@ -197,4 +198,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/votes', [VoteController::class, 'store']);
 });
 
-require __DIR__.'/auth.php';
+Route::middleware(['auth', 'verified'])->prefix('notifications')->name('notifications.')->group(function () {
+    Route::get('/', [NotificationController::class, 'show'])->name('show');
+    Route::post('/{id}/read', [NotificationController::class, 'markNotificationAsRead'])->name('read');
+    Route::post('/read-all', [NotificationController::class, 'markAllNotificationsAsRead'])->name('readAll');
+});
+
+require __DIR__ . '/auth.php';

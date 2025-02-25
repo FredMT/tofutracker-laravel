@@ -100,9 +100,13 @@ export function ActivityListItem({ activity }: ActivityListItemProps) {
                             hiddenFrom="sm"
                         >
                             <Clock size={16} />
-                            <Text size="sm">{activity.occurred_at_diff}</Text>
+                            <Text span size="sm">
+                                {activity.occurred_at_diff}
+                            </Text>
                         </Group>
-                        <Text size="sm">{description}</Text>
+                        <Text span size="sm">
+                            {description}
+                        </Text>
                     </Stack>
                 </Grid.Col>
                 <Grid.Col span="content">
@@ -119,7 +123,9 @@ export function ActivityListItem({ activity }: ActivityListItemProps) {
                             visibleFrom="sm"
                         >
                             <Clock size={16} />
-                            <Text size="sm">{activity.occurred_at_diff}</Text>
+                            <Text span size="sm">
+                                {activity.occurred_at_diff}
+                            </Text>
                         </Group>
                         <Group gap={4} pb={10}>
                             <ActivityLike
@@ -132,7 +138,9 @@ export function ActivityListItem({ activity }: ActivityListItemProps) {
                                     <MessageCircle size={16} />
                                 </ActionIcon>
                                 {/* TODO: Add comments */}
-                                <Text size="xs">2</Text>
+                                <Text span size="xs">
+                                    2
+                                </Text>
                             </Group>
                         </Group>
                     </Stack>
