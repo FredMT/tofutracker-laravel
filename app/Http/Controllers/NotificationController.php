@@ -14,7 +14,7 @@ class NotificationController extends Controller
     {
         $user = Auth::user();
 
-        if (!$user) {
+        if (! $user) {
             return to_route('login');
         }
 
@@ -41,17 +41,18 @@ class NotificationController extends Controller
     {
         try {
             $user = Auth::user();
-            if (!$user) {
+            if (! $user) {
                 return response()->json(['success' => false, 'message' => 'User not authenticated'], 401);
             }
 
             $notification = $user->unreadNotifications->firstWhere('id', $id);
 
-            if (!$notification) {
+            if (! $notification) {
                 return response()->json(['success' => false, 'message' => 'Notification not found'], 404);
             }
 
             $notification->markAsRead();
+
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
             logger()->error('Error marking notification as read', ['error' => $e->getMessage()]);
@@ -61,16 +62,16 @@ class NotificationController extends Controller
     public function markAllNotificationsAsRead(): JsonResponse
     {
         $user = Auth::user();
-        if (!$user) {
+        if (! $user) {
             return response()->json(['success' => false, 'message' => 'User not authenticated'], 401);
         }
 
-
-        if (!$user->unreadNotifications->count() > 0) {
+        if (! $user->unreadNotifications->count() > 0) {
             return response()->json(['success' => false, 'message' => 'No unread notifications'], 400);
         }
 
         $user->unreadNotifications->markAsRead();
+
         return response()->json(['success' => true, 'message' => 'All notifications marked as read']);
     }
 }

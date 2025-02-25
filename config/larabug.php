@@ -36,7 +36,7 @@ return [
     */
 
     'environments' => [
-        'local'
+        'local',
     ],
 
     /*
@@ -107,7 +107,7 @@ return [
         '*cvv*',
         '*iban*',
         '*name*',
-        '*email*'
+        '*email*',
     ],
 
     /*

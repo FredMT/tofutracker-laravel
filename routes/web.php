@@ -204,4 +204,4 @@ Route::middleware(['auth', 'verified'])->prefix('notifications')->name('notifica
     Route::post('/read-all', [NotificationController::class, 'markAllNotificationsAsRead'])->name('readAll');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

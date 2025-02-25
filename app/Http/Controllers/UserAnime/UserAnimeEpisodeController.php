@@ -75,7 +75,7 @@ class UserAnimeEpisodeController extends Controller
             ]);
         } catch (\Exception $e) {
             logger()->error($e);
-            logger()->error('Failed to add anime episode to library: ' . $e->getMessage());
+            logger()->error('Failed to add anime episode to library: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
 
             return back()->with([
@@ -125,7 +125,7 @@ class UserAnimeEpisodeController extends Controller
                 ]);
             });
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            logger()->error('Failed to remove anime episode from library model not found: ' . $e->getMessage());
+            logger()->error('Failed to remove anime episode from library model not found: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
 
             return back()->with([
@@ -133,7 +133,7 @@ class UserAnimeEpisodeController extends Controller
                 'message' => 'Episode not found in your library.',
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to remove anime episode from library: ' . $e->getMessage());
+            logger()->error('Failed to remove anime episode from library: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
 
             return back()->with([

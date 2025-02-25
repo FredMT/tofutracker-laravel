@@ -21,7 +21,7 @@ class FetchCommentsAction
         $commentable = $modelClass::findOrFail($id);
 
         // If showCommentId is provided but parentId is not, use showCommentId as parentId
-        if ($showCommentId && !$parentId) {
+        if ($showCommentId && ! $parentId) {
             $parentId = $showCommentId;
         }
 
@@ -33,7 +33,7 @@ class FetchCommentsAction
                 ->where('id', $parentId)
                 ->first();
 
-            if (!$parentComment) {
+            if (! $parentComment) {
                 return [];
             }
 
@@ -49,7 +49,7 @@ class FetchCommentsAction
 
             return [
                 'comments' => $this->formatComments($comments)->all(),
-                'showCommentId' => $showCommentId
+                'showCommentId' => $showCommentId,
             ];
         }
 
@@ -69,7 +69,7 @@ class FetchCommentsAction
 
         return [
             'comments' => $this->formatComments($comments)->all(),
-            'showCommentId' => null
+            'showCommentId' => null,
         ];
     }
 
@@ -89,7 +89,7 @@ class FetchCommentsAction
 
     private function formatComments(Collection $comments): Collection
     {
-        return $comments->map(fn($comment) => $this->formatComment($comment));
+        return $comments->map(fn ($comment) => $this->formatComment($comment));
     }
 
     private function formatComment($comment): array
@@ -100,7 +100,7 @@ class FetchCommentsAction
             'points' => $comment->votes->sum('value'),
             'timeAgo' => $comment->created_at->diffForHumans(),
             'content' => $comment->body,
-            'children' => $comment->children->map(fn($child) => $this->formatComment($child)),
+            'children' => $comment->children->map(fn ($child) => $this->formatComment($child)),
             'isEdited' => $comment->user_id !== null && $comment->created_at != $comment->updated_at,
             'isDeleted' => $comment->user_id === null && $comment->deleted_at !== null,
             'direction' => $comment->votes->where('user_id', Auth::id())->first()?->value ?? 0,
