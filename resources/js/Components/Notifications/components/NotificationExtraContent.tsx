@@ -1,80 +1,27 @@
-import { Blockquote, Text } from "@mantine/core";
 import type { Notification } from "@/Components/Notifications/types/notifications";
-import {
-    isReplyNotification,
-    normalizeNotificationType,
-    getNotificationContentData,
-} from "@/Components/Notifications/utils/notifications";
+import { useNotificationContent } from "@/Components/Notifications/hooks/useNotificationContent";
+import CompactContent from "@/Components/Notifications/components/content/CompactContent";
+import FullContent from "@/Components/Notifications/components/content/FullContent";
 
 interface Props {
     notification: Notification;
     variant: "compact" | "full";
 }
 
-interface ContentConfig {
-    render: (
-        notification: Notification,
-        variant: "compact" | "full"
-    ) => React.ReactNode;
-}
-
-const contentConfigs: Partial<Record<string, ContentConfig>> = {
-    reply: {
-        render: (notification, variant) => {
-            if (!isReplyNotification(notification)) return null;
-
-            const data = getNotificationContentData(notification);
-            if (!data.content) return null;
-
-            const plainText = data.content.replace(/<[^>]*>/g, "");
-
-            if (variant === "compact") {
-                return (
-                    <Text size="sm" c="dimmed" lineClamp={1}>
-                        {plainText}
-                    </Text>
-                );
-            }
-
-            return (
-                <Blockquote p="xs">
-                    <Text lineClamp={3}>{plainText}</Text>
-                </Blockquote>
-            );
-        },
-    },
-    // Add support for commentreply type which is the same as reply
-    commentreply: {
-        render: (notification, variant) => {
-            const data = getNotificationContentData(notification);
-            if (!data.content) return null;
-
-            const plainText = data.content.replace(/<[^>]*>/g, "");
-
-            if (variant === "compact") {
-                return (
-                    <Text size="sm" c="dimmed" lineClamp={1}>
-                        {plainText}
-                    </Text>
-                );
-            }
-
-            return (
-                <Blockquote p="xs">
-                    <Text lineClamp={3}>{plainText}</Text>
-                </Blockquote>
-            );
-        },
-    },
-};
-
+/**
+ * Renders additional content for a notification based on its type and variant
+ */
 export default function NotificationExtraContent({
     notification,
     variant,
 }: Props) {
-    const type = normalizeNotificationType(notification.type);
-    const config = type ? contentConfigs[type] : null;
-    if (!config) return null;
+    const { shouldDisplayExtraContent } = useNotificationContent(notification);
 
-    return config.render(notification, variant);
+    if (!shouldDisplayExtraContent) return null;
+
+    return variant === "compact" ? (
+        <CompactContent notification={notification} />
+    ) : (
+        <FullContent notification={notification} />
+    );
 }

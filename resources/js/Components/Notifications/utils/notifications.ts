@@ -3,8 +3,6 @@ import type {
     NotificationFullType,
     NotificationSimpleType,
     ReplyNotification,
-    VoteMilestoneNotification,
-    DatabaseNotification,
     WebsocketNotification,
     NotificationData,
 } from "@/Components/Notifications/types/notifications";
@@ -94,7 +92,7 @@ export function getNotificationUserInfo(notification: Notification) {
 /**
  * Gets a human-readable content string for a notification
  */
-export const getNotificationContent = (notification: Notification) => {
+export const getHumanReadableNotificationContent = (notification: Notification) => {
     const type = normalizeNotificationType(notification.type);
     const data = getNotificationData(notification);
 

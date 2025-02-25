@@ -1,6 +1,6 @@
 import { useNotificationStore } from "@/Components/Notifications/store/notificationStore";
 import {
-    getNotificationContent,
+    getHumanReadableNotificationContent,
     getNotificationData,
 } from "@/Components/Notifications/utils/notifications";
 import { Notification } from "@/Components/Notifications/types/notifications";
@@ -36,7 +36,7 @@ export default function NotificationItem({
             <NotificationIcon notification={notification} variant={variant} />
             <Stack gap={variant === "compact" ? 2 : "xs"} style={{ flex: 1 }}>
                 <Text size={variant === "compact" ? "sm" : "md"} lh={1.4}>
-                    {getNotificationContent(notification)}
+                    {getHumanReadableNotificationContent(notification)}
                 </Text>
                 <NotificationExtraContent
                     notification={notification}
