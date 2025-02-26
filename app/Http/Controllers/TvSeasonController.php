@@ -37,7 +37,7 @@ class TvSeasonController extends Controller
                 return $season->filteredData;
             });
             $seasonId = $seasonData['id'];
-            $comments = $this->commentController->index('tvseason', $seasonId);
+            $comments = $this->commentController->index($request, 'tvseason', $seasonId);
 
             $userLibrary = null;
             $userLists = null;
@@ -84,7 +84,7 @@ class TvSeasonController extends Controller
                 'comments' => $comments,
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to retrieve TV season: '.$e->getMessage());
+            logger()->error('Failed to retrieve TV season: ' . $e->getMessage());
             logger()->error($e->getTraceAsString());
 
             return $this->tvShowActions->errorResponse($e);

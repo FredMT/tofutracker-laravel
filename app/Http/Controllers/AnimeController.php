@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\Controller\Anime\AnimeControllerAction;
 use App\Repositories\Anime\AnimeControllerRepository;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -15,7 +16,7 @@ class AnimeController extends Controller
         private AnimeControllerRepository $repository
     ) {}
 
-    public function show($accessId): Response
+    public function show(Request $request, $accessId): Response
     {
         try {
             // Get anime data
@@ -27,7 +28,8 @@ class AnimeController extends Controller
             // Get comments
             $comments = $this->action->getComments(
                 $animeData['type'],
-                $animeData['type'] === 'animetv' ? $accessId : $firstChainEntry['id']
+                $animeData['type'] === 'animetv' ? $accessId : $firstChainEntry['id'],
+                $request
             );
 
             // Get user content

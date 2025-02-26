@@ -31,7 +31,7 @@ class AnimeSeasonController extends Controller
             $processedData = $this->action->processAnimeData($anime, $seasonId);
             $userContent = $this->action->getUserContent($request, $seasonId);
             $links = $this->action->generateNavigationLinks($accessId, $seasonId);
-            $comments = $this->commentController->index('animeseason', $seasonId);
+            $comments = $this->commentController->index($request, 'animeseason', $seasonId);
 
             return Inertia::render('AnimeSeasonContent', [
                 'data' => $processedData,

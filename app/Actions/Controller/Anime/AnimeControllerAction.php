@@ -7,6 +7,7 @@ use App\Actions\Anime\GetAnimeTypeAction;
 use App\Actions\Anime\GetTmdbData;
 use App\Http\Controllers\Comment\CommentController;
 use App\Repositories\Anime\AnimeControllerRepository;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AnimeControllerAction
@@ -39,9 +40,9 @@ class AnimeControllerAction
         return $this->repository->getFirstChainEntry($prequelSequelChains);
     }
 
-    public function getComments(string $type, int $commentId): array
+    public function getComments(string $type, int $commentId, Request $request): array
     {
-        return $this->commentController->index($type, $commentId);
+        return $this->commentController->index($request, $type, $commentId);
     }
 
     public function getUserContent(int $accessId): array

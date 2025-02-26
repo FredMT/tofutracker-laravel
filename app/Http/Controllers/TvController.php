@@ -22,7 +22,7 @@ class TvController extends Controller
     public function show(Request $request, string $id): Response
     {
         $tvShowData = $this->tvShowActions->fetchTvShow($id);
-        $comments = $this->commentController->index('tv', $id);
+        $comments = $this->commentController->index($request, 'tv', $id);
 
         $userLibrary = null;
         $userLists = null;

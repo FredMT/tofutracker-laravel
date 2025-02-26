@@ -1,11 +1,11 @@
-import AddMovieToLibrary from "@/Components/ContentActions/components/Actions/AddToLibrary/Movie/AddMovieToLibrary";
-import RemoveMovieFromLibrary from "@/Components/ContentActions/components/Actions/RemoveFromLibrary/Movie/RemoveMovieFromLibrary";
 import { WatchStatusSelect } from "@/Components/ContentActions/components/Actions/WatchStatus/Movie/MovieWatchStatusSelect";
 import { RateContent } from "@/Components/ContentActions/components/Rating/RateContent";
 import { PageProps } from "@/types";
 import { usePage } from "@inertiajs/react";
 import { Stack } from "@mantine/core";
 import ManageCustomList from "./Actions/ManageCustomList/ManageCustomList";
+import RemoveMovieFromLibrary from "@/Components/ContentActions/components/Actions/RemoveFromLibrary/Movie/RemoveMovieFromLibrary";
+import AddToLibrary from "@/Components/ContentActions/components/Actions/AddToLibrary/AddToLibrary";
 
 type MoviePageProps = PageProps<{ type: "movie" }>;
 
@@ -18,7 +18,7 @@ export default function MovieActions() {
 
     return (
         <Stack gap={8} w={"100%"}>
-            {hasLibraryEntry ? <RemoveMovieFromLibrary /> : <AddMovieToLibrary />}
+            {hasLibraryEntry ? <RemoveMovieFromLibrary /> : <AddToLibrary />}
             <RateContent />
             {auth.user && <WatchStatusSelect />}
             <ManageCustomList />
