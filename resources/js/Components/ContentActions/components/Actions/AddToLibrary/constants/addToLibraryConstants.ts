@@ -1,7 +1,10 @@
-import { ContentType, RouteMap } from "../types/libraryTypes";
+import {
+    ContentType,
+    RouteMap,
+} from "@/Components/ContentActions/components/Actions/shared/types/libraryTypes";
 
-// Route names for different content types
-export const ROUTE_NAMES: RouteMap = {
+// Constants
+export const ROUTE_NAMES: Record<string, string> = {
     movie: "movie.library.store",
     tv: "tv.library.store",
     "tv.season": "tv.season.library.store",
@@ -10,8 +13,7 @@ export const ROUTE_NAMES: RouteMap = {
     "anime.season": "anime.season.library.store",
 };
 
-// Display names for different content types
-export const CONTENT_NAMES: RouteMap = {
+export const CONTENT_NAMES: Record<string, string> = {
     movie: "movie",
     tv: "show",
     "tv.season": "season",
@@ -20,7 +22,11 @@ export const CONTENT_NAMES: RouteMap = {
     "anime.season": "anime season",
 };
 
-// Custom button text for specific content types
-export const BUTTON_TEXTS: Partial<RouteMap> = {
+export const BUTTON_TEXTS: Record<string, string> = {
+    movie: "Add to Library",
+    tv: "Add to Library",
     "tv.season": "Add Season to Library",
+    "anime.movie": "Add to Library",
+    "anime.tv": "Add to Library",
+    "anime.season": "Add to Library",
 };

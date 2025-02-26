@@ -1,8 +1,5 @@
 import React from "react";
 import { usePage } from "@inertiajs/react";
-import { useRemoveFromLibrary } from "./hooks/useRemoveFromLibrary";
-import { RemoveFromLibraryButton } from "./components/RemoveFromLibraryButton";
-import { LibraryPageProps, ContentType } from "./types/libraryTypes";
 import {
     ROUTE_NAMES,
     CONTENT_NAMES,
@@ -10,7 +7,13 @@ import {
     MODAL_TITLES,
     MODAL_CONTENTS,
 } from "./constants/libraryConstants";
-import { determineContentType, buildFormData } from "./utils/contentTypeUtils";
+import {
+    determineContentType,
+    buildFormData,
+} from "../shared/utils/contentTypeUtils";
+import { LibraryPageProps } from "@/Components/ContentActions/components/Actions/shared/types/libraryTypes";
+import { RemoveFromLibraryButton } from "@/Components/ContentActions/components/Actions/RemoveFromLibrary/components/RemoveFromLibraryButton";
+import { useRemoveFromLibrary } from "@/Components/ContentActions/components/Actions/RemoveFromLibrary/hooks/useRemoveFromLibrary";
 
 /**
  * Unified component for removing content from library

@@ -2,7 +2,12 @@ import React from "react";
 import { useForm } from "@inertiajs/react";
 import { notifications } from "@mantine/notifications";
 import { Check, CircleAlertIcon } from "lucide-react";
-import { AddToLibraryParams } from "../types/libraryTypes";
+
+type AddToLibraryParams = {
+    routeName: string;
+    formData: Record<string, any>;
+    itemName?: string;
+};
 
 /**
  * Hook for handling adding items to library

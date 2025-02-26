@@ -1,13 +1,15 @@
-import { ContentType, ContentData } from "../types/libraryTypes";
+import {
+    ContentData,
+    ContentType,
+} from "@/Components/ContentActions/components/Actions/shared/types/libraryTypes";
 import { Movie, TvShow, TvSeason } from "@/types";
 import { Anime } from "@/types/anime";
 import { AnimeSeason } from "@/types/animeseason";
-
 /**
- * Determines the content type based on the page type
+ * Determines the content type based on the type string from the page props
  */
-export function determineContentType(pageType: string): ContentType | null {
-    switch (pageType) {
+export function determineContentType(type: string): ContentType {
+    switch (type) {
         case "movie":
             return "movie";
         case "tv":
@@ -20,9 +22,9 @@ export function determineContentType(pageType: string): ContentType | null {
             return "anime.tv";
         case "animeseason":
             return "anime.season";
+        default:
+            return "movie"; // Default to movie if type is unknown
     }
-
-    return null;
 }
 
 /**
@@ -57,7 +59,10 @@ export function buildFormData(
 
         case "anime.tv":
             const animeTvData = data as Anime;
-            return { map_id: animeTvData.map_id };
+            return {
+                anidb_id: animeTvData.anidb_id,
+                map_id: animeTvData.map_id,
+            };
 
         case "anime.season":
             const animeSeasonData = data as AnimeSeason;

@@ -1,20 +1,16 @@
-import React from "react";
 import { usePage } from "@inertiajs/react";
 import { useAddToLibrary } from "@/Components/ContentActions/components/Actions/AddToLibrary/hooks/useAddToLibrary";
 import { AddToLibraryButton } from "@/Components/ContentActions/components/Actions/AddToLibrary/components/AddToLibraryButton";
 import {
-    LibraryPageProps,
-    ContentType,
-} from "@/Components/ContentActions/components/Actions/AddToLibrary/types/libraryTypes";
-import {
     ROUTE_NAMES,
     CONTENT_NAMES,
     BUTTON_TEXTS,
-} from "@/Components/ContentActions/components/Actions/AddToLibrary/constants/libraryConstants";
+} from "@/Components/ContentActions/components/Actions/AddToLibrary/constants/addToLibraryConstants";
+import { LibraryPageProps } from "@/Components/ContentActions/components/Actions/shared/types/libraryTypes";
 import {
-    determineContentType,
     buildFormData,
-} from "@/Components/ContentActions/components/Actions/AddToLibrary/utils/contentTypeUtils";
+    determineContentType,
+} from "@/Components/ContentActions/components/Actions/shared/utils/contentTypeUtils";
 
 /**
  * Unified component for adding any content type to library

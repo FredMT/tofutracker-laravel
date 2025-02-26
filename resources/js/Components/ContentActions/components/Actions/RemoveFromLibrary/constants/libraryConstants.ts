@@ -1,4 +1,7 @@
-import { ContentType, RouteMap } from "../types/libraryTypes";
+import {
+    ContentType,
+    RouteMap,
+} from "@/Components/ContentActions/components/Actions/shared/types/libraryTypes";
 
 /**
  * Route names for removing different content types from library
