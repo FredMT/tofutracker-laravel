@@ -4,7 +4,7 @@ import { notifications } from "@mantine/notifications";
 import { Check, CircleAlertIcon, MinusCircle } from "lucide-react";
 import { Movie } from "@/types";
 
-function RemoveFromLibrary() {
+function RemoveMovieFromLibrary() {
     const { type, data } = usePage<{ type: "movie"; data: Movie }>().props;
     const stack = useModalsStack(["confirm-delete"]);
 
@@ -94,4 +94,4 @@ function RemoveFromLibrary() {
     );
 }
 
-export default RemoveFromLibrary;
+export default RemoveMovieFromLibrary;

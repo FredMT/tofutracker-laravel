@@ -4,7 +4,7 @@ import { notifications } from "@mantine/notifications";
 import { Check, CircleAlertIcon, PlusCircle } from "lucide-react";
 import { Movie } from "@/types";
 
-function AddToLibrary() {
+function AddMovieToLibrary() {
     const { type, data } = usePage<{ type: "movie"; data: Movie }>().props;
 
     const { post, processing } = useForm({
@@ -59,4 +59,4 @@ function AddToLibrary() {
     );
 }
 
-export default AddToLibrary;
+export default AddMovieToLibrary;
