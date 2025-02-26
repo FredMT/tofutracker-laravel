@@ -1,7 +1,18 @@
+import { router } from "@inertiajs/react";
 import axios from "axios";
 import Echo from "laravel-echo";
 import Pusher from "pusher-js";
 window.Pusher = Pusher;
+
+window.addEventListener("popstate", (event) => {
+    event.stopImmediatePropagation();
+
+    router.visit(window.location.href, {
+        preserveState: false,
+        preserveScroll: false,
+        replace: true,
+    });
+});
 
 window.Echo = new Echo({
     broadcaster: "reverb",
