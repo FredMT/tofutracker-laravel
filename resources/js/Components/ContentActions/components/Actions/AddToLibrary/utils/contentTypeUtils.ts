@@ -7,18 +7,19 @@ import { AnimeSeason } from "@/types/animeseason";
  * Determines the content type based on the page type
  */
 export function determineContentType(pageType: string): ContentType | null {
-    if (pageType === "movie") {
-        return "movie";
-    } else if (pageType === "tv") {
-        return "tv";
-    } else if (pageType === "tvseason") {
-        return "tv.season";
-    } else if (pageType === "animemovie") {
-        return "anime.movie";
-    } else if (pageType === "animetv") {
-        return "anime.tv";
-    } else if (pageType === "animeseason") {
-        return "anime.season";
+    switch (pageType) {
+        case "movie":
+            return "movie";
+        case "tv":
+            return "tv";
+        case "tvseason":
+            return "tv.season";
+        case "animemovie":
+            return "anime.movie";
+        case "animetv":
+            return "anime.tv";
+        case "animeseason":
+            return "anime.season";
     }
 
     return null;
