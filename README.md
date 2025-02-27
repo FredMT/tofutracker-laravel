@@ -1,4 +1,4 @@
-# TofuTracker.com
+# TofuTracker.com [![Laravel Forge Site Deployment Status](https://img.shields.io/endpoint?url=https%3A%2F%2Fforge.laravel.com%2Fsite-badges%2Fabc1c5a4-917e-43a6-aca6-5857b2ea29d1%3Fdate%3D1%26label%3D1%26commit%3D1&style=plastic)](https://forge.laravel.com/servers/873629/sites/2578047)
 
 TofuTracker is the ultimate platform for tracking and discovering **movies**, **TV shows**, and **anime**. It unifies data from [AniDB](https://anidb.net), [TMDb](https://www.themoviedb.org), and [TVDB](https://thetvdb.com) into one beautiful, minimalistic interface.
 
