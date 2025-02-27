@@ -8,7 +8,7 @@ import { CommentEditor } from "@/Components/Comments/CommentEditor";
 import { CommentThreadProps } from "@/Components/Comments/types";
 import { useComments } from "@/Components/Comments/hooks/useComments";
 import { useSearchParams } from "@/hooks/useSearchParams";
-import { useRef, useEffect } from "react";
+import { useEffect } from "react";
 import { useScrollIntoView } from "@mantine/hooks";
 import styles from "./styles/Comments.module.css";
 import { clsx } from "clsx";

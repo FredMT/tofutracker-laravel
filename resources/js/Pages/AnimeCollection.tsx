@@ -55,7 +55,7 @@ function AnimeCollectionPage({ collections }: AnimeCollectionPageProps) {
             <Space h={64} />
 
             <Container size="xl" py="md">
-                <Paper p="md" withBorder>
+                <Paper p="md">
                     <Title order={1} mb="xs">
                         Anime Collections
                     </Title>

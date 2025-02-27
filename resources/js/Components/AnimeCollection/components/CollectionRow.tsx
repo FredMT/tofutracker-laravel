@@ -76,11 +76,8 @@ export function CollectionRow({ expandedCollectionIds }: CollectionRowProps) {
             render: ({ id }: AnimeCollection) => (
                 <ActionButtons
                     visitUrl={`/anime/${id}`}
-                    onSuggestions={() =>
-                        console.log(`Suggestions for collection ${id}`)
-                    }
-                    onLock={() => console.log(`Lock collection ${id}`)}
-                    onEdit={() => console.log(`Edit collection ${id}`)}
+                    itemId={id}
+                    itemType="collection"
                 />
             ),
         },

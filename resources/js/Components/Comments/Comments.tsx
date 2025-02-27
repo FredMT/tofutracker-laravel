@@ -10,7 +10,6 @@ import { CommentsProps, Comment } from "@/Components/Comments/types";
 import { useSearchParams } from "@/hooks/useSearchParams";
 import { useCommentsQuery } from "@/Components/Comments/hooks/useCommentsQuery";
 import { ViewAllCommentsButton } from "@/Components/Comments/ViewAllCommentsButton";
-import styles from "./styles/Comments.module.css";
 
 export default function Comments() {
     const {

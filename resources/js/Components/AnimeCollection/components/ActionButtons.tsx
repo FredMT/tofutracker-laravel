@@ -1,6 +1,8 @@
 import { Group, ActionIcon, Tooltip } from "@mantine/core";
 import { ExternalLink, Lightbulb, Lock, Pencil } from "lucide-react";
 import { router } from "@inertiajs/react";
+import { usePage } from "@inertiajs/react";
+import { PageProps } from "@/types";
 
 interface ActionButtonsProps {
     /**
@@ -8,17 +10,13 @@ interface ActionButtonsProps {
      */
     visitUrl: string;
     /**
-     * Optional callback for the suggestions button
+     * The ID of the item for action handling
      */
-    onSuggestions?: () => void;
+    itemId: number;
     /**
-     * Optional callback for the lock button
+     * The type of item (collection, entry, related)
      */
-    onLock?: () => void;
-    /**
-     * Optional callback for the edit button
-     */
-    onEdit?: () => void;
+    itemType: "collection" | "entry" | "related";
 }
 
 /**
@@ -26,12 +24,26 @@ interface ActionButtonsProps {
  */
 export function ActionButtons({
     visitUrl,
-    onSuggestions,
-    onLock,
-    onEdit,
+    itemId,
+    itemType,
 }: ActionButtonsProps) {
+    const { permissions } = usePage<PageProps>().props;
+    const isSuperuser = permissions?.is_superuser || false;
+
     const handleVisit = () => {
         router.visit(visitUrl);
+    };
+
+    const handleSuggestions = () => {
+        console.log(`Suggestions for ${itemType} ${itemId}`);
+    };
+
+    const handleLock = () => {
+        console.log(`Lock ${itemType} ${itemId}`);
+    };
+
+    const handleEdit = () => {
+        console.log(`Edit ${itemType} ${itemId}`);
     };
 
     return (
@@ -51,34 +63,38 @@ export function ActionButtons({
                 <ActionIcon
                     variant="subtle"
                     color="yellow"
-                    onClick={onSuggestions}
+                    onClick={handleSuggestions}
                     aria-label="Suggestions"
                 >
                     <Lightbulb size={16} />
                 </ActionIcon>
             </Tooltip>
 
-            <Tooltip label="Lock">
-                <ActionIcon
-                    variant="subtle"
-                    color="gray"
-                    onClick={onLock}
-                    aria-label="Lock"
-                >
-                    <Lock size={16} />
-                </ActionIcon>
-            </Tooltip>
+            {isSuperuser && (
+                <>
+                    <Tooltip label="Lock">
+                        <ActionIcon
+                            variant="subtle"
+                            color="gray"
+                            onClick={handleLock}
+                            aria-label="Lock"
+                        >
+                            <Lock size={16} />
+                        </ActionIcon>
+                    </Tooltip>
 
-            <Tooltip label="Edit">
-                <ActionIcon
-                    variant="subtle"
-                    color="green"
-                    onClick={onEdit}
-                    aria-label="Edit"
-                >
-                    <Pencil size={16} />
-                </ActionIcon>
-            </Tooltip>
+                    <Tooltip label="Edit">
+                        <ActionIcon
+                            variant="subtle"
+                            color="green"
+                            onClick={handleEdit}
+                            aria-label="Edit"
+                        >
+                            <Pencil size={16} />
+                        </ActionIcon>
+                    </Tooltip>
+                </>
+            )}
         </Group>
     );
 }

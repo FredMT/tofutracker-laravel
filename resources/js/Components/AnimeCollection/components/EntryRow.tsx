@@ -41,11 +41,8 @@ export function EntryRow() {
             render: ({ anime_id, map_id }: AnimeCollectionEntry) => (
                 <ActionButtons
                     visitUrl={`/anime/${map_id}/season/${anime_id}`}
-                    onSuggestions={() =>
-                        console.log(`Suggestions for entry ${anime_id}`)
-                    }
-                    onLock={() => console.log(`Lock entry ${anime_id}`)}
-                    onEdit={() => console.log(`Edit entry ${anime_id}`)}
+                    itemId={anime_id}
+                    itemType="entry"
                 />
             ),
         },
