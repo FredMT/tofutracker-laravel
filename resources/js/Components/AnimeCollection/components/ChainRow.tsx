@@ -1,6 +1,6 @@
 import { Text } from "@mantine/core";
 import clsx from "clsx";
-import { ChevronRight, Timer } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { AnimeCollectionChain } from "../types/animeCollections";
 import classes from "../AnimeCollectionTable.module.css";
 
@@ -25,7 +25,6 @@ export function ChainRow({ expandedChainIds }: ChainRowProps) {
                                 expandedChainIds.includes(id),
                         })}
                     />
-                    <Timer className={classes.icon} />
                     <Text className={classes.chainName}>{name}</Text>
                 </div>
             ),

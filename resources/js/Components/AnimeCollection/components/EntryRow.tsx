@@ -1,7 +1,6 @@
 import { Box, Text } from "@mantine/core";
 import { AnimeCollectionEntry } from "../types/animeCollections";
 import { formatPosterUrl } from "../utils/animeUtils";
-import { AnimeMetaInfo } from "./AnimeMetaInfo";
 import classes from "../AnimeCollectionTable.module.css";
 
 /**
@@ -32,23 +31,6 @@ export function EntryRow() {
                         </Text>
                     </Text>
                 </Box>
-            ),
-        },
-        {
-            accessor: "metaInfo",
-            title: "Information",
-            render: ({
-                year,
-                rating,
-                episode_count,
-                runtime,
-            }: AnimeCollectionEntry) => (
-                <AnimeMetaInfo
-                    year={year}
-                    rating={rating}
-                    episode_count={episode_count}
-                    runtime={runtime}
-                />
             ),
         },
         {
