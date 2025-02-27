@@ -1,7 +1,14 @@
-import { Box, Text } from "@mantine/core";
-import { DataTable } from "mantine-datatable";
+import { Box, Text, Table } from "@mantine/core";
 import { AnimeRelatedEntry } from "../types/animeCollections";
 import { RelatedEntryRow } from "./RelatedEntryRow";
+
+// Define a column type to handle the width property
+interface TableColumn {
+    accessor: string;
+    title: string;
+    width?: number;
+    render?: (record: any) => React.ReactNode;
+}
 
 interface RelatedEntriesTableProps {
     entries: AnimeRelatedEntry[];
@@ -24,15 +31,44 @@ export function RelatedEntriesTable({
             <Text fw={700} mb="xs">
                 Related Entries
             </Text>
-            <DataTable
-                noHeader
+            <Table
                 withColumnBorders
+                withTableBorder
                 highlightOnHover
-                columns={columns}
-                records={entries}
-                // Add key to fix React warning
-                idAccessor="related_entry_id"
-            />
+                tabularNums
+            >
+                <Table.Thead>
+                    <Table.Tr>
+                        {columns.map((column) => (
+                            <Table.Th
+                                key={column.accessor}
+                                style={{
+                                    width: (column as TableColumn).width
+                                        ? `${(column as TableColumn).width}px`
+                                        : "auto",
+                                }}
+                            >
+                                {column.title}
+                            </Table.Th>
+                        ))}
+                    </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                    {entries.map((entry) => (
+                        <Table.Tr key={entry.related_entry_id}>
+                            {columns.map((column) => (
+                                <Table.Td
+                                    key={`${entry.related_entry_id}-${column.accessor}`}
+                                >
+                                    {column.render
+                                        ? column.render(entry)
+                                        : null}
+                                </Table.Td>
+                            ))}
+                        </Table.Tr>
+                    ))}
+                </Table.Tbody>
+            </Table>
         </Box>
     );
 }
