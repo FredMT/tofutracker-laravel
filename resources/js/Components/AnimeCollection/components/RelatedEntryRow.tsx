@@ -13,14 +13,23 @@ export function RelatedEntryRow() {
         {
             accessor: "title",
             title: "Anime",
-            render: ({ title, anidb_poster }: AnimeRelatedEntry) => (
+            render: ({
+                title,
+                anidb_poster,
+                related_entry_id,
+            }: AnimeRelatedEntry) => (
                 <Box ml={20} className={classes.titleCell}>
                     <img
                         src={formatPosterUrl(anidb_poster, false)}
                         alt={title}
                         className={classes.poster}
                     />
-                    <Text>{title}</Text>
+                    <Text>
+                        {title}
+                        <Text span c="dimmed">
+                            {` id: ${related_entry_id}`}
+                        </Text>
+                    </Text>
                 </Box>
             ),
         },

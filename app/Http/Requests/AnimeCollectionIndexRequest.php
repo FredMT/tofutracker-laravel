@@ -28,10 +28,11 @@ class AnimeCollectionIndexRequest extends FormRequest
         return [
             'page' => ['sometimes', 'integer', 'min:1'],
             'per_page' => ['sometimes', 'integer', Rule::in([10, 25, 50, 100])],
+            'search' => ['sometimes', 'nullable', 'string', 'max:100'],
             'sort' => [
                 'sometimes',
                 'string',
-                Rule::in(['id', 'collection_name', 'created_at', 'updated_at'])
+                Rule::in(['id', 'created_at', 'updated_at'])
             ],
             'direction' => ['sometimes', 'string', Rule::in(['asc', 'desc'])],
         ];
@@ -49,6 +50,7 @@ class AnimeCollectionIndexRequest extends FormRequest
         // Apply default values
         return [
             'per_page' => $validated['per_page'] ?? 25,
+            'search' => $validated['search'] ?? null,
             'sort' => $validated['sort'] ?? 'id',
             'direction' => $validated['direction'] ?? 'asc',
             'page' => $validated['page'] ?? 1,

@@ -2,6 +2,9 @@ import { create } from "zustand";
 import { router } from "@inertiajs/react";
 
 interface AnimeCollectionStore {
+    // Search state
+    search: string;
+
     // Sorting state
     sortField: string;
     sortDirection: "asc" | "desc";
@@ -10,6 +13,7 @@ interface AnimeCollectionStore {
     perPage: number;
 
     // Actions
+    setSearch: (search: string) => void;
     setSortField: (field: string) => void;
     setSortDirection: (direction: "asc" | "desc") => void;
     setPerPage: (perPage: number) => void;
@@ -22,7 +26,6 @@ interface AnimeCollectionStore {
 // Available sort fields
 export const SORT_FIELDS = [
     { value: "id", label: "ID" },
-    { value: "collection_name", label: "Collection Name" },
     { value: "created_at", label: "Date Added" },
     { value: "updated_at", label: "Last Updated" },
 ];
@@ -37,6 +40,7 @@ export const PER_PAGE_OPTIONS = [
 
 // Default values for the store
 const DEFAULT_VALUES = {
+    search: "",
     sortField: "id",
     sortDirection: "asc" as const,
     perPage: 25,
@@ -47,11 +51,13 @@ export const useAnimeCollectionStore = create<AnimeCollectionStore>(
         // Initialize with default values (URL parameters are handled separately on mount)
         return {
             // Default state values
+            search: DEFAULT_VALUES.search,
             sortField: DEFAULT_VALUES.sortField,
             sortDirection: DEFAULT_VALUES.sortDirection,
             perPage: DEFAULT_VALUES.perPage,
 
             // State setters
+            setSearch: (search) => set({ search }),
             setSortField: (sortField) => set({ sortField }),
             setSortDirection: (sortDirection) => set({ sortDirection }),
             setPerPage: (perPage) => set({ perPage }),
@@ -59,6 +65,7 @@ export const useAnimeCollectionStore = create<AnimeCollectionStore>(
             // Reset to defaults
             resetFilters: () =>
                 set({
+                    search: DEFAULT_VALUES.search,
                     sortField: DEFAULT_VALUES.sortField,
                     sortDirection: DEFAULT_VALUES.sortDirection,
                     perPage: DEFAULT_VALUES.perPage,
@@ -66,11 +73,12 @@ export const useAnimeCollectionStore = create<AnimeCollectionStore>(
 
             // Apply all filters and navigate
             applyFilters: (page = 1) => {
-                const { sortField, sortDirection, perPage } = get();
+                const { search, sortField, sortDirection, perPage } = get();
 
                 // Build query parameters
                 const queryParams: Record<string, any> = { page };
 
+                if (search) queryParams.search = search;
                 if (sortField !== DEFAULT_VALUES.sortField)
                     queryParams.sort = sortField;
                 if (sortDirection !== DEFAULT_VALUES.sortDirection)

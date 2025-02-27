@@ -18,7 +18,12 @@ export function CollectionRow({ expandedCollectionIds }: CollectionRowProps) {
         {
             accessor: "title",
             title: "Collection / Chain / Entry",
-            render: ({ id, title, tmdb_poster }: AnimeCollection) => (
+            render: ({
+                id,
+                title,
+                tmdb_poster,
+                most_common_tmdb_id,
+            }: AnimeCollection) => (
                 <div className={classes.titleCell}>
                     <ChevronRight
                         className={clsx(classes.icon, classes.expandIcon, {
@@ -33,7 +38,12 @@ export function CollectionRow({ expandedCollectionIds }: CollectionRowProps) {
                             className={classes.poster}
                         />
                     )}
-                    <Text fw={700}>{title || "Unnamed Collection"}</Text>
+                    <Text fw={700}>
+                        {title || "Unnamed Collection"}
+                        <Text span c="dimmed">
+                            {` id: ${id} - tmdb_id: ${most_common_tmdb_id}`}
+                        </Text>
+                    </Text>
                 </div>
             ),
         },
