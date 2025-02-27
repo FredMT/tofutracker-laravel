@@ -1,0 +1,89 @@
+import { create } from "zustand";
+import { router } from "@inertiajs/react";
+
+interface AnimeCollectionStore {
+    // Sorting state
+    sortField: string;
+    sortDirection: "asc" | "desc";
+
+    // Pagination state
+    perPage: number;
+
+    // Actions
+    setSortField: (field: string) => void;
+    setSortDirection: (direction: "asc" | "desc") => void;
+    setPerPage: (perPage: number) => void;
+    resetFilters: () => void;
+
+    // Navigation
+    applyFilters: (page?: number) => void;
+}
+
+// Available sort fields
+export const SORT_FIELDS = [
+    { value: "id", label: "ID" },
+    { value: "collection_name", label: "Collection Name" },
+    { value: "created_at", label: "Date Added" },
+    { value: "updated_at", label: "Last Updated" },
+];
+
+// Available items per page options
+export const PER_PAGE_OPTIONS = [
+    { value: 10, label: "10" },
+    { value: 25, label: "25" },
+    { value: 50, label: "50" },
+    { value: 100, label: "100" },
+];
+
+// Default values for the store
+const DEFAULT_VALUES = {
+    sortField: "id",
+    sortDirection: "asc" as const,
+    perPage: 25,
+};
+
+export const useAnimeCollectionStore = create<AnimeCollectionStore>(
+    (set, get) => {
+        // Initialize with default values (URL parameters are handled separately on mount)
+        return {
+            // Default state values
+            sortField: DEFAULT_VALUES.sortField,
+            sortDirection: DEFAULT_VALUES.sortDirection,
+            perPage: DEFAULT_VALUES.perPage,
+
+            // State setters
+            setSortField: (sortField) => set({ sortField }),
+            setSortDirection: (sortDirection) => set({ sortDirection }),
+            setPerPage: (perPage) => set({ perPage }),
+
+            // Reset to defaults
+            resetFilters: () =>
+                set({
+                    sortField: DEFAULT_VALUES.sortField,
+                    sortDirection: DEFAULT_VALUES.sortDirection,
+                    perPage: DEFAULT_VALUES.perPage,
+                }),
+
+            // Apply all filters and navigate
+            applyFilters: (page = 1) => {
+                const { sortField, sortDirection, perPage } = get();
+
+                // Build query parameters
+                const queryParams: Record<string, any> = { page };
+
+                if (sortField !== DEFAULT_VALUES.sortField)
+                    queryParams.sort = sortField;
+                if (sortDirection !== DEFAULT_VALUES.sortDirection)
+                    queryParams.direction = sortDirection;
+                if (perPage !== DEFAULT_VALUES.perPage)
+                    queryParams.per_page = perPage;
+
+                // Navigate with Inertia
+                router.get(route("anime-collections.index"), queryParams, {
+                    preserveState: true,
+                    preserveScroll: true,
+                });
+            },
+        };
+    }
+);

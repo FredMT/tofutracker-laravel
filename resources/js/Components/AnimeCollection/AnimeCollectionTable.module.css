@@ -1,0 +1,49 @@
+.icon {
+    width: 16px;
+    height: auto;
+    vertical-align: -1px;
+    margin-right: 8px;
+}
+
+.expandIcon {
+    transition: transform 0.2s;
+}
+
+.expandIconRotated {
+    transform: rotate(90deg);
+}
+
+.poster {
+    width: 30px;
+    height: 45px;
+    object-fit: cover;
+    margin-right: 8px;
+    border-radius: 2px;
+}
+
+.titleCell {
+    display: flex;
+    align-items: center;
+}
+
+.metaInfo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+}
+
+.metaItem {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.chainName {
+    font-weight: 600;
+}
+
+.relatedTitle {
+    font-weight: 500;
+    margin-left: 12px;
+}

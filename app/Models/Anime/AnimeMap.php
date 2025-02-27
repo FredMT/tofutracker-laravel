@@ -22,7 +22,7 @@ class AnimeMap extends Model
     public function poster(): Attribute
     {
         return Attribute::get(function () {
-            return $this->getTmdbModel()->poster;
+            return $this->getTmdbModel()?->poster;
         });
     }
 
@@ -38,9 +38,7 @@ class AnimeMap extends Model
                 return $this->collection_name;
             }
 
-            $model = $this->getTmdbModel();
-
-            return $model ? $model->title : null;
+            return $this->getTmdbModel()?->title;
         });
     }
 
@@ -110,7 +108,7 @@ class AnimeMap extends Model
     public function trailer(): Attribute
     {
         return Attribute::get(function () {
-            return $this->getTmdbModel()->trailer;
+            return $this->getTmdbModel()?->trailer;
         });
     }
 }

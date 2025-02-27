@@ -33,6 +33,7 @@ use App\Http\Controllers\UserTv\UserTvEpisodeController;
 use App\Http\Controllers\UserTv\UserTvSeasonController;
 use App\Http\Controllers\UserTv\UserTvShowController;
 use App\Http\Middleware\CheckAnimeMapping;
+use App\Http\Controllers\AnimeCollectionController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -204,4 +205,9 @@ Route::middleware(['auth', 'verified'])->prefix('notifications')->name('notifica
     Route::post('/read-all', [NotificationController::class, 'markAllNotificationsAsRead'])->name('readAll');
 });
 
-require __DIR__.'/auth.php';
+// Anime Collections API Routes
+Route::prefix('anime-collections')->name('anime-collections.')->group(function () {
+    Route::get('/', [AnimeCollectionController::class, 'index'])->name('index');
+});
+
+require __DIR__ . '/auth.php';
