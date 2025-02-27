@@ -29,19 +29,6 @@ export function ChainRow({ expandedChainIds }: ChainRowProps) {
                 </div>
             ),
         },
-        {
-            accessor: "importance_order",
-            title: "Priority",
-            width: 100,
-            textAlign: "center" as const,
-        },
-        {
-            accessor: "entries",
-            title: "Entries",
-            textAlign: "right" as const,
-            width: 100,
-            render: (chain: AnimeCollectionChain) => chain.entries.length,
-        },
     ];
 
     return { columns };

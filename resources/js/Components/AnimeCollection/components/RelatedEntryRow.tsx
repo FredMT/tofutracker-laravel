@@ -2,6 +2,7 @@ import { Box, Text } from "@mantine/core";
 import { AnimeRelatedEntry } from "../types/animeCollections";
 import { formatPosterUrl } from "../utils/animeUtils";
 import classes from "../AnimeCollectionTable.module.css";
+import { ActionButtons } from "./ActionButtons";
 
 /**
  * Component to define columns for related entries
@@ -30,6 +31,21 @@ export function RelatedEntryRow() {
                         </Text>
                     </Text>
                 </Box>
+            ),
+        },
+        {
+            accessor: "actions",
+            title: "Actions",
+            width: 150,
+            render: ({ anime_id, map_id }: AnimeRelatedEntry) => (
+                <ActionButtons
+                    visitUrl={`/anime/${map_id}/season/${anime_id}`}
+                    onSuggestions={() =>
+                        console.log(`Suggestions for related entry ${anime_id}`)
+                    }
+                    onLock={() => console.log(`Lock related entry ${anime_id}`)}
+                    onEdit={() => console.log(`Edit related entry ${anime_id}`)}
+                />
             ),
         },
     ];

@@ -2,6 +2,7 @@ import { Box, Text } from "@mantine/core";
 import { AnimeCollectionEntry } from "../types/animeCollections";
 import { formatPosterUrl } from "../utils/animeUtils";
 import classes from "../AnimeCollectionTable.module.css";
+import { ActionButtons } from "./ActionButtons";
 
 /**
  * Component to render a single anime entry row
@@ -34,10 +35,19 @@ export function EntryRow() {
             ),
         },
         {
-            accessor: "entry_sequence_order",
-            title: "Order",
-            width: 70,
-            textAlign: "center" as const,
+            accessor: "actions",
+            title: "Actions",
+            width: 150,
+            render: ({ anime_id, map_id }: AnimeCollectionEntry) => (
+                <ActionButtons
+                    visitUrl={`/anime/${map_id}/season/${anime_id}`}
+                    onSuggestions={() =>
+                        console.log(`Suggestions for entry ${anime_id}`)
+                    }
+                    onLock={() => console.log(`Lock entry ${anime_id}`)}
+                    onEdit={() => console.log(`Edit entry ${anime_id}`)}
+                />
+            ),
         },
     ];
 

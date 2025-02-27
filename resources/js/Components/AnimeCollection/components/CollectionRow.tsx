@@ -4,6 +4,7 @@ import { ChevronRight } from "lucide-react";
 import { AnimeCollection } from "../types/animeCollections";
 import { formatPosterUrl, getTotalEntriesCount } from "../utils/animeUtils";
 import classes from "../AnimeCollectionTable.module.css";
+import { ActionButtons } from "./ActionButtons";
 
 interface CollectionRowProps {
     expandedCollectionIds: number[];
@@ -41,7 +42,12 @@ export function CollectionRow({ expandedCollectionIds }: CollectionRowProps) {
                     <Text fw={700}>
                         {title || "Unnamed Collection"}
                         <Text span c="dimmed">
-                            {` id: ${id} - tmdb_id: ${most_common_tmdb_id}`}
+                            {` id: ${id} `}
+                            {most_common_tmdb_id && (
+                                <Text span c="dimmed">
+                                    {`- tmdb_id: ${most_common_tmdb_id}`}
+                                </Text>
+                            )}
                         </Text>
                     </Text>
                 </div>
@@ -62,6 +68,21 @@ export function CollectionRow({ expandedCollectionIds }: CollectionRowProps) {
             width: 100,
             render: (collection: AnimeCollection) =>
                 getTotalEntriesCount(collection),
+        },
+        {
+            accessor: "actions",
+            title: "Actions",
+            width: 150,
+            render: ({ id }: AnimeCollection) => (
+                <ActionButtons
+                    visitUrl={`/anime/${id}`}
+                    onSuggestions={() =>
+                        console.log(`Suggestions for collection ${id}`)
+                    }
+                    onLock={() => console.log(`Lock collection ${id}`)}
+                    onEdit={() => console.log(`Edit collection ${id}`)}
+                />
+            ),
         },
     ];
 

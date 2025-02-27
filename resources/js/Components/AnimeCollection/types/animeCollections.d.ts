@@ -1,5 +1,6 @@
 export interface AnimeCollectionEntry {
     entry_id: number;
+    map_id: number;
     entry_sequence_order: number;
     anime_id: number;
     title: string;
@@ -20,6 +21,7 @@ export interface AnimeCollectionChain {
 export interface AnimeRelatedEntry {
     related_entry_id: number;
     anime_id: number;
+    map_id: number;
     title: string;
     anidb_poster: string | null;
     year: number | null;

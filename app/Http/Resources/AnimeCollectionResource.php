@@ -32,6 +32,7 @@ class AnimeCollectionResource extends JsonResource
                     'entries' => $chain->entries->map(function ($entry) {
                         return [
                             'entry_id' => $entry->id,
+                            'map_id' => $this->id,
                             'entry_sequence_order' => $entry->sequence_order,
                             'anime_id' => $entry->anime->id,
                             'title' => $entry->anime->title,
@@ -48,6 +49,7 @@ class AnimeCollectionResource extends JsonResource
                 return [
                     'related_entry_id' => $entry->id,
                     'anime_id' => $entry->anime->id,
+                    'map_id' => $this->id,
                     'title' => $entry->anime->title,
                     'anidb_poster' => $entry->anime->poster,
                     'year' => $entry->anime->year,
