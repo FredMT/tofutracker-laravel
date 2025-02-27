@@ -41,7 +41,7 @@ export function ChainTable({
     };
 
     return (
-        <Table withColumnBorders withTableBorder highlightOnHover tabularNums>
+        <Table withColumnBorders withTableBorder tabularNums>
             <Table.Thead>
                 <Table.Tr>
                     {columns.map((column) => (
