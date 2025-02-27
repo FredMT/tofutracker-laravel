@@ -192,5 +192,10 @@ class AppServiceProvider extends ServiceProvider
                 ? Response::allow()
                 : Response::deny('This list is private.');
         });
+
+        // Define a direct gate for superuser check
+        Gate::define('superuser', function (User $user) {
+            return $user->id === 1;
+        });
     }
 }

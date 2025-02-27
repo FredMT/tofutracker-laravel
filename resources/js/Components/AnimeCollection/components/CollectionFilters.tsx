@@ -35,6 +35,7 @@ export function CollectionFilters() {
         setPerPage,
         resetFilters,
         applyFilters,
+        hasActiveFilters,
     } = useAnimeCollectionStore();
 
     // Local state for form values (to avoid immediate filtering on each keystroke)
@@ -76,10 +77,15 @@ export function CollectionFilters() {
 
     // Handle reset filters
     const handleReset = () => {
-        resetFilters();
-        setLocalSearch("");
-        applyFilters(1);
+        // Only reset if there are active filters
+        if (hasActiveFilters()) {
+            resetFilters();
+            setLocalSearch("");
+        }
     };
+
+    // Check if any filters are active
+    const filtersActive = hasActiveFilters();
 
     return (
         <Box mb="md">
@@ -142,8 +148,13 @@ export function CollectionFilters() {
                     />
                 </Box>
 
-                {/* Reset button */}
-                <Button variant="subtle" color="gray" onClick={handleReset}>
+                {/* Reset button - disabled when no filters are active */}
+                <Button
+                    variant="subtle"
+                    color="gray"
+                    onClick={handleReset}
+                    disabled={!filtersActive}
+                >
                     Reset Filters
                 </Button>
             </Flex>

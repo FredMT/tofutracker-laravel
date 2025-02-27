@@ -18,6 +18,7 @@ interface AnimeCollectionStore {
     setSortDirection: (direction: "asc" | "desc") => void;
     setPerPage: (perPage: number) => void;
     resetFilters: () => void;
+    hasActiveFilters: () => boolean;
 
     // Navigation
     applyFilters: (page?: number) => void;
@@ -62,14 +63,36 @@ export const useAnimeCollectionStore = create<AnimeCollectionStore>(
             setSortDirection: (sortDirection) => set({ sortDirection }),
             setPerPage: (perPage) => set({ perPage }),
 
+            // Check if any filters are active
+            hasActiveFilters: () => {
+                const { search, sortField, sortDirection, perPage } = get();
+                return (
+                    search !== DEFAULT_VALUES.search ||
+                    sortField !== DEFAULT_VALUES.sortField ||
+                    sortDirection !== DEFAULT_VALUES.sortDirection ||
+                    perPage !== DEFAULT_VALUES.perPage
+                );
+            },
+
             // Reset to defaults
-            resetFilters: () =>
+            resetFilters: () => {
                 set({
                     search: DEFAULT_VALUES.search,
                     sortField: DEFAULT_VALUES.sortField,
                     sortDirection: DEFAULT_VALUES.sortDirection,
                     perPage: DEFAULT_VALUES.perPage,
-                }),
+                });
+
+                // Reset URL to base path without any query parameters
+                router.get(
+                    route("anime-collections.index"),
+                    {},
+                    {
+                        preserveState: true,
+                        preserveScroll: true,
+                    }
+                );
+            },
 
             // Apply all filters and navigate
             applyFilters: (page = 1) => {

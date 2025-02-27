@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
 
@@ -36,13 +37,16 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
-            'ziggy' => fn () => [
+            'permissions' => [
+                'is_superuser' => Gate::check('superuser', Auth::user()),
+            ],
+            'ziggy' => fn() => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
             'flash' => [
-                'success' => fn () => $request->session()->get('success'),
-                'message' => fn () => $request->session()->get('message'),
+                'success' => fn() => $request->session()->get('success'),
+                'message' => fn() => $request->session()->get('message'),
             ],
             'notifications' => Auth::user()?->notifications->take(5)->map(function ($notification) {
                 return array_merge([

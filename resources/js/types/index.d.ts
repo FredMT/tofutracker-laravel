@@ -99,6 +99,9 @@ export type PageProps<
     flash?: FlashMessage;
     ziggy: Config & { location: string };
     user_library: ContentTypeToLibrary<T> | null;
+    permissions: {
+        is_superuser: boolean;
+    };
 } & (
         | { type: "movie" }
         | { type: "tv" }

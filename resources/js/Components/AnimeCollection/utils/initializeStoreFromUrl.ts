@@ -10,9 +10,14 @@ export function initializeStoreFromUrl(): void {
     const store = useAnimeCollectionStore.getState();
 
     // Update store values if URL parameters exist
+    const search = params.get("search");
     const sort = params.get("sort");
     const direction = params.get("direction") as "asc" | "desc" | null;
     const perPage = params.get("per_page");
+
+    if (search !== null && search !== store.search) {
+        store.setSearch(search);
+    }
 
     if (sort !== null && sort !== store.sortField) {
         store.setSortField(sort);
