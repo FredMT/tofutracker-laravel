@@ -6,6 +6,8 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use App\Models\Tmdb\Genre;
+use App\Models\Tmdb\TmdbContentGenre;
 
 class TvShow extends Model
 {
@@ -494,6 +496,16 @@ class TvShow extends Model
     public function comments(): MorphMany
     {
         return $this->morphMany(Comment::class, 'commentable');
+    }
+
+    public function genreRelations(): MorphMany
+    {
+        return $this->morphMany(TmdbContentGenre::class, 'content');
+    }
+
+    public function genreModels()
+    {
+        return $this->morphToMany(Genre::class, 'content', 'tmdb_content_genres', 'content_id', 'genre_id');
     }
 
     public function trailer(): Attribute

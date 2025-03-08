@@ -18,7 +18,7 @@ class ProcessAnimeXmlJob implements ShouldQueue
     /**
      * The number of times the job may be attempted.
      */
-    public $tries = 100;
+    public $tries = 3;
 
     /**
      * The number of seconds to wait before retrying the job.

@@ -4,12 +4,13 @@ namespace App\Jobs;
 
 use App\Actions\Trending\GetTrendingGenresAndWatchProvidersAction;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class UpdateTrendingGenresAndWatchProvidersJob implements ShouldQueue
+class UpdateTrendingGenresAndWatchProvidersJob implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
