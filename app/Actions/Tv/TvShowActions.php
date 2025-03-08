@@ -157,6 +157,7 @@ class TvShowActions
 
             $tvShow->update([
                 'data' => $showData,
+                'tvdb_id' => $showData['external_ids']['tvdb_id'] ?? null,
                 'etag' => $data['etag'],
             ]);
 

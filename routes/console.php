@@ -9,5 +9,5 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote')->hourly();
 
 Schedule::command('anime:fetch-updates --days=1')->dailyAt('08:00')->timezone('UTC');
-Schedule::command('trendingGenresAndWatchProviders:update')->dailyAt('08:00')->timezone('UTC');
+Schedule::command('trending:update')->dailyAt('08:00')->timezone('UTC');
 Schedule::command('tvmaze:fetch-schedule')->dailyAt('10:00')->timezone('UTC');

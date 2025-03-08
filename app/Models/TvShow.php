@@ -13,7 +13,7 @@ class TvShow extends Model
 {
     protected $table = 'tv_shows';
 
-    protected $fillable = ['id', 'data', 'etag'];
+    protected $fillable = ['id', 'data', 'etag', 'tvdb_id'];
 
     public $incrementing = false;
 

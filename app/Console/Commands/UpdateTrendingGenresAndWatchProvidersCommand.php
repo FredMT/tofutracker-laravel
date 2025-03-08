@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 
 class UpdateTrendingGenresAndWatchProvidersCommand extends Command
 {
-    protected $signature = 'trendingGenresAndWatchProviders:update';
+    protected $signature = 'trending:update';
 
     protected $description = 'Update trending genres and watch providers data';
 
