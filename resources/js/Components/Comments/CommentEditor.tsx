@@ -30,6 +30,7 @@ export function CommentEditor({
     const [error, setError] = useState<string | null>(null);
 
     const editor = useEditor({
+        immediatelyRender: false,
         extensions: [StarterKit, Underline, Link, Superscript, SubScript],
         content: initialContent,
         onUpdate: ({ editor }) => {

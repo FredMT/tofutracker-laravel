@@ -14,18 +14,22 @@ import {
     Text,
     Title,
 } from "@mantine/core";
-import { useViewportSize } from "@mantine/hooks";
+import { useMounted, useViewportSize } from "@mantine/hooks";
 import Seasons from "@/Components/Content/TV/Seasons/Seasons";
 import { AnimeContentCredits } from "@/Components/Content/Shared/Anime/AnimeContentCredits";
 import { Anime } from "@/types/anime";
 import { AnimeContentSummary } from "@/Components/Content/Shared/Regular/AnimeContentSummary";
 import AnimePosterImage from "@/Components/Content/Shared/Anime/AnimePosterImage";
-import Comments from "@/Components/Comments/Comments";
 import Trailer from "@/Components/Content/TV/Trailer";
+import { Suspense, lazy } from "react";
+
+const Comments = lazy(() => import("@/Components/Comments/Comments"));
 
 function AnimeContent() {
     const { width } = useViewportSize();
     const { data } = usePage<{ data: Anime }>().props;
+    const mounted = useMounted();
+
     return (
         <>
             <Head title={data.collection_name} />
@@ -81,7 +85,15 @@ function AnimeContent() {
                                     containerWidth={width * 0.95}
                                 />
                                 <Divider my={16} />
-                                <Comments />
+                                {mounted && (
+                                    <Suspense
+                                        fallback={
+                                            <div>Loading comments...</div>
+                                        }
+                                    >
+                                        <Comments />
+                                    </Suspense>
+                                )}
                             </Box>
                         </Stack>
                     }
@@ -121,7 +133,13 @@ function AnimeContent() {
                                 containerWidth={width * 0.67}
                             />
                             <Divider my={16} />
-                            <Comments />
+                            {mounted && (
+                                <Suspense
+                                    fallback={<div>Loading comments...</div>}
+                                >
+                                    <Comments />
+                                </Suspense>
+                            )}
                         </Box>
                     }
                 />

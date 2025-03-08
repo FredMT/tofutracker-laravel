@@ -1,6 +1,7 @@
 import { useCommentStore } from "@/Components/Comments/store/commentStore";
 import { usePage } from "@inertiajs/react";
 import { Stack } from "@mantine/core";
+import { useMounted } from "@mantine/hooks";
 import { useEffect, useRef, useState } from "react";
 import CommentThread from "@/Components/Comments/CommentThread";
 import { EmptyState } from "@/Components/Comments/EmptyState";
@@ -31,8 +32,8 @@ export default function Comments() {
     const [isViewingThread, setIsViewingThread] = useState(
         Boolean(parentId || showCommentId)
     );
+    const mounted = useMounted();
 
-    // Get content ID based on content type
     const getContentId = () => {
         switch (type) {
             case "animemovie":
@@ -46,7 +47,6 @@ export default function Comments() {
 
     const contentId = getContentId() || "";
 
-    // Use React Query to fetch comments
     const { commentsQuery, fetchAllComments } = useCommentsQuery(
         type,
         contentId,
@@ -54,10 +54,8 @@ export default function Comments() {
         showCommentId
     );
 
-    // Handle loading state
     const isLoading = commentsQuery.isLoading;
 
-    // Handle view all comments click
     const handleViewAllComments = async () => {
         try {
             const allCommentsData = await fetchAllComments();
@@ -65,11 +63,12 @@ export default function Comments() {
                 setInitialComments(allCommentsData.comments);
                 setIsViewingThread(false);
 
-                // Clear URL parameters without page reload
-                const url = new URL(window.location.href);
-                url.searchParams.delete("parentId");
-                url.searchParams.delete("showCommentId");
-                window.history.pushState({}, "", url.toString());
+                if (mounted) {
+                    const url = new URL(window.location.href);
+                    url.searchParams.delete("parentId");
+                    url.searchParams.delete("showCommentId");
+                    window.history.pushState({}, "", url.toString());
+                }
             }
         } catch (error) {
             console.error("Failed to fetch all comments:", error);
