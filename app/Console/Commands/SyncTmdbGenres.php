@@ -2,15 +2,19 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\SyncGenresJob;
 use App\Models\Movie;
 use App\Models\Tmdb\Genre;
 use App\Models\Tmdb\TmdbContentGenre;
 use App\Models\TvShow;
 use Illuminate\Console\Command;
+use Illuminate\Support\Collection;
 
 class SyncTmdbGenres extends Command
 {
-    protected $signature = 'app:sync-tmdb-genres';
+    protected $signature = 'app:sync-tmdb-genres
+                            {type? : Type of content to sync (movies, tvshows, or all)}
+                            {--count=1000 : Number of records to process or "all" for all records}';
 
     protected $description = 'Synchronize genres from existing Movie and TvShow data to the genres table';
 
@@ -18,68 +22,53 @@ class SyncTmdbGenres extends Command
     {
         $this->info('Starting genre synchronization...');
 
-        $this->info('Processing movies...');
-        $movieCount = 0;
-        $this->syncMovieGenres($movieCount);
-        $this->info("Processed $movieCount movies.");
+        $type = $this->argument('type') ?: 'all';
+        $count = $this->option('count');
 
-        $this->info('Processing TV shows...');
-        $tvShowCount = 0;
-        $this->syncTvShowGenres($tvShowCount);
-        $this->info("Processed $tvShowCount TV shows.");
+        if ($count === 'all') {
+            $count = null;
+        } else {
+            $count = (int) $count;
+        }
 
-        $this->info('Genre synchronization completed successfully!');
+        if ($type === 'all' || $type === 'movies') {
+            $this->info('Queuing movie genre sync jobs...');
+            $this->queueMovieGenreSync($count);
+        }
+
+        if ($type === 'all' || $type === 'tvshows') {
+            $this->info('Queuing TV show genre sync jobs...');
+            $this->queueTvShowGenreSync($count);
+        }
+
+        $this->info('Genre synchronization jobs have been queued successfully!');
     }
 
-    private function syncMovieGenres(int &$count): void
+    private function queueMovieGenreSync(?int $limit): void
     {
-        Movie::take(1000)->chunk(100, function ($movies) use (&$count) {
-            foreach ($movies as $movie) {
-                $genres = $movie->genres;
+        $query = Movie::query();
 
-                if (!empty($genres)) {
-                    foreach ($genres as $genreData) {
-                        $genre = Genre::firstOrCreate(
-                            ['id' => $genreData['id']],
-                            ['name' => $genreData['name']]
-                        );
+        if ($limit) {
+            $query->take($limit);
+        }
 
-                        TmdbContentGenre::firstOrCreate([
-                            'genre_id' => $genre->id,
-                            'content_type' => Movie::class,
-                            'content_id' => $movie->id,
-                        ]);
-                    }
-                }
-
-                $count++;
-            }
+        $query->chunkById(100, function ($movies) {
+            dispatch(new SyncGenresJob($movies, Movie::class))
+                ->onQueue('syncgenres');
         });
     }
 
-    private function syncTvShowGenres(int &$count): void
+    private function queueTvShowGenreSync(?int $limit): void
     {
-        TvShow::take(1000)->chunk(100, function ($tvShows) use (&$count) {
-            foreach ($tvShows as $tvShow) {
-                $genres = $tvShow->genres;
+        $query = TvShow::query();
 
-                if (!empty($genres)) {
-                    foreach ($genres as $genreData) {
-                        $genre = Genre::firstOrCreate(
-                            ['id' => $genreData['id']],
-                            ['name' => $genreData['name']]
-                        );
+        if ($limit) {
+            $query->take($limit);
+        }
 
-                        TmdbContentGenre::firstOrCreate([
-                            'genre_id' => $genre->id,
-                            'content_type' => TvShow::class,
-                            'content_id' => $tvShow->id,
-                        ]);
-                    }
-                }
-
-                $count++;
-            }
+        $query->chunkById(100, function ($tvShows) {
+            dispatch(new SyncGenresJob($tvShows, TvShow::class))
+                ->onQueue('syncgenres');
         });
     }
 }
