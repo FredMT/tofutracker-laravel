@@ -45,4 +45,7 @@ return [
         'local_port' => env('ANIDB_LOCAL_PORT', 4321),
         'client_name' => env('ANIDB_CLIENT_NAME', 'sprung'),
     ],
+    'animeschedule' => [
+        'bearer' => env('ANIME_SCHEDULE_BEARER'),
+    ],
 ];
