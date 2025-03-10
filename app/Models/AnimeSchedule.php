@@ -60,6 +60,11 @@ class AnimeSchedule extends Model
         return $query->where('episode_date', '>', now());
     }
 
+    public function scopeNext7DaysEpisodes(Builder $query): Builder
+    {
+        return $query->whereBetween('episode_date', [now(), now()->addDays(7)]);
+    }
+
     // Scope to only include past episodes
     public function scopePastEpisodes(Builder $query): Builder
     {
