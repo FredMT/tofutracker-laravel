@@ -50,6 +50,8 @@ class ProcessAnimeXmlJob implements ShouldQueue
                     // Process the XML
                     $service->processXmlContent($xmlContent);
 
+                    UpdateAnidbTvdbEpisodeData::dispatch($this->animeId);
+
                     logger()->info('Successfully processed anime', ['anime_id' => $this->animeId]);
                 } catch (\Exception $e) {
                     logger()->error('Failed to process anime', ['anime_id' => $this->animeId]);
