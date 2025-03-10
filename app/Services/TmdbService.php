@@ -277,7 +277,7 @@ class TmdbService
 
     public function getFirst500TrendingTvShowsSortedByPopularity(): array
     {
-        return Cache::flexible('trending_tv_shows', [60 * 60 * 24, 60 * 60 * 25], function () {
+        return Cache::flexible('trending_tv_shows', [60 * 60 * 24, 60 * 60 * 48], function () {
             $page = 1;
             $trendingTvShows = [];
 

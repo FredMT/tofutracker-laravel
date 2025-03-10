@@ -37,7 +37,7 @@ class GetTrendingGenresAndWatchProvidersAction
 
     public function execute(): array
     {
-        return Cache::flexible('trending_organized', [60 * 60 * 23, 60 * 60 * 24], function () {
+        return Cache::flexible('trending_organized', [60 * 60 * 24, 60 * 60 * 48], function () {
             UpdateTrendingGenresAndWatchProvidersJob::dispatch();
 
             return Cache::get('trending_organized');
