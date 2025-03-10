@@ -20,8 +20,6 @@ class FetchAnimeSchedules extends Command
 
         $this->deletePastEpisodes();
 
-        $this->info('Queuing jobs to fetch anime schedules for the next 4 weeks...');
-
         $jobs = [];
         $currentDate = now();
 
@@ -50,8 +48,6 @@ class FetchAnimeSchedules extends Command
         $firstJob->chain($jobs);
         dispatch($firstJob);
 
-        $this->info('Job chain queued successfully!');
-
         return Command::SUCCESS;
     }
 
@@ -66,10 +62,8 @@ class FetchAnimeSchedules extends Command
         // Delete past episodes
         if ($count > 0) {
             AnimeSchedule::pastEpisodes()->delete();
-            $this->info("Deleted {$count} past episodes from the schedule.");
             Log::channel('animeschedulelog')->info("Deleted {$count} past episodes from the anime schedule.");
         } else {
-            $this->info('No past episodes to delete.');
             Log::channel('animeschedulelog')->info('No past episodes to delete.');
         }
     }

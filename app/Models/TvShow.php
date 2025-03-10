@@ -50,6 +50,13 @@ class TvShow extends Model
         });
     }
 
+    public function backdrop(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->data['backdrop_path'];
+        });
+    }
+
     public function voteAverage(): Attribute
     {
         return Attribute::get(function () {

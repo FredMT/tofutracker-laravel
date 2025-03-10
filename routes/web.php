@@ -3,6 +3,7 @@
 use App\Actions\Trending\GetTrendingAction;
 use App\Actions\Trending\GetTrendingGenresAndWatchProvidersAction;
 use App\Http\Controllers\Activity\ToggleActivityLikeController;
+use App\Http\Controllers\AnimeCollectionController;
 use App\Http\Controllers\AnimeController;
 use App\Http\Controllers\AnimeSeasonController;
 use App\Http\Controllers\Comment\CommentController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\List\ListUpdateOrderController;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\Search\QuickSearchController;
 use App\Http\Controllers\Search\SearchController;
 use App\Http\Controllers\TvController;
@@ -33,7 +35,6 @@ use App\Http\Controllers\UserTv\UserTvEpisodeController;
 use App\Http\Controllers\UserTv\UserTvSeasonController;
 use App\Http\Controllers\UserTv\UserTvShowController;
 use App\Http\Middleware\CheckAnimeMapping;
-use App\Http\Controllers\AnimeCollectionController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -210,4 +211,8 @@ Route::prefix('anime-collections')->name('anime-collections.')->group(function (
     Route::get('/', [AnimeCollectionController::class, 'index'])->name('index');
 });
 
-require __DIR__ . '/auth.php';
+Route::prefix('schedule')->name('schedule.')->group(function () {
+    Route::get('/', [ScheduleController::class, 'index'])->name('index');
+});
+
+require __DIR__.'/auth.php';

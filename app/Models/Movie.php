@@ -27,6 +27,13 @@ class Movie extends Model
         });
     }
 
+    public function backdrop(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->data['backdrop_path'];
+        });
+    }
+
     public function releaseDate(): Attribute
     {
         return Attribute::get(function () {
