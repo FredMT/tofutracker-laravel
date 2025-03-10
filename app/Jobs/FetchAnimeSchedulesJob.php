@@ -12,6 +12,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class FetchAnimeSchedulesJob implements ShouldQueue
 {
@@ -40,22 +41,22 @@ class FetchAnimeSchedulesJob implements ShouldQueue
         $year = $this->year ?? now()->year;
         $week = $this->week ?? now()->weekOfYear();
 
-        logger()->info("Starting to fetch anime schedules for year {$year}, week {$week}");
+        Log::channel('animeschedulelog')->info("Starting to fetch anime schedules for year {$year}, week {$week}");
 
         try {
             $scheduledAnime = $animeScheduleService->getScheduledAnimeWithAnidbIds($year, $week);
 
             if ($scheduledAnime->isEmpty()) {
-                logger()->info("No anime schedules found for year {$year}, week {$week}");
+                Log::channel('animeschedulelog')->info("No anime schedules found for year {$year}, week {$week}");
 
                 return;
             }
 
             $this->storeSchedules($scheduledAnime);
 
-            logger()->info('Successfully fetched and stored '.$scheduledAnime->count()." anime schedules for year {$year}, week {$week}");
+            Log::channel('animeschedulelog')->info('Successfully fetched and stored '.$scheduledAnime->count()." anime schedules for year {$year}, week {$week}");
         } catch (\Exception $e) {
-            logger()->error("Error fetching anime schedules for year {$year}, week {$week}: ".$e->getMessage());
+            Log::channel('animeschedulelog')->error("Error fetching anime schedules for year {$year}, week {$week}: ".$e->getMessage());
             throw $e;
         }
     }
@@ -73,7 +74,7 @@ class FetchAnimeSchedulesJob implements ShouldQueue
 
             // Filter out episodes with no date or past dates
             if (! isset($anime['episode_date']) || empty($anime['episode_date'])) {
-                logger()->info('Skipping anime without episode date: '.($anime['title'] ?? 'Unknown'));
+                Log::channel('animeschedulelog')->info('Skipping anime without episode date: '.($anime['title'] ?? 'Unknown'));
 
                 return false;
             }
@@ -84,7 +85,7 @@ class FetchAnimeSchedulesJob implements ShouldQueue
                     return false;
                 }
             } catch (\Exception $e) {
-                logger()->warning('Invalid episode date format for '.($anime['title'] ?? 'Unknown').': '.$anime['episode_date']);
+                Log::channel('animeschedulelog')->warning('Invalid episode date format for '.($anime['title'] ?? 'Unknown').': '.$anime['episode_date']);
 
                 return false;
             }
@@ -93,7 +94,7 @@ class FetchAnimeSchedulesJob implements ShouldQueue
         });
 
         if ($validAnime->isEmpty()) {
-            logger()->info('No valid future anime episodes found');
+            Log::channel('animeschedulelog')->info('No valid future anime episodes found');
 
             return;
         }
@@ -142,9 +143,9 @@ class FetchAnimeSchedulesJob implements ShouldQueue
                 }
 
                 $processed += count($chunk);
-                logger()->info("Processed {$processed}/{$total} anime schedules");
+                Log::channel('animeschedulelog')->info("Processed {$processed}/{$total} anime schedules");
             } catch (QueryException $e) {
-                logger()->error('Error processing anime schedule batch: '.$e->getMessage());
+                Log::channel('animeschedulelog')->error('Error processing anime schedule batch: '.$e->getMessage());
             }
         }
     }

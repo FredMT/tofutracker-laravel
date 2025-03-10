@@ -55,6 +55,11 @@ return [
         'larabug' => [
             'driver' => 'larabug',
         ],
+        'animeschedulelog' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/animeschedule.log'),
+        ],
+
         'stack' => [
             'driver' => 'stack',
             'channels' => explode(',', env('LOG_STACK', 'single')),

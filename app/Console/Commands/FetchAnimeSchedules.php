@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Jobs\FetchAnimeSchedulesJob;
 use App\Models\AnimeSchedule;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class FetchAnimeSchedules extends Command
 {
@@ -66,10 +67,10 @@ class FetchAnimeSchedules extends Command
         if ($count > 0) {
             AnimeSchedule::pastEpisodes()->delete();
             $this->info("Deleted {$count} past episodes from the schedule.");
-            logger()->info("Deleted {$count} past episodes from the anime schedule.");
+            Log::channel('animeschedulelog')->info("Deleted {$count} past episodes from the anime schedule.");
         } else {
             $this->info('No past episodes to delete.');
-            logger()->info('No past episodes to delete.');
+            Log::channel('animeschedulelog')->info('No past episodes to delete.');
         }
     }
 }
