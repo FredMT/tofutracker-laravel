@@ -37,6 +37,7 @@ class AnidbAnime extends Model
         'rating',
         'rating_count',
         'picture',
+        'map_id'
     ];
 
     protected $casts = [
