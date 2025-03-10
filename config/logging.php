@@ -61,7 +61,7 @@ return [
         ],
         'trendinglog' => [
             'driver' => 'single',
-            'path' => storage_path('logs/trendinglog.log'),
+            'path' => storage_path('logs/trending.log'),
         ],
         'stack' => [
             'driver' => 'stack',
