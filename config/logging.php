@@ -59,7 +59,10 @@ return [
             'driver' => 'single',
             'path' => storage_path('logs/animeschedule.log'),
         ],
-
+        'trendinglog' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/trendinglog.log'),
+        ],
         'stack' => [
             'driver' => 'stack',
             'channels' => explode(',', env('LOG_STACK', 'single')),

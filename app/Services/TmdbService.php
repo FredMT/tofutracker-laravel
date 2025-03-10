@@ -6,6 +6,7 @@ use App\Models\Anime\AnimeMappingExternalId;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class TmdbService
 {
@@ -33,7 +34,7 @@ class TmdbService
                 return [
                     'title' => $movieData['title'],
                     'poster_path' => $movieData['poster_path'],
-                    'genres' => collect($movieData['genres'])->map(fn($genre) => [
+                    'genres' => collect($movieData['genres'])->map(fn ($genre) => [
                         'id' => $genre['id'],
                         'name' => $genre['name'],
                     ]),
@@ -41,7 +42,7 @@ class TmdbService
                 ];
             });
         } catch (\Exception $e) {
-            logger()->error('TMDB API error: ' . $e->getMessage());
+            logger()->error('TMDB API error: '.$e->getMessage());
             throw $e;
         }
     }
@@ -57,7 +58,7 @@ class TmdbService
                 return [
                     'title' => $tvData['name'],
                     'poster_path' => $tvData['poster_path'],
-                    'genres' => collect($tvData['genres'])->map(fn($genre) => [
+                    'genres' => collect($tvData['genres'])->map(fn ($genre) => [
                         'id' => $genre['id'],
                         'name' => $genre['name'],
                     ]),
@@ -65,7 +66,7 @@ class TmdbService
                 ];
             });
         } catch (\Exception $e) {
-            logger()->error('TMDB API error: ' . $e->getMessage());
+            logger()->error('TMDB API error: '.$e->getMessage());
             throw $e;
         }
     }
@@ -84,7 +85,7 @@ class TmdbService
                 'etag' => $response->header('etag'),
             ];
         } catch (\Exception $e) {
-            logger()->error('TMDB API error: ' . $e->getMessage());
+            logger()->error('TMDB API error: '.$e->getMessage());
             throw $e;
         }
     }
@@ -118,7 +119,7 @@ class TmdbService
                 'etag' => $response->header('etag'),
             ];
         } catch (\Exception $e) {
-            logger()->error('TMDB API error: ' . $e->getMessage());
+            logger()->error('TMDB API error: '.$e->getMessage());
             throw $e;
         }
     }
@@ -137,7 +138,7 @@ class TmdbService
                 'etag' => $response->header('etag'),
             ];
         } catch (\Exception $e) {
-            logger()->error('TMDB API error: ' . $e->getMessage());
+            logger()->error('TMDB API error: '.$e->getMessage());
             throw $e;
         }
     }
@@ -196,7 +197,7 @@ class TmdbService
                 'etag' => $response->header('etag'),
             ];
         } catch (\Exception $e) {
-            logger()->error('TMDB API error: ' . $e->getMessage());
+            logger()->error('TMDB API error: '.$e->getMessage());
             throw $e;
         }
     }
@@ -214,7 +215,7 @@ class TmdbService
                 'etag' => $response->header('etag'),
             ];
         } catch (\Exception $e) {
-            logger()->error('TMDB API error: ' . $e->getMessage());
+            logger()->error('TMDB API error: '.$e->getMessage());
             throw $e;
         }
     }
@@ -249,6 +250,7 @@ class TmdbService
     public function getTrendingAllPaginated(int $page = 1): array
     {
         try {
+            Log::channel('trendinglog')->info("Fetching trending page {$page}");
             $response = $this->client->get('/trending/all/week', [
                 'language' => 'en-US',
                 'page' => $page,
@@ -262,15 +264,45 @@ class TmdbService
 
             // Filter out items with media_type "person"
             $data['results'] = collect($data['results'])
-                ->filter(fn($item) => $item['media_type'] !== 'person')
+                ->filter(fn ($item) => $item['media_type'] !== 'person')
                 ->values()
                 ->all();
 
             return $data;
         } catch (\Exception $e) {
-            logger()->error('TMDB Trending API error: ' . $e->getMessage());
+            logger()->error('TMDB Trending API error: '.$e->getMessage());
             throw $e;
         }
+    }
+
+    public function getFirst500TrendingTvShowsSortedByPopularity(): array
+    {
+        return Cache::flexible('trending_tv_shows', [60 * 60 * 24, 60 * 60 * 25], function () {
+            $page = 1;
+            $trendingTvShows = [];
+
+            while (count($trendingTvShows) < 500) {
+                $response = $this->client->get('/trending/tv/day', [
+                    'language' => 'en-US',
+                    'page' => $page,
+                ]);
+
+                if (! $response->successful()) {
+                    throw new \Exception('TMDB trending request failed');
+                }
+
+                $data = $response->json();
+
+                $trendingTvShows = array_merge($trendingTvShows, $data['results'] ?? []);
+
+                $page++;
+            }
+
+            return collect($trendingTvShows)
+                ->sortByDesc('popularity')
+                ->values()
+                ->all();
+        });
     }
 
     public function getRandomTrendingBackdropImage(): ?string
@@ -323,7 +355,7 @@ class TmdbService
                 'logo_path' => $logo['file_path'] ?? null,
             ];
         } catch (\Exception $e) {
-            logger()->error("Error getting TMDB ID for AniDB ID {$anidbId}: " . $e->getMessage());
+            logger()->error("Error getting TMDB ID for AniDB ID {$anidbId}: ".$e->getMessage());
 
             return null;
         }
@@ -345,7 +377,7 @@ class TmdbService
 
             return $response->json();
         } catch (\Exception $e) {
-            logger()->error('TMDB Search API error: ' . $e->getMessage());
+            logger()->error('TMDB Search API error: '.$e->getMessage());
             throw $e;
         }
     }
@@ -372,7 +404,7 @@ class TmdbService
 
             return $response->json();
         } catch (\Exception $e) {
-            logger()->error("TMDB {$type} Changes API error: " . $e->getMessage(), [
+            logger()->error("TMDB {$type} Changes API error: ".$e->getMessage(), [
                 'type' => $type,
                 'page' => $page,
                 'start_date' => $yesterday,
@@ -392,7 +424,8 @@ class TmdbService
 
             return $response->json();
         } catch (\Exception $e) {
-            logger()->error("TMDB Credits API error: " . $e->getMessage());
+            logger()->error('TMDB Credits API error: '.$e->getMessage());
+
             return null;
         }
     }
