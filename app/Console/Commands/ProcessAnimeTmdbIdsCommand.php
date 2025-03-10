@@ -16,10 +16,8 @@ class ProcessAnimeTmdbIdsCommand extends Command
     {
         $this->info('Starting to process anime TMDB IDs...');
 
-        $totalMaps = AnimeMap::count();
-        $this->info("Found {$totalMaps} anime maps to process");
-
         AnimeMap::select('id')
+            ->whereNull('most_common_tmdb_id')
             ->chunkById($this->option('chunk'), function ($maps) {
                 foreach ($maps as $map) {
                     ProcessAnimeTmdbId::dispatch($map->id);
