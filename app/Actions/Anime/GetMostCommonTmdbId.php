@@ -32,6 +32,11 @@ class GetMostCommonTmdbId
                     Arr::flatten($animeMap->data['prequel_sequel_chains'])
                 );
 
+                // Update map_id for AnidbAnime records where it's null
+                AnidbAnime::whereIn('id', $allIds)
+                    ->whereNull('map_id')
+                    ->update(['map_id' => $mapId]);
+
                 $types = AnidbAnime::whereIn('id', $allIds)->pluck('type')->toArray();
                 $isMovie = collect($types)->every(fn ($type) => $type === 'Movie');
                 $type = $isMovie ? 'movie' : 'tv';
