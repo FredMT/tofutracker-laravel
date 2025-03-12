@@ -110,6 +110,7 @@ class FetchAnimeSchedulesJob implements ShouldQueue
                     'episode_date' => $anime['episode_date'] ?? null,
                     'year' => $anime['year'],
                     'week' => $anime['week'],
+                    'episode_number' => $anime['episode_number'] ?? null,
                 ];
             }
 
@@ -138,6 +139,7 @@ class FetchAnimeSchedulesJob implements ShouldQueue
                         [
                             'title' => $record['title'],
                             'episode_date' => $record['episode_date'],
+                            'episode_number' => $record['episode_number'],
                         ]
                     );
                 }

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use App\Models\Tmdb\Genre;
 use App\Models\Tmdb\TmdbContentGenre;
+use App\Models\TmdbSchedule;
 
 class TvShow extends Model
 {
@@ -538,5 +539,15 @@ class TvShow extends Model
                 'name' => $trailer['name'],
             ];
         });
+    }
+
+    /**
+     * Get the schedules for this TV show.
+     */
+    public function schedules()
+    {
+        return TmdbSchedule::where('tmdb_type', 'tv')
+                          ->where('tmdb_id', $this->id)
+                          ->get();
     }
 }

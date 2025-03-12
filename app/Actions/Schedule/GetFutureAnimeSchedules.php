@@ -25,7 +25,7 @@ class GetFutureAnimeSchedules
 
         list($tvShows, $movies) = $this->getTmdbModels($anidbToTmdbMap);
 
-        return $this->transformScheduleData($schedules, $anidbToTmdbMap, $animeMaps, $tvShows, $movies);
+        return $this->transformScheduleData($schedules, $anidbToTmdbMap, $animeMaps, $tvShows, $movies, $anidbAnimes);
     }
 
      // Get anime schedules for the next 7 days
@@ -114,9 +114,10 @@ class GetFutureAnimeSchedules
         Collection $anidbToTmdbMap,
         EloquentCollection $animeMaps,
         EloquentCollection $tvShows,
-        EloquentCollection $movies
+        EloquentCollection $movies,
+        EloquentCollection $anidbAnimes
     ): Collection {
-        return $schedules->map(function (AnimeSchedule $schedule) use ($anidbToTmdbMap, $animeMaps, $tvShows, $movies) {
+        return $schedules->map(function (AnimeSchedule $schedule) use ($anidbToTmdbMap, $animeMaps, $tvShows, $movies, $anidbAnimes) {
             $anidbId = $schedule->anidb_id;
 
             $title = $schedule->title;
@@ -135,7 +136,8 @@ class GetFutureAnimeSchedules
                     $mapping,
                     $animeMaps,
                     $tvShows,
-                    $movies
+                    $movies,
+                    $anidbAnimes->get($anidbId)
                 );
             }
 
@@ -143,14 +145,15 @@ class GetFutureAnimeSchedules
                 'id' => $schedule->id,
                 'title' => $title,
                 'episode_date' => $schedule->episode_date,
+                'episode_number' => $schedule->episode_number,
                 'year' => $schedule->year,
                 'week' => $schedule->week,
                 'anidb_id' => $anidbId,
-                'route' => $schedule->route,
                 'anime_map' => $animeMapData,
                 'backdrop' => $mediaAssets['backdrop'],
                 'logo' => $mediaAssets['logo'],
-                'poster' => $mediaAssets['poster']
+                'poster' => $mediaAssets['poster'],
+                'link' => $animeMapData && isset($animeMapData['id']) ? '/anime/' . $animeMapData['id'] . '/season/' . $anidbId : null
             ];
         });
     }
@@ -161,9 +164,14 @@ class GetFutureAnimeSchedules
         array $mapping,
         EloquentCollection $animeMaps,
         EloquentCollection $tvShows,
-        EloquentCollection $movies
+        EloquentCollection $movies,
+        ?AnidbAnime $anidbAnime
     ): array {
         $title = $schedule->title;
+        if ($anidbAnime && $anidbAnime->title_main) {
+            $title = $anidbAnime->title_main;
+        }
+
         $tmdbId = $mapping['tmdb_id'];
         $tmdbType = $mapping['tmdb_type'];
         $mapId = $mapping['map_id'];
@@ -179,9 +187,7 @@ class GetFutureAnimeSchedules
         if ($animeMaps->has($mapId)) {
             $animeMap = $animeMaps->get($mapId);
 
-            if ($animeMap->collection_name && trim($animeMap->collection_name) !== '') {
-                $title = $animeMap->collection_name;
-            }
+            $mapTitle = $animeMap->collection_name ?: $schedule->title;
 
             $tmdbModel = null;
             if ($tmdbType === 'tv' && $tvShows->has($tmdbId)) {
@@ -191,6 +197,14 @@ class GetFutureAnimeSchedules
             }
 
             if ($tmdbModel) {
+                if ($title === $schedule->title) {
+                    $title = $tmdbModel->title;
+                }
+
+                if ($mapTitle === $schedule->title) {
+                    $mapTitle = $tmdbModel->title;
+                }
+
                 $mediaAssets = [
                     'backdrop' => $tmdbModel->backdrop,
                     'logo' => $tmdbModel->highestVotedLogoPath,
@@ -200,12 +214,6 @@ class GetFutureAnimeSchedules
 
             $animeMapData = [
                 'id' => $animeMap->id,
-                'title' => $title,
-                'tmdb_id' => $tmdbId,
-                'tmdb_type' => $tmdbType,
-                'poster' => $mediaAssets['poster'],
-                'backdrop' => $mediaAssets['backdrop'],
-                'logo' => $mediaAssets['logo']
             ];
         }
 

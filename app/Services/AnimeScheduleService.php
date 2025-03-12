@@ -149,6 +149,7 @@ class AnimeScheduleService
             $result->push([
                 'animeschedule_id' => $animeScheduleId,
                 'title' => $anime['title'] ?? null,
+                'episode_number' => $anime['episodeNumber'] ?? null,
                 'episode_date' => $this->formatEpisodeDate($anime['episodeDate'] ?? null),
                 'year' => $year,
                 'week' => $week,
@@ -183,6 +184,7 @@ class AnimeScheduleService
                 $result->push([
                     'animeschedule_id' => $animeScheduleId,
                     'title' => $anime['title'] ?? null,
+                    'episode_number' => $anime['episodeNumber'] ?? null,
                     'episode_date' => $this->formatEpisodeDate($anime['episodeDate'] ?? null),
                     'year' => $year,
                     'week' => $week,

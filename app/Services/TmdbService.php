@@ -7,6 +7,7 @@ use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
 
 class TmdbService
 {
@@ -27,6 +28,7 @@ class TmdbService
     {
         try {
             return Cache::remember("tmdb_movie_basic_{$id}", now()->addMonth(), function () use ($id) {
+
                 $response = $this->client->get("/movie/{$id}");
 
                 $movieData = $response->json();
@@ -51,6 +53,7 @@ class TmdbService
     {
         try {
             return Cache::remember("tmdb_tv_basic_{$id}", now()->addMonth(), function () use ($id) {
+
                 $response = $this->client->get("/tv/{$id}");
 
                 $tvData = $response->json();
@@ -74,6 +77,7 @@ class TmdbService
     public function getMovie(string $id): array
     {
         try {
+
             $response = $this->client->get("/movie/{$id}", [
                 'append_to_response' => 'credits,external_ids,images,keywords,release_dates,similar,videos,translations,watch/providers,recommendations',
                 'include_image_language' => 'en,null',
@@ -93,6 +97,7 @@ class TmdbService
     public function getMovieAnime(string $id): array
     {
         try {
+
             $response = $this->client->get("/movie/{$id}", [
                 'append_to_response' => 'images,recommendations,videos,release_dates',
                 'include_image_language' => 'en,null',
@@ -127,6 +132,7 @@ class TmdbService
     public function getTv(string $id)
     {
         try {
+
             $response = $this->client->get("/tv/{$id}", [
                 'append_to_response' => 'aggregate_credits,external_ids,images,keywords,content_ratings,similar,videos,translations,watch/providers,recommendations',
                 'include_image_language' => 'en,null',
@@ -146,6 +152,7 @@ class TmdbService
     public function getTvAnime(string $id): array
     {
         try {
+
             $response = $this->client->get("/tv/{$id}", [
                 'append_to_response' => 'images,recommendations,videos,content_ratings',
                 'include_image_language' => 'en,null',
@@ -205,6 +212,7 @@ class TmdbService
     public function getSeason(int $tvShowId, int $seasonNumber)
     {
         try {
+
             $response = $this->client->get("/tv/{$tvShowId}/season/{$seasonNumber}", [
                 'language' => 'en-US',
                 'append_to_response' => 'credits,external_ids,images,videos',
@@ -222,6 +230,7 @@ class TmdbService
 
     public function getTrendingMovies()
     {
+
         return $this->client->get('/trending/movie/day', [
             'language' => 'en-US',
         ])->json();
@@ -229,6 +238,7 @@ class TmdbService
 
     public function getTrendingTv()
     {
+
         return $this->client->get('/trending/tv/day', [
             'language' => 'en-US',
         ])->json();
@@ -251,6 +261,7 @@ class TmdbService
     {
         try {
             Log::channel('trendinglog')->info("Fetching trending page {$page}");
+
             $response = $this->client->get('/trending/all/week', [
                 'language' => 'en-US',
                 'page' => $page,
@@ -273,36 +284,6 @@ class TmdbService
             logger()->error('TMDB Trending API error: '.$e->getMessage());
             throw $e;
         }
-    }
-
-    public function getFirst500TrendingTvShowsSortedByPopularity(): array
-    {
-        return Cache::flexible('trending_tv_shows', [60 * 60 * 24, 60 * 60 * 48], function () {
-            $page = 1;
-            $trendingTvShows = [];
-
-            while (count($trendingTvShows) < 500) {
-                $response = $this->client->get('/trending/tv/day', [
-                    'language' => 'en-US',
-                    'page' => $page,
-                ]);
-
-                if (! $response->successful()) {
-                    throw new \Exception('TMDB trending request failed');
-                }
-
-                $data = $response->json();
-
-                $trendingTvShows = array_merge($trendingTvShows, $data['results'] ?? []);
-
-                $page++;
-            }
-
-            return collect($trendingTvShows)
-                ->sortByDesc('popularity')
-                ->values()
-                ->all();
-        });
     }
 
     public function getRandomTrendingBackdropImage(): ?string
@@ -331,6 +312,7 @@ class TmdbService
             }
 
             $endpoint = $externalId->type === 'MOVIE' ? 'movie' : 'tv';
+
 
             $response = $this->client->get("/{$endpoint}/{$externalId->themoviedb_id}/images", [
                 'include_image_language' => 'en,null',
@@ -364,6 +346,7 @@ class TmdbService
     public function search(string $query, int $page = 1): array
     {
         try {
+
             $response = $this->client->get('/search/multi', [
                 'query' => $query,
                 'include_adult' => false,
@@ -392,6 +375,7 @@ class TmdbService
             $today = now()->format('Y-m-d');
             $yesterday = now()->subDay()->format('Y-m-d');
 
+
             $response = $this->client->get("/{$type}/changes", [
                 'start_date' => $yesterday,
                 'end_date' => $today,
@@ -417,6 +401,7 @@ class TmdbService
     public function getCreditsForPerson(int $personId): ?array
     {
         try {
+
             $response = $this->client->get("/person/{$personId}", [
                 'append_to_response' => 'combined_credits',
                 'language' => 'en-US',
@@ -427,6 +412,73 @@ class TmdbService
             logger()->error('TMDB Credits API error: '.$e->getMessage());
 
             return null;
+        }
+    }
+
+    public function getAiringTvShows(int $timeframeInDays = 30): array
+    {
+        try {
+            // Get today's date and specified timeframe later in YYYY-MM-DD format
+            $today = now()->format('Y-m-d');
+            $endDate = now()->addDays($timeframeInDays)->format('Y-m-d');
+
+            Log::info("Fetching TV shows airing between {$today} and {$endDate}");
+
+            $results = [];
+            $totalPages = 1;
+            $currentPage = 1;
+            $processedIds = [];
+
+            do {
+                $response = $this->client->get('/discover/tv', [
+                    'air_date.gte' => $today,
+                    'air_date.lte' => $endDate,
+                    'include_adult' => false,
+                    'include_null_first_air_dates' => false,
+                    'language' => 'en-US',
+                    'page' => $currentPage,
+                    'sort_by' => 'vote_count.desc',
+                ]);
+
+                if (!$response->successful()) {
+                    Log::error('TMDB Airing TV Shows API error: Failed to fetch page ' . $currentPage, [
+                        'status' => $response->status(),
+                        'response' => $response->body()
+                    ]);
+                    break;
+                }
+
+                $data = $response->json();
+                $totalPages = $data['total_pages'] ?? 1;
+
+                // Process each TV show to prevent duplicates
+                foreach ($data['results'] as $show) {
+                    $showId = $show['id'];
+
+                    // Stop when we hit the first show with vote_count 10 or below
+                    if ($show['vote_count'] <= 10) {
+                        Log::info("Stopping at show ID: {$showId} with vote_count: {$show['vote_count']}");
+                        break 2; // Break out of both the foreach and do-while loops
+                    }
+
+                    // Prevent duplicate processing
+                    if (!in_array($showId, $processedIds)) {
+                        $processedIds[] = $showId;
+                        $results[] = $show;
+                    }
+                }
+
+                $currentPage++;
+            } while ($currentPage <= $totalPages);
+
+            return [
+                'results' => $results,
+                'total_pages' => $totalPages,
+                'total_results' => count($results)
+            ];
+        } catch (\Exception $e) {
+            Log::error('TMDB Airing TV Shows API error: ' . $e->getMessage());
+            throw $e;
         }
     }
 }

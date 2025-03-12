@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\TmdbSchedule;
 
 class TvEpisode extends Model
 {
@@ -122,5 +123,13 @@ class TvEpisode extends Model
             })
             ->values()
             ->all();
+    }
+
+    /**
+     * Get the schedules for this TV episode.
+     */
+    public function schedules()
+    {
+        return $this->hasMany(TmdbSchedule::class, 'episode_id');
     }
 }

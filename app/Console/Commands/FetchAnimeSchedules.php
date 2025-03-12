@@ -35,11 +35,10 @@ class FetchAnimeSchedules extends Command
 
             $job = new FetchAnimeSchedulesJob($currentYear, $currentWeek);
 
-            // For first job in chain, dispatch immediately; for others, add to chain with delay
             if ($i === 0) {
                 $firstJob = $job;
             } else {
-                $jobs[] = $job->delay(now()->addMinutes($i));
+                $jobs[] = $job;
             }
 
             $currentDate->addWeek();
