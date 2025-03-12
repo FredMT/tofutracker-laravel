@@ -12,15 +12,7 @@ export default function ScheduleItem({ item }: FeaturedScheduleItemProps) {
     return (
         <Box w={238} h={229}>
             <Stack gap={0}>
-                <Tooltip label={item.title}>
-                    {item.link ? (
-                        <Link href={item.link}>
-                            <ScheduleItemBanner item={item} />
-                        </Link>
-                    ) : (
-                        <ScheduleItemBanner item={item} />
-                    )}
-                </Tooltip>
+                <ScheduleItemBanner item={item} />
                 <ScheduleItemInfo item={item} />
             </Stack>
         </Box>

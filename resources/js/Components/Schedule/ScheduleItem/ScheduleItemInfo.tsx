@@ -32,7 +32,7 @@ function ScheduleItemInfo({ item }: { item: ScheduleItem }) {
                     </Text>
                 ) : (
                     <Text size="sm" lineClamp={1}>
-                        {item.title}
+                        {`Episode ${item.episode_number}`}
                     </Text>
                 )}
             </Link>

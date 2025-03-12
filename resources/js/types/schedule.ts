@@ -23,3 +23,10 @@ export type DailySchedule = {
 };
 
 export type CombinedSchedules = DailySchedule[];
+
+export type TypeCounts = {
+    tv: number;
+    anime: number;
+    formatted_start_date: string;
+    formatted_end_date: string;
+};

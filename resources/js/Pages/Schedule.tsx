@@ -1,17 +1,10 @@
 import BoundedContainer from "@/Components/BoundedContainer";
 import ScheduleDay from "@/Components/Schedule/ScheduleDay";
+import ScheduleCountSummary from "@/Components/Schedule/ScheduleItem/ScheduleCountSummary";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
-import { CombinedSchedules, ScheduleItem } from "@/types/schedule";
+import { CombinedSchedules, ScheduleItem, TypeCounts } from "@/types/schedule";
 import { Head } from "@inertiajs/react";
-import {
-    Accordion,
-    Badge,
-    Group,
-    Space,
-    Stack,
-    Text,
-    Title,
-} from "@mantine/core";
+import { Accordion, Badge, Group, Space, Stack, Title } from "@mantine/core";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 
@@ -33,12 +26,6 @@ function removePastEpisodes(schedules: ScheduleItem[]): ScheduleItem[] {
         return episodeDateTime.isAfter(currentDateTime);
     });
 }
-
-type TypeCounts = {
-    tv: number;
-    anime: number;
-    movie: number;
-};
 
 function Schedule({
     schedule,
@@ -62,20 +49,10 @@ function Schedule({
                 <Stack gap={8}>
                     <Title order={1}>Schedule</Title>
 
-                    <Text>
-                        <Text span fw={700}>{`${counts.movie} movies, `}</Text>
-                        <Text span fw={700}>{`${counts.tv} shows`}</Text>
-                        <Text span>, and </Text>
-                        <Text span fw={700}>{`${counts.anime} anime `}</Text>
-                        <Text span>airing today</Text>
-                    </Text>
-
+                    <ScheduleCountSummary counts={counts} />
                     <Space h={4} />
 
                     <Group>
-                        <Badge variant="outline" size="lg">
-                            Movies
-                        </Badge>
                         <Badge variant="outline" size="lg">
                             TV Shows
                         </Badge>

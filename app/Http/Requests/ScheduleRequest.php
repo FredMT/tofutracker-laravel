@@ -25,16 +25,12 @@ class ScheduleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'start_date' => [
-                'required',
-                'date',
-                'after_or_equal:today'
+            'start_date' => ['required','date','after_or_equal:today'
             ],
-            'end_date' => [
-                'required',
-                'date',
-                'after_or_equal:start_date'
+            'end_date' => ['required','date','after_or_equal:start_date'
             ],
+            'type' => ['sometimes','string','in:anime,tv'
+            ]
         ];
     }
 
@@ -47,6 +43,7 @@ class ScheduleRequest extends FormRequest
             'end_date.required' => 'The end date is required.',
             'end_date.date' => 'The end date must be a valid date.',
             'end_date.after_or_equal' => 'The end date must be equal to or after the start date.',
+            'type.string' => 'The type must be a string.',
         ];
     }
 }
