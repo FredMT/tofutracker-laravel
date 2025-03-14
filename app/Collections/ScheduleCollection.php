@@ -28,6 +28,26 @@ class ScheduleCollection extends Collection
         });
     }
 
+    public function filterOutFieldsByType(): self
+    {
+        return $this->map(function ($daySchedule) {
+            $filteredDaySchedules = collect($daySchedule['schedules'])->map(function ($schedule) {
+                if ($schedule['type'] === 'anime') {
+                    return collect($schedule)
+                        ->forget(['anidb_id', 'anime_map', 'poster', 'week', 'year'])
+                        ->toArray();
+                } elseif ($schedule['type'] === 'tv') {
+                    return collect($schedule)
+                        ->forget(['poster', 'show_id', 'week', 'year'])
+                        ->toArray();
+                }
+                return $schedule;
+            })->values();
+
+            return array_merge($daySchedule, ['schedules' => $filteredDaySchedules]);
+        });
+    }
+
     public function filterByType(?string $type): self
     {
         if (!$type) {
@@ -41,26 +61,6 @@ class ScheduleCollection extends Collection
 
             return array_merge($daySchedule, ['schedules' => $filteredDaySchedules]);
         });
-    }
-
-    public function countItemsByTypeForToday(): array
-    {
-        $today = today()->format('Y-m-d');
-        $todaySchedule = $this->firstWhere('date', $today);
-
-        $typeCounts = [
-            'tv' => 0,
-            'anime' => 0,
-        ];
-
-        if ($todaySchedule && isset($todaySchedule['schedules'])) {
-            $todayItems = collect($todaySchedule['schedules']);
-
-            $typeCounts['tv'] = $todayItems->where('type', 'tv')->count();
-            $typeCounts['anime'] = $todayItems->where('type', 'anime')->count();
-        }
-
-        return $typeCounts;
     }
 
     public function countItemsByType(): array
@@ -97,6 +97,8 @@ class ScheduleCollection extends Collection
         if (isset($filters['type'])) {
             $collection = $collection->filterByType($filters['type']);
         }
+
+        $collection = $collection->filterOutFieldsByType();
 
         return $collection;
     }

@@ -1,8 +1,7 @@
 import { ScheduleItem as ScheduleItemType } from "@/types/schedule";
-import { Link } from "@inertiajs/react";
-import { Box, Stack, Tooltip } from "@mantine/core";
-import ScheduleItemBanner from "./ScheduleItem/ScheduleItemBanner";
-import ScheduleItemInfo from "./ScheduleItem/ScheduleItemInfo";
+import { Box, Stack } from "@mantine/core";
+import ScheduleItemInfo from "@/Components/Schedule/ScheduleItem/ScheduleItemInfo";
+import ScheduleItemBanner from "@/Components/Schedule/ScheduleItem/ScheduleItemBanner";
 
 interface FeaturedScheduleItemProps {
     item: ScheduleItemType;

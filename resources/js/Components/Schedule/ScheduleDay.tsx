@@ -1,5 +1,5 @@
-import { DailySchedule } from "@/types/schedule";
-import { Accordion, Flex, Group, Space, Text } from "@mantine/core";
+import {DailySchedule} from "@/types/schedule";
+import {Accordion, Flex, Group, Space, Text} from "@mantine/core";
 import ScheduleItem from "@/Components/Schedule/ScheduleItem";
 
 interface ScheduleDayProps {
@@ -18,7 +18,7 @@ export default function ScheduleDay({ day }: ScheduleDayProps) {
             </Accordion.Control>
             <Space h={8} />
             <Accordion.Panel>
-                <Flex gap="md" wrap="wrap" justify="center">
+                <Flex gap="md" wrap="wrap">
                     {day.schedules.map((item) => (
                         <ScheduleItem
                             key={`${item.show_id}-${item.episode_date}`}

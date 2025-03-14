@@ -1,76 +1,56 @@
 import BoundedContainer from "@/Components/BoundedContainer";
-import ScheduleDay from "@/Components/Schedule/ScheduleDay";
-import ScheduleCountSummary from "@/Components/Schedule/ScheduleItem/ScheduleCountSummary";
+import EmptySchedule from "@/Components/Schedule/EmptySchedule";
+import ScheduleContent from "@/Components/Schedule/ScheduleContent";
+import ScheduleHeader from "@/Components/Schedule/ScheduleHeader";
+import ScheduleNavigationAndTitle from "@/Components/Schedule/ScheduleNavigationAndTitle";
+import ScheduleSkeleton from "@/Components/Schedule/ScheduleSkeleton";
+import { useScheduleFilterStore } from "@/Components/Schedule/store/useScheduleFilterStore";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
-import { CombinedSchedules, ScheduleItem, TypeCounts } from "@/types/schedule";
-import { Head } from "@inertiajs/react";
-import { Accordion, Badge, Group, Space, Stack, Title } from "@mantine/core";
+import { DailySchedule, TypeCounts } from "@/types/schedule";
+import { Deferred, Head } from "@inertiajs/react";
+import { Space, Stack } from "@mantine/core";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { useEffect } from "react";
 
 dayjs.extend(relativeTime);
 
-function removeDuplicateSchedules(schedules: ScheduleItem[]): ScheduleItem[] {
-    const seen = new Set<string>();
-    return schedules.filter((item) => {
-        const key = `${item.show_id}-${item.episode_date}`;
-        return !seen.has(key) && !!seen.add(key);
-    });
-}
-
-function removePastEpisodes(schedules: ScheduleItem[]): ScheduleItem[] {
-    const currentDateTime = dayjs();
-
-    return schedules.filter((item) => {
-        const episodeDateTime = dayjs(item.episode_date);
-        return episodeDateTime.isAfter(currentDateTime);
-    });
-}
-
-function Schedule({
-    schedule,
-    counts,
-}: {
-    schedule: CombinedSchedules;
+type ScheduleData = {
+    schedule: DailySchedule[];
     counts: TypeCounts;
-}) {
-    // Create a new schedule array with duplicates removed
-    const filteredSchedule = schedule.map((day) => ({
-        ...day,
-        schedules: removePastEpisodes(removeDuplicateSchedules(day.schedules)),
-    }));
+};
+
+function Schedule({ data }: { data?: ScheduleData }) {
+    const { initFromUrl } = useScheduleFilterStore();
+
+    useEffect(() => {
+        initFromUrl();
+    }, []);
 
     return (
         <>
             <Head title="Schedule" />
-            <Space h={72} />
+            <Space h={80} />
 
             <BoundedContainer>
                 <Stack gap={8}>
-                    <Title order={1}>Schedule</Title>
-
-                    <ScheduleCountSummary counts={counts} />
-                    <Space h={4} />
-
-                    <Group>
-                        <Badge variant="outline" size="lg">
-                            TV Shows
-                        </Badge>
-                        <Badge variant="outline" size="lg">
-                            Anime
-                        </Badge>
-                    </Group>
-
-                    <Accordion
-                        defaultValue={filteredSchedule.map(
-                            (day) => day.formatted_date
+                    <Deferred data="data" fallback={<ScheduleSkeleton />}>
+                        {data ? (
+                            <>
+                                <ScheduleNavigationAndTitle
+                                    counts={data.counts}
+                                />
+                                <ScheduleHeader counts={data.counts} />
+                                {data.schedule && data.schedule.length > 0 ? (
+                                    <ScheduleContent schedule={data.schedule} />
+                                ) : (
+                                    <EmptySchedule />
+                                )}
+                            </>
+                        ) : (
+                            <EmptySchedule />
                         )}
-                        multiple
-                    >
-                        {filteredSchedule.map((day) => (
-                            <ScheduleDay key={day.formatted_date} day={day} />
-                        ))}
-                    </Accordion>
+                    </Deferred>
                 </Stack>
             </BoundedContainer>
         </>

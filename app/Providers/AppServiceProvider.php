@@ -194,9 +194,8 @@ class AppServiceProvider extends ServiceProvider
                 : Response::deny('This list is private.');
         });
 
-        // Define a direct gate for superuser check
         Gate::define('superuser', function (User $user) {
-            return $user->id === 1;
+            return $user->email === 'fredmtonline@gmail.com';
         });
     }
 

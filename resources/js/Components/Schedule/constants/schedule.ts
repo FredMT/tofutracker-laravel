@@ -1,0 +1,2 @@
+export const SCHEDULE_DAYS_SKIP_PREVIOUS = 8;
+export const SCHEDULE_DAYS_SKIP_NEXT = 1;

@@ -28,17 +28,14 @@ class GetFutureAnimeSchedules
         return $this->transformScheduleData($schedules, $anidbToTmdbMap, $animeMaps, $tvShows, $movies, $anidbAnimes);
     }
 
-     // Get anime schedules for the next 7 days
     private function getAnimeSchedules(): EloquentCollection
     {
         return AnimeSchedule::query()
-            ->next7DaysEpisodes()
             ->with('animeMap')
             ->orderBy('episode_date')
             ->get();
     }
 
-    // Get AnidbAnime models with map_ids based on schedule anidb_ids
     private function getAnidbAnimes(EloquentCollection $schedules): EloquentCollection
     {
         $anidbIds = $schedules->pluck('anidb_id')->filter()->unique()->values()->toArray();
@@ -49,7 +46,6 @@ class GetFutureAnimeSchedules
             ->keyBy('id');
     }
 
-     // Get AnimeMap models by IDs
     private function getAnimeMaps(array $mapIds): EloquentCollection
     {
         return AnimeMap::whereIn('id', $mapIds)
@@ -57,7 +53,6 @@ class GetFutureAnimeSchedules
             ->keyBy('id');
     }
 
-     // Create mapping from anidb_id to TMDB information
     private function createAnidbToTmdbMap(EloquentCollection $anidbAnimes, EloquentCollection $animeMaps): Collection
     {
         $anidbToTmdbMap = collect();
@@ -83,7 +78,6 @@ class GetFutureAnimeSchedules
         return $anidbToTmdbMap;
     }
 
-     // Get TMDB models (TV shows and movies)
     private function getTmdbModels(Collection $anidbToTmdbMap): array
     {
         $tvShowIds = collect();
@@ -108,7 +102,6 @@ class GetFutureAnimeSchedules
         return [$tvShows, $movies];
     }
 
-     // Transform schedule data with related models
     private function transformScheduleData(
         EloquentCollection $schedules,
         Collection $anidbToTmdbMap,
@@ -128,7 +121,6 @@ class GetFutureAnimeSchedules
                 'poster' => null
             ];
 
-            // Process if we have mapping data
             if ($anidbId && $anidbToTmdbMap->has($anidbId)) {
                 $mapping = $anidbToTmdbMap->get($anidbId);
                 list($title, $animeMapData, $mediaAssets) = $this->processAnimeData(
@@ -158,7 +150,6 @@ class GetFutureAnimeSchedules
         });
     }
 
-     // Process anime data to extract title, map data and media assets
     private function processAnimeData(
         AnimeSchedule $schedule,
         array $mapping,

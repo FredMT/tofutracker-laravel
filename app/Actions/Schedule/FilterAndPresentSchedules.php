@@ -23,14 +23,18 @@ class FilterAndPresentSchedules
             $allSchedules = $this->getCombinedSchedules->execute();
 
             $scheduleCollection = new ScheduleCollection($allSchedules);
+
+            $date = $filters['date'] ?? Carbon::today()->format('Y-m-d');
+            $end_date = Carbon::parse($date)->addDays(7)->format('Y-m-d');
+
+            $filters['start_date'] = $date;
+            $filters['end_date'] = $end_date;
+
             $filteredSchedules = $scheduleCollection->applyFilters($filters);
 
             $typeCounts = $filteredSchedules->countItemsByType();
 
-            $start_date = $filters['start_date'] ?? Carbon::today()->format('Y-m-d');
-            $end_date = $filters['end_date'] ?? Carbon::today()->addDays(7)->format('Y-m-d');
-
-            $typeCounts['formatted_start_date'] = Carbon::parse($start_date)->format('F j, Y');
+            $typeCounts['formatted_start_date'] = Carbon::parse($date)->format('F j, Y');
             $typeCounts['formatted_end_date'] = Carbon::parse($end_date)->format('F j, Y');
 
             return [
