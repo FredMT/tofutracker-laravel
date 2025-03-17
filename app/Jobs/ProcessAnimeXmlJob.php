@@ -37,6 +37,9 @@ class ProcessAnimeXmlJob implements ShouldQueue
             // Clean XML content
             $xmlContent = preg_replace('/&(?!(?:amp|lt|gt|quot|apos);)/', '&amp;', $response->body());
 
+            logger()->channel('anidbxml')->info($xmlContent);
+            logger()->channel('anidbxml')->info('-----xml-----');
+
             // Process the XML
             $service->processXmlContent($xmlContent);
 
