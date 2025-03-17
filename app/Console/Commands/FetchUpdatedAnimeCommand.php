@@ -24,7 +24,6 @@ class FetchUpdatedAnimeCommand extends Command
                 return;
             }
 
-            // Dispatch jobs with delay to respect rate limit
             foreach ($result['anime_ids'] as $index => $animeId) {
                 ProcessAnimeXmlJob::dispatch($animeId);
             }

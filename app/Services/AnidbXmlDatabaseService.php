@@ -22,12 +22,6 @@ class AnidbXmlDatabaseService
 
             $parsedData = $this->xmlService->parseAnimeXml($xmlContent);
 
-            logger()->channel('anidbparsedxml')->info('Parsed data', [
-                'anime_id' => $parsedData['anime']['id'] ?? 'not_found',
-                'data' => $parsedData
-            ]);
-            logger()->channel('anidbparsedxml')->info('-------');
-
             DB::beginTransaction();
 
             // Create or update anime record
