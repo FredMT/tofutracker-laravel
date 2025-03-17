@@ -2,6 +2,8 @@ import ThemeButton from "@/Components/ThemeButton";
 import { Space } from "@mantine/core";
 import NotificationBellMenu from "@/Components/Notifications/components/NotificationBellMenu";
 import { useUser } from "@/hooks/useUser";
+import ScheduleLinkActionIcon from "./UserMenu/ScheduleLinkActionIcon";
+import { usePage } from "@inertiajs/react";
 
 interface MobileMenuButtonProps {
     showingNavigationDropdown: boolean;
@@ -13,8 +15,10 @@ export default function MobileMenuButton({
     setShowingNavigationDropdown,
 }: MobileMenuButtonProps) {
     const user = useUser();
+    const component = usePage().component;
     return (
         <div className="-me-2 flex items-center gap-2 sm:hidden">
+            {component !== "Schedule" && <ScheduleLinkActionIcon />}
             {user && <NotificationBellMenu />}
             <ThemeButton />
             <button

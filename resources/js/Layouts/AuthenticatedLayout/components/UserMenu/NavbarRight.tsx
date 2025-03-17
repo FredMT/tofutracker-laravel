@@ -5,16 +5,19 @@ import UserDropdown from "@/Layouts/AuthenticatedLayout/components/UserMenu/User
 import { PageProps } from "@/types";
 import { usePage } from "@inertiajs/react";
 import { Group } from "@mantine/core";
+import ScheduleLinkActionIcon from "./ScheduleLinkActionIcon";
 
-export default function UserMenu() {
+export default function NavbarRight() {
     const {
         auth: { user },
     } = usePage<PageProps>().props;
+    const component = usePage().component;
     return (
         <div className="hidden sm:ms-6 sm:flex sm:items-center">
             <Group gap={16}>
-                {user && <NotificationBellMenu />}
+                {component !== "Schedule" && <ScheduleLinkActionIcon />}
                 <ThemeButton />
+                {user && <NotificationBellMenu />}
                 {user ? <UserDropdown /> : <AuthButtons />}
             </Group>
         </div>

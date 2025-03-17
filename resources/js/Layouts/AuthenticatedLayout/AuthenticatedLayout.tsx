@@ -5,7 +5,7 @@ import MobileMenuButton from "@/Layouts/AuthenticatedLayout/components/MobileMen
 import MobileMenu from "@/Layouts/AuthenticatedLayout/components/MobileMenu";
 import {Box, Group} from "@mantine/core";
 import SearchBar from "@/Layouts/AuthenticatedLayout/components/UserMenu/SearchBar/SearchBar";
-import UserMenu from "@/Layouts/AuthenticatedLayout/components/UserMenu/UserMenu";
+import NavbarRight from "@/Layouts/AuthenticatedLayout/components/UserMenu/NavbarRight";
 
 export default function AuthenticatedLayout({
     children,
@@ -56,7 +56,7 @@ export default function AuthenticatedLayout({
                                 <SearchBar onOpenChange={setIsSearchOpen} />
                             </Box>
                         </Group>
-                        <UserMenu />
+                        <NavbarRight />
                         <MobileMenuButton
                             showingNavigationDropdown={
                                 showingNavigationDropdown

@@ -32,6 +32,7 @@ function TV() {
     return (
         <>
             <Head title={data.title} />
+            <Space h={64} />
             <RegularBannerImageContainer />
             <ResponsiveContainer>
                 <Box hiddenFrom="sm" mt={12}>
