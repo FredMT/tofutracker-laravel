@@ -55,6 +55,14 @@ return [
         'larabug' => [
             'driver' => 'larabug',
         ],
+        'anidbupdate' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/anidbupdate.log'),
+        ],
+        'anidbparsedxml' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/anidbparsedxml.log'),
+        ],
         'animeschedulelog' => [
             'driver' => 'single',
             'path' => storage_path('logs/animeschedule.log'),

@@ -42,11 +42,11 @@ class ProcessAnimeXmlJob implements ShouldQueue
 
             UpdateAnidbTvdbEpisodeData::dispatchSync($this->animeId);
 
-            logger()->info('Successfully processed anime', ['anime_id' => $this->animeId]);
+            logger()->channel('anidbupdate')->info('Successfully processed anime', ['anime_id' => $this->animeId]);
         } catch (\Exception $e) {
-            logger()->error('Failed to process anime', ['anime_id' => $this->animeId]);
-            logger()->error($e->getMessage());
-            logger()->error($e->getTraceAsString());
+            logger()->channel('anidbupdate')->error('Failed to process anime', ['anime_id' => $this->animeId]);
+            logger()->channel('anidbupdate')->error($e->getMessage());
+            logger()->channel('anidbupdate')->error($e->getTraceAsString());
             throw $e; // Re-throw to trigger job failure
         }
     }

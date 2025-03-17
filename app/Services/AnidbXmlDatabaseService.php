@@ -22,6 +22,12 @@ class AnidbXmlDatabaseService
 
             $parsedData = $this->xmlService->parseAnimeXml($xmlContent);
 
+            logger()->channel('anidbparsedxml')->info('Parsed data', [
+                'anime_id' => $parsedData['anime']['id'] ?? 'not_found',
+                'data' => $parsedData
+            ]);
+            logger()->channel('anidbparsedxml')->info('-------');
+
             DB::beginTransaction();
 
             // Create or update anime record
@@ -36,10 +42,10 @@ class AnidbXmlDatabaseService
             $this->processExternalLinks($anime, $parsedData['external_links']);
 
             DB::commit();
-            logger()->info('Successfully processed anime XML', ['anime_id' => $anime->id]);
+            logger()->channel('anidbupdate')->info('Successfully processed anime XML', ['anime_id' => $anime->id]);
         } catch (\Exception $e) {
             DB::rollBack();
-            logger()->error('Error processing anime XML', [
+            logger()->channel('anidbupdate')->error('Error processing anime XML', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
@@ -70,7 +76,7 @@ class AnidbXmlDatabaseService
                 ]
             );
         } catch (\Exception $e) {
-            logger()->error('Error processing anime record', [
+            logger()->channel('anidbupdate')->error('Error processing anime record', [
                 'data' => $data,
                 'error' => $e->getMessage(),
             ]);
@@ -99,7 +105,7 @@ class AnidbXmlDatabaseService
                 // Process seiyuus for this character
                 $this->processSeiyuus($character, $characterData['seiyuus'] ?? []);
             } catch (\Exception $e) {
-                logger()->error('Error processing character', [
+                logger()->channel('anidbupdate')->error('Error processing character', [
                     'character_id' => $characterData['character_id'] ?? 'unknown',
                     'error' => $e->getMessage(),
                 ]);
@@ -116,7 +122,7 @@ class AnidbXmlDatabaseService
         foreach ($seiyuus as $seiyuuData) {
             try {
                 if (empty($seiyuuData['seiyuu_id']) || empty($seiyuuData['name'])) {
-                    logger()->warning('Skipping invalid seiyuu data', [
+                    logger()->channel('anidbupdate')->warning('Skipping invalid seiyuu data', [
                         'seiyuu_data' => $seiyuuData,
                         'character_id' => $character->id,
                     ]);
@@ -134,7 +140,7 @@ class AnidbXmlDatabaseService
 
                 $seiyuuIds[] = $seiyuu->id;
             } catch (\Exception $e) {
-                logger()->error('Error processing seiyuu', [
+                logger()->channel('anidbupdate')->error('Error processing seiyuu', [
                     'seiyuu_data' => $seiyuuData,
                     'character_id' => $character->id,
                     'error' => $e->getMessage(),
@@ -149,7 +155,7 @@ class AnidbXmlDatabaseService
             try {
                 $character->seiyuus()->sync($seiyuuIds);
             } catch (\Exception $e) {
-                logger()->error('Error syncing seiyuus for character', [
+                logger()->channel('anidbupdate')->error('Error syncing seiyuus for character', [
                     'character_id' => $character->id,
                     'seiyuu_ids' => $seiyuuIds,
                     'error' => $e->getMessage(),
@@ -180,7 +186,7 @@ class AnidbXmlDatabaseService
                     ]
                 );
             } catch (\Exception $e) {
-                logger()->error('Error processing episode', [
+                logger()->channel('anidbupdate')->error('Error processing episode', [
                     'episode_id' => $episodeData['episode_id'] ?? 'unknown',
                     'anime_id' => $anime->id,
                     'error' => $e->getMessage(),
@@ -203,7 +209,7 @@ class AnidbXmlDatabaseService
                     ]
                 );
             } catch (\Exception $e) {
-                logger()->error('Error processing related anime', [
+                logger()->channel('anidbupdate')->error('Error processing related anime', [
                     'related_anime_id' => $relatedData['related_anime_id'] ?? 'unknown',
                     'anime_id' => $anime->id,
                     'error' => $e->getMessage(),
@@ -225,7 +231,7 @@ class AnidbXmlDatabaseService
                     ]
                 );
             } catch (\Exception $e) {
-                logger()->error('Error processing similar anime', [
+                logger()->channel('anidbupdate')->error('Error processing similar anime', [
                     'similar_anime_id' => $similarData['similar_anime_id'] ?? 'unknown',
                     'anime_id' => $anime->id,
                     'error' => $e->getMessage(),
@@ -248,7 +254,7 @@ class AnidbXmlDatabaseService
                     ]
                 );
             } catch (\Exception $e) {
-                logger()->error('Error processing creator', [
+                logger()->channel('anidbupdate')->error('Error processing creator', [
                     'creator_id' => $creatorData['creator_id'] ?? 'unknown',
                     'anime_id' => $anime->id,
                     'error' => $e->getMessage(),
@@ -264,7 +270,7 @@ class AnidbXmlDatabaseService
         foreach ($links as $linkData) {
             try {
                 if (! in_array($linkData['type'], $this->getAllowedExternalLinkTypes())) {
-                    logger()->warning('Skipping invalid external link type', [
+                    logger()->channel('anidbupdate')->warning('Skipping invalid external link type', [
                         'type' => $linkData['type'],
                         'anime_id' => $anime->id,
                     ]);
@@ -279,7 +285,7 @@ class AnidbXmlDatabaseService
                     ],
                 );
             } catch (\Exception $e) {
-                logger()->error('Error processing external link', [
+                logger()->channel('anidbupdate')->error('Error processing external link', [
                     'type' => $linkData['type'] ?? 'unknown',
                     'anime_id' => $anime->id,
                     'error' => $e->getMessage(),
