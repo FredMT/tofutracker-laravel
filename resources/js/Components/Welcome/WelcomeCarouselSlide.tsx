@@ -3,6 +3,7 @@ import { Badge, Button, Flex, Image, Stack, Text, Title } from "@mantine/core";
 import classes from "./WelcomeCarouselSlide.module.css";
 import { useMediaQuery } from "@mantine/hooks";
 import ResponsiveContainer from "@/Components/ResponsiveContainer";
+import RepeatedImage from "../Content/Shared/Regular/RepeatedImage";
 
 interface MediaItem {
     title: string;
@@ -31,14 +32,14 @@ export default function WelcomeCarouselSlide({
     return (
         <div className={classes.slideContainer}>
             <div>
-                <Image
-                    src={`https://image.tmdb.org/t/p/original${backdrop_path}`}
+                <RepeatedImage
+                    backdrop_path={
+                        backdrop_path
+                            ? `https://image.tmdb.org/t/p/original${backdrop_path}`
+                            : undefined
+                    }
+                    title={title}
                     height={540}
-                    mih={540}
-                    mah={540}
-                    alt={title}
-                    fit="cover"
-                    loading="lazy"
                 />
             </div>
             <ResponsiveContainer>

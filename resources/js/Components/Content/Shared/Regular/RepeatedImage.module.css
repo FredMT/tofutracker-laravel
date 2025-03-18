@@ -1,0 +1,17 @@
+.container {
+    position: relative;
+    width: 100%;
+}
+
+.repeatedTop {
+    height: 32px;
+    object-fit: cover;
+    object-position: top;
+    display: block;
+}
+
+.mainImage {
+    display: block;
+    clip-path: inset(32px 0 0 0);
+    margin-top: -32px;
+}
