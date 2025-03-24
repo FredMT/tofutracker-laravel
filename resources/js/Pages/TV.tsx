@@ -53,7 +53,7 @@ function TV() {
                                 <Space h={16} />
                                 <RegularContentSummary />
                             </Box>
-                            <Stack>
+                            <Stack w={"100%"}>
                                 {data.trailer && (
                                     <Trailer trailer={data.trailer} />
                                 )}
