@@ -46,7 +46,7 @@ export default function WelcomeCarouselSlide({
                 {logo_path ? (
                     <Link href={`/${type}/${link}`} prefetch>
                         <Image
-                            src={`https://image.tmdb.org/t/p/original${logo_path}`}
+                            src={`https://image.tmdb.org/t/p/w500${logo_path}`}
                             alt={title}
                             fit="contain"
                             loading="lazy"

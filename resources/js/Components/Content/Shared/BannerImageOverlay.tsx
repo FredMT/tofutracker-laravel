@@ -1,5 +1,5 @@
-import {Genre} from "@/types";
-import {Badge, Flex, Group, Image, Paper} from "@mantine/core";
+import { Genre } from "@/types";
+import { Badge, Flex, Group, Image, Paper } from "@mantine/core";
 import classes from "./styles/BannerImage.module.css";
 
 interface BannerImageProps {
@@ -30,7 +30,7 @@ export function BannerImageOverlay({
             >
                 {logo_path && (
                     <Image
-                        src={`https://image.tmdb.org/t/p/original${logo_path}`}
+                        src={`https://image.tmdb.org/t/p/w500${logo_path}`}
                         alt={title}
                         fit="contain"
                         height={120}

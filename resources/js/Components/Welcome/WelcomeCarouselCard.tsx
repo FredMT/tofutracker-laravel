@@ -46,7 +46,7 @@ function WelcomeCarouselCard({
         >
             <Card.Section className={classes.cardWrapper}>
                 <Image
-                    src={`https://image.tmdb.org/t/p/original${posterPath}`}
+                    src={`https://image.tmdb.org/t/p/w440_and_h660_face${posterPath}`}
                     alt={title}
                     height={350}
                     mih={300}
