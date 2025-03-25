@@ -1,9 +1,9 @@
-import {PropsWithChildren, useEffect, useState} from "react";
+import { PropsWithChildren, useEffect, useState } from "react";
 import styles from "./AuthenticatedLayout.module.css";
 import Logo from "@/Layouts/AuthenticatedLayout/components/Logo";
 import MobileMenuButton from "@/Layouts/AuthenticatedLayout/components/MobileMenuButton";
 import MobileMenu from "@/Layouts/AuthenticatedLayout/components/MobileMenu";
-import {Box, Group} from "@mantine/core";
+import { Box, Group } from "@mantine/core";
 import SearchBar from "@/Layouts/AuthenticatedLayout/components/UserMenu/SearchBar/SearchBar";
 import NavbarRight from "@/Layouts/AuthenticatedLayout/components/UserMenu/NavbarRight";
 
@@ -52,7 +52,7 @@ export default function AuthenticatedLayout({
                     <div className="flex h-16 justify-between">
                         <Group>
                             <Logo />
-                            <Box visibleFrom="smmdlg">
+                            <Box visibleFrom="sixtyem">
                                 <SearchBar onOpenChange={setIsSearchOpen} />
                             </Box>
                         </Group>
