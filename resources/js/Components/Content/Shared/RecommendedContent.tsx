@@ -1,6 +1,6 @@
 import { Recommended, RegularContentDataType } from "@/types";
 import { Carousel } from "@mantine/carousel";
-import { Container, Stack, Title } from "@mantine/core";
+import { Container, Divider, Stack, Title } from "@mantine/core";
 import classes from "./RecommendedContent.module.css";
 import RecommendedContentCard from "./RecommendedContentCard";
 import { usePage } from "@inertiajs/react";
@@ -21,6 +21,7 @@ export default function RecommendedContent({
 
     return (
         <Stack>
+            <Divider my={16} />
             <Title order={3}>Recommended</Title>
             <CustomCarousel
                 containerWidth={containerWidth}
@@ -34,6 +35,7 @@ export default function RecommendedContent({
                     </Carousel.Slide>
                 ))}
             </CustomCarousel>
+            <Divider my={16} />
         </Stack>
     );
 }

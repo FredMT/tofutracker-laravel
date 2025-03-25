@@ -118,9 +118,7 @@ function Movie() {
                             <RegularContentCredits
                                 containerWidth={width * 0.67}
                             />
-                            <Divider my={16} />
                             <RecommendedContent containerWidth={width * 0.67} />
-                            <Divider my={16} />
                             <Comments />
                         </Box>
                     }

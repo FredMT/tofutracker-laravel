@@ -121,9 +121,7 @@ function TV() {
                             />
                             <Divider my={16} />
                             <Seasons containerWidth={width * 0.67} />
-                            <Divider my={16} />
                             <RecommendedContent containerWidth={width * 0.67} />
-                            <Divider my={16} />
                             <Comments />
                         </Box>
                     }
