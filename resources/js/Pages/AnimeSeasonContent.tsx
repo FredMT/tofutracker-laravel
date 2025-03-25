@@ -5,7 +5,7 @@ import ContentActions from "@/Components/ContentActions/ContentActions";
 import ResponsiveContainer from "@/Components/ResponsiveContainer";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
 import ContentLayout from "@/Layouts/ContentLayout";
-import AnimeSeasonDetails from "@/Pages/AnimeSeasonDetails";
+import AnimeSeasonDetails from "@/Components/Content/Anime/AnimeSeasonDetails";
 import { Head, usePage } from "@inertiajs/react";
 import { Box, Divider, Space, Stack, Title } from "@mantine/core";
 import { useViewportSize } from "@mantine/hooks";

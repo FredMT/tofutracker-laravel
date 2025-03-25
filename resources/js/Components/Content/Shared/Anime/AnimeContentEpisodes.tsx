@@ -1,8 +1,16 @@
-import ContentEpisodeCard from "@/Components/Content/Episodes/ContentEpisodeCard";
-import {AnimeSeason} from "@/types/animeseason";
-import {usePage} from "@inertiajs/react";
-import {Button, Space, Spoiler, Stack, Tabs, Title} from "@mantine/core";
-import {useState} from "react";
+import { AnimeSeason } from "@/types/animeseason";
+import { usePage } from "@inertiajs/react";
+import {
+    Button,
+    Grid,
+    Space,
+    Spoiler,
+    Stack,
+    Tabs,
+    Title,
+} from "@mantine/core";
+import { useState } from "react";
+import { EpisodeCard } from "../../Episodes/EpisodeCard";
 
 function AnimeContentEpisodes() {
     const { data } = usePage<{ data: AnimeSeason }>().props;
@@ -72,16 +80,28 @@ function AnimeContentEpisodes() {
                     {hasMainEpisodes && (
                         <Tabs.Panel value="main">
                             <Stack mt="md">
-                                {Object.entries(paginatedMainEpisodes).map(
-                                    ([number, episode]) => (
-                                        <ContentEpisodeCard
-                                            key={`main-${number}`}
-                                            episode={episode}
-                                            imageSource="tvdb"
-                                            type="anime"
-                                        />
-                                    )
-                                )}
+                                <Grid
+                                    type="container"
+                                    breakpoints={{
+                                        xs: "500px",
+                                        sm: "500px",
+                                        md: "700px",
+                                        lg: "900px",
+                                        xl: "1024px",
+                                    }}
+                                    gutter={{ base: 12 }}
+                                >
+                                    {Object.entries(paginatedMainEpisodes).map(
+                                        ([number, episode]) => (
+                                            <EpisodeCard
+                                                key={`main-${number}`}
+                                                episode={episode}
+                                                imageSource="tvdb"
+                                                type="anime"
+                                            />
+                                        )
+                                    )}
+                                </Grid>
                                 {hasMoreMainEpisodes && (
                                     <Button
                                         onClick={() =>
@@ -103,16 +123,28 @@ function AnimeContentEpisodes() {
                         <>
                             <Tabs.Panel value="special">
                                 <Stack mt="md">
-                                    {Object.entries(
-                                        paginatedSpecialEpisodes
-                                    ).map(([number, episode]) => (
-                                        <ContentEpisodeCard
-                                            key={`special-${number}`}
-                                            episode={episode}
-                                            imageSource="tvdb"
-                                            type="anime"
-                                        />
-                                    ))}
+                                    <Grid
+                                        type="container"
+                                        breakpoints={{
+                                            xs: "500px",
+                                            sm: "500px",
+                                            md: "700px",
+                                            lg: "900px",
+                                            xl: "1024px",
+                                        }}
+                                        gutter={{ base: 12 }}
+                                    >
+                                        {Object.entries(
+                                            paginatedSpecialEpisodes
+                                        ).map(([number, episode]) => (
+                                            <EpisodeCard
+                                                key={`special-${number}`}
+                                                episode={episode}
+                                                imageSource="tvdb"
+                                                type="anime"
+                                            />
+                                        ))}
+                                    </Grid>
                                     {hasMoreSpecialEpisodes && (
                                         <Button
                                             onClick={() =>

@@ -276,12 +276,12 @@ interface ContentSummaryProps {
 export interface Episode {
     id: number;
     name: string;
-    overview: string;
+    overview: string | null;
     episode_number: number;
-    air_date: string;
-    still_path: string;
-    vote_average?: number;
-    runtime: number;
+    air_date: string | null;
+    still_path: string | null;
+    vote_average: number | null;
+    runtime: number | null;
 }
 
 interface BasePerson {

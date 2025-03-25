@@ -98,32 +98,30 @@ export default function EpisodeActions({ episodal_id }: EpisodeActionsProps) {
     };
 
     return (
-        <Paper>
-            <Button
-                leftSection={
-                    isEpisodeWatched && isHovered ? (
-                        <XCircle size={24} />
-                    ) : (
-                        <CheckCircle2 size={24} />
-                    )
-                }
-                size="xs"
-                p={4}
-                variant={
-                    isEpisodeWatched
-                        ? isHovered
-                            ? "outline"
-                            : "filled"
-                        : "outline"
-                }
-                color={isEpisodeWatched && isHovered ? "red" : "grape"}
-                fullWidth
-                onClick={handleEpisodeAction}
-                loading={form.processing}
-                disabled={form.processing}
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-            />
-        </Paper>
+        <Button
+            leftSection={
+                isEpisodeWatched && isHovered ? (
+                    <XCircle size={24} />
+                ) : (
+                    <CheckCircle2 size={24} />
+                )
+            }
+            size="xs"
+            p={4}
+            variant={
+                isEpisodeWatched
+                    ? isHovered
+                        ? "outline"
+                        : "filled"
+                    : "outline"
+            }
+            color={isEpisodeWatched && isHovered ? "red" : "grape"}
+            fullWidth
+            onClick={handleEpisodeAction}
+            loading={form.processing}
+            disabled={form.processing}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+        />
     );
 }
