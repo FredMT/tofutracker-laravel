@@ -88,33 +88,33 @@ class TvdbService
             return CreateTvdbAnimeSeasonJob::dispatch($completeData);
         }
 
-        $shouldUpdate = $season->status_keep_updated ||
-            ($season->last_fetched_at && now()->diffInMonths($season->last_fetched_at) >= 1);
+        // $shouldUpdate = $season->status_keep_updated ||
+        //     ($season->last_fetched_at && now()->diffInMonths($season->last_fetched_at) >= 1);
 
-        if (! $shouldUpdate) {
-            $logMessage = $season->last_fetched_at
-                ? 'Skipping update - monthly check not due yet'
-                : 'Skipping update - status_keep_updated is false and no previous fetch';
+        // if (! $shouldUpdate) {
+        //     $logMessage = $season->last_fetched_at
+        //         ? 'Skipping update - monthly check not due yet'
+        //         : 'Skipping update - status_keep_updated is false and no previous fetch';
 
-            logger()->info($logMessage, [
-                'series_id' => $seriesId,
-                'season_id' => $season->id,
-                'months_until_next_check' => $season->last_fetched_at ? 1 - now()->diffInMonths($season->last_fetched_at) : null,
-            ]);
-            throw new TvdbSyncException('Update not needed', 0, null);
-        }
+        //     logger()->info($logMessage, [
+        //         'series_id' => $seriesId,
+        //         'season_id' => $season->id,
+        //         'months_until_next_check' => $season->last_fetched_at ? 1 - now()->diffInMonths($season->last_fetched_at) : null,
+        //     ]);
+        //     throw new TvdbSyncException('Update not needed', 0, null);
+        // }
 
         // Compare lastUpdated timestamps
-        $apiLastUpdated = $completeData->data->lastUpdated;
-        if ($season->last_updated >= $apiLastUpdated) {
-            logger()->info('Skipping update - no new updates from TVDB because api response lastUpdated is not newer than local lastUpdated', [
-                'series_id' => $seriesId,
-            ]);
+        // $apiLastUpdated = $completeData->data->lastUpdated;
+        // if ($season->last_updated >= $apiLastUpdated) {
+        //     logger()->info('Skipping update - no new updates from TVDB because api response lastUpdated is not newer than local lastUpdated', [
+        //         'series_id' => $seriesId,
+        //     ]);
 
-            // Update last_fetched_at even though we're not updating content
-            $season->update(['last_fetched_at' => now()]);
-            throw new TvdbSyncException('No new updates available', 0, null);
-        }
+        //     // Update last_fetched_at even though we're not updating content
+        //     $season->update(['last_fetched_at' => now()]);
+        //     throw new TvdbSyncException('No new updates available', 0, null);
+        // }
 
         logger()->info('Dispatching update job for existing season', [
             'series_id' => $seriesId,

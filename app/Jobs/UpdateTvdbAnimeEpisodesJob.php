@@ -68,7 +68,6 @@ class UpdateTvdbAnimeEpisodesJob implements ShouldQueue
         // Update existing episodes
         foreach ($toUpdate as $episode) {
             TvdbAnimeEpisode::where('id', $episode->id)
-                ->where('last_updated', '<', $episode->lastUpdated)
                 ->update([
                     'is_movie' => $episode->isMovie,
                     'name' => $episode->name,

@@ -6,6 +6,7 @@ use App\Jobs\FetchAiringTvShowsJob;
 use App\Jobs\FetchTraktEpisodesJob;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class FetchAiringTvShowsCommand extends Command
@@ -26,6 +27,8 @@ class FetchAiringTvShowsCommand extends Command
 
             $this->info('Jobs dispatched successfully.');
             Log::info('TMDB airing TV shows and Trakt episodes fetch jobs dispatched successfully.');
+
+            Cache::forget('trakt_episodes_calendar');
         } catch (\Exception $e) {
             $this->error('Failed to dispatch jobs: ' . $e->getMessage());
             Log::error('Failed to dispatch TMDB airing TV shows and Trakt episodes fetch jobs', [
