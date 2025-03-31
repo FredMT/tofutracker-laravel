@@ -1,10 +1,14 @@
-import {Tabs, Text} from "@mantine/core";
-import {useState} from "react";
+import { Tabs, Text } from "@mantine/core";
+import { useState } from "react";
 import PersonCard from "./PersonCard";
-import {ContentCreditsProps, RegularContentDataType, TmdbPerson,} from "@/types";
-import {usePage} from "@inertiajs/react";
-import {CustomCarousel} from "@/Components/Shared/CustomCarousel";
-import {Carousel} from "@mantine/carousel";
+import {
+    ContentCreditsProps,
+    RegularContentDataType,
+    TmdbPerson,
+} from "@/types";
+import { usePage } from "@inertiajs/react";
+import { CustomCarousel } from "@/Components/Shared/CustomCarousel";
+import { Carousel } from "@mantine/carousel";
 
 export function RegularContentCredits({
     containerWidth,
@@ -14,7 +18,8 @@ export function RegularContentCredits({
 
     const [activeTab, setActiveTab] = useState<"cast" | "crew">("cast");
 
-    const people: TmdbPerson[] = activeTab === "cast" ? data.credits.cast : data.credits.crew;
+    const people: TmdbPerson[] =
+        activeTab === "cast" ? data.credits.cast : data.credits.crew;
 
     return (
         <>
@@ -39,15 +44,17 @@ export function RegularContentCredits({
                 height={300}
                 slidesToScroll={3}
             >
-                {people.map((person) => (
-                    <Carousel.Slide key={person.id}>
-                        <PersonCard
-                            person={person}
-                            type={activeTab}
-                            isAnime={false}
-                        />
-                    </Carousel.Slide>
-                ))}
+                {people
+                    .filter((person) => person.profile_path)
+                    .map((person) => (
+                        <Carousel.Slide key={person.id}>
+                            <PersonCard
+                                person={person}
+                                type={activeTab}
+                                isAnime={false}
+                            />
+                        </Carousel.Slide>
+                    ))}
             </CustomCarousel>
         </>
     );
