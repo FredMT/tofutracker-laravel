@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class AnimePrequelSequelChain extends Model
 {
     protected $fillable = [
+        'id',
         'map_id',
         'name',
         'importance_order',

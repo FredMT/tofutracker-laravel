@@ -22,6 +22,7 @@ const CONTAINER_SIZES: Record<string, string> = {
 };
 
 const theme = createTheme({
+    cursorType: 'pointer',
     breakpoints: {
         xs: "20em",
         xssm: "25em",

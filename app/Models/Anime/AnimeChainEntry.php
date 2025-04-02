@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class AnimeChainEntry extends Model
 {
     protected $fillable = [
+        'id',
         'chain_id',
         'anime_id',
         'sequence_order',

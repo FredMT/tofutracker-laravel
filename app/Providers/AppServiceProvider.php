@@ -195,7 +195,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Gate::define('superuser', function (User $user) {
-            return $user->email === 'fredmtonline@gmail.com';
+            return $user->email === env('SUPERUSER_EMAIL');
         });
     }
 
