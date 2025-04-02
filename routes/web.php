@@ -54,7 +54,7 @@ Route::prefix('admin')->middleware(CheckSuperuserEmail::class)->name('admin.')->
         Route::get('/', 'show')->name('show');
         Route::post('/anime/createAnimeMapChainEntry', 'createAnimeMapChainEntry')->name('createAnimeMapChainEntry');
         Route::post('/anime/findAnimeByAnidbId', 'findAnimeByAnidbId')->name('findAnimeByAnidbId');
-        Route::get('/anime/map/{mapId}', 'showAdminAnimeCollectionPage')->name('showAdminAnimeCollectionPage');
+        Route::get('/anime/map/{animeMap}', 'showAdminAnimeCollectionPage')->name('showAdminAnimeCollectionPage');
         Route::get('/anime/{animeId}', 'showAdminAnime')->name('showAdminAnime');
     });
 });

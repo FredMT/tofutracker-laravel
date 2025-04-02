@@ -9,15 +9,15 @@ use App\Models\Anime\AnimePrequelSequelChain;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
-use Inertia\Inertia;
-
 use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
 
 class AdminController extends Controller
 {
     protected $logger;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->logger = Log::channel('admin');
     }
 
@@ -50,16 +50,43 @@ class AdminController extends Controller
         ]);
     }
 
-    public function showAdminAnimeCollectionPage(AnimeMap $mapId)
+    public function showAdminAnimeCollectionPage(AnimeMap $animeMap)
     {
-        // {"id":101,"created_at":null,"updated_at":"2024-12-15T15:28:06.000000Z","most_common_tmdb_id":37854,"tmdb_type":"tv","collection_name":null}  
-        $chainEntries = $mapId->chainEntries->groupBy('chain_id')->map(function ($entries) {
-            return $entries->sortBy('sequence_order')->values();
+        $chainEntries = $animeMap->chainEntries->groupBy('chain_id')->map(function ($entries) {
+            return $entries->sortBy('sequence_order')->map(function ($entry) {
+                return $entry->only(['id', 'anime_id', 'sequence_order']);
+            })->values();
         });
-        $relatedEntries = $mapId->relatedEntries;
-        $data["chain_entries"] = $chainEntries;
-        $data["related_entries"] = $relatedEntries;
-        return Inertia::render('Admin/ShowAnimeCollectionPage', ['data' => $mapId]);
+
+        $relatedEntries = $animeMap->relatedEntries->map(function ($entry) {
+            return $entry->only(['id', 'anime_id']);
+        });
+
+        $animeIds = $chainEntries->flatten(1)->pluck('anime_id')->merge($relatedEntries->pluck('anime_id'))->unique();
+        $animes = AnidbAnime::whereIn('id', $animeIds)->get()->keyBy('id');
+
+        $chainEntries = $chainEntries->map(function ($entries) use ($animes) {
+            return $entries->map(function ($entry) use ($animes) {
+                $anime = $animes->get($entry['anime_id']);
+                $entry['picture'] = $anime->picture ?? null;
+                $entry['title_main'] = $anime->title_main ?? null;
+                return $entry;
+            });
+        });
+
+        $relatedEntries = $relatedEntries->map(function ($entry) use ($animes) {
+            $anime = $animes->get($entry['anime_id']);
+            $entry['picture'] = $anime->picture ?? null;
+            $entry['title_main'] = $anime->title_main ?? null;
+            return $entry;
+        });
+
+        $data['anime_map'] = $animeMap->only(['id', 'collection_name', 'most_common_tmdb_id', 'tmdb_type']);
+        $data['chain_entries'] = $chainEntries;
+        $data['related_entries'] = $relatedEntries;
+        $data['anime_map']['poster'] = $animeMap->poster;
+
+        return Inertia::render('Admin/ShowAnimeCollectionPage', ['data' => $data]);
     }
 
     public function findAnimeByAnidbId(Request $request)
@@ -138,7 +165,7 @@ class AdminController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            logger()->channel('admin')->error("Failed to create anime map chain entry for anidb_id {$validated['anidb_id']}: ".$e->getMessage());
+            $this->logger->error("Failed to create anime map chain entry for anidb_id {$validated['anidb_id']}: ".$e->getMessage());
 
             return response()->json(['success' => false, 'message' => 'Failed to create anime map chain entry. Please check logs.'], 500);
         }

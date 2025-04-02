@@ -87,7 +87,7 @@ function ShowAnimePage({ data }: { data: AdminAnimePage }) {
 												<Text>Map ID: {data.map_id}</Text>
 												<Link
 													href={route('admin.showAdminAnimeCollectionPage', {
-														mapId: data.map_id,
+														animeMap: data.map_id,
 													})}
 												>
 													<Button>View anime collection</Button>
