@@ -1,14 +1,17 @@
-import {PageProps} from "@/types";
-import {Head} from "@inertiajs/react";
-import DeleteUserForm from "./Partials/DeleteUserForm";
-import UpdatePasswordForm from "./Partials/UpdatePasswordForm";
-import UpdateProfileInformationForm from "./Partials/UpdateProfileInformationForm";
-import UpdateAvatarForm from "./Partials/UpdateAvatarForm";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
-import {Paper, Space, Stack} from "@mantine/core";
 import BoundedContainer from "@/Components/BoundedContainer";
+import SpoilerSettings from "@/Components/Edit/SpoilerSettings";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
 import UpdateBannerForm from "@/Pages/Profile/Partials/UpdateBannerForm";
 import UpdateBioForm from "@/Pages/Profile/Partials/UpdateBioForm";
+import { useUserConfiguration } from "@/hooks/props/useUserConfiguration";
+import { PageProps } from "@/types";
+import { Head } from "@inertiajs/react";
+import { Paper, Space, Stack } from "@mantine/core";
+import DeleteUserForm from "./Partials/DeleteUserForm";
+import UpdateAvatarForm from "./Partials/UpdateAvatarForm";
+import UpdatePasswordForm from "./Partials/UpdatePasswordForm";
+import UpdateProfileInformationForm from "./Partials/UpdateProfileInformationForm";
+import axios from "axios";
 
 function Edit({
     mustVerifyEmail,
@@ -17,6 +20,8 @@ function Edit({
     mustVerifyEmail: boolean;
     status?: string;
 }>) {
+    const userConfiguration = useUserConfiguration();
+
     return (
         <>
             <Head title="Profile" />
@@ -24,6 +29,8 @@ function Edit({
 
             <BoundedContainer>
                 <Stack>
+                    <SpoilerSettings userConfiguration={userConfiguration} />
+
                     <Paper shadow="sm" p="md" withBorder>
                         <UpdateProfileInformationForm
                             mustVerifyEmail={mustVerifyEmail}

@@ -11,9 +11,11 @@ import {
 } from "@mantine/core";
 import { useState } from "react";
 import { EpisodeCard } from "../../Episodes/EpisodeCard";
+import { useSpoilerConfiguration } from "@/stores/useSpoilerConfiguration";
 
 function AnimeContentEpisodes() {
     const { data } = usePage<{ data: AnimeSeason }>().props;
+    const configuration = useSpoilerConfiguration().configuration;
 
     if (!data?.mapped_episodes) return null;
 
@@ -98,6 +100,9 @@ function AnimeContentEpisodes() {
                                                 episode={episode}
                                                 imageSource="tvdb"
                                                 type="anime"
+                                                hideDescription={
+                                                    configuration.hide_episode_description
+                                                }
                                             />
                                         )
                                     )}
@@ -142,6 +147,9 @@ function AnimeContentEpisodes() {
                                                 episode={episode}
                                                 imageSource="tvdb"
                                                 type="anime"
+                                                hideDescription={
+                                                    configuration.hide_episode_description
+                                                }
                                             />
                                         ))}
                                     </Grid>

@@ -40,10 +40,6 @@ class ProcessAnimeXmlJob implements ShouldQueue
                         }, function () use ($job) {
                             // Release the job back to the queue with a delay
                             $job->release(2); // Release back after 2 seconds
-
-                            logger()->channel('anidbupdate')->info('Rate limited AniDB API request, releasing job back to queue', [
-                                'anime_id' => $job->animeId ?? 'unknown',
-                            ]);
                         });
                 }
             }
@@ -65,12 +61,11 @@ class ProcessAnimeXmlJob implements ShouldQueue
             $xmlContent = preg_replace('/&(?!(?:amp|lt|gt|quot|apos);)/', '&amp;', $response->body());
 
             if (preg_match('/<error code="500">banned<\/error>/', $xmlContent)) {
-                logger()->channel('anidbupdate')->error('AniDB API access banned. Cancelling all related jobs.');
-
+                $errorMessage = 'AniDB API access banned (detected in response). Cancelling all related jobs.';
+                logger()->channel('anidbupdate')->error($errorMessage, ['anime_id' => $this->animeId]);
                 $this->cancelAllRelatedJobs();
-
-                // No need to continue processing
-                return;
+                // Throw an exception instead of returning so the calling command can catch it.
+                throw new \RuntimeException($errorMessage);
             }
             // Process the XML
             $service->processXmlContent($xmlContent);

@@ -3,9 +3,11 @@ import { usePage } from "@inertiajs/react";
 import { Divider, Grid, Stack, Title } from "@mantine/core";
 
 import { EpisodeCard } from "./EpisodeCard";
+import { useSpoilerConfiguration } from "@/stores/useSpoilerConfiguration";
 
 function ContentEpisodes() {
     const { data } = usePage<{ data: TvSeason }>().props;
+    const configuration = useSpoilerConfiguration().configuration;
 
     return (
         <Stack mb={24}>
@@ -30,6 +32,9 @@ function ContentEpisodes() {
                             key={episode.id}
                             imageSource="tmdb"
                             type="tv"
+                            hideDescription={
+                                configuration.hide_episode_description
+                            }
                         />
                     ))}
             </Grid>

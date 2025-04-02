@@ -6,6 +6,7 @@ use App\Actions\Controller\Anime\AnimeControllerAction;
 use App\Repositories\Anime\AnimeControllerRepository;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -35,6 +36,14 @@ class AnimeController extends Controller
             // Get user content
             $userContent = $this->action->getUserContent($accessId);
 
+            $user = Auth::user();
+
+            $configuration = $user?->configuration()->first() ?? (object) [
+                'hide_episode_description' => false,
+                'hide_character_name' => false,
+                'hide_anime_character_picture' => false,
+            ];
+
             // Prepare and return response
             return Inertia::render(
                 'AnimeContent',
@@ -51,6 +60,7 @@ class AnimeController extends Controller
                     'user_library' => $userContent['library'],
                     'user_lists' => $userContent['lists'],
                     'comments' => $comments,
+                    'configuration' => $configuration,
                 ]
             );
         } catch (ModelNotFoundException $e) {

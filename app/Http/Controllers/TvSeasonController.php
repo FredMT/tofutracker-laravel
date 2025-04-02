@@ -41,9 +41,11 @@ class TvSeasonController extends Controller
 
             $userLibrary = null;
             $userLists = null;
+            $user = null;
             if (Auth::check()) {
+                $user = Auth::user();
                 $userSeason = UserTvSeason::where([
-                    'user_id' => Auth::id(),
+                    'user_id' => $user->id,
                     'season_id' => $seasonData['id'],
                     'show_id' => $seasonData['show_id'],
 
@@ -58,7 +60,7 @@ class TvSeasonController extends Controller
                     ];
                 }
 
-                $userLists = $request->user()
+                $userLists = $user
                     ->customLists()
                     ->select('id', 'title')
                     ->orderBy('title', 'ASC')
@@ -75,6 +77,12 @@ class TvSeasonController extends Controller
 
             $links = $this->generateNavigationLinks($tvId, (int) $seasonNumber);
 
+            $configuration = $user?->configuration()->first() ?? (object) [
+                'hide_episode_description' => false,
+                'hide_character_name' => false,
+                'hide_anime_character_picture' => false,
+            ];
+            
             return Inertia::render('TVSeason', [
                 'data' => $seasonData,
                 'user_library' => $userLibrary,
@@ -82,6 +90,7 @@ class TvSeasonController extends Controller
                 'type' => 'tvseason',
                 'links' => $links,
                 'comments' => $comments,
+                'configuration' => $configuration
             ]);
         } catch (\Exception $e) {
             logger()->error('Failed to retrieve TV season: ' . $e->getMessage());

@@ -59,6 +59,7 @@ function TV() {
                                 )}
                                 <ContentActions />
                             </Stack>
+
                             <Box hiddenFrom="sm">
                                 <ContentDetails />
                                 <Divider my={16} />
@@ -81,11 +82,9 @@ function TV() {
                                 />
                                 <Divider my={16} />
                                 <Seasons containerWidth={width * 0.95} />
-                                <Divider my={16} />
                                 <RecommendedContent
                                     containerWidth={width * 0.95}
                                 />
-                                <Divider my={16} />
                                 <Comments />
                             </Box>
                         </Stack>

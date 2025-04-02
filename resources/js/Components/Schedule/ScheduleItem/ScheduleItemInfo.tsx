@@ -32,7 +32,9 @@ function ScheduleItemInfo({ item }: { item: ScheduleItem }) {
                     </Text>
                 ) : (
                     <Text size="sm" lineClamp={1}>
-                        {`Episode ${item.episode_number}`}
+                        {item.type === "anime"
+                            ? item.title
+                            : `Episode ${item.episode_number}`}
                     </Text>
                 )}
             </Link>

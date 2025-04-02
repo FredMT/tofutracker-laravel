@@ -1,13 +1,19 @@
-import {AnimePerson, TmdbPerson} from "@/types";
-import {Card, Image, Stack, Text, Tooltip} from "@mantine/core";
+import { AnimePerson, TmdbPerson } from "@/types";
+import { Card, Image, Skeleton, Stack, Text, Tooltip } from "@mantine/core";
 
 interface PersonCardProps {
     person: TmdbPerson | AnimePerson;
     type: "cast" | "crew";
     isAnime: boolean;
+    hideCharacterName?: boolean;
 }
 
-function PersonCard({ person, type, isAnime }: PersonCardProps) {
+function PersonCard({
+    person,
+    type,
+    isAnime,
+    hideCharacterName,
+}: PersonCardProps) {
     const getImageUrl = () => {
         if (isAnime) {
             return person.picture;
@@ -61,11 +67,15 @@ function PersonCard({ person, type, isAnime }: PersonCardProps) {
                             {person.name}
                         </Text>
                     </Tooltip>
-                    <Tooltip label={getSubtext()} openDelay={150}>
-                        <Text size="sm" lineClamp={1}>
-                            {getSubtext()}
-                        </Text>
-                    </Tooltip>
+                    {hideCharacterName && type === "cast" ? (
+                        <Skeleton h={8} />
+                    ) : (
+                        <Tooltip label={getSubtext()} openDelay={150}>
+                            <Text size="sm" lineClamp={1}>
+                                {getSubtext()}
+                            </Text>
+                        </Tooltip>
+                    )}
                 </Stack>
             </Card.Section>
         </Card>

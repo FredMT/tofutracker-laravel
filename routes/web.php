@@ -3,6 +3,7 @@
 use App\Actions\Trending\GetTrendingAction;
 use App\Actions\Trending\GetTrendingGenresAndWatchProvidersAction;
 use App\Http\Controllers\Activity\ToggleActivityLikeController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AnimeCollectionController;
 use App\Http\Controllers\AnimeController;
 use App\Http\Controllers\AnimeSeasonController;
@@ -35,9 +36,11 @@ use App\Http\Controllers\UserTv\UserTvEpisodeController;
 use App\Http\Controllers\UserTv\UserTvSeasonController;
 use App\Http\Controllers\UserTv\UserTvShowController;
 use App\Http\Middleware\CheckAnimeMapping;
+use App\Http\Middleware\CheckSuperuserEmail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -46,11 +49,20 @@ Route::get('/', function () {
     ]);
 })->name('welcome');
 
+Route::prefix('admin')->middleware(CheckSuperuserEmail::class)->name('admin.')->group(function () {
+    Route::controller(AdminController::class)->group(function () {
+        Route::get('/', 'show')->name('show');
+        Route::post('/anime/createAnimeMapChainEntry', 'createAnimeMapChainEntry')->name('createAnimeMapChainEntry');
+        Route::post('/anime/findAnimeByAnidbId', 'findAnimeByAnidbId')->name('findAnimeByAnidbId');
+        Route::get('/anime/map/{mapId}', 'showAdminAnimeCollectionPage')->name('showAdminAnimeCollectionPage');
+        Route::get('/anime/{animeId}', 'showAdminAnime')->name('showAdminAnime');
+    });
+});
+
 Route::get('/me', function () {
-    if (! Auth::check()) {
+    if (!Auth::check()) {
         return redirect()->route('login');
     }
-
     return redirect()->route('user.profile', ['username' => Auth::user()->username]);
 })->name('me');
 
@@ -73,6 +85,7 @@ Route::middleware('auth')->prefix('settings')->name('profile.')->group(function 
     Route::post('/avatar', [ProfileController::class, 'updateAvatar'])->name('avatar');
     Route::post('/banner', [ProfileController::class, 'updateBanner'])->name('banner');
     Route::patch('/bio', [ProfileController::class, 'updateBio'])->name('bio');
+    Route::post('/updateConfiguration', [ProfileController::class, 'updateConfiguration'])->name('updateConfiguration');
 });
 
 Route::middleware('auth')->prefix('list/{list}')->name('list.')->group(function () {
@@ -215,4 +228,4 @@ Route::prefix('schedule')->name('schedule.')->group(function () {
     Route::get('/', [ScheduleController::class, 'index'])->name('index');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

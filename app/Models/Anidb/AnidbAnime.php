@@ -10,8 +10,10 @@ use App\Models\Comment;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Znck\Eloquent\Relations\BelongsToThrough;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class AnidbAnime extends Model
 {
@@ -238,6 +240,11 @@ class AnidbAnime extends Model
     public function comments(): MorphMany
     {
         return $this->morphMany(Comment::class, 'commentable');
+    }
+
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(AnidbTag::class, 'anidb_anime_tags', 'anidb_id', 'tag_id');
     }
 
     public function mainEpisodes(): array

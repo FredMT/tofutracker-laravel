@@ -11,6 +11,7 @@ import {
     Stack,
     Text,
     Title,
+    Skeleton,
 } from "@mantine/core";
 
 import { Calendar, Clock } from "lucide-react";
@@ -21,10 +22,12 @@ export function EpisodeCard({
     episode,
     imageSource,
     type,
+    hideDescription,
 }: {
     episode: Episode;
     imageSource: "tmdb" | "tvdb";
     type: "anime" | "tv";
+    hideDescription: boolean;
 }) {
     const STILL_PATH =
         imageSource === "tmdb"
@@ -86,15 +89,31 @@ export function EpisodeCard({
                                 </Group>
                             )}
                         </Group>
-                        {episode.overview && (
-                            <Spoiler
-                                maxHeight={30}
-                                showLabel="Show more"
-                                hideLabel="Hide"
-                            >
-                                <Text>{episode.overview}</Text>
-                            </Spoiler>
-                        )}
+                        {episode.overview &&
+                            (hideDescription ? (
+                                <>
+                                    <Skeleton
+                                        animate={false}
+                                        height={16}
+                                        radius="xl"
+                                    />
+                                    <Skeleton
+                                        animate={false}
+                                        height={16}
+                                        radius="xl"
+                                    />
+                                </>
+                            ) : (
+                                <>
+                                    <Spoiler
+                                        maxHeight={30}
+                                        showLabel="Show more"
+                                        hideLabel="Hide"
+                                    >
+                                        <Text>{episode.overview}</Text>
+                                    </Spoiler>
+                                </>
+                            ))}
                     </Stack>
                 </Paper>
             </Paper>

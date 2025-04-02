@@ -63,6 +63,7 @@ class AnidbXmlService
                 'similar_anime' => isset($xml->similaranime) ? $this->parseSimilarAnime($xml->similaranime->anime ?? []) : [],
                 'creators' => isset($xml->creators) ? $this->parseCreators($xml->creators->name ?? []) : [],
                 'external_links' => isset($xml->resources) ? $this->parseExternalLinks($xml->resources->resource ?? []) : [],
+                'tags' => isset($xml->tags) ? $this->parseTags($xml->tags->tag ?? []) : [],
             ];
 
             return $data;
@@ -273,5 +274,27 @@ class AnidbXmlService
         }
 
         return null;
+    }
+
+    private function parseTags(?SimpleXMLElement $tags): array
+    {
+        if (! $tags) {
+            return [];
+        }
+
+        $parsedTags = [];
+        foreach ($tags as $tag) {
+            if (((string) ($tag['verified'] ?? '')) !== 'true') {
+                continue;
+            }            
+
+            $parsedTags[] = [
+                'tag_id' => (string) ($tag['id'] ?? ''),
+                'name' => (string) ($tag->name ?? ''),
+                'description' => (string) ($tag->description ?? ''),
+            ];
+        }
+
+        return $parsedTags;
     }
 }

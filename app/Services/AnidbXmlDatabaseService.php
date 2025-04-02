@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Anidb\AnidbAnime;
 use App\Models\Anidb\AnidbCharacter;
 use App\Models\Anidb\AnidbSeiyuu;
+use App\Models\Anidb\AnidbTag;
 use Illuminate\Support\Facades\DB;
 
 class AnidbXmlDatabaseService
@@ -34,6 +35,7 @@ class AnidbXmlDatabaseService
             $this->processSimilarAnime($anime, $parsedData['similar_anime']);
             $this->processCreators($anime, $parsedData['creators']);
             $this->processExternalLinks($anime, $parsedData['external_links']);
+            $this->processTags($anime, $parsedData['tags']);
 
             DB::commit();
             logger()->channel('anidbupdate')->info('Successfully processed anime XML', ['anime_id' => $anime->id]);
@@ -311,5 +313,44 @@ class AnidbXmlDatabaseService
             'funimation',
             'primevideo',
         ];
+    }
+
+    private function processTags(AnidbAnime $anime, array $tags): void
+    {
+        $tagIds = [];
+        foreach ($tags as $tagData) {
+            try {
+                if (empty($tagData['tag_id']) || empty($tagData['name'])) {
+                    continue; 
+                }
+
+                AnidbTag::updateOrCreate(
+                    ['id' => (int) $tagData['tag_id']], // ID comes from XML
+                    [
+                        'name' => $tagData['name'],
+                        'description' => $tagData['description'],
+                    ]
+                );
+    
+                $tagIds[] = (int) $tagData['tag_id'];
+            } catch (\Exception $e) {
+                logger()->channel('anidbupdate')->error('Error processing or saving tag definition', [
+                    'tag_id' => $tagData['tag_id'] ?? 'unknown',
+                    'error' => $e->getMessage(),
+                ]);
+
+                continue;
+            }
+        }
+
+        try {
+            $anime->tags()->sync($tagIds);
+        } catch (\Exception $e) {
+            logger()->channel('anidbupdate')->error('Error syncing tags for anime', [
+                'anime_id' => $anime->id,
+                'tag_ids' => $tagIds,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 }

@@ -1,5 +1,5 @@
 import {CastMember, SeiyuuMember} from "@/types/anime";
-import {Card, Group, Image, Stack, Text, Tooltip} from "@mantine/core";
+import {Card, Group, Image, Skeleton, Stack, Text, Tooltip} from "@mantine/core";
 import {Carousel} from "@mantine/carousel";
 import classes from "./AnimeCreditsCard.module.css";
 import {Cast} from "@/types/animeseason";
@@ -7,9 +7,11 @@ import {Cast} from "@/types/animeseason";
 interface AnimeCreditsCardProps {
     character: CastMember | Cast;
     seiyuus: (SeiyuuMember | Cast)[];
+    hideAnimeCharacterPicture: boolean;
+    hideCharacterName: boolean;
 }
 
-function AnimeCreditsCard({ character, seiyuus }: AnimeCreditsCardProps) {
+function AnimeCreditsCard({ character, seiyuus, hideAnimeCharacterPicture, hideCharacterName }: AnimeCreditsCardProps) {
     return (
         <Card
             radius="md"
@@ -23,7 +25,7 @@ function AnimeCreditsCard({ character, seiyuus }: AnimeCreditsCardProps) {
             <Group wrap="nowrap" gap="md" justify="center">
                 <Stack gap={8} mih={200}>
                     <Image
-                        src={character.picture}
+                        src={!hideAnimeCharacterPicture && character.picture}
                         h={186}
                         mih={186}
                         mah={186}
@@ -31,16 +33,18 @@ function AnimeCreditsCard({ character, seiyuus }: AnimeCreditsCardProps) {
                         radius={"md"}
                         loading="lazy"
                         w={124}
-                        alt={character.name}
+                        alt={hideCharacterName ? "Character" : character.name}
                         fit="cover"
                         style={{ objectPosition: "top" }}
-                        fallbackSrc={`https://placehold.co/124x186?text=${character.name}`}
+                        fallbackSrc={`https://placehold.co/124x186?text=${hideCharacterName ? "Character" : character.name}`}
                     />
-                    <Tooltip label={character.name} openDelay={150}>
+                    {hideCharacterName ? (
+                        <><Skeleton h={20} animate={false} /></>
+                    ) : (<Tooltip label={hideCharacterName ? "Character" : character.name} openDelay={150}>
                         <Text size="sm" fw={500} lineClamp={1} w={124}>
                             {character.name}
                         </Text>
-                    </Tooltip>
+                    </Tooltip>)}
                 </Stack>
 
                 <Stack gap={8} mih={200}>
@@ -95,7 +99,7 @@ function AnimeCreditsCard({ character, seiyuus }: AnimeCreditsCardProps) {
                             fit="cover"
                             style={{ objectPosition: "top" }}
                             fallbackSrc={`https://placehold.co/124x186?text=${
-                                seiyuus[0]?.name || `${character.name}'s seiyuu`
+                                seiyuus[0]?.name || `${hideCharacterName ? "Character" : character.name}'s seiyuu`
                             }`}
                         />
                     )}
@@ -103,14 +107,14 @@ function AnimeCreditsCard({ character, seiyuus }: AnimeCreditsCardProps) {
                         label={
                             seiyuus.length
                                 ? seiyuus.map((s) => s.name).join(", ")
-                                : `${character.name}'s seiyuu`
+                                : `${hideCharacterName ? "Character" : character.name}'s seiyuu`
                         }
                         openDelay={150}
                     >
                         <Text size="sm" fw={500} lineClamp={1} w={124} truncate>
                             {seiyuus.length
                                 ? seiyuus.map((s) => s.name).join(", ")
-                                : `${character.name}'s seiyuu`}
+                                : `${hideCharacterName ? "Character" : character.name}'s seiyuu`}
                         </Text>
                     </Tooltip>
                 </Stack>

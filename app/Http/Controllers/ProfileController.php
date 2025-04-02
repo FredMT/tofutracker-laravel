@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,9 +18,20 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): Response
     {
+        $user = $request->user();
+
+        $configuration = $user->configuration()->first();
+
+        $configuration = $configuration ?: (object) [
+            'hide_episode_description' => false,
+            'hide_character_name' => false,
+            'hide_anime_character_picture' => false,
+        ];
+
         return Inertia::render('Profile/Edit', [
-            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+            'mustVerifyEmail' => $user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail,
             'status' => session('status'),
+            'configuration' => $configuration,
         ]);
     }
 
@@ -202,5 +212,42 @@ class ProfileController extends Controller
         ]);
 
         return back()->with('status', 'Bio updated successfully.');
+    }
+
+    public function updateConfiguration(Request $request)
+    {
+        $user = Auth::user();
+
+        abort_if(!$user, 403, 'Unauthorized');
+
+        if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail) {
+            to_route('verification.notice');
+        }
+
+        $validated = $request->validate([
+            'hide_episode_description' => ['required', 'boolean'],
+            'hide_character_name' => ['required', 'boolean'],
+            'hide_anime_character_picture' => ['required', 'boolean'],
+        ]);
+
+        try {
+            $user->configuration()->updateOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'hide_episode_description' => $validated['hide_episode_description'],
+                    'hide_character_name' => $validated['hide_character_name'],
+                    'hide_anime_character_picture' => $validated['hide_anime_character_picture'],
+                ]
+            );
+    
+            return back()->with([
+                'success' => true,
+                'message' => 'User configuration updated successfully',
+            ], 200);
+        } catch (\Exception $e) {
+            logger($e->getMessage());
+            logger($e->getTraceAsString());
+            return response()->json(['success' => false, 'message' => 'Failed to update user configuration.'], 500);
+        }
     }
 }

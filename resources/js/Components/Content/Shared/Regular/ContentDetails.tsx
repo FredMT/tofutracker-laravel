@@ -1,6 +1,7 @@
 import { RegularContentDataType } from "@/types";
 import { usePage } from "@inertiajs/react";
-import { Grid, Text, Title } from "@mantine/core";
+import { Grid, Group, Switch, Text, Title } from "@mantine/core";
+import { useSpoilerConfiguration } from "@/stores/useSpoilerConfiguration";
 
 type DetailsField = {
     key: string;
@@ -12,6 +13,8 @@ export function ContentDetails() {
         data: RegularContentDataType;
         type: "movie" | "tv";
     }>().props;
+    const { mustShowSpoilerSwitch, setShowSpoilers } =
+        useSpoilerConfiguration();
 
     const getDetailsFields = (): DetailsField[] => {
         switch (type) {
@@ -52,9 +55,20 @@ export function ContentDetails() {
 
     return (
         <>
-            <Title order={3} my={16} style={{ letterSpacing: "0.5px" }}>
-                Details
-            </Title>
+            <Group justify="space-between">
+                <Title order={3} my={16} style={{ letterSpacing: "0.5px" }}>
+                    Details
+                </Title>
+                {mustShowSpoilerSwitch && (
+                    <Switch
+                        label="Show spoilers"
+                        onChange={(event) =>
+                            setShowSpoilers(event.currentTarget.checked)
+                        }
+                    />
+                )}
+            </Group>
+
             <Grid columns={6}>
                 {getDetailsFields().map(
                     ({ key, label }) =>

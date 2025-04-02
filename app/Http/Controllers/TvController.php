@@ -26,14 +26,16 @@ class TvController extends Controller
 
         $userLibrary = null;
         $userLists = null;
+        $user = null;
 
         if ($request->user()) {
+            $user = $request->user();
             $userLibrary = UserTvShow::where([
-                'user_id' => $request->user()->id,
+                'user_id' => $user->id,
                 'show_id' => $id,
             ])->first();
 
-            $userLists = $request->user()
+            $userLists = $user
                 ->customLists()
                 ->select('id', 'title')
                 ->orderBy('title', 'ASC')
@@ -46,6 +48,12 @@ class TvController extends Controller
             if ($userLists->isEmpty()) {
                 $userLists = null;
             }
+
+            $configuration = $user?->configuration()->first() ?? (object) [
+                'hide_episode_description' => false,
+                'hide_character_name' => false,
+                'hide_anime_character_picture' => false,
+            ];
         }
 
         return Inertia::render('TV', [
@@ -54,6 +62,7 @@ class TvController extends Controller
             'user_lists' => $userLists,
             'type' => 'tv',
             'comments' => $comments,
+            'configuration' => $configuration,
         ]);
     }
 }

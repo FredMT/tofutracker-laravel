@@ -260,7 +260,6 @@ class TmdbService
     public function getTrendingAllPaginated(int $page = 1): array
     {
         try {
-            Log::channel('trendinglog')->info("Fetching trending page {$page}");
 
             $response = $this->client->get('/trending/all/week', [
                 'language' => 'en-US',

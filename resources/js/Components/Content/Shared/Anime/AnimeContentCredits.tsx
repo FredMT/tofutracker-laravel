@@ -6,6 +6,7 @@ import { AnimeSeason, Cast } from "@/types/animeseason";
 import { CustomCarousel } from "@/Components/Shared/CustomCarousel";
 import { Carousel } from "@mantine/carousel";
 import { Anime } from "@/types/anime";
+import { useSpoilerConfiguration } from "@/stores/useSpoilerConfiguration";
 
 export function AnimeContentCredits({
     containerWidth,
@@ -13,6 +14,7 @@ export function AnimeContentCredits({
 }: ContentCreditsProps) {
     const { type } = usePage<{ type: AnimeType }>().props;
     let { data } = usePage<{ data: AnimeContentDataType }>().props;
+    const configuration = useSpoilerConfiguration().configuration;
 
     let cast: Cast[];
     let seiyuu: Cast[];
@@ -51,6 +53,12 @@ export function AnimeContentCredits({
                                             ?.split(", ")
                                             ?.includes(character.name) ?? false
                                 )}
+                                hideAnimeCharacterPicture={
+                                    configuration.hide_anime_character_picture
+                                }
+                                hideCharacterName={
+                                    configuration.hide_character_name
+                                }
                             />
                         </Carousel.Slide>
                     ))}

@@ -8,9 +8,11 @@ import { Head, usePage } from "@inertiajs/react";
 import {
     Box,
     Divider,
+    Group,
     Space,
     Spoiler,
     Stack,
+    Switch,
     Text,
     Title,
 } from "@mantine/core";
@@ -21,10 +23,13 @@ import { RegularContentCredits } from "@/Components/Content/Shared/Regular/Regul
 import RegularPosterImage from "@/Components/Content/Shared/Regular/RegularPosterImage";
 import { RegularBannerImageContainer } from "@/Components/Content/Shared/Regular/RegularBannerImageContainer";
 import Comments from "@/Components/Comments/Comments";
+import { useSpoilerConfiguration } from "@/stores/useSpoilerConfiguration";
 
 function TVSeason() {
     const { width } = useViewportSize();
     const { data } = usePage<{ data: TvSeason }>().props;
+    const { mustShowSpoilerSwitch, setShowSpoilers } =
+        useSpoilerConfiguration();
     return (
         <>
             <Head title={data.title} />
@@ -52,7 +57,20 @@ function TVSeason() {
                             <ContentActions />
                             <Box hiddenFrom="sm">
                                 <Stack mt={16}>
-                                    <Title order={3}>Overview</Title>
+                                    <Group justify="space-between">
+                                        <Title order={3}>Overview</Title>
+                                        {mustShowSpoilerSwitch && (
+                                            <Switch
+                                                label="Show spoilers"
+                                                onChange={(event) =>
+                                                    setShowSpoilers(
+                                                        event.currentTarget
+                                                            .checked
+                                                    )
+                                                }
+                                            />
+                                        )}
+                                    </Group>
                                     <Spoiler
                                         maxHeight={120}
                                         showLabel="Show more"
@@ -85,7 +103,19 @@ function TVSeason() {
                                 <RegularContentSummary />
                             </Stack>
                             <Stack mt={16}>
-                                <Title order={3}>Overview</Title>
+                                <Group justify="space-between">
+                                    <Title order={3}>Overview</Title>
+                                    {mustShowSpoilerSwitch && (
+                                        <Switch
+                                            label="Show spoilers"
+                                            onChange={(event) =>
+                                                setShowSpoilers(
+                                                    event.currentTarget.checked
+                                                )
+                                            }
+                                        />
+                                    )}
+                                </Group>
                                 <Spoiler
                                     maxHeight={120}
                                     showLabel="Show more"

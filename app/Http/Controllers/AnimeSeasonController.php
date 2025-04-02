@@ -7,6 +7,7 @@ use App\Http\Controllers\Comment\CommentController;
 use App\Repositories\Anime\AnimeSeasonControllerRepository;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -33,6 +34,14 @@ class AnimeSeasonController extends Controller
             $links = $this->action->generateNavigationLinks($accessId, $seasonId);
             $comments = $this->commentController->index($request, 'animeseason', $seasonId);
 
+            $user = Auth::user();
+
+            $configuration = $user?->configuration()->first() ?? (object) [
+                'hide_episode_description' => false,
+                'hide_character_name' => false,
+                'hide_anime_character_picture' => false,
+            ];
+
             return Inertia::render('AnimeSeasonContent', [
                 'data' => $processedData,
                 'user_library' => $userContent['library'],
@@ -40,6 +49,7 @@ class AnimeSeasonController extends Controller
                 'type' => 'animeseason',
                 'links' => $links,
                 'comments' => $comments,
+                'configuration' => $configuration,
             ]);
         } catch (ModelNotFoundException $e) {
             abort(404, 'Anime not found');

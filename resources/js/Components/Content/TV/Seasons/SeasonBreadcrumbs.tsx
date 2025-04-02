@@ -1,7 +1,7 @@
-import {Box, Breadcrumbs, Group, Menu, Text, Tooltip,} from "@mantine/core";
-import {Link, usePage} from "@inertiajs/react";
-import {ContentType, Links} from "@/types";
-import {ChevronDown, ChevronLeft, ChevronRight} from "lucide-react";
+import { Box, Breadcrumbs, Group, Menu, Text, Tooltip } from "@mantine/core";
+import { Link, usePage } from "@inertiajs/react";
+import { ContentType, Links } from "@/types";
+import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import classes from "./SeasonBreadcrumbs.module.css";
 
 export default function SeasonBreadcrumbs() {
@@ -28,11 +28,18 @@ export default function SeasonBreadcrumbs() {
                     season.name.length > 50
                         ? `${season.name.slice(0, 50)}...`
                         : season.name;
-                return `Season ${season.season_number} - ${truncatedName}`;
+                return `Season ${
+                    season.season_number ?? ""
+                } - ${truncatedName}`;
             }
             return season.name;
         }
-        return `Season ${season.season_number}`;
+        // return `Season ${season.season_number}`;
+        return `${
+            season.season_number
+                ? `Season ${season.season_number}`
+                : season.name
+        }`;
     };
 
     const items = [

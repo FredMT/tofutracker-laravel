@@ -9,6 +9,7 @@ import {
 import { usePage } from "@inertiajs/react";
 import { CustomCarousel } from "@/Components/Shared/CustomCarousel";
 import { Carousel } from "@mantine/carousel";
+import { useSpoilerConfiguration } from "@/stores/useSpoilerConfiguration";
 
 export function RegularContentCredits({
     containerWidth,
@@ -20,6 +21,8 @@ export function RegularContentCredits({
 
     const people: TmdbPerson[] =
         activeTab === "cast" ? data.credits.cast : data.credits.crew;
+
+    const configuration = useSpoilerConfiguration().configuration;
 
     return (
         <>
@@ -52,6 +55,9 @@ export function RegularContentCredits({
                                 person={person}
                                 type={activeTab}
                                 isAnime={false}
+                                hideCharacterName={
+                                    configuration.hide_character_name
+                                }
                             />
                         </Carousel.Slide>
                     ))}
