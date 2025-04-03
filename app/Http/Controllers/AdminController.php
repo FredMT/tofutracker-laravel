@@ -266,11 +266,11 @@ class AdminController extends Controller
             $anime->map_id = null;
             $anime->save();
 
-            $chainEntry->delete();
-
             if ($shouldDeleteChain) {
                 $animeChain->delete();
             }
+
+            $chainEntry->delete();
 
             DB::commit();
 
@@ -392,7 +392,7 @@ class AdminController extends Controller
         }
     }
 
-    public function moveAnimeToChain(AnimeChainEntry $chainEntry, AnidbAnime $anime, Request $request)
+    public function moveChainEntryToAnotherChain(AnimeChainEntry $chainEntry, AnidbAnime $anime, Request $request)
     {
         $validated = $request->validate([
             'move_chain_id' => ['required', 'integer', 'exists:anime_prequel_sequel_chains,id'],
@@ -434,7 +434,7 @@ class AdminController extends Controller
 
                 DB::commit();
 
-                return response()->json(['message' => 'Entry moved successfully', 'redirect'=>true, 'redirectMapId' => $mapToChain->id], 200);
+                return response()->json(['message' => 'Entry moved successfully', 'redirect' => true, 'redirectMapId' => $mapToChain->id], 200);
             }
 
             $chainToMoveFromEntriesCount = $chainToMoveFrom->entries()->count();
@@ -458,6 +458,110 @@ class AdminController extends Controller
 
             return response()->json(['message' => 'Internal Server Error'], 500);
         }
+    }
+
+    public function moveChainEntryToNewChain(AnimeMap $animeMap, AnimeChainEntry $chainEntry, AnidbAnime $anime, Request $request)
+    {
+        $validated = $request->validate([
+            'chain_name' => ['required', 'string'],
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $chainToMoveFrom = AnimePrequelSequelChain::find($chainEntry->chain_id);
+            $mapFromChain = AnimeMap::find($chainToMoveFrom->map_id);
+
+            $mapFromChainChainEntriesCount = $mapFromChain->chainEntries()->count();
+            $mapFromChainRelatedEntriesCount = $mapFromChain->relatedEntries()->count();
+
+            if ($mapFromChainChainEntriesCount === 1 && $mapFromChainRelatedEntriesCount === 0) {
+                $mapFromChain->delete();
+
+                $maxImportanceOrder = AnimePrequelSequelChain::where('map_id', $animeMap->id)
+                    ->orderBy('importance_order', 'desc')
+                    ->value('importance_order');
+
+                $newChain = AnimePrequelSequelChain::create([
+                    'map_id' => $animeMap->id,
+                    'name' => $validated['chain_name'],
+                    'importance_order' => $maxImportanceOrder + 1,
+                ]);
+
+                AnimeChainEntry::create([
+                    'chain_id' => $newChain->id,
+                    'anime_id' => $anime->id,
+                    'sequence_order' => 1,
+                ]);
+
+                $anime->map_id = $animeMap->id;
+                $anime->save();
+
+                DB::commit();
+
+                return response()->json(['message' => 'Chain entry moved to new chain successfully', 'redirect' => true, 'redirectMapId' => $animeMap->id], 200);
+            }
+
+            $chainToMoveFromEntriesCount = $chainToMoveFrom->entries()->count();
+
+            if ($chainToMoveFromEntriesCount === 1) {
+                $chainToMoveFrom->delete();
+
+                $maxImportanceOrder = AnimePrequelSequelChain::where('map_id', $animeMap->id)
+                    ->orderBy('importance_order', 'desc')
+                    ->value('importance_order');
+
+                $newChain = AnimePrequelSequelChain::create([
+                    'map_id' => $animeMap->id,
+                    'name' => $validated['chain_name'],
+                    'importance_order' => $maxImportanceOrder + 1,
+                ]);
+
+                AnimeChainEntry::create([
+                    'chain_id' => $newChain->id,
+                    'anime_id' => $anime->id,
+                    'sequence_order' => 1,
+                ]);
+
+                $anime->map_id = $animeMap->id;
+                $anime->save();
+
+                DB::commit();
+
+                return response()->json(['message' => 'Chain entry moved to new chain successfully', 'redirect' => true, 'redirectMapId' => $animeMap->id], 200);
+            }
+
+            $chainEntry->delete();
+
+            $maxImportanceOrder = AnimePrequelSequelChain::where('map_id', $animeMap->id)
+                ->orderBy('importance_order', 'desc')
+                ->value('importance_order');
+
+            $newChain = AnimePrequelSequelChain::create([
+                'map_id' => $animeMap->id,
+                'name' => $validated['chain_name'],
+                'importance_order' => $maxImportanceOrder + 1,
+            ]);
+
+            AnimeChainEntry::create([
+                'chain_id' => $newChain->id,
+                'anime_id' => $anime->id,
+                'sequence_order' => 1,
+            ]);
+
+            $anime->map_id = $animeMap->id;
+            $anime->save();
+
+            DB::commit();
+
+            return response()->json(['message' => 'Chain entry moved to new chain successfully', 'refresh' => true, 'refreshMapId' => $mapFromChain->id], 200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $this->logError($th);
+
+            return response()->json(['message' => 'Internal Server Error'], 500);
+        }
+
     }
 
     private function logError(\Throwable $th)

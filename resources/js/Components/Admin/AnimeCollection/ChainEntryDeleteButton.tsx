@@ -55,11 +55,7 @@ export function ChainEntryDeleteButton({
 				title='Delete chain entry?'
 			>
 				<Stack>
-					<Text>
-						{' '}
-						Are you sure you want to delete anime ID: {entry.id} from the chain:{' '}
-						{entry.chain_id}?
-					</Text>
+					<Text> Are you sure?</Text>
 					<Group>
 						<Button onClick={close}>Cancel</Button>
 						<Button
@@ -73,7 +69,6 @@ export function ChainEntryDeleteButton({
 			</Modal>
 			<Button
 				color='red'
-				size='xs'
 				onClick={open}
 			>
 				Delete

@@ -84,14 +84,64 @@ export function ExistingMapTabContent({
 			.success;
 	};
 
-	async function handleCreateChain(chainName: string) {}
+	async function moveChainEntryToNewChain() {
+		if (!animeMap)
+			return notifications.show({
+				title: 'Error',
+				message: 'Anime Map ID not found',
+				color: 'red',
+				icon: <X />,
+			});
+
+		try {
+			const response = await axios.post(
+				route('admin.moveChainEntryToNewChain', {
+					animeMap: animeMap.id,
+					chainEntry: chainId,
+					anime: animeId,
+				}),
+				{
+					chain_name: newChainName,
+				}
+			);
+
+			notifications.show({
+				title: 'Success',
+				message: response.data.message,
+				color: 'green',
+				icon: <InfoIcon />,
+			});
+
+			if (response.data.redirect === true) {
+				router.visit(
+					route('admin.showAdminAnimeCollectionPage', {
+						animeMap: response.data.redirectMapId,
+					})
+				);
+			} else {
+				router.visit(
+					route('admin.showAdminAnimeCollectionPage', {
+						animeMap: response.data.refreshMapId,
+					})
+				);
+			}
+		} catch (error: any) {
+			console.error(error);
+			notifications.show({
+				title: 'Error',
+				message: error.response.data.message || error.message,
+				color: 'red',
+				icon: <X />,
+			});
+		}
+	}
 
 	async function handleCreateRelatedEntry() {}
 
 	async function moveAnimeToChain() {
 		try {
 			const response = await axios.post(
-				route('admin.moveAnimeToChain', {
+				route('admin.moveChainEntryToAnotherChain', {
 					chainEntry: chainId,
 					anime: animeId,
 				}),
@@ -201,7 +251,7 @@ export function ExistingMapTabContent({
 						}
 					/>
 					<Button
-						onClick={() => handleCreateChain(newChainName)}
+						onClick={moveChainEntryToNewChain}
 						disabled={!newChainName.trim() || !isNewChainNameValid()}
 					>
 						Create New Chain

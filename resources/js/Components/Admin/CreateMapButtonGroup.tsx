@@ -136,11 +136,7 @@ export function CreateMapButtonGroup({
 					</Button>
 				</Stack>
 			</Drawer>
-			<ButtonGroup>
-				<Button onClick={open}>As Chain Entry</Button>
-				<Divider orientation='vertical' />
-				<Button>As Related Entry</Button>
-			</ButtonGroup>
+			<Button onClick={open}>As Chain Entry</Button>
 		</>
 	);
 }
