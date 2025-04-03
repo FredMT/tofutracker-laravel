@@ -136,7 +136,54 @@ export function ExistingMapTabContent({
 		}
 	}
 
-	async function handleCreateRelatedEntry() {}
+	async function moveToRelatedAnime() {
+		if (!animeMap)
+			return notifications.show({
+				title: 'Error',
+				message: 'Anime Map ID not found',
+				color: 'red',
+				icon: <X />,
+			});
+
+		try {
+			const response = await axios.post(
+				route('admin.moveToRelated', {
+					animeMap: animeMap.id,
+					chainEntry: chainId,
+					anime: animeId,
+				})
+			);
+
+			notifications.show({
+				title: 'Success',
+				message: response.data.message,
+				color: 'green',
+				icon: <InfoIcon />,
+			});
+
+			if (response.data.redirect === true) {
+				router.visit(
+					route('admin.showAdminAnimeCollectionPage', {
+						animeMap: response.data.redirectMapId,
+					})
+				);
+			} else {
+				router.visit(
+					route('admin.showAdminAnimeCollectionPage', {
+						animeMap: response.data.refreshMapId,
+					})
+				);
+			}
+		} catch (error: any) {
+			console.error(error);
+			notifications.show({
+				title: 'Error',
+				message: error.response.data.message || error.message,
+				color: 'red',
+				icon: <X />,
+			});
+		}
+	}
 
 	async function moveAnimeToChain() {
 		try {
@@ -260,7 +307,7 @@ export function ExistingMapTabContent({
 					<Text ta='center'>OR</Text>
 
 					<Button
-						onClick={handleCreateRelatedEntry}
+						onClick={moveToRelatedAnime}
 						color='green'
 					>
 						Create New Related Entry

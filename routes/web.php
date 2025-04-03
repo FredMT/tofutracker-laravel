@@ -60,6 +60,7 @@ Route::prefix('admin')->middleware(CheckSuperuserEmail::class)->name('admin.')->
         Route::delete('/anime/deleteItemFromRelatedEntry/{relatedEntry}', 'deleteItemFromRelatedEntry')->name('deleteItemFromRelatedEntry');
         Route::post('/anime/moveChainEntryToAnotherChain/{chainEntry}/{anime}', 'moveChainEntryToAnotherChain')->name('moveChainEntryToAnotherChain');
         Route::post('/anime/moveChainEntryToNewChain/{animeMap}/{chainEntry}/{anime}', 'moveChainEntryToNewChain')->name('moveChainEntryToNewChain');
+        Route::post('/anime/moveToRelated/{animeMap}/{chainEntry}/{anime}', 'moveToRelated')->name('moveToRelated');
         Route::get('/anime/findMapByMapId/{animeMap}', 'findMapByMapId')->name('findMapByMapId');
         Route::get('/anime/findAnimeByAnidbId/{animeId}', 'findAnimeByAnidbId')->name('findAnimeByAnidbId');
         Route::patch('/anime/map/patchCollectionName/{animeMap}', 'patchCollectionName')->name('patchCollectionName');

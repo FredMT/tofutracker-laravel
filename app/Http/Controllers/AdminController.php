@@ -561,6 +561,73 @@ class AdminController extends Controller
 
             return response()->json(['message' => 'Internal Server Error'], 500);
         }
+    }
+
+    public function moveToRelated(AnimeMap $animeMap, AnimeChainEntry $chainEntry, AnidbAnime $anime)
+    {
+        DB::beginTransaction();
+
+        try {
+            $chainToMoveFrom = AnimePrequelSequelChain::find($chainEntry->chain_id);
+            $mapFromChain = AnimeMap::find($chainToMoveFrom->map_id);
+
+            $mapFromChainChainEntriesCount = $mapFromChain->chainEntries()->count();
+            $mapFromChainRelatedEntriesCount = $mapFromChain->relatedEntries()->count();
+
+            if ($mapFromChainChainEntriesCount === 1 && $mapFromChainRelatedEntriesCount === 0) {
+                $mapFromChain->delete();
+
+                AnimeRelatedEntry::create([
+                    'map_id' => $animeMap->id,
+                    'anime_id' => $anime->id
+                ]);
+
+                $anime->map_id = $animeMap->id;
+                $anime->save();
+
+                DB::commit();
+
+                return response()->json(['message' => 'Chain entry moved to new map successfully', 'redirect' => true, 'redirectMapId' => $animeMap->id], 200);
+            }
+
+            $chainToMoveFromEntriesCount = $chainToMoveFrom->entries()->count();
+
+            if ($chainToMoveFromEntriesCount === 1) {
+                $chainToMoveFrom->delete();
+
+                AnimeRelatedEntry::create([
+                    'map_id' => $animeMap->id,
+                    'anime_id' => $anime->id
+                ]);
+
+                $anime->map_id = $animeMap->id;
+                $anime->save();
+
+                DB::commit();
+
+                return response()->json(['message' => 'Chain entry moved to new map successfully', 'redirect' => true, 'redirectMapId' => $mapFromChain->id], 200);
+            }
+
+            $chainEntry->delete();
+
+            AnimeRelatedEntry::create([
+                'map_id' => $animeMap->id,
+                'anime_id' => $anime->id
+            ]);
+
+            $anime->map_id = $animeMap->id;
+            $anime->save();
+
+            DB::commit();
+
+            return response()->json(['message' => 'Chain entry moved to new map successfully', 'refresh' => true, 'refreshMapId' => $animeMap->id], 200);
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $this->logError($th);
+
+            return response()->json(['message' => 'Internal Server Error'], 500);
+        }
 
     }
 

@@ -55,7 +55,7 @@ export function ChainEntryDeleteButton({
 				title='Delete chain entry?'
 			>
 				<Stack>
-					<Text> Are you sure?</Text>
+					<Text>Are you sure?</Text>
 					<Group>
 						<Button onClick={close}>Cancel</Button>
 						<Button
