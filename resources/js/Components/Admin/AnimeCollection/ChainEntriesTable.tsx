@@ -3,6 +3,7 @@ import { Button, Group, Image, Table } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { AddNewChainEntryDrawer } from './AddNewChainEntryDrawer';
 import { ChainEntryDeleteButton } from './ChainEntryDeleteButton';
+import { MovePopoverButton } from './MovePopoverButton';
 
 export function ChainEntriesTable({
 	entries,
@@ -44,12 +45,10 @@ export function ChainEntriesTable({
 			</Table.Td>
 			<Table.Td>
 				<Group gap='xs'>
-					<Button
-						size='xs'
-						color='violet'
-					>
-						Move
-					</Button>
+					<MovePopoverButton
+						animeId={entry.anime_id}
+						chainId={entry.id}
+					/>
 					<ChainEntryDeleteButton
 						entry={entry}
 						mapId={mapId}
