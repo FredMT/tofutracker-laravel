@@ -1,6 +1,6 @@
 import { ChainEntriesSection } from '@/Components/Admin/AnimeCollection/ChainEntriesSection';
+import { EditCollectionNameButton } from '@/Components/Admin/AnimeCollection/EditCollectionNameButton';
 import { RelatedEntriesSection } from '@/Components/Admin/AnimeCollection/RelatedEntriesSection';
-import { EditableText } from '@/Components/EditableText';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout/AuthenticatedLayout';
 import {
 	Box,
@@ -91,10 +91,10 @@ function ShowAnimeCollectionPage({ data }: ShowAnimeCollectionPageProps) {
 									<Text>Collection name:</Text>
 								</Grid.Col>
 								<Grid.Col span={10}>
-									<EditableText
-										initialText={data.anime_map.collection_name ?? ''}
-										animeId={data.anime_map.id}
-									/>
+									<Group>
+										<Text>{data.anime_map.collection_name}</Text>
+										<EditCollectionNameButton mapId={data.anime_map.id} />
+									</Group>
 								</Grid.Col>
 
 								<Grid.Col span={2}>

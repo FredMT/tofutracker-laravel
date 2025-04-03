@@ -1,11 +1,7 @@
-import { Button, Drawer, Group, Image, Table } from '@mantine/core';
+import { ChainEntry } from '@/Pages/Admin/ShowAnimeCollectionPage';
+import { Button, Group, Image, Table } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { AddNewChainEntryDrawer } from './AddNewChainEntryDrawer';
-import axios from 'axios';
-import { notifications } from '@mantine/notifications';
-import { InfoIcon } from 'lucide-react';
-import { router } from '@inertiajs/react';
-import { ChainEntry } from '@/Pages/Admin/ShowAnimeCollectionPage';
 import { ChainEntryDeleteButton } from './ChainEntryDeleteButton';
 
 export function ChainEntriesTable({
@@ -87,21 +83,23 @@ export function ChainEntriesTable({
 					</Table.Tr>
 				</Table.Thead>
 				<Table.Tbody>{rows}</Table.Tbody>
-				<Table.Tr>
-					<Table.Td
-						colSpan={4}
-						py={20}
-					>
-						<Group justify='center'>
-							<Button
-								size='xs'
-								onClick={open}
-							>
-								Add new chain entry
-							</Button>
-						</Group>
-					</Table.Td>
-				</Table.Tr>
+				<Table.Tfoot>
+					<Table.Tr>
+						<Table.Td
+							colSpan={4}
+							py={20}
+						>
+							<Group justify='center'>
+								<Button
+									size='xs'
+									onClick={open}
+								>
+									Add new chain entry
+								</Button>
+							</Group>
+						</Table.Td>
+					</Table.Tr>
+				</Table.Tfoot>
 			</Table>
 		</>
 	);

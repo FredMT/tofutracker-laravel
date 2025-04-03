@@ -361,7 +361,29 @@ class AdminController extends Controller
 
             return response()->json(['message' => 'Could not create entry in anime chain'], 500);
         }
+    }
 
+    public function patchCollectionName(Request $request, AnimeMap $animeMap )
+    {
+        $validated = $request->validate([
+            'collection_name' => ['required', 'string', 'min:3']
+        ]);
+
+        DB::beginTransaction();
+        try {
+
+            $animeMap->collection_name = $validated['collection_name'];
+            $animeMap->save();
+    
+            DB::commit();
+
+            return response()->json(['message' => "Saved new collection name"], 200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $this->logError($th);
+
+            return response()->json(['message' => "Unable to update anime map collection name"], 500);
+        }
     }
 
     private function logError(\Throwable $th)
