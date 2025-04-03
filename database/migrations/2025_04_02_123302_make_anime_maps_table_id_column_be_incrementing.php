@@ -8,7 +8,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('anime_maps', function (Blueprint $table) {
-            $table->increments('id')->change(); 
+            $table->id()->change(); 
         });
     }
 

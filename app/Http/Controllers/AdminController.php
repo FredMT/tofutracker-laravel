@@ -6,6 +6,7 @@ use App\Models\Anidb\AnidbAnime;
 use App\Models\Anime\AnimeChainEntry;
 use App\Models\Anime\AnimeMap;
 use App\Models\Anime\AnimePrequelSequelChain;
+use App\Models\Anime\AnimeRelatedEntry;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -52,32 +53,45 @@ class AdminController extends Controller
 
     public function showAdminAnimeCollectionPage(AnimeMap $animeMap)
     {
-        $chainEntries = $animeMap->chainEntries->groupBy('chain_id')->map(function ($entries) {
-            return $entries->sortBy('sequence_order')->map(function ($entry) {
-                return $entry->only(['id', 'anime_id', 'sequence_order']);
+        $animeMap->load('chains.entries');
+        $chainEntries = $animeMap->chains->mapWithKeys(function ($chain) {
+            $entries = $chain->entries->sortBy('sequence_order')->map(function ($entry) {
+                return $entry->only(['id', 'anime_id', 'sequence_order', 'chain_id']);
             })->values();
+
+            return [
+                $chain->id => [
+                    'name' => $chain->name,
+                    'importance_order' => $chain->importance_order,
+                    'entries' => $entries,
+                ],
+            ];
         });
 
         $relatedEntries = $animeMap->relatedEntries->map(function ($entry) {
             return $entry->only(['id', 'anime_id']);
         });
 
-        $animeIds = $chainEntries->flatten(1)->pluck('anime_id')->merge($relatedEntries->pluck('anime_id'))->unique();
+        $animeIds = $chainEntries->pluck('entries')->flatten(1)->pluck('anime_id')->merge($relatedEntries->pluck('anime_id'))->unique();
         $animes = AnidbAnime::whereIn('id', $animeIds)->get()->keyBy('id');
 
-        $chainEntries = $chainEntries->map(function ($entries) use ($animes) {
-            return $entries->map(function ($entry) use ($animes) {
+        $chainEntries = $chainEntries->map(function ($chain) use ($animes) {
+            $chain['entries'] = $chain['entries']->map(function ($entry) use ($animes) {
                 $anime = $animes->get($entry['anime_id']);
                 $entry['picture'] = $anime->picture ?? null;
                 $entry['title_main'] = $anime->title_main ?? null;
+
                 return $entry;
             });
+
+            return $chain;
         });
 
         $relatedEntries = $relatedEntries->map(function ($entry) use ($animes) {
             $anime = $animes->get($entry['anime_id']);
             $entry['picture'] = $anime->picture ?? null;
             $entry['title_main'] = $anime->title_main ?? null;
+
             return $entry;
         });
 
@@ -89,21 +103,11 @@ class AdminController extends Controller
         return Inertia::render('Admin/ShowAnimeCollectionPage', ['data' => $data]);
     }
 
-    public function findAnimeByAnidbId(Request $request)
+    public function findAnimeByAnidbId(AnidbAnime $animeId)
     {
-        $validated = $request->validate([
-            'animeId' => ['required', 'integer'],
-        ]);
+        $data = $animeId->only(['id', 'picture', 'title_main', 'map_id']);
 
-        $anime = AnidbAnime::find($validated['animeId']);
-
-        if (! $anime) {
-            $message = sprintf('Anidb with the id %d not found', $validated['animeId']);
-
-            return response()->json(['success' => false, 'message' => $message], 404);
-        }
-
-        return response()->json(['message' => 'Valid id, can redirect.'], 200);
+        return response()->json(['message' => 'Valid id, can redirect.', 'anime' => $data], 200);
     }
 
     public function createAnimeMapChainEntry(Request $request)
@@ -136,21 +140,20 @@ class AdminController extends Controller
         DB::beginTransaction();
 
         try {
-            $maxId = AnimeMap::max('id');
-            $maxChainId = AnimePrequelSequelChain::max('id');
-            $maxChainEntryId = AnimeChainEntry::max('id');
 
-            $animeMap = AnimeMap::create(['id' => $maxId + 1, 'tmdb_type' => $tmdbType, 'most_common_tmdb_id' => $tmdbId, 'collection_name' => $collectionName]);
+            $animeMap = AnimeMap::create([
+                'tmdb_type' => $tmdbType, 
+                'most_common_tmdb_id' => $tmdbId, 
+                'collection_name' => $collectionName
+            ]);
 
             $chain = AnimePrequelSequelChain::create([
-                'id' => $maxChainId + 1,
                 'map_id' => $animeMap->id,
                 'name' => 'Chain 1',
                 'importance_order' => 1,
             ]);
 
             AnimeChainEntry::create([
-                'id' => $maxChainEntryId + 1,
                 'chain_id' => $chain->id,
                 'anime_id' => $validated['anidb_id'],
                 'sequence_order' => 1,
@@ -163,11 +166,207 @@ class AdminController extends Controller
 
             return response()->json(['success' => true, 'message' => 'Anime map chain entry created successfully.', 'map_id' => $animeMap->id], 201);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            $this->logger->error("Failed to create anime map chain entry for anidb_id {$validated['anidb_id']}: ".$e->getMessage());
+            $this->logError($e);
 
             return response()->json(['success' => false, 'message' => 'Failed to create anime map chain entry. Please check logs.'], 500);
         }
+    }
+
+    public function addNewRelatedAnimetoAnimeCollection(Request $request)
+    {
+        $validated = $request->validate([
+            'anidb_id' => ['required', 'integer', 'exists:anidb_anime,id'],
+            'map_id' => ['required', 'integer', 'exists:anime_maps,id'],
+        ]);
+
+        $anime = AnidbAnime::find($validated['anidb_id']);
+        $animeMap = AnimeMap::find($validated['map_id']);
+
+        if (! $anime) {
+            return response()->json(['message' => 'Anime not found'], 404);
+        }
+
+        if (! $animeMap) {
+            return response()->json(['message' => 'Anime map not found'], 404);
+        }
+
+        $existingEntry = AnimeRelatedEntry::where('anime_id', $anime->id)
+            ->first();
+
+        if ($existingEntry) {
+            return response()->json(['message' => 'Anime already exists in related entries'], 400);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            AnimeRelatedEntry::create([
+                'anime_id' => $anime->id,
+                'map_id' => $animeMap->id,
+            ]);
+
+            $anime->map_id = $animeMap->id;
+            $anime->save();
+
+            DB::commit();
+
+            return response()->json(['message' => 'Related anime added successfully'], 201);
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            $this->logError($e);
+
+            return response()->json(['message' => 'Could not add related anime'], 500);
+        }
+    }
+
+    public function deleteItemFromRelatedEntry(AnimeRelatedEntry $relatedEntry)
+    {
+        try {
+
+            DB::beginTransaction();
+            $anime = AnidbAnime::find($relatedEntry->anime_id);
+            $anime->map_id = null;
+            $anime->save();
+
+            $relatedEntry->delete();
+
+            DB::commit();
+
+            return response()->json(['message' => "Deleted related entry for this anime id"], 200);
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            $this->logError($e);
+
+            return response()->json(['message' => 'Could not delete related entry'], 500);
+        }
+
+        return response()->json(['message' => 'Related entry deleted successfully'], 200);
+    }
+
+    public function deleteItemFromChainEntry(AnimePrequelSequelChain $animeChain, AnimeChainEntry $chainEntry)
+    {
+        $entryCount = AnimeChainEntry::where('chain_id', $animeChain->id)->count();
+        $shouldDeleteChain = $entryCount === 1;
+
+        DB::beginTransaction();
+
+        try {
+            $anime = AnidbAnime::find($chainEntry->anime_id);
+            $anime->map_id = null;
+            $anime->save();
+
+            $chainEntry->delete();
+
+            if ($shouldDeleteChain) {
+                $animeChain->delete();
+            }
+
+            DB::commit();
+
+            return response()->json(['message' => 'Chain entry deleted successfully'], 200);
+        } catch (\Throwable $e) {
+            DB::rollback();
+            $this->logError($e);
+
+            return response()->json(['message' => 'Could not delete chain entry'], 500);
+        }
+    }
+
+    public function createAnimeChainAndEntry(Request $request)
+    {
+        $validated = $request->validate([
+            'chain_name' => ['required', 'string', 'min:3'],
+            'anime_id' => ['required', 'integer', 'exists:anidb_anime,id'],
+            'map_id' => ['required', 'integer', 'exists:anime_maps,id'],
+        ]);
+
+        $chainName = $validated['chain_name'];
+
+        $animeId = $validated['anime_id'];
+        $animeMapId = $validated['map_id'];
+
+        DB::beginTransaction();
+
+        $maxImportanceOrder = AnimePrequelSequelChain::where('map_id', $animeMapId)
+            ->orderBy('importance_order', 'desc')
+            ->value('importance_order') ?? 0;
+
+        try {
+            $chain = AnimePrequelSequelChain::create([
+                'name' => $chainName,
+                'importance_order' => $maxImportanceOrder + 1,
+                'map_id' => $animeMapId,
+            ]);
+
+            AnimeChainEntry::create([
+                'chain_id' => $chain->id,
+                'anime_id' => $animeId,
+                'sequence_order' => 1,
+            ]);
+
+            $anime = AnidbAnime::find($animeId);
+            $anime->map_id = $animeMapId;
+            $anime->save();
+
+            DB::commit();
+
+            return response()->json(['message' => 'Anime chain with entry created'], 201);
+        } catch (\Throwable $e) {
+            DB::rollback();
+            $this->logError($e);
+
+            return response()->json(['message' => 'Could not create anime chain with entry'], 500);
+        }
+
+    }
+
+    public function createEntryInAnimeChain(Request $request)
+    {
+        $validated = $request->validate([
+            'chain_id' => ['required', 'integer', 'exists:anime_prequel_sequel_chains,id'],
+            'anime_id' => ['required', 'integer', 'exists:anidb_anime,id'],
+            'map_id' => ['required', 'integer', 'exists:anime_maps,id'],
+        ]);
+
+        
+        $chainId = $validated['chain_id'];
+        $animeId = $validated['anime_id'];
+        
+        DB::beginTransaction();
+
+        try {
+            $maxSequenceOrder = AnimeChainEntry::where('chain_id', $chainId)
+                ->orderBy('sequence_order', 'desc')
+                ->value('sequence_order');
+
+            AnimeChainEntry::create([
+                'chain_id' => $chainId,
+                'anime_id' => $animeId,
+                'sequence_order' => $maxSequenceOrder + 1,
+            ]);
+
+            $anime = AnidbAnime::find($animeId);
+            $anime->map_id = $validated['map_id'];
+            $anime->save();
+
+            DB::commit();
+
+        } catch (\Throwable $th) {
+            DB::rollback();
+            $this->logError($th);
+
+            return response()->json(['message' => 'Could not create entry in anime chain'], 500);
+        }
+
+    }
+
+    private function logError(\Throwable $th)
+    {
+        $this->logger->error($th->getMessage());
+        $this->logger->error($th->getTraceAsString());
     }
 }

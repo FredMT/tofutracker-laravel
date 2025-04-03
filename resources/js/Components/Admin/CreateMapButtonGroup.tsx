@@ -1,19 +1,18 @@
 import { router } from '@inertiajs/react';
 import {
-	Drawer,
 	Button,
 	ButtonGroup,
-	Divider,
-	Stack,
 	CloseButton,
-	Input,
+	Divider,
+	Drawer,
+	Stack,
 	TextInput,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import axios from 'axios';
-import { InfoIcon, ThumbsDown, X } from 'lucide-react';
-import React, { SetStateAction, Dispatch, useState, useEffect } from 'react';
+import { InfoIcon, X } from 'lucide-react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { z } from 'zod';
 
 const createAnimeMapChainEntrySchema = z.object({

@@ -12,9 +12,12 @@ use App\Models\UserMovie\UserMovie;
 use App\Models\UserTv\UserTvSeason;
 use App\Models\UserTv\UserTvShow;
 use Illuminate\Auth\Access\Response;
+use Illuminate\Database\Console\Migrations\FreshCommand;
+use Illuminate\Database\Console\Migrations\RefreshCommand;
+use Illuminate\Database\Console\Migrations\ResetCommand;
+use Illuminate\Database\Console\WipeCommand;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 
@@ -198,5 +201,4 @@ class AppServiceProvider extends ServiceProvider
             return $user->email === env('SUPERUSER_EMAIL');
         });
     }
-
 }

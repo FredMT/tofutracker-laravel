@@ -14,15 +14,35 @@ import { useState } from 'react';
 import { notifications } from '@mantine/notifications';
 import { X } from 'lucide-react';
 import { router } from '@inertiajs/react';
+import { z } from 'zod';
+
+const anidbIdSchema = z
+	.string()
+	.min(1, { message: 'AniDB ID cannot be empty.' })
+	.max(6, { message: 'AniDB ID cannot be longer than 6 digits.' })
+	.regex(/^[0-9]+$/, { message: 'AniDB ID must contain only digits.' });
 
 function Show() {
 	const [searchAnidbId, setSearchAnidbId] = useState('');
+	const [validationError, setValidationError] = useState<string | null>(null);
+
+	const handleInputChange = (value: string) => {
+		setSearchAnidbId(value);
+		const result = anidbIdSchema.safeParse(value);
+		if (!result.success) {
+			setValidationError(result.error.errors.map((e) => e.message).join(' '));
+		} else {
+			setValidationError(null);
+		}
+	};
 
 	const handleShowAnime = () => {
 		axios
-			.post(route('admin.findAnimeByAnidbId'), {
-				animeId: searchAnidbId,
-			})
+			.get(
+				route('admin.findAnimeByAnidbId', {
+					animeId: searchAnidbId,
+				})
+			)
 			.then((res) => {
 				if (res.status === 200) {
 					router.visit(
@@ -57,21 +77,25 @@ function Show() {
 								variant='filled'
 								value={searchAnidbId}
 								onChange={(event) =>
-									setSearchAnidbId(event.currentTarget.value)
+									handleInputChange(event.currentTarget.value)
 								}
 								placeholder='Type AniDB ID here'
+								error={validationError}
 								rightSectionPointerEvents='all'
 								rightSection={
 									<CloseButton
 										aria-label='Clear input'
-										onClick={() => setSearchAnidbId('')}
+										onClick={() => {
+											setSearchAnidbId('');
+											setValidationError(null);
+										}}
 										style={{ display: searchAnidbId ? undefined : 'none' }}
 									/>
 								}
 							/>
 							<Button
 								onClick={handleShowAnime}
-								disabled={searchAnidbId.length < 1}
+								disabled={!!validationError || searchAnidbId.length < 1}
 							>
 								Find anime by AniDB ID
 							</Button>
