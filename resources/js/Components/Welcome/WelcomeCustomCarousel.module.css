@@ -1,28 +1,93 @@
-.carouselControl {
-    color: light-dark(black, white);
-    background: transparent;
-    box-shadow: none;
-    border-radius: 5px;
-    width: 40px;
-    height: 40px;
+/* Remove existing styles or comment them out if needed */
+/* .carouselControl { ... } */
+/* .carouselControls { ... } */
+
+/* Add new styles from the example */
+.container {
+	margin-bottom: 48px;
 }
 
-.carouselControl svg {
-    width: 20px !important;
-    height: 20px !important;
+.header {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	margin-bottom: 24px;
 }
 
-.carouselControl[data-inactive] {
-    opacity: 0;
-    cursor: default;
-    color: inherit;
+/* Adjust this if the Title component in Mantine doesn't match h2 */
+.top10Text {
+	font-size: 72px; /* Keep or adjust as needed */
+	font-weight: 800;
+	line-height: 0.9;
+	-webkit-text-stroke: 2px var(--mantine-color-red-6); /* Use Mantine theme color */
+	color: transparent;
 }
 
-.carouselControls {
-    top: -72px;
-    justify-content: flex-end;
-    gap: 10px;
-    background-color: transparent;
-    position: absolute;
-    right: 0;
+.contentText {
+	text-transform: uppercase;
+	font-weight: 700;
+	letter-spacing: 2px;
+	font-size: 20px; /* Keep or adjust as needed */
+}
+
+.tabs {
+	position: relative;
+	border-bottom: 1px solid var(--mantine-color-dark-4); /* Use Mantine theme color */
+}
+
+.tabList {
+	display: flex;
+}
+
+.tab {
+	flex: 1;
+	padding: 12px 16px;
+	font-size: 14px;
+	font-weight: 500;
+	transition: color 0.2s ease;
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	color: var(--mantine-color-gray-6); /* Use Mantine theme color */
+}
+
+.tab:hover {
+	color: var(--mantine-color-white); /* Use Mantine theme color */
+}
+
+.tabActive {
+	color: var(--mantine-color-white); /* Use Mantine theme color */
+}
+
+.tabIndicator {
+	position: absolute;
+	bottom: 0;
+	height: 2px;
+	background-color: var(--mantine-color-white); /* Use Mantine theme color */
+	width: 33.33%; /* Adjust if number of tabs changes */
+	transition: transform 0.3s ease;
+}
+
+.itemContainer {
+	position: relative;
+	min-width: 220px; /* Match slideSize */
+}
+
+.numberMarker {
+	position: absolute;
+	left: -20px; /* Adjust positioning */
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 1;
+	-webkit-text-stroke: 2px var(--mantine-color-red-6); /* Use Mantine theme color */
+	color: transparent;
+	line-height: 0.8;
+	font-size: 120px; /* Keep or adjust as needed */
+	font-weight: 700;
+}
+
+.cardContainer {
+	margin-left: 40px; /* Adjust positioning */
+	position: relative;
+	z-index: 2;
 }

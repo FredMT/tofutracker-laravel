@@ -1,183 +1,166 @@
-import { Carousel } from "@mantine/carousel";
+import { Carousel } from '@mantine/carousel';
 import {
-    Container,
-    ContainerProps,
-    Group,
-    Menu,
-    Space,
-    Stack,
-    Title,
-} from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
-import { ChevronDown } from "lucide-react";
-import React from "react";
-import classes from "./WelcomeCustomCarousel.module.css";
-import WelcomeCarouselCard from "./WelcomeCarouselCard";
+	Container,
+	ContainerProps,
+	Group,
+	Space,
+	Stack,
+	Title,
+	Box,
+	Button,
+} from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import React from 'react';
+import classes from './WelcomeCustomCarousel.module.css';
+import WelcomeCarouselCard from './WelcomeCarouselCard';
 
 interface ContentItem {
-    title: string;
-    release_date: string;
-    poster_path: string;
-    vote_average: number;
-    popularity: number;
-    link: number | string;
-    type: string;
+	title: string;
+	release_date: string;
+	poster_path: string;
+	vote_average: number;
+	popularity: number;
+	link: number | string;
+	type: string;
 }
 
 interface WelcomeCustomCarouselContentProps {
-    children?: React.ReactNode;
-    containerWidth?: ContainerProps["size"];
-    slideSize?: string;
-    height?: number;
-    slidesToScroll?: number;
-    withControls?: boolean;
-    align?: "start" | "center" | "end";
-    className?: string;
-    slideGap?: number;
-    title?: string;
-    titleOrder?: 1 | 2 | 3 | 4 | 5 | 6;
-    movies: ContentItem[];
-    tvShows: ContentItem[];
-    anime: ContentItem[];
+	children?: React.ReactNode;
+	containerWidth?: ContainerProps['size'];
+	slideSize?: string;
+	height?: number;
+	slidesToScroll?: number;
+	withControls?: boolean;
+	align?: 'start' | 'center' | 'end';
+	className?: string;
+	slideGap?: number;
+	title?: string;
+	titleOrder?: 1 | 2 | 3 | 4 | 5 | 6;
+	movies: ContentItem[];
+	tvShows: ContentItem[];
+	anime: ContentItem[];
 }
 
 export function WelcomeCustomCarouselContent({
-    containerWidth = "100%",
-    slideSize = "300px",
-    height = 300,
-    slidesToScroll = 3,
-    withControls = true,
-    align = "start",
-    slideGap = 0,
-    className,
-    titleOrder = 2,
-    movies,
-    tvShows,
-    anime,
+	slideSize = '220px',
+	height = 350,
+	withControls = true,
+	align = 'start',
+	slideGap = 25,
+	className,
+	movies,
+	tvShows,
+	anime,
 }: WelcomeCustomCarouselContentProps) {
-    const isMobile = useMediaQuery("(max-width: 500px)");
-    const [activeTab, setActiveTab] = React.useState<string>("tv");
+	const isMobile = useMediaQuery('(max-width: 500px)');
+	const [activeTab, setActiveTab] = React.useState<0 | 1 | 2>(0);
 
-    // If on mobile, only scroll 1 slide at a time
-    const mobileSlidesToScroll = isMobile ? 1 : slidesToScroll;
+	const tabs = [
+		{ id: 0, label: 'Movies', content: movies },
+		{ id: 1, label: 'TV Shows', content: tvShows },
+		{ id: 2, label: 'Anime', content: anime },
+	];
 
-    const getContentByType = () => {
-        const getUniqueByLink = (items: ContentItem[]) => {
-            const uniqueLinks = new Set();
-            return items.filter((item) => {
-                if (uniqueLinks.has(item.link)) return false;
-                uniqueLinks.add(item.link);
-                return true;
-            });
-        };
+	const getUniqueByLink = (items: ContentItem[]) => {
+		const uniqueLinks = new Set();
+		return items.filter((item) => {
+			if (uniqueLinks.has(item.link)) return false;
+			uniqueLinks.add(item.link);
+			return true;
+		});
+	};
 
-        switch (activeTab) {
-            case "movies":
-                return getUniqueByLink(movies).sort(
-                    (a, b) => b.popularity - a.popularity
-                );
-            case "tv":
-                return getUniqueByLink(tvShows).sort(
-                    (a, b) => b.popularity - a.popularity
-                );
-            case "anime":
-                return getUniqueByLink(anime).sort(
-                    (a, b) => b.popularity - a.popularity
-                );
-            default:
-                return [];
-        }
-    };
+	const currentContent = getUniqueByLink(tabs[activeTab].content).sort(
+		(a, b) => b.popularity - a.popularity
+	);
 
-    const getTabTitle = () => {
-        switch (activeTab) {
-            case "movies":
-                return "Movies";
-            case "tv":
-                return "TV Shows";
-            case "anime":
-                return "Anime";
-            default:
-                return "";
-        }
-    };
+	const getTabPosition = () => {
+		switch (activeTab) {
+			case 1:
+				return 'translateX(100%)';
+			case 2:
+				return 'translateX(200%)';
+			default:
+				return 'translateX(0)';
+		}
+	};
 
-    return (
-        <Stack gap="xs">
-            <Group>
-                <Menu shadow="md" position="bottom-end" width={175}>
-                    <Menu.Target>
-                        <Group gap="xs" style={{ cursor: "pointer" }}>
-                            {isMobile ? (
-                                <Stack gap={0}>
-                                    <Title order={titleOrder}>Top 10</Title>
-                                    <Group gap="xs">
-                                        <Title order={titleOrder}>
-                                            {getTabTitle()}
-                                        </Title>
-                                        <ChevronDown size={24} />
-                                    </Group>
-                                </Stack>
-                            ) : (
-                                <Group gap="xs">
-                                    <Title order={titleOrder}>
-                                        Top 10 {getTabTitle()}
-                                    </Title>
-                                    <ChevronDown size={24} />
-                                </Group>
-                            )}
-                        </Group>
-                    </Menu.Target>
+	return (
+		<Box className={classes.container}>
+			<div className={classes.header}>
+				<div style={{ display: 'flex', alignItems: 'flex-end', gap: '12px' }}>
+					<h2 className={classes.top10Text}>TOP 10</h2>
+					<div style={{ marginBottom: '4px' }}>
+						<p className={classes.contentText}>CONTENT</p>
+						<p className={classes.contentText}>TODAY</p>
+					</div>
+				</div>
 
-                    <Menu.Dropdown>
-                        <Menu.Item onClick={() => setActiveTab("movies")}>
-                            Movies
-                        </Menu.Item>
-                        <Menu.Item onClick={() => setActiveTab("tv")}>
-                            TV Shows
-                        </Menu.Item>
-                        <Menu.Item onClick={() => setActiveTab("anime")}>
-                            Anime
-                        </Menu.Item>
-                    </Menu.Dropdown>
-                </Menu>
-            </Group>
-            <Space h="xs" />
-            <Container
-                size={containerWidth}
-                className="select-none"
-                px={0}
-                mx={0}
-            >
-                <Carousel
-                    key={activeTab}
-                    height={height}
-                    slideSize={slideSize}
-                    align={align}
-                    slidesToScroll={mobileSlidesToScroll}
-                    withControls={withControls}
-                    classNames={{
-                        control: classes.carouselControl,
-                        controls: classes.carouselControls,
-                    }}
-                    className={className}
-                    slideGap={slideGap}
-                >
-                    {getContentByType().map((content) => (
-                        <Carousel.Slide key={`${content.type}-${content.link}`}>
-                            <WelcomeCarouselCard
-                                id={Number(content.link)}
-                                title={content.title}
-                                posterPath={content.poster_path}
-                                type={content.type}
-                                vote_average={content.vote_average}
-                            />
-                        </Carousel.Slide>
-                    ))}
-                </Carousel>
-            </Container>
-        </Stack>
-    );
+				<div className={classes.tabs}>
+					<div className={classes.tabList}>
+						{tabs.map((tab) => (
+							<button
+								key={tab.id}
+								onClick={() => setActiveTab(tab.id as 0 | 1 | 2)}
+								className={`${classes.tab} ${
+									activeTab === tab.id ? classes.tabActive : ''
+								}`}
+							>
+								Top 10 {tab.label}
+							</button>
+						))}
+					</div>
+					<div
+						className={classes.tabIndicator}
+						style={{ transform: getTabPosition() }}
+					/>
+				</div>
+			</div>
+
+			<Carousel
+				key={activeTab}
+				height={height}
+				slideSize={slideSize}
+				align={align}
+				withControls={withControls}
+				slideGap={slideGap}
+				controlsOffset='xs'
+				previousControlIcon={<ChevronLeft size={20} />}
+				nextControlIcon={<ChevronRight size={20} />}
+				styles={{
+					control: {
+						backgroundColor: 'rgba(10, 14, 25, 0.8)',
+						backdropFilter: 'blur(4px)',
+						border: 'none',
+						color: 'white',
+						'&:hover': {
+							backgroundColor: 'rgba(10, 14, 25, 0.9)',
+						},
+						zIndex: 5,
+					},
+				}}
+				className={className}
+			>
+				{currentContent.slice(0, 10).map((content, index) => (
+					<Carousel.Slide key={`${content.type}-${content.link}`}>
+						<div className={classes.itemContainer}>
+							<div className={classes.numberMarker}>{index + 1}</div>
+							<div className={classes.cardContainer}>
+								<WelcomeCarouselCard
+									id={Number(content.link)}
+									title={content.title}
+									posterPath={content.poster_path}
+									type={content.type}
+									vote_average={content.vote_average}
+								/>
+							</div>
+						</div>
+					</Carousel.Slide>
+				))}
+			</Carousel>
+		</Box>
+	);
 }
 
 export default WelcomeCustomCarouselContent;
