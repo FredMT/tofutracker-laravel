@@ -50,7 +50,9 @@ export function RelatedEntriesSection({
 			});
 
 			router.visit(
-				route('admin.showAdminAnimeCollectionPage', { animeMap: mapId })
+				route('admin.showAdminAnimeCollectionPage', {
+					animeMap: response.data.redirectMapId,
+				})
 			);
 		} catch (error: any) {
 			notifications.show({

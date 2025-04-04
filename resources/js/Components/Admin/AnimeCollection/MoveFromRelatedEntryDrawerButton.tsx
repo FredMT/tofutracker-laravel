@@ -5,6 +5,7 @@ import {
 	Divider,
 	Drawer,
 	Group,
+	Modal,
 	Select,
 	Stack,
 	Text,
@@ -47,6 +48,8 @@ export function MoveFromRelatedEntryDrawerButton({
 	relatedEntryId,
 }: MoveFromRelatedEntryDrawerButtonProps) {
 	const [opened, { open, close }] = useDisclosure(false);
+	const [modalOpened, { open: modalOpen, close: modalClose }] =
+		useDisclosure(false);
 	const [searchMap, setSearchMap] = useState('');
 	const [animeMap, setAnimeMap] = useState<Collection | null>(null);
 	const [selectedChain, setSelectedChain] = useState<string | null>(null);
@@ -68,7 +71,7 @@ export function MoveFromRelatedEntryDrawerButton({
 			console.log(error);
 			notifications.show({
 				title: 'Error',
-				message: 'Error retrieving data',
+				message: 'Map ID does not exist',
 				color: 'red',
 				icon: <X />,
 			});
@@ -99,6 +102,59 @@ export function MoveFromRelatedEntryDrawerButton({
 				color: 'green',
 				icon: <InfoIcon />,
 			});
+
+			if (response.data.redirect === true) {
+				router.visit(
+					route('admin.showAdminAnimeCollectionPage', {
+						animeMap: response.data.redirectMapId,
+					})
+				);
+			}
+
+			router.reload();
+		} catch (error: any) {
+			console.error(error);
+			notifications.show({
+				title: 'Error',
+				message: error.response.data.message || error.message,
+				color: 'red',
+				icon: <X />,
+			});
+			router.reload();
+		}
+	}
+
+	async function moveFromRelatedToRelated() {
+		if (!relatedEntryId || !animeMap || !animeMap.id) {
+			return notifications.show({
+				title: 'Error',
+				message: 'Ensure both related entry id exists and anime map id exists',
+				color: 'red',
+				icon: <X />,
+			});
+		}
+		try {
+			const response = await axios.post(
+				route('admin.moveFromRelatedToRelated', {
+					relatedEntry: relatedEntryId,
+					animeMap: animeMap.id,
+				})
+			);
+
+			notifications.show({
+				title: 'Success',
+				message: response.data.message,
+				color: 'green',
+				icon: <InfoIcon />,
+			});
+
+			if (response.data.redirect === true) {
+				return router.visit(
+					route('admin.showAdminAnimeCollectionPage', {
+						animeMap: response.data.redirectMapId,
+					})
+				);
+			}
 
 			router.reload();
 		} catch (error: any) {
@@ -181,6 +237,9 @@ export function MoveFromRelatedEntryDrawerButton({
 								)}
 							</Stack>
 							<Text ta='center'>OR</Text>
+							<Button onClick={modalOpen}>
+								Move to different map's related entries
+							</Button>
 						</>
 					)}
 				</Stack>
@@ -191,6 +250,34 @@ export function MoveFromRelatedEntryDrawerButton({
 			>
 				Move
 			</Button>
+			{animeMap && animeMap.id && (
+				<Modal
+					opened={modalOpened}
+					onClose={modalClose}
+					title='Transfer from Related to Related'
+				>
+					<Stack gap='xl'>
+						<Text>
+							Are you sure you want to transfer anime with related entry id:{' '}
+							{relatedEntryId} to map id: {animeMap.id} ?
+						</Text>
+						<Group justify='flex-end'>
+							<Button
+								onClick={modalClose}
+								variant='default'
+							>
+								Cancel
+							</Button>
+							<Button
+								onClick={moveFromRelatedToRelated}
+								color='green'
+							>
+								Confirm
+							</Button>
+						</Group>
+					</Stack>
+				</Modal>
+			)}
 		</>
 	);
 }
