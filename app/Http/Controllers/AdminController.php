@@ -400,6 +400,10 @@ class AdminController extends Controller
 
         $chainToMoveTo = AnimePrequelSequelChain::find($validated['move_chain_id']);
         $chainToMoveFrom = AnimePrequelSequelChain::find($chainEntry->chain_id);
+
+        if ($chainToMoveTo->id === $chainToMoveFrom->id) {
+            return response()->json(['message' => "You're not allowed to transfer items within the same chain"], 403);
+        }
         $mapFromChain = AnimeMap::find($chainToMoveFrom->map_id);
         $mapToChain = AnimeMap::find($chainToMoveTo->map_id);
 

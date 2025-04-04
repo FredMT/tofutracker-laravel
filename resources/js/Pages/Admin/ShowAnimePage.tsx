@@ -127,7 +127,7 @@ function ShowAnimePage({ data }: { data: AdminAnimePage }) {
 									) : (
 										<Stack>
 											<Text>Map ID: No Map ID Found</Text>
-											<Text>Create map for this anime</Text>
+											<Text>Create map for this anime:</Text>
 											<CreateMapButtonGroup
 												id={data.id}
 												loadingOverlayVisible={setVisible}
@@ -162,7 +162,7 @@ function ShowAnimePage({ data }: { data: AdminAnimePage }) {
 													href={`https://www.themoviedb.org/search?query=${data.title_main}`}
 													target='_blank'
 												>
-													<Button>Search on TMDB</Button>
+													<Button fullWidth>Search on TMDB</Button>
 												</a>
 											</>
 										)}
