@@ -57,7 +57,6 @@ export function ChainEntriesSection({
 					<Group align='center'>
 						<Title order={4}>{chainData.name || `Chain ${chainId}`}</Title>
 						<RenameChainButton
-							mapId={mapId}
 							chainId={chainId}
 							initialName={chainData.name || `Chain ${chainId}`}
 						/>

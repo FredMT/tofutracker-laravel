@@ -7,13 +7,11 @@ import { router } from '@inertiajs/react';
 import axios from 'axios';
 
 interface RenameChainButtonProps {
-	mapId: number;
 	chainId: string;
 	initialName: string;
 }
 
 export function RenameChainButton({
-	mapId,
 	chainId,
 	initialName,
 }: RenameChainButtonProps) {
