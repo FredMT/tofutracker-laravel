@@ -18,7 +18,8 @@ export function ChainEntriesTable({
 
 	const rows = entries.map((entry) => (
 		<Table.Tr key={entry.id}>
-			<Table.Td>{entry.sequence_order}</Table.Td>
+			<Table.Td>{entry.id}</Table.Td>
+			<Table.Td>{entry.anime_id}</Table.Td>
 			<Table.Td>
 				{entry.picture ? (
 					<Image
@@ -75,7 +76,8 @@ export function ChainEntriesTable({
 			>
 				<Table.Thead>
 					<Table.Tr>
-						<Table.Th>Order</Table.Th>
+						<Table.Th>ID</Table.Th>
+						<Table.Th>Anime ID</Table.Th>
 						<Table.Th>Picture</Table.Th>
 						<Table.Th>Title</Table.Th>
 						<Table.Th>Actions</Table.Th>
@@ -85,7 +87,7 @@ export function ChainEntriesTable({
 				<Table.Tfoot>
 					<Table.Tr>
 						<Table.Td
-							colSpan={4}
+							colSpan={5} // Updated colspan
 							py={20}
 						>
 							<Group justify='center'>

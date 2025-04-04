@@ -65,7 +65,6 @@ export function RelatedEntriesSection({
 		}
 	}
 
-	// Show message and Add button if no entries
 	if (!relatedEntries || relatedEntries.length === 0) {
 		return (
 			<Stack
@@ -81,6 +80,8 @@ export function RelatedEntriesSection({
 
 	const rows = relatedEntries.map((entry) => (
 		<Table.Tr key={entry.id}>
+			<Table.Td>{entry.id}</Table.Td>
+			<Table.Td>{entry.anime_id}</Table.Td>
 			<Table.Td>
 				{entry.picture ? (
 					<Image
@@ -101,10 +102,11 @@ export function RelatedEntriesSection({
 						href={`https://anidb.net/anime/${entry.anime_id}`}
 						target='_blank'
 					>
-						<Button variant='outline'>Visit</Button>
+						<Button variant='outline'>Visit AniDB</Button>
 					</a>
 				</Group>
 			</Table.Td>
+
 			<Table.Td>
 				<Group gap='xs'>
 					<MoveFromRelatedEntryDrawerButton relatedEntryId={entry.id} />
@@ -161,10 +163,12 @@ export function RelatedEntriesSection({
 						highlightOnHover
 						withTableBorder
 						withColumnBorders
-						miw={400} // Minimum width
+						miw={600} // Adjusted minimum width
 					>
 						<Table.Thead>
 							<Table.Tr>
+								<Table.Th>ID</Table.Th>
+								<Table.Th>Anime ID</Table.Th>
 								<Table.Th>Picture</Table.Th>
 								<Table.Th>Title</Table.Th>
 								<Table.Th>Actions</Table.Th>
@@ -174,7 +178,7 @@ export function RelatedEntriesSection({
 							{rows}
 							<Table.Tr>
 								<Table.Td
-									colSpan={3}
+									colSpan={5} // Updated colspan
 									py={20}
 								>
 									<Group justify='center'>
