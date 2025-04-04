@@ -49,11 +49,11 @@ export function RelatedEntriesSection({
 				icon: <InfoIcon />,
 			});
 
-			router.visit(
-				route('admin.showAdminAnimeCollectionPage', {
-					animeMap: response.data.redirectMapId,
-				})
-			);
+			if (response.data.redirect === true) {
+				return router.visit(response.data.redirectTo);
+			}
+
+			return router.reload();
 		} catch (error: any) {
 			notifications.show({
 				title: 'Error',

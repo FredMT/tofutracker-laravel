@@ -59,8 +59,15 @@ export function CreateMapButtonGroup({
 						icon: <InfoIcon />,
 						color: 'green',
 					});
+
+					if (res.data.redirect === true) {
+						return router.visit(
+							route('admin.showAdminAnimeCollectionPage', {
+								animeMap: res.data.redirectMapId,
+							})
+						);
+					}
 				}
-				router.visit(route('admin.showAdminAnime', { anime_id: id }));
 			})
 			.catch((e) => {
 				notifications.show({

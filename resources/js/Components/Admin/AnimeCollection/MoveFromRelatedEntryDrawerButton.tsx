@@ -53,6 +53,7 @@ export function MoveFromRelatedEntryDrawerButton({
 	const [searchMap, setSearchMap] = useState('');
 	const [animeMap, setAnimeMap] = useState<Collection | null>(null);
 	const [selectedChain, setSelectedChain] = useState<string | null>(null);
+	const [newChainName, setNewChainName] = useState<string>('');
 
 	const isSearchMapValid = () => {
 		const parsedValue = Number(searchMap);
@@ -169,6 +170,61 @@ export function MoveFromRelatedEntryDrawerButton({
 		}
 	}
 
+	async function moveFromRelatedToNewChain() {
+		try {
+			if (
+				!relatedEntryId ||
+				!animeMap ||
+				!animeMap.id ||
+				newChainName.length < 1
+			) {
+				return notifications.show({
+					title: 'Error',
+					message:
+						'Ensure both related entry id exists and anime map id exists, as well as if newChainName is a valid string',
+					color: 'red',
+					icon: <X />,
+				});
+			}
+
+			const response = await axios.post(
+				route('admin.moveFromRelatedToNewChain', {
+					relatedEntry: relatedEntryId,
+					animeMap: animeMap.id,
+				}),
+				{
+					chain_name: newChainName,
+				}
+			);
+
+			notifications.show({
+				title: 'Success',
+				message: response.data.message,
+				color: 'green',
+				icon: <InfoIcon />,
+			});
+
+			if (response.data.redirect === true) {
+				return router.visit(
+					route('admin.showAdminAnimeCollectionPage', {
+						animeMap: response.data.redirectMapId,
+					})
+				);
+			}
+
+			if (response.data.refresh === true) {
+				router.reload();
+			}
+		} catch (error: any) {
+			console.error(error);
+			notifications.show({
+				title: 'Error',
+				message: error.response.data.message || error.message,
+				color: 'red',
+				icon: <X />,
+			});
+		}
+	}
 	return (
 		<>
 			<Drawer
@@ -210,35 +266,75 @@ export function MoveFromRelatedEntryDrawerButton({
 						<>
 							<Stack>
 								<Divider />
-								<Title
-									order={3}
-									ta='center'
-								>
-									Move to existing chain
-								</Title>
-								<Select
-									label='Select a Chain'
-									placeholder='Choose a chain'
-									data={animeMap.chains.map((chain) => ({
-										value: chain.id.toString(),
-										label: chain.name,
-									}))}
-									value={selectedChain}
-									onChange={setSelectedChain}
-									clearable
-								/>
-								{selectedChain && (
-									<Button
-										onClick={moveFromRelatedToChain}
-										color='blue'
-									>
-										Move To Selected Chain
-									</Button>
+								{animeMap.chains.length > 0 && (
+									<>
+										<Title
+											order={3}
+											ta='center'
+										>
+											Move to existing chain
+										</Title>
+										<Select
+											label='Select a Chain'
+											placeholder='Choose a chain'
+											data={animeMap.chains.map((chain) => ({
+												value: chain.id.toString(),
+												label: chain.name,
+											}))}
+											value={selectedChain}
+											onChange={setSelectedChain}
+											clearable
+										/>
+										{selectedChain && (
+											<Button
+												onClick={moveFromRelatedToChain}
+												color='blue'
+											>
+												Move To Selected Chain
+											</Button>
+										)}
+										<Text ta='center'>OR</Text>
+									</>
 								)}
 							</Stack>
+							<Title
+								order={3}
+								ta='center'
+							>
+								Move to new chain in {animeMap.id}
+							</Title>
+							<TextInput
+								placeholder='Type new chain name'
+								label='New chain name'
+								value={newChainName}
+								onChange={(event) => setNewChainName(event.currentTarget.value)}
+								rightSectionPointerEvents='all'
+								mt='md'
+								rightSection={
+									<CloseButton
+										aria-label='Clear input'
+										onClick={() => {
+											setNewChainName('');
+										}}
+										style={{ display: newChainName ? undefined : 'none' }}
+									/>
+								}
+							/>
+							<Button
+								disabled={newChainName.length < 1}
+								onClick={moveFromRelatedToNewChain}
+							>
+								Move to new chain
+							</Button>
 							<Text ta='center'>OR</Text>
+							<Title
+								order={3}
+								ta='center'
+							>
+								Move to related entry
+							</Title>
 							<Button onClick={modalOpen}>
-								Move to different map's related entries
+								Move to {animeMap.id}'s related entries
 							</Button>
 						</>
 					)}

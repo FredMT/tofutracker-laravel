@@ -171,7 +171,7 @@ class AdminController extends Controller
 
             DB::commit();
 
-            return response()->json(['success' => true, 'message' => 'Anime map chain entry created successfully.', 'map_id' => $animeMap->id], 201);
+            return response()->json(['success' => true, 'message' => 'Anime map chain entry created successfully.', 'redirectMapId' => $animeMap->id, 'redirect' => true], 201);
 
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -234,16 +234,26 @@ class AdminController extends Controller
         try {
 
             DB::beginTransaction();
-            $anime = AnidbAnime::find($relatedEntry->anime_id);
-            $anime->map_id = null;
-            $anime->save();
+
+            AnidbAnime::where('id', $relatedEntry->anime_id)->update(['map_id' => $relatedEntry->map_id]);
+
+            $mapFromRelated = AnimeMap::find($relatedEntry->map_id);
+
+            $mapFromRelatedChainEntriesCount = $mapFromRelated->chainEntries()->count();
+            $mapFromRelatedRelatedEntriesCount = $mapFromRelated->relatedEntries()->count();
+
+            if ($mapFromRelatedChainEntriesCount === 0 && $mapFromRelatedRelatedEntriesCount === 1) {
+                $mapFromRelated->delete();
+
+                DB::commit();
+
+                return response()->json(['message' => 'Deleted related entry for this anime id and map deleted as it has no more entries', 'redirect' => true, 'redirectTo' => route('admin.show')], 200);
+            }
 
             $relatedEntry->delete();
-
             DB::commit();
 
-            return response()->json(['message' => 'Deleted related entry for this anime id', 'redirectMapId' => $relatedEntry->map_id], 200);
-
+            return response()->json(['message' => 'Deleted related entry for this anime id'], 200);
         } catch (\Throwable $e) {
             DB::rollBack();
             $this->logError($e);
@@ -620,10 +630,8 @@ class AdminController extends Controller
 
                 DB::commit();
 
-                return response()->json(['message' => 'Chain entry moved to new map successfully', 'redirect' => true, 'redirectMapId' => $mapFromChain->id], 200);
+                return response()->json(['message' => 'Chain entry moved to new map successfully and chain deleted', 'redirect' => true, 'redirectMapId' => $mapFromChain->id], 200);
             }
-
-            $chainEntry->delete();
 
             AnimeRelatedEntry::create([
                 'map_id' => $animeMap->id,
@@ -635,7 +643,7 @@ class AdminController extends Controller
 
             DB::commit();
 
-            return response()->json(['message' => 'Chain entry moved to new map successfully', 'refresh' => true, 'refreshMapId' => $animeMap->id], 200);
+            return response()->json(['message' => 'Chain entry moved to map successfully', 'refresh' => true, 'refreshMapId' => $animeMap->id], 200);
 
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -701,12 +709,13 @@ class AdminController extends Controller
 
     public function moveFromRelatedToRelated(AnimeRelatedEntry $relatedEntry, AnimeMap $animeMap)
     {
+        if ($relatedEntry->map_id === $animeMap->id) {
+            return response()->json(['message' => 'You cannot move a related entry item within the same anime map'], 403);
+        }
+
         DB::beginTransaction();
 
         try {
-            if ($relatedEntry->map_id === $animeMap->id) {
-                return response()->json(['message' => 'You cannot move a related entry item within the same anime map'], 403);
-            }
 
             $mapFromRelated = AnimeMap::find($relatedEntry->map_id);
 
@@ -743,6 +752,85 @@ class AdminController extends Controller
                 'message' => "Anime id {$relatedEntry->anime_id} moved to Map ID: {$animeMap->id} and previous map is deleted as it had no more entries",
             ]);
 
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $this->logError($th);
+
+            return response()->json(['message' => 'Internal Server Error'], 500);
+        }
+    }
+
+    public function moveFromRelatedToNewChain(AnimeRelatedEntry $relatedEntry, AnimeMap $animeMap, Request $request)
+    {
+        $validated = $request->validate(['chain_name' => ['required', 'string', 'min:1']]);
+
+        $chainName = $validated['chain_name'];
+
+        DB::beginTransaction();
+
+        try {
+            $mapFromRelated = AnimeMap::find($relatedEntry->map_id);
+            $mapFromRelatedChainEntriesCount = $mapFromRelated->chainEntries()->count();
+            $mapFromRelatedRelatedEntriesCount = $mapFromRelated->relatedEntries()->count();
+
+            $isRelatedEntryMapIdAndMoveChainMapIdSame = $relatedEntry->map_id === $animeMap->id;
+
+            if ($mapFromRelatedChainEntriesCount === 0 && $mapFromRelatedRelatedEntriesCount === 1 && $isRelatedEntryMapIdAndMoveChainMapIdSame === false) {
+                $mapFromRelated->delete();
+
+                $maxImportanceOrder = AnimePrequelSequelChain::where('map_id', $animeMap->id)
+                    ->orderBy('importance_order', 'desc')
+                    ->value('importance_order') ?? 0;
+
+                $chain = AnimePrequelSequelChain::create([
+                    'map_id' => $animeMap->id,
+                    'name' => $chainName,
+                    'importance_order' => $maxImportanceOrder + 1,
+                ]);
+
+                AnimeChainEntry::create([
+                    'chain_id' => $chain->id,
+                    'anime_id' => $relatedEntry->anime_id,
+                    'sequence_order' => 1,
+                ]);
+
+                AnidbAnime::where('id', $relatedEntry->anime_id)->update(['map_id' => $chain->map_id]);
+
+                DB::commit();
+
+                return response()->json([
+                    'message' => "Anime with id {$relatedEntry->anime_id} moved to new chain {$chain->name} and previous map is deleted as it has no more entries",
+                    'redirect' => true,
+                    'redirectMapId' => $chain->map_id,
+                ]);
+            }
+
+            $relatedEntry->delete();
+
+            $maxImportanceOrder = AnimePrequelSequelChain::where('map_id', $animeMap->id)
+                ->orderBy('importance_order', 'desc')
+                ->value('importance_order') ?? 0;
+
+            $chain = AnimePrequelSequelChain::create([
+                'map_id' => $animeMap->id,
+                'name' => $chainName,
+                'importance_order' => $maxImportanceOrder + 1,
+            ]);
+
+            AnimeChainEntry::create([
+                'chain_id' => $chain->id,
+                'anime_id' => $relatedEntry->anime_id,
+                'sequence_order' => 1,
+            ]);
+
+            AnidbAnime::where('id', $relatedEntry->anime_id)->update(['map_id' => $chain->map_id]);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => "Anime with id {$relatedEntry->anime_id} moved to new chain {$chain->name} in map id: {$chain->map_id}.",
+                'refresh' => true,
+            ]);
         } catch (\Throwable $th) {
             DB::rollBack();
             $this->logError($th);
