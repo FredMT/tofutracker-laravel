@@ -1,15 +1,15 @@
-import { ChainEntry } from '@/Pages/Admin/ShowAnimeCollectionPage';
-import { Button, Group, Image, Table } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
-import { AddNewChainEntryDrawer } from './AddNewChainEntryDrawer';
-import { ChainEntryDeleteButton } from './ChainEntryDeleteButton';
-import { MovePopoverButton } from './MovePopoverButton';
+import { ChainEntry } from "@/Pages/Admin/ShowAnimeCollectionPage";
+import { Button, Group, Image, Table } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import { AddNewChainEntryDrawer } from "./AddNewChainEntryDrawer";
+import { ChainEntryDeleteButton } from "./ChainEntryDeleteButton";
+import { ChainEntryMoveDrawerButton } from "./ChainEntryMoveDrawerButton";
 
 export function ChainEntriesTable({
-	entries,
-	chainIdsAndNames,
-	mapId,
-}: {
+																		entries,
+																		chainIdsAndNames,
+																		mapId,
+																	}: {
 	entries: ChainEntry[];
 	chainIdsAndNames: { id: string; name: string }[];
 	mapId: number;
@@ -25,27 +25,27 @@ export function ChainEntriesTable({
 						src={`https://anidb.net/images/main/${entry.picture}`}
 						alt={entry.title_main}
 						w={40}
-						h='auto'
-						radius='sm'
+						h="auto"
+						radius="sm"
 					/>
 				) : (
-					'-'
+					"-"
 				)}
 			</Table.Td>
 			<Table.Td>
-				<Group justify='space-between'>
+				<Group justify="space-between">
 					{entry.title_main}
 					<a
 						href={`https://anidb.net/anime/${entry.anime_id}`}
-						target='_blank'
+						target="_blank"
 					>
-						<Button variant='outline'>Visit</Button>
+						<Button variant="outline">Visit</Button>
 					</a>
 				</Group>
 			</Table.Td>
 			<Table.Td>
-				<Group gap='xs'>
-					<MovePopoverButton
+				<Group gap="xs">
+					<ChainEntryMoveDrawerButton
 						animeId={entry.anime_id}
 						chainId={entry.id}
 					/>
@@ -88,9 +88,9 @@ export function ChainEntriesTable({
 							colSpan={4}
 							py={20}
 						>
-							<Group justify='center'>
+							<Group justify="center">
 								<Button
-									size='xs'
+									size="xs"
 									onClick={open}
 								>
 									Add new chain entry

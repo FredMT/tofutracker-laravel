@@ -136,7 +136,7 @@ export function ExistingMapTabContent({
 		}
 	}
 
-	async function moveToRelatedAnime() {
+	async function moveFromChainToRelated() {
 		if (!animeMap)
 			return notifications.show({
 				title: 'Error',
@@ -147,7 +147,7 @@ export function ExistingMapTabContent({
 
 		try {
 			const response = await axios.post(
-				route('admin.moveToRelated', {
+				route('admin.moveFromChainToRelated', {
 					animeMap: animeMap.id,
 					chainEntry: chainId,
 					anime: animeId,
@@ -307,7 +307,7 @@ export function ExistingMapTabContent({
 					<Text ta='center'>OR</Text>
 
 					<Button
-						onClick={moveToRelatedAnime}
+						onClick={moveFromChainToRelated}
 						color='green'
 					>
 						Create New Related Entry

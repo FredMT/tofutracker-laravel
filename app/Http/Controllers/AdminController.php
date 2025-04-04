@@ -567,7 +567,7 @@ class AdminController extends Controller
         }
     }
 
-    public function moveToRelated(AnimeMap $animeMap, AnimeChainEntry $chainEntry, AnidbAnime $anime)
+    public function moveFromChainToRelated(AnimeMap $animeMap, AnimeChainEntry $chainEntry, AnidbAnime $anime)
     {
         DB::beginTransaction();
 
@@ -583,7 +583,7 @@ class AdminController extends Controller
 
                 AnimeRelatedEntry::create([
                     'map_id' => $animeMap->id,
-                    'anime_id' => $anime->id
+                    'anime_id' => $anime->id,
                 ]);
 
                 $anime->map_id = $animeMap->id;
@@ -601,7 +601,7 @@ class AdminController extends Controller
 
                 AnimeRelatedEntry::create([
                     'map_id' => $animeMap->id,
-                    'anime_id' => $anime->id
+                    'anime_id' => $anime->id,
                 ]);
 
                 $anime->map_id = $animeMap->id;
@@ -616,7 +616,7 @@ class AdminController extends Controller
 
             AnimeRelatedEntry::create([
                 'map_id' => $animeMap->id,
-                'anime_id' => $anime->id
+                'anime_id' => $anime->id,
             ]);
 
             $anime->map_id = $animeMap->id;
@@ -633,6 +633,36 @@ class AdminController extends Controller
             return response()->json(['message' => 'Internal Server Error'], 500);
         }
 
+    }
+
+    public function moveFromRelatedToChain(AnimeRelatedEntry $relatedEntry, AnimePrequelSequelChain $chain)
+    {
+        DB::beginTransaction();
+
+        try {
+            $relatedEntry->delete();
+
+            $maxSequenceOrder = AnimeChainEntry::where('chain_id', $chain->id)
+                ->max('sequence_order') ?? 0;
+
+
+            AnimeChainEntry::create([
+                'chain_id' => $chain->id,
+                'anime_id' => $relatedEntry->anime_id,
+                'sequence_order' => $maxSequenceOrder + 1
+            ]);
+
+            AnidbAnime::where('id', $relatedEntry->anime_id)->update(['map_id' => $chain->map_id]);
+
+            DB::commit();
+
+            return response()->json(['message' => "Related entry with anime id {$relatedEntry->anime_id} moved to {$chain->name} successfully"], 200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $this->logError($th);
+
+            return response()->json(['message' => 'Internal Server Error'], 500);
+        }
     }
 
     private function logError(\Throwable $th)

@@ -16,6 +16,7 @@ import { notifications } from '@mantine/notifications';
 import axios from 'axios';
 import { InfoIcon, X } from 'lucide-react';
 import { useState } from 'react';
+import { MoveFromRelatedEntryDrawerButton } from '@/Components/Admin/AnimeCollection/MoveFromRelatedEntryDrawerButton';
 
 type RelatedEntry = {
 	id: number;
@@ -103,15 +104,9 @@ export function RelatedEntriesSection({
 			</Table.Td>
 			<Table.Td>
 				<Group gap='xs'>
-					<Button
-						size='xs'
-						color='violet'
-					>
-						Move
-					</Button>
+					<MoveFromRelatedEntryDrawerButton relatedEntryId={entry.id} />
 					<Button
 						color='red'
-						size='xs'
 						onClick={() => {
 							open();
 							setSelectedEntry(entry.id);
@@ -132,7 +127,7 @@ export function RelatedEntriesSection({
 				title='Delete Related Entry ?'
 			>
 				<Text>
-					Are you sure you want to delete this entry from related entries?{' '}
+					Are you sure you want to delete this entry from related entries?
 				</Text>
 				<Group
 					justify='self-end'
