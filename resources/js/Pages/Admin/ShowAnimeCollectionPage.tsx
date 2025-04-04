@@ -14,6 +14,7 @@ import {
 	Title,
 } from '@mantine/core';
 import { EditTMDBIDModalButton } from '@/Pages/Admin/EditTMDBIDModalButton';
+import { UpdateTMDBTypeModal } from '@/Pages/Admin/UpdateTMDBTypeModal';
 
 export type ChainEntry = {
 	id: number;
@@ -119,22 +120,20 @@ function ShowAnimeCollectionPage({ data }: ShowAnimeCollectionPageProps) {
 										<Text>
 											{data.anime_map.tmdb_type ?? 'TMDB Type not given'}
 										</Text>
+										<UpdateTMDBTypeModal
+											mapId={data.anime_map.id}
+											currentType={data.anime_map.tmdb_type ?? null}
+										/>
+
 										{data.anime_map.most_common_tmdb_id &&
-										data.anime_map.tmdb_type ? (
-											<a
-												href={`https://themoviedb.org/${data.anime_map.tmdb_type}/${data.anime_map.most_common_tmdb_id}`}
-												target='_blank'
-											>
-												<Button>Visit TMDB</Button>
-											</a>
-										) : (
-											<a
-												href={`https://www.themoviedb.org/search?query=`}
-												target='_blank'
-											>
-												<Button>Visit TMDB search page</Button>
-											</a>
-										)}
+											data.anime_map.tmdb_type && (
+												<a
+													href={`https://themoviedb.org/${data.anime_map.tmdb_type}/${data.anime_map.most_common_tmdb_id}`}
+													target='_blank'
+												>
+													<Button>Visit TMDB</Button>
+												</a>
+											)}
 									</Group>
 								</Grid.Col>
 							</Grid>

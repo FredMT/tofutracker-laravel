@@ -860,6 +860,43 @@ class AdminController extends Controller
         return response()->json(['message' => 'TMDB ID updated successfully', 'refresh' => true], 200);
     }
 
+    public function handleUpdateTmdbTypeForMap(AnimeMap $animeMap, Request $request) {
+        $validated = $request->validate([
+            'tmdb_type' => ['required', 'string', 'in:tv,movie']
+        ]);
+
+        AnimeMap::where('id', $animeMap->id)->update(['tmdb_type' => $validated['tmdb_type']]);
+
+        return response()->json(['message' => 'TMDB Type updated successfully', 'refresh' => true], 200);
+    }
+
+    public function updateChainName(AnimePrequelSequelChain $chain, Request $request) {
+        
+        $validated = $request->validate([
+            'chain_name' => ['required', 'string', 'min:1']
+        ]);
+
+        $chain->update(['name' => $validated['chain_name']]);
+
+        return response()->json(['message' => 'TMDB Type updated successfully', 'refresh' => true], 200);
+    }
+
+    public function reorderChains(AnimeMap $animeMap, Request $request)
+    {
+        $validated = $request->validate([
+            'data' => 'required|array',
+            'data.*.chainId' => 'required|integer|exists:anime_prequel_sequel_chains,id',
+            'data.*.numOrder' => 'required|integer|min:1',
+        ]);
+    
+        foreach ($validated['data'] as $item) {
+            AnimePrequelSequelChain::where('id', $item['chainId'])
+                ->update(['importance_order' => $item['numOrder']]);
+        }
+
+        return response()->json(['message' => 'Chain order updated successfully', 'refresh' => true]);
+    }
+
     private function logError(\Throwable $th)
     {
         $this->logger->error($th->getMessage());
