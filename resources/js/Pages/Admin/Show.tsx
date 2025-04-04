@@ -24,6 +24,7 @@ const anidbIdSchema = z
 
 function Show() {
 	const [searchAnidbId, setSearchAnidbId] = useState('');
+	const [searchAnimeMapByAnidbId, setSearchAnimeMapByAnidbId] = useState('');
 	const [validationError, setValidationError] = useState<string | null>(null);
 
 	const handleInputChange = (value: string) => {
@@ -35,6 +36,39 @@ function Show() {
 			setValidationError(null);
 		}
 	};
+
+	const handleAnimeMapInputChange = (value: string) => {
+		setSearchAnimeMapByAnidbId(value);
+		const result = anidbIdSchema.safeParse(value);
+		if (!result.success) {
+			setValidationError(result.error.errors.map((e) => e.message).join(' '));
+		} else {
+			setValidationError(null);
+		}
+	};
+
+	async function handleShowAnimeMapByAnimeId() {
+		try {
+			const response = await axios.get(
+				route('admin.findMapByAnimeId', {
+					anime: searchAnimeMapByAnidbId,
+				})
+			);
+
+			if (response.data.redirect === true) {
+				router.visit(response.data.redirectTo);
+			}
+
+			router.reload();
+		} catch (error: any) {
+			notifications.show({
+				title: 'Error',
+				message: error.response.data.message || error.message,
+				icon: <X />,
+				color: 'red',
+			});
+		}
+	}
 
 	const handleShowAnime = () => {
 		axios
@@ -101,18 +135,42 @@ function Show() {
 							</Button>
 						</Group>
 						<Group>
-							<Input />
-							<FindAnimeCollectionByAniDBID />
+							<Input
+								variant='filled'
+								value={searchAnimeMapByAnidbId}
+								onChange={(event) =>
+									handleAnimeMapInputChange(event.currentTarget.value)
+								}
+								placeholder='Type AniDB ID here'
+								error={validationError}
+								rightSectionPointerEvents='all'
+								rightSection={
+									<CloseButton
+										aria-label='Clear input'
+										onClick={() => {
+											setSearchAnimeMapByAnidbId('');
+											setValidationError(null);
+										}}
+										style={{
+											display: searchAnimeMapByAnidbId ? undefined : 'none',
+										}}
+									/>
+								}
+							/>
+							<Button
+								onClick={handleShowAnimeMapByAnimeId}
+								disabled={
+									!!validationError || searchAnimeMapByAnidbId.length < 1
+								}
+							>
+								Find anime collection by AniDB ID
+							</Button>
 						</Group>
 					</Stack>
 				</Stack>
 			</Box>
 		</>
 	);
-}
-
-function FindAnimeCollectionByAniDBID() {
-	return <Button>Find anime collection by AniDB ID</Button>;
 }
 
 Show.layout = (page: any) => <AuthenticatedLayout>{page}</AuthenticatedLayout>;

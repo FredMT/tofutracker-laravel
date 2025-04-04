@@ -14,10 +14,13 @@ export default function NavbarRight() {
 		permissions,
 	} = usePage<PageProps>().props;
 	const component = usePage().component;
+
+	const path = window.location.pathname;
+
 	return (
 		<div className='hidden sm:ms-6 sm:flex sm:items-center'>
 			<Group gap={16}>
-				{permissions.is_superuser && (
+				{permissions.is_superuser && !path.startsWith('/admin') && (
 					<ActionIcon
 						variant='outline'
 						size='lg'

@@ -117,6 +117,16 @@ class AdminController extends Controller
         return response()->json(['message' => 'Anime map data retrieved', 'animeMap' => $animeMap]);
     }
 
+    public function findMapByAnimeId(AnidbAnime $anime) {
+
+        if (!$anime->map_id) {
+            return response()->json(['message' => "Anime map doesnt exist for {$anime->id}", 'redirect' => false], 404);
+        }
+        return response()->json(['message' => 'Found', 'redirect' => true, 'redirectTo' => route('admin.showAdminAnimeCollectionPage', [
+            'animeMap' => $anime->map_id
+        ])], 200);
+    }
+
     public function createAnimeMapChainEntry(Request $request)
     {
         $validated = $request->validate([
