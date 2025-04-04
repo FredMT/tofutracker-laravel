@@ -13,6 +13,7 @@ import {
 	Text,
 	Title,
 } from '@mantine/core';
+import { EditTMDBIDModalButton } from '@/Pages/Admin/EditTMDBIDModalButton';
 
 export type ChainEntry = {
 	id: number;
@@ -101,9 +102,13 @@ function ShowAnimeCollectionPage({ data }: ShowAnimeCollectionPageProps) {
 									<Text>TMDB ID:</Text>
 								</Grid.Col>
 								<Grid.Col span={10}>
-									<Text>
-										{data.anime_map.most_common_tmdb_id ?? 'TMDB ID not given'}
-									</Text>
+									<Group>
+										<Text>
+											{data.anime_map.most_common_tmdb_id ??
+												'TMDB ID not given'}
+										</Text>
+										<EditTMDBIDModalButton mapId={data.anime_map.id} />
+									</Group>
 								</Grid.Col>
 
 								<Grid.Col span={2}>

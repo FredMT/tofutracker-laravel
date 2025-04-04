@@ -25,6 +25,7 @@ const anidbIdSchema = z
 function Show() {
 	const [searchAnidbId, setSearchAnidbId] = useState('');
 	const [searchAnimeMapByAnidbId, setSearchAnimeMapByAnidbId] = useState('');
+	const [searchAnidb, setSearchAnidb] = useState('');
 	const [validationError, setValidationError] = useState<string | null>(null);
 
 	const handleInputChange = (value: string) => {
@@ -94,6 +95,15 @@ function Show() {
 					color: 'red',
 				});
 			});
+	};
+
+	const createAnidbSearchUrl = (searchTerm: string): string => {
+		const baseUrl = 'https://anidb.net/search/anime/';
+		const query = new URLSearchParams({
+			'adb.search': searchTerm,
+			'do.search': '1',
+		}).toString();
+		return `${baseUrl}?${query}`;
 	};
 	return (
 		<>
@@ -165,6 +175,36 @@ function Show() {
 							>
 								Find anime collection by AniDB ID
 							</Button>
+						</Group>
+						<Group>
+							<Input
+								variant='filled'
+								value={searchAnidb}
+								onChange={(event) => setSearchAnidb(event.currentTarget.value)}
+								placeholder='Type AniDB search entry here'
+								error={validationError}
+								rightSectionPointerEvents='all'
+								rightSection={
+									<CloseButton
+										aria-label='Clear input'
+										onClick={() => {
+											setSearchAnidb('');
+											setValidationError(null);
+										}}
+										style={{
+											display: searchAnidb ? undefined : 'none',
+										}}
+									/>
+								}
+							/>
+							<a
+								href={createAnidbSearchUrl(searchAnidb)}
+								target='_blank'
+							>
+								<Button disabled={searchAnidb.length < 1}>
+									Search on AniDB
+								</Button>
+							</a>
 						</Group>
 					</Stack>
 				</Stack>

@@ -849,6 +849,17 @@ class AdminController extends Controller
         }
     }
 
+    public function handleUpdateTmdbIdForMap(AnimeMap $animeMap, Request $request) {
+        $validated = $request->validate([
+            'tmdb_id' => ['required', 'integer']
+        ]);
+
+        AnimeMap::where('id', $animeMap->id)->update(['most_common_tmdb_id' => $validated['tmdb_id']]);
+
+
+        return response()->json(['message' => 'TMDB ID updated successfully', 'refresh' => true], 200);
+    }
+
     private function logError(\Throwable $th)
     {
         $this->logger->error($th->getMessage());
