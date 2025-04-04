@@ -53,6 +53,7 @@ export function RelatedEntriesSection({
 				return router.visit(response.data.redirectTo);
 			}
 
+			close();
 			return router.reload();
 		} catch (error: any) {
 			notifications.show({

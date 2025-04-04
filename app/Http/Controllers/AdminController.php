@@ -245,7 +245,7 @@ class AdminController extends Controller
 
             DB::beginTransaction();
 
-            AnidbAnime::where('id', $relatedEntry->anime_id)->update(['map_id' => $relatedEntry->map_id]);
+            AnidbAnime::where('id', $relatedEntry->anime_id)->update(['map_id' => null]);
 
             $mapFromRelated = AnimeMap::find($relatedEntry->map_id);
 

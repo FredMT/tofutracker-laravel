@@ -50,6 +50,9 @@ export function CreateMapButtonGroup({
 		axios
 			.post(route('admin.createAnimeMapChainEntry'), {
 				anidb_id: id,
+				tmdb_id: tmdbId,
+				tmdb_type: tmdbType,
+				collection_name: collectionName,
 			})
 			.then((res) => {
 				if (res.status === 201) {

@@ -240,23 +240,46 @@ export function AddNewChainEntryDrawer({
 								{!isCreatingNewChain && (
 									<>
 										{chainIdsAndNames.length > 0 && (
-											<Select
-												label='Select Chain'
-												placeholder='Choose a chain to add entry'
-												data={chainIdsAndNames.map((chain) => ({
-													value: chain.id,
-													label: `id: ${chain.id} - name: ${chain.name}`,
-												}))}
-												clearable
-												value={selectedChainId}
-												onChange={(value) => {
-													setSelectedChainId(value);
-													if (value) {
-														setIsCreatingNewChain(false);
-														setNewChainName('');
+											<>
+												<Select
+													label='Select Chain'
+													placeholder='Choose a chain to add entry'
+													data={chainIdsAndNames.map((chain) => ({
+														value: chain.id,
+														label: `id: ${chain.id} - name: ${chain.name}`,
+													}))}
+													clearable
+													value={selectedChainId}
+													onChange={(value) => {
+														setSelectedChainId(value);
+														if (value) {
+															setIsCreatingNewChain(false);
+															setNewChainName('');
+														}
+													}}
+												/>
+												<Button
+													disabled={
+														(animeResult && animeResult.map_id !== null) ||
+														selectedChainId === null
 													}
-												}}
-											/>
+													onClick={() =>
+														handleAddChainEntry(
+															mapId,
+															Boolean(isCreatingNewChain),
+															newChainName ?? null,
+															selectedChainId
+																? parseInt(selectedChainId)
+																: undefined,
+															animeResult.id
+														)
+													}
+												>
+													{animeResult && animeResult.map_id !== null
+														? 'Cannot Add because it already exists in an anime map'
+														: `Add as chain entry`}
+												</Button>
+											</>
 										)}
 
 										{!selectedChainId && (
@@ -298,25 +321,6 @@ export function AddNewChainEntryDrawer({
 										/>
 									</>
 								)}
-
-								<Divider />
-
-								<Button
-									disabled={animeResult && animeResult.map_id !== null}
-									onClick={() =>
-										handleAddChainEntry(
-											mapId,
-											Boolean(isCreatingNewChain),
-											newChainName ?? null,
-											selectedChainId ? parseInt(selectedChainId) : undefined,
-											animeResult.id
-										)
-									}
-								>
-									{animeResult && animeResult.map_id !== null
-										? 'Cannot Add because it already exists in an anime map'
-										: `Add as chain entry`}
-								</Button>
 							</Stack>
 						</Card>
 					)}
