@@ -27,7 +27,14 @@ class MovieController extends Controller
         $existingMovie = Movie::find($id);
         $comments = $this->commentController->index($request, 'movie', $id);
 
+        $user = null;
+        $configuration = (object) [
+            'hide_episode_description' => false,
+            'hide_character_name' => false,
+            'hide_anime_character_picture' => false,
+        ];
         if ($request->user()) {
+            $user = $request->user();
             $userLibraryData = UserMovie::where([
                 'user_id' => $request->user()->id,
                 'movie_id' => $id,
@@ -46,6 +53,8 @@ class MovieController extends Controller
             if ($userLists->isEmpty()) {
                 $userLists = null;
             }
+
+            $configuration = $user?->configuration()->first();
         }
 
         if (Cache::has($cacheKey)) {
@@ -55,6 +64,7 @@ class MovieController extends Controller
                 'user_library' => $userLibraryData,
                 'user_lists' => $userLists,
                 'comments' => $comments,
+                'configuration' => $configuration,
             ]);
         }
 
