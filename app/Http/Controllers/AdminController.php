@@ -897,6 +897,41 @@ class AdminController extends Controller
         return response()->json(['message' => 'Chain order updated successfully', 'refresh' => true]);
     }
 
+    public function reorderChainEntries(Request $request)
+    {
+        $validated = $request->validate([
+            'data' => 'required|array',
+            'data.*.id' => 'required|integer|exists:anime_chain_entries,id',
+            'data.*.anime_id' => 'required|integer|exists:anime_chain_entries,anime_id',
+            'data.*.chain_id' => 'required|integer|exists:anime_chain_entries,chain_id',
+            'data.*.sequence_order' => 'required|integer|min:1',
+        ]);
+
+        $entryIdsToDelete = array_column($validated['data'], 'id');
+
+        DB::beginTransaction();
+        try {
+            AnimeChainEntry::whereIn('id', $entryIdsToDelete)->delete();
+
+            foreach ($validated['data'] as $item) {
+                AnimeChainEntry::create([
+                    'anime_id' => $item['anime_id'],
+                    'chain_id' => $item['chain_id'],
+                    'sequence_order' => $item['sequence_order'],
+                ]);
+            }
+
+            DB::commit();
+
+            return response()->json(['success' => true, 'message' => 'Chain entry order updated successfully.', 'refresh' => true], 200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $this->logError($th);
+
+            return response()->json(['success' => false, 'message' => 'Failed to update chain entry order.'], 500);
+        }
+    }
+
     private function logError(\Throwable $th)
     {
         $this->logger->error($th->getMessage());

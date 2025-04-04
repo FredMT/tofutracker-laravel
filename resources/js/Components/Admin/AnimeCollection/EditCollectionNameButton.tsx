@@ -59,7 +59,7 @@ export function EditCollectionNameButton({ mapId }: { mapId: number }) {
 				<Stack gap='xl'>
 					<TextInput
 						mt={2}
-						placeholder='Enter new chain name'
+						placeholder='Enter new collection name'
 						value={newCollectionName}
 						onChange={(event) =>
 							setNewCollectionName(event.currentTarget.value)

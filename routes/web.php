@@ -64,6 +64,7 @@ Route::prefix('admin')->middleware(CheckSuperuserEmail::class)->name('admin.')->
         Route::post('/anime/moveFromRelatedToChain/{relatedEntry}/{chain}', 'moveFromRelatedToChain')->name('moveFromRelatedToChain');
         Route::post('/anime/moveFromRelatedToRelated/{relatedEntry}/{animeMap}', 'moveFromRelatedToRelated')->name('moveFromRelatedToRelated');
         Route::post('/anime/moveFromRelatedToNewChain/{relatedEntry}/{animeMap}', 'moveFromRelatedToNewChain')->name('moveFromRelatedToNewChain');
+        Route::patch('/anime/reorderChainEntries/', 'reorderChainEntries')->name('reorderChainEntries');
         Route::patch('/anime/updateChainName/{chain}', 'updateChainName')->name('updateChainName');
         Route::patch('/anime/reorderChains/{animeMap}', 'reorderChains')->name('reorderChains');
         Route::patch('/anime/handleUpdateTmdbIdForMap/{animeMap}', 'handleUpdateTmdbIdForMap')->name('handleUpdateTmdbIdForMap');
