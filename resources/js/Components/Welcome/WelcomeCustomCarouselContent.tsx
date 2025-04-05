@@ -1,19 +1,9 @@
 import { Carousel } from '@mantine/carousel';
-import {
-	Container,
-	ContainerProps,
-	Group,
-	Space,
-	Stack,
-	Title,
-	Box,
-	Button,
-} from '@mantine/core';
-import { useMediaQuery } from '@mantine/hooks';
+import { Box, ContainerProps } from '@mantine/core';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import React from 'react';
-import classes from './WelcomeCustomCarousel.module.css';
 import WelcomeCarouselCard from './WelcomeCarouselCard';
+import classes from './WelcomeCustomCarousel.module.css';
 
 interface ContentItem {
 	title: string;
@@ -44,16 +34,15 @@ interface WelcomeCustomCarouselContentProps {
 
 export function WelcomeCustomCarouselContent({
 	slideSize = '220px',
-	height = 350,
+	height = 300,
 	withControls = true,
 	align = 'start',
-	slideGap = 25,
+	slideGap = 35,
 	className,
 	movies,
 	tvShows,
 	anime,
 }: WelcomeCustomCarouselContentProps) {
-	const isMobile = useMediaQuery('(max-width: 500px)');
 	const [activeTab, setActiveTab] = React.useState<0 | 1 | 2>(0);
 
 	const tabs = [
@@ -89,7 +78,15 @@ export function WelcomeCustomCarouselContent({
 	return (
 		<Box className={classes.container}>
 			<div className={classes.header}>
-				<div style={{ display: 'flex', alignItems: 'flex-end', gap: '12px' }}>
+				<div
+					style={{
+						display: 'flex',
+						alignItems: 'flex-end',
+						gap: '12px',
+						marginBottom: '20px',
+						marginTop: '40px',
+					}}
+				>
 					<h2 className={classes.top10Text}>TOP 10</h2>
 					<div style={{ marginBottom: '4px' }}>
 						<p className={classes.contentText}>CONTENT</p>
@@ -125,28 +122,31 @@ export function WelcomeCustomCarouselContent({
 				align={align}
 				withControls={withControls}
 				slideGap={slideGap}
-				controlsOffset='xs'
-				previousControlIcon={<ChevronLeft size={20} />}
-				nextControlIcon={<ChevronRight size={20} />}
-				styles={{
-					control: {
-						backgroundColor: 'rgba(10, 14, 25, 0.8)',
-						backdropFilter: 'blur(4px)',
-						border: 'none',
-						color: 'white',
-						'&:hover': {
-							backgroundColor: 'rgba(10, 14, 25, 0.9)',
-						},
-						zIndex: 5,
-					},
+				controlsOffset={0}
+				previousControlIcon={<ChevronLeft size={40} />}
+				nextControlIcon={<ChevronRight size={40} />}
+				classNames={{
+					root: classes.carouselRoot,
+					controls: classes.carouselControls,
+					control: classes.carouselControl,
 				}}
 				className={className}
 			>
 				{currentContent.slice(0, 10).map((content, index) => (
 					<Carousel.Slide key={`${content.type}-${content.link}`}>
-						<div className={classes.itemContainer}>
+						<div
+							className={`${classes.itemContainer} ${
+								index === 0 ? classes.firstItem : ''
+							}`}
+						>
 							<div className={classes.numberMarker}>{index + 1}</div>
-							<div className={classes.cardContainer}>
+							<div
+								className={classes.cardContainer}
+								style={{
+									marginLeft:
+										index === currentContent.length - 1 ? '90px' : '40px',
+								}}
+							>
 								<WelcomeCarouselCard
 									id={Number(content.link)}
 									title={content.title}
