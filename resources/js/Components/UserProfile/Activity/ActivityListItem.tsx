@@ -4,14 +4,17 @@ import {
 	ActionIcon,
 	AspectRatio,
 	Box,
+	Button,
 	Card,
 	Grid,
 	Group,
 	Image,
+	Modal,
 	Stack,
 	Text,
+	Collapse,
 } from '@mantine/core';
-import { useHover, useMediaQuery } from '@mantine/hooks';
+import { useDisclosure, useHover, useMediaQuery } from '@mantine/hooks';
 import { Clock, MessageCircle } from 'lucide-react';
 import styles from './ActivityListItem.module.css';
 import { useActivityItemType } from '@/Components/UserProfile/Activity/hooks/useActivityItemType';
@@ -20,6 +23,7 @@ import { useActivityDescription } from '@/Components/UserProfile/Activity/hooks/
 import { useActivityPoster } from '@/Components/UserProfile/Activity/hooks/useActivityPoster';
 import { Activity } from '@/Components/UserProfile/Activity/activityType';
 import { ActivityLike } from '@/Components/UserProfile/Activity/ActivityLike';
+import { CommentSection } from '@/Components/UserProfile/Activity/Comments/CommentSection';
 
 interface ActivityListItemProps {
 	activity: Activity;
@@ -31,7 +35,11 @@ export function ActivityListItem({ activity }: ActivityListItemProps) {
 	const { itemLink, itemTitle } = useActivityItemDetails(activity);
 	const description = useActivityDescription(activity, itemLink, itemTitle);
 	const min_sm_width = useMediaQuery('(min-width: 640px)');
+	const [commentsOpened, { toggle: toggleComments }] = useDisclosure(false);
 	const { hovered, ref } = useHover();
+	const [opened, { open, close }] = useDisclosure(false);
+
+	const commentCount = 2;
 
 	const isEpisodeWatch =
 		itemType === 'tv_episode' || itemType === 'anime_episode';
@@ -154,22 +162,36 @@ export function ActivityListItem({ activity }: ActivityListItemProps) {
 								initialLikesCount={activity.likes_count}
 								isLiked={activity.is_liked}
 							/>
-							<Group gap={1}>
-								<ActionIcon variant='subtle'>
-									<MessageCircle size={16} />
-								</ActionIcon>
-								{/* TODO: Add comments */}
-								<Text
-									span
-									size='xs'
-								>
-									2
-								</Text>
-							</Group>
+							<Button
+								variant='subtle'
+								size='compact-xs'
+								color='gray'
+								onClick={toggleComments} // Use toggle function
+								leftSection={<MessageCircle size={16} />}
+								className={styles.commentButton}
+							>
+								{commentCount > 0 && (
+									<Text
+										span
+										size='xs'
+									>
+										{commentCount}
+									</Text>
+								)}
+							</Button>
 						</Group>
 					</Stack>
 				</Grid.Col>
 			</Grid>
+
+			{/* Collapsible Comment Section */}
+			<Collapse in={commentsOpened}>
+				<Box pt='sm'>
+					{' '}
+					{/* Add some padding top */}
+					<CommentSection activityId={activity.id} />
+				</Box>
+			</Collapse>
 		</Card>
 	);
 }

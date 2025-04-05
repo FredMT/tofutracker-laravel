@@ -20,6 +20,10 @@ class FetchCommentsAction
         $modelClass = $this->getModelClass($type);
         $commentable = $modelClass::findOrFail($id);
 
+        $commentCount = Comment::where('commentable_type', $modelClass)
+            ->where('commentable_id', $commentable->id)
+            ->count();
+
         // If showCommentId is provided but parentId is not, use showCommentId as parentId
         if ($showCommentId && ! $parentId) {
             $parentId = $showCommentId;
@@ -47,9 +51,12 @@ class FetchCommentsAction
                 ->get()
                 ->toTree();
 
+            $formattedComments = $this->formatComments($comments);
+
             return [
-                'comments' => $this->formatComments($comments)->all(),
+                'comments' => $formattedComments->all(),
                 'showCommentId' => $showCommentId,
+                'commentCount' => $commentCount,
             ];
         }
 
@@ -67,9 +74,12 @@ class FetchCommentsAction
             ->get()
             ->toTree();
 
+        $formattedComments = $this->formatComments($comments);
+
         return [
-            'comments' => $this->formatComments($comments)->all(),
-            'showCommentId' => null,
+            'comments' => $formattedComments->all(),
+            'showCommentId' => $showCommentId,
+            'commentCount' => $commentCount,
         ];
     }
 

@@ -1,0 +1,27 @@
+.commentContentContainer {
+	/* Styles for the main comment content area */
+}
+
+.commentText {
+	word-break: break-word; /* Prevent long words from overflowing */
+}
+
+.commentMeta {
+	color: var(--mantine-color-gray-6);
+}
+
+.replyButton {
+	color: var(--mantine-color-gray-7);
+	font-weight: 600;
+	padding: 0;
+	height: auto;
+
+	&:hover {
+		background-color: transparent;
+		text-decoration: underline;
+	}
+}
+
+.likeButton {
+	/* Add specific styles if needed */
+}
