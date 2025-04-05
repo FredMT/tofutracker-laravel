@@ -1,5 +1,7 @@
 import { Carousel } from '@mantine/carousel';
 import {
+	BackgroundImage,
+	Box,
 	Card,
 	Container,
 	ContainerProps,
@@ -12,9 +14,9 @@ import {
 	Text,
 	Title,
 } from '@mantine/core';
-import { useMediaQuery } from '@mantine/hooks';
+import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import classes from './WelcomeCustomCarousel.module.css';
 import WelcomeCarouselCard from './WelcomeCarouselCard';
 
@@ -65,7 +67,35 @@ export function DiscoverByGenre({
 	const [activeGenreId, setActiveGenreId] = React.useState<string>(
 		Object.keys(genres)[0] || ''
 	);
-	const [modalOpened, setModalOpened] = React.useState(false);
+	const [opened, { open, close }] = useDisclosure(false);
+	const [imageOpacities, setImageOpacities] = useState<Record<string, number>>(
+		{}
+	);
+	const [showImages, setShowImages] = useState(false);
+
+	useEffect(() => {
+		const initialOpacities = Object.keys(genres).reduce((acc, genreId) => {
+			acc[genreId] = 0;
+			return acc;
+		}, {} as Record<string, number>);
+		setImageOpacities(initialOpacities);
+	}, [genres]);
+
+	useEffect(() => {
+		if (opened) {
+			const timeout = setTimeout(() => {
+				requestAnimationFrame(() => {
+					setShowImages(true);
+				});
+			}, 200); // slight delay to allow modal to mount first
+			return () => {
+				clearTimeout(timeout);
+				setShowImages(false);
+			};
+		} else {
+			setShowImages(false);
+		}
+	}, [opened]);
 
 	const mobileSlidesToScroll = isMobile ? 1 : slidesToScroll;
 	const activeGenre = genres[activeGenreId];
@@ -76,13 +106,12 @@ export function DiscoverByGenre({
 		<Group
 			gap='xs'
 			style={{ cursor: 'pointer' }}
-			onClick={() => setModalOpened(true)}
+			onClick={open}
 		>
 			<Title order={titleOrder}>{activeGenre.genre_name}</Title>
 			<ChevronDown size={24} />
 		</Group>
 	);
-
 	const genreCards = (
 		<Flex
 			gap='md'
@@ -95,7 +124,7 @@ export function DiscoverByGenre({
 				<Card
 					key={genreId}
 					shadow='sm'
-					padding='lg'
+					p={0}
 					radius='md'
 					withBorder
 					style={{
@@ -108,21 +137,45 @@ export function DiscoverByGenre({
 					}}
 					onClick={() => {
 						setActiveGenreId(genreId);
-						setModalOpened(false);
+						close();
 					}}
 				>
-					<Text
-						fw={500}
-						size='lg'
+					{showImages && (
+						<img
+							src={`/genre_images/${genre.genre_name
+								.replaceAll('&', 'and')
+								.replaceAll(' ', '')
+								.toLowerCase()}.webp`}
+							style={{
+								filter: 'brightness(0.2)',
+								height: '100%',
+								width: '100%',
+								position: 'absolute',
+								top: 0,
+								left: 0,
+								borderRadius: '5px',
+								objectFit: 'cover',
+								opacity: imageOpacities[genreId] ?? 0,
+								transition: 'opacity 0.5s ease-in-out',
+							}}
+							loading='lazy'
+							onLoad={() =>
+								setImageOpacities((prev) => ({ ...prev, [genreId]: 1 }))
+							}
+						/>
+					)}
+					<Box
+						p={20}
+						style={{ position: 'relative', zIndex: 2 }}
 					>
-						{genre.genre_name}
-					</Text>
-					<Text
-						size='sm'
-						c='dimmed'
-					>
-						{genre.items.length} items
-					</Text>
+						<Text
+							fw={500}
+							size='lg'
+						>
+							{genre.genre_name}
+						</Text>
+						<Text size='sm'>{genre.items.length} items</Text>
+					</Box>
 				</Card>
 			))}
 		</Flex>
@@ -136,7 +189,7 @@ export function DiscoverByGenre({
 					{genreSelector}
 				</Stack>
 			) : (
-				<Group>
+				<Group pl='xl'>
 					<Title order={titleOrder}>Discover by Genre:</Title>
 					{genreSelector}
 				</Group>
@@ -182,8 +235,8 @@ export function DiscoverByGenre({
 
 			{isSmall ? (
 				<Drawer
-					opened={modalOpened}
-					onClose={() => setModalOpened(false)}
+					opened={opened}
+					onClose={close}
 					title='Select a Genre'
 					position='bottom'
 					size='90%'
@@ -192,8 +245,8 @@ export function DiscoverByGenre({
 				</Drawer>
 			) : (
 				<Modal
-					opened={modalOpened}
-					onClose={() => setModalOpened(false)}
+					opened={opened}
+					onClose={close}
 					title='Select a Genre'
 					size='xl'
 				>

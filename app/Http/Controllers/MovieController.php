@@ -79,6 +79,8 @@ class MovieController extends Controller
                 'user_library' => $userLibraryData,
                 'user_lists' => $userLists,
                 'comments' => $comments,
+                'configuration' => $configuration,
+
             ]);
         }
 
@@ -92,6 +94,8 @@ class MovieController extends Controller
             'user_library' => $userLibraryData,
             'user_lists' => $userLists,
             'comments' => $comments,
+            'configuration' => $configuration,
+
         ]);
     }
 
