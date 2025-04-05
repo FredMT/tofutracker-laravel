@@ -82,6 +82,8 @@ class TvSeasonController extends Controller
                 'hide_character_name' => false,
                 'hide_anime_character_picture' => false,
             ];
+
+            
             
             return Inertia::render('TVSeason', [
                 'data' => $seasonData,

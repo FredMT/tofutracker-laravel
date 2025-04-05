@@ -15,8 +15,6 @@ interface WelcomeCustomCarouselProps {
 	align?: 'start' | 'center' | 'end';
 	className?: string;
 	slideGap?: number;
-	title?: string;
-	titleOrder?: 1 | 2 | 3 | 4 | 5 | 6;
 }
 
 export function WelcomeCustomCarousel({
@@ -29,8 +27,6 @@ export function WelcomeCustomCarousel({
 	align = 'start',
 	slideGap = 0,
 	className,
-	title,
-	titleOrder = 2,
 }: WelcomeCustomCarouselProps) {
 	const isMobile = useMediaQuery('(max-width: 500px)');
 
@@ -39,14 +35,13 @@ export function WelcomeCustomCarousel({
 
 	return (
 		<Stack gap='xs'>
-			{isMobile && title ? (
-				<Stack gap={0}>
-					<Title order={titleOrder}>{title}</Title>
-					<Title order={titleOrder}>{' Content'}</Title>
-				</Stack>
-			) : (
-				<Title order={titleOrder}>{title + ' Content'}</Title>
-			)}
+			<div className={classes.sectionHeaderTextWrapper}>
+				<h2 className={classes.top10Text}>TOP 20</h2>
+				<div style={{ marginBottom: '4px' }}>
+					<p className={classes.contentText}>CONTENT</p>
+					<p className={classes.contentText}>THIS WEEK</p>
+				</div>
+			</div>
 			<Space h='xs' />
 			<Container
 				size={containerWidth}

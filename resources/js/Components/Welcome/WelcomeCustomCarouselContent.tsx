@@ -78,15 +78,7 @@ export function WelcomeCustomCarouselContent({
 	return (
 		<Box className={classes.container}>
 			<div className={classes.header}>
-				<div
-					style={{
-						display: 'flex',
-						alignItems: 'flex-end',
-						gap: '12px',
-						marginBottom: '20px',
-						marginTop: '40px',
-					}}
-				>
+				<div className={classes.sectionHeaderTextWrapper}>
 					<h2 className={classes.top10Text}>TOP 10</h2>
 					<div style={{ marginBottom: '4px' }}>
 						<p className={classes.contentText}>CONTENT</p>

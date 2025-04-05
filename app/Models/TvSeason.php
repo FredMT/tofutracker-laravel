@@ -94,20 +94,34 @@ class TvSeason extends Model
 
     private function getCast(): array
     {
-        return collect($this->data['credits']['cast'] ?? [])
-            ->sortBy('order')
-            ->take(50)
-            ->map(function ($cast) {
-                return [
-                    'id' => $cast['id'],
-                    'name' => $cast['name'],
-                    'character' => $cast['character'],
-                    'profile_path' => $cast['profile_path'] ?: null,
-                    'order' => $cast['order'],
-                ];
-            })
-            ->values()
-            ->all();
+        $seasonCast = $this->data['credits']['cast'] ?? [];
+
+        if (!empty($seasonCast)) {
+            return collect($seasonCast)
+                ->sortBy('order')
+                ->take(50)
+                ->map(function ($cast) {
+                    return [
+                        'id' => $cast['id'],
+                        'name' => $cast['name'],
+                        'character' => $cast['character'],
+                        'profile_path' => $cast['profile_path'] ?: null,
+                        'order' => $cast['order'],
+                    ];
+                })
+                ->values()
+                ->all();
+        }
+
+        // Fallback to show's cast if season cast is empty
+        if ($this->show) {
+             // Access the cast attribute from the TvShow model
+            $showCast = $this->show->cast;
+            // Ensure it's converted to a plain array if it's a collection
+            return is_array($showCast) ? $showCast : $showCast->all();
+        }
+
+        return []; // Return empty array if no cast found
     }
 
     private function getCrew(): array

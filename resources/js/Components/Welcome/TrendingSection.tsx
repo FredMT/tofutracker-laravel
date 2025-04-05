@@ -5,6 +5,7 @@ import { Carousel } from '@mantine/carousel';
 import WelcomeCarouselCard from './WelcomeCarouselCard';
 import WelcomeCustomCarousel from './WelcomeCustomCarousel';
 import WelcomeCustomCarouselContent from './WelcomeCustomCarouselContent';
+import { Space } from '@mantine/core';
 
 function getContentType(type: string) {
 	switch (type) {
@@ -27,10 +28,7 @@ function TrendingSection() {
 
 	return (
 		<ResponsiveContainer>
-			<WelcomeCustomCarousel
-				title='Top 20'
-				slideSize='200px'
-			>
+			<WelcomeCustomCarousel slideSize='200px'>
 				{allContent.map((content) => (
 					<Carousel.Slide key={`${content.type}-${content.link}`}>
 						<WelcomeCarouselCard
@@ -43,6 +41,8 @@ function TrendingSection() {
 					</Carousel.Slide>
 				))}
 			</WelcomeCustomCarousel>
+
+			<Space h='60px' />
 
 			<WelcomeCustomCarouselContent
 				title='Top 10'
