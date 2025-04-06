@@ -107,12 +107,13 @@ class FetchCommentsAction
         return [
             'id' => (string) $comment->id,
             'author' => $comment->user?->username,
+            'avatar' => $comment->user?->avatar,
             'points' => $comment->votes->sum('value'),
-            'timeAgo' => $comment->created_at->diffForHumans(),
             'content' => $comment->body,
+            'created_at' => $comment->created_at->timestamp,
+            'updated_at' => $comment->updated_at->timestamp,
+            'deleted_at' => $comment->deleted_at?->timestamp,
             'children' => $comment->children->map(fn ($child) => $this->formatComment($child)),
-            'isEdited' => $comment->user_id !== null && $comment->created_at != $comment->updated_at,
-            'isDeleted' => $comment->user_id === null && $comment->deleted_at !== null,
             'direction' => $comment->votes->where('user_id', Auth::id())->first()?->value ?? 0,
         ];
     }

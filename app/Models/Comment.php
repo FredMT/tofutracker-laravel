@@ -21,6 +21,8 @@ class Comment extends Model
 
     protected $casts = [
         'deleted_at' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
     ];
 
     public function user(): BelongsTo
@@ -46,11 +48,6 @@ class Comment extends Model
     public function getPointsAttribute()
     {
         return $this->votes->sum('value');
-    }
-
-    public function getTimeAgoAttribute(): string
-    {
-        return $this->created_at->diffForHumans(now(), CarbonInterface::DIFF_RELATIVE_TO_NOW, true);
     }
 
     public function getBodyAttribute($value)

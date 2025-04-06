@@ -20,7 +20,7 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
-        $configuration = $user->configuration()->first();
+        $configuration = $user->configuration->first();
 
         $configuration = $configuration ?: (object) [
             'hide_episode_description' => false,
@@ -77,11 +77,9 @@ class ProfileController extends Controller
      */
     public function updateAvatar(Request $request): RedirectResponse
     {
-        logger()->info('Request data:', $request->all());
-        logger()->info('Files:', $request->allFiles());
 
         try {
-            $validated = $request->validate([
+            $request->validate([
                 'avatar' => ['required', 'file', 'image', 'max:3072'], // 5MB max
             ]);
 
@@ -102,7 +100,7 @@ class ProfileController extends Controller
                 'avatars',
                 $file->hashName(),
                 [
-                    'disk' => 'spaces',
+                    'disk' => 'public',
                     'options' => [
                         'ContentType' => $file->getMimeType(),
                     ],
@@ -118,7 +116,7 @@ class ProfileController extends Controller
             // Delete old avatar if exists
             if ($request->user()->avatar) {
                 try {
-                    Storage::disk('spaces')->delete($request->user()->avatar);
+                    Storage::disk('public')->delete($request->user()->avatar);
                 } catch (\Exception $e) {
                     logger()->warning('Failed to delete old avatar: '.$e->getMessage());
                 }
@@ -143,20 +141,16 @@ class ProfileController extends Controller
     {
 
         try {
-            $validated = $request->validate([
+            $request->validate([
                 'banner' => ['required', 'file', 'image', 'max:6144'], // 6MB max
             ]);
 
             if (! $request->hasFile('banner')) {
-                logger()->error('No file in request');
-
                 return back()->withErrors(['banner' => 'No file was uploaded.']);
             }
 
             $file = $request->file('banner');
             if (! $file->isValid()) {
-                logger()->error('Invalid file');
-
                 return back()->withErrors(['banner' => 'File upload failed.']);
             }
 
@@ -164,7 +158,7 @@ class ProfileController extends Controller
                 'banners',
                 $file->hashName(),
                 [
-                    'disk' => 'spaces',
+                    'disk' => 'public',
                     'options' => [
                         'ContentType' => $file->getMimeType(),
                     ],
@@ -172,15 +166,13 @@ class ProfileController extends Controller
             );
 
             if (! $path) {
-                logger()->error('Failed to store file');
-
                 return back()->withErrors(['banner' => 'Failed to store file.']);
             }
 
             // Delete old banner if exists
             if ($request->user()->banner) {
                 try {
-                    Storage::disk('spaces')->delete($request->user()->banner);
+                    Storage::disk('public')->delete($request->user()->banner);
                 } catch (\Exception $e) {
                     logger()->warning('Failed to delete old banner: '.$e->getMessage());
                 }

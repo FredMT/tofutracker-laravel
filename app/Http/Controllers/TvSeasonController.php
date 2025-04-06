@@ -77,13 +77,13 @@ class TvSeasonController extends Controller
 
             $links = $this->generateNavigationLinks($tvId, (int) $seasonNumber);
 
-            $configuration = $user?->configuration()->first() ?? (object) [
+            $configuration = $user?->configuration->first() ?? (object) [
                 'hide_episode_description' => false,
                 'hide_character_name' => false,
                 'hide_anime_character_picture' => false,
             ];
 
-            
+
             
             return Inertia::render('TVSeason', [
                 'data' => $seasonData,

@@ -1,28 +1,25 @@
-import { useCommentStore } from "@/Components/Comments/store/commentStore";
-import { usePage } from "@inertiajs/react";
-import { AllContentTypes, Auth } from "@/types";
-import { notifications } from "@mantine/notifications";
-import { InfoIcon } from "lucide-react";
-import { CommentContent } from "@/Components/Comments/CommentContent";
-import { CommentEditor } from "@/Components/Comments/CommentEditor";
-import { CommentThreadProps } from "@/Components/Comments/types";
-import { useComments } from "@/Components/Comments/hooks/useComments";
-import { useSearchParams } from "@/hooks/useSearchParams";
-import { useEffect } from "react";
-import { useScrollIntoView } from "@mantine/hooks";
-import styles from "./styles/Comments.module.css";
-import { clsx } from "clsx";
+import { useCommentStore } from '@/Components/Comments/store/commentStore';
+import { usePage } from '@inertiajs/react';
+import { notifications } from '@mantine/notifications';
+import { InfoIcon } from 'lucide-react';
+import { CommentContent } from '@/Components/Comments/CommentContent';
+import { CommentEditor } from '@/Components/Comments/CommentEditor';
+import { CommentThreadProps } from '@/Components/Comments/types';
+import { useComments } from '@/Components/Comments/hooks/useComments';
+import { useSearchParams } from '@/hooks/useSearchParams';
+import { useEffect } from 'react';
+import { useScrollIntoView } from '@mantine/hooks';
+import styles from './styles/Comments.module.css';
+import { clsx } from 'clsx';
+import { useAuth } from '@/propsHooks/useAuth';
+import { useAllContentTypes } from '@/propsHooks/useAllContentTypes';
 
 interface PageProps {
-	type: AllContentTypes;
 	data: {
 		id?: string;
 		anidb_id?: string;
 		map_id?: string;
 	};
-	auth: Auth;
-
-	[key: string]: any;
 }
 
 interface ExtendedCommentThreadProps extends CommentThreadProps {
@@ -30,20 +27,18 @@ interface ExtendedCommentThreadProps extends CommentThreadProps {
 }
 
 export function CommentThread({
-																children,
-																isHighlighted = false,
-																...props
-															}: ExtendedCommentThreadProps) {
-	const { type, data, auth } = usePage<PageProps>().props;
+	children,
+	isHighlighted = false,
+	...props
+}: ExtendedCommentThreadProps) {
+	const { data } = usePage<PageProps>().props;
+	const type = useAllContentTypes();
 	const { uiState, setReplying, setEditing, toggleCollapsed } =
 		useCommentStore();
-	const { handleAddComment, handleEditComment } = useComments(
-		type,
-		data,
-		auth,
-	);
+	const { handleAddComment, handleEditComment } = useComments(type, data);
+	const auth = useAuth();
 	const { getParam } = useSearchParams();
-	const showCommentId = getParam("showCommentId");
+	const showCommentId = getParam('showCommentId');
 
 	// Setup scroll into view hook
 	const { scrollIntoView, targetRef } = useScrollIntoView<HTMLDivElement>({
@@ -58,7 +53,7 @@ export function CommentThread({
 	// Scroll into view when highlighted
 	useEffect(() => {
 		if (isHighlighted && targetRef.current) {
-			scrollIntoView({ alignment: "center" });
+			scrollIntoView({ alignment: 'center' });
 
 			// Add highlight class
 			const element = targetRef.current;
@@ -76,10 +71,10 @@ export function CommentThread({
 	const handleReply = () => {
 		if (!auth.user) {
 			notifications.show({
-				title: "Error",
-				message: "You must be logged in to reply",
+				title: 'Error',
+				message: 'You must be logged in to reply',
 				icon: <InfoIcon />,
-				color: "red",
+				color: 'red',
 			});
 			return;
 		}
@@ -98,10 +93,10 @@ export function CommentThread({
 	const handleEdit = () => {
 		if (!auth.user) {
 			notifications.show({
-				title: "Error",
-				message: "You must be logged in to edit",
+				title: 'Error',
+				message: 'You must be logged in to edit',
 				icon: <InfoIcon />,
-				color: "red",
+				color: 'red',
 			});
 			return;
 		}
@@ -126,16 +121,14 @@ export function CommentThread({
 			<div
 				className={clsx(
 					styles.commentBar,
-					isHighlighted
-						? styles.commentBarHighlighted
-						: styles.commentBarNormal,
+					isHighlighted ? styles.commentBarHighlighted : styles.commentBarNormal
 				)}
 				onClick={() => toggleCollapsed(props.id)}
-				role="button"
+				role='button'
 				tabIndex={0}
-				aria-label={isCollapsed ? "Expand comment" : "Collapse comment"}
+				aria-label={isCollapsed ? 'Expand comment' : 'Collapse comment'}
 				onKeyDown={(e) => {
-					if (e.key === "Enter" || e.key === " ") {
+					if (e.key === 'Enter' || e.key === ' ') {
 						toggleCollapsed(props.id);
 					}
 				}}
@@ -153,7 +146,7 @@ export function CommentThread({
 					onCancelEdit={handleCancelEdit}
 				/>
 				{isReplying && auth.user && (
-					<div className="mt-4">
+					<div className='mt-4'>
 						<CommentEditor
 							onSave={handleSaveReply}
 							onCancel={handleCancelReply}

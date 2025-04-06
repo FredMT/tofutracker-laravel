@@ -1,15 +1,14 @@
-import { RichTextEditor, Link } from "@mantine/tiptap";
+import { Link, RichTextEditor } from "@mantine/tiptap";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import Superscript from "@tiptap/extension-superscript";
 import SubScript from "@tiptap/extension-subscript";
-import { Button, Group, Stack, Flex, Alert } from "@mantine/core";
+import { Alert, Button, Flex, Group, Stack } from "@mantine/core";
 import { useEffect, useState } from "react";
-import { usePage } from "@inertiajs/react";
-import { Auth } from "@/types";
-import { InfoIcon } from "lucide-react";
 import { Link as InertiaLink } from "@inertiajs/react";
+import { InfoIcon } from "lucide-react";
+import { useAuth } from "@/propsHooks/useAuth";
 
 interface CommentEditorProps {
     onSave: (content: string) => void;
@@ -19,12 +18,12 @@ interface CommentEditorProps {
 }
 
 export function CommentEditor({
-    onSave,
-    onCancel,
-    isReply = false,
-    initialContent = "",
-}: CommentEditorProps) {
-    const { auth } = usePage<{ auth: Auth }>().props;
+                                  onSave,
+                                  onCancel,
+                                  isReply = false,
+                                  initialContent = "",
+                              }: CommentEditorProps) {
+    const auth = useAuth();
     const [isEmpty, setIsEmpty] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);

@@ -1,6 +1,7 @@
 import { Avatar, Button, Flex, TextInput } from '@mantine/core';
 import { forwardRef } from 'react';
 import styles from './CommentInput.module.css';
+import { useAuth } from '@/propsHooks/useAuth';
 
 interface CommentInputProps {
 	onPost: () => void;
@@ -8,22 +9,41 @@ interface CommentInputProps {
 	value: string;
 	onValueChange: (value: string) => void;
 	autoFocus?: boolean;
+	disabled?: boolean;
 }
 
 export const CommentInput = forwardRef<HTMLInputElement, CommentInputProps>(
-	({ onPost, placeholder, value, onValueChange, autoFocus = false }, ref) => {
+	(
+		{
+			onPost,
+			placeholder,
+			value,
+			onValueChange,
+			autoFocus = false,
+			disabled = false,
+		},
+		ref
+	) => {
+		const auth = useAuth();
+
 		const handlePostClick = () => {
-			if (value.trim()) {
+			if (value.trim() && !disabled) {
 				onPost();
 			}
 		};
 
 		const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-			if (event.key === 'Enter' && !event.shiftKey) {
+			if (event.key === 'Enter' && !event.shiftKey && !disabled) {
 				event.preventDefault();
 				handlePostClick();
 			}
 		};
+
+		const userAvatar = auth.user
+			? auth.user.avatar
+				? `/storage/${auth.user.avatar}`
+				: `https://api.dicebear.com/9.x/open-peeps/svg?seed=tofutracker-${auth.user.username}`
+			: '/placeholder.svg?height=32&width=32';
 
 		return (
 			<Flex
@@ -32,8 +52,8 @@ export const CommentInput = forwardRef<HTMLInputElement, CommentInputProps>(
 				className={styles.commentInputContainer}
 			>
 				<Avatar
-					src='/placeholder.svg?height=32&width=32'
-					alt='Your avatar'
+					src={userAvatar}
+					alt={auth.user ? `${auth.user.username}'s avatar` : 'Your avatar'}
 					radius='xl'
 					size='md'
 				/>
@@ -43,6 +63,7 @@ export const CommentInput = forwardRef<HTMLInputElement, CommentInputProps>(
 					value={value}
 					onChange={(event) => onValueChange(event.currentTarget.value)}
 					onKeyDown={handleKeyDown}
+					disabled={disabled}
 					style={{ flex: 1 }}
 					styles={{
 						input: { padding: 10 },
@@ -54,7 +75,7 @@ export const CommentInput = forwardRef<HTMLInputElement, CommentInputProps>(
 						<Button
 							variant='subtle'
 							size='sm'
-							disabled={!value.trim()}
+							disabled={disabled || !value.trim()}
 							onClick={handlePostClick}
 							className={styles.postButton}
 						>

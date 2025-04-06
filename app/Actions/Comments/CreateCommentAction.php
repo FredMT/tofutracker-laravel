@@ -85,11 +85,13 @@ class CreateCommentAction
                 'id' => (string) $comment->id,
                 'author' => $comment->user?->username,
                 'points' => 1,
-                'timeAgo' => 'just now',
                 'content' => $comment->body,
                 'children' => [],
                 'isEdited' => false,
                 'isDeleted' => false,
+                'created_at' => now()->timestamp,
+                'updated_at' => now()->timestamp,
+                'deleted_at' => null
             ],
         ];
     }

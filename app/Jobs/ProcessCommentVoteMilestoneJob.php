@@ -42,7 +42,9 @@ class ProcessCommentVoteMilestoneJob implements ShouldQueue
         }
 
         // Update milestone in database
-        $this->comment->update(['vote_milestone' => $milestone]);
+        Comment::withoutTimestamps(
+            fn () => $this->comment->update(['vote_milestone' => $milestone])
+        );
 
         // Only notify if it's a new milestone and higher than the previous one
         if ($milestone && (! $this->comment->vote_milestone || $milestone >= $this->comment->vote_milestone)) {

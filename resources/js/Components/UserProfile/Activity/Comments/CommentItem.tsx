@@ -1,71 +1,56 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { Box, Button, Collapse, Stack } from '@mantine/core';
 import {
-	Box,
-	Button,
-	Collapse,
-	Group,
-	Stack,
-	Text,
-	ActionIcon,
-	Avatar,
-} from '@mantine/core';
-import {
-	CommentType,
-	ReplyType,
+	Comment,
 	ReplyTarget,
 } from '@/Components/UserProfile/Activity/Comments/commentTypes';
 
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import styles from './CommentItem.module.css';
 import { CommentContent } from './CommentContent';
-import { ReplyItem } from './ReplyItem';
 
 interface CommentItemProps {
-	comment: CommentType;
+	comment: Comment;
 	setReplyTarget: (target: ReplyTarget | null) => void;
 }
 
-// Helper to flatten replies (can be moved to a utils file)
-function flattenReplies(replies: ReplyType[] | undefined): ReplyType[] {
-	if (!replies) return [];
+function getAllDescendants(comments: Comment[]): Comment[] {
+	const descendants: Comment[] = [];
+	const queue = [...comments];
 
-	const flattened: ReplyType[] = [];
-
-	function traverse(replyList: ReplyType[]) {
-		replyList.forEach((reply) => {
-			flattened.push({
-				...reply,
-				replies: undefined, // Remove nested structure when flattening
-			});
-			if (reply.replies && reply.replies.length > 0) {
-				traverse(reply.replies);
+	while (queue.length > 0) {
+		const current = queue.shift();
+		if (current) {
+			descendants.push(current);
+			if (current.children && current.children.length > 0) {
+				queue.push(...current.children);
 			}
-		});
+		}
 	}
-
-	traverse(replies);
-
-	// Sort by time (simplified - use actual date parsing/comparison)
-	return flattened.sort((a, b) => a.time.localeCompare(b.time));
+	return descendants;
 }
 
 export function CommentItem({ comment, setReplyTarget }: CommentItemProps) {
 	const [showReplies, setShowReplies] = useState(false);
 
-	const flattenedReplies = flattenReplies(comment.replies);
-	const hasReplies = flattenedReplies.length > 0;
+	const allReplies = useMemo(() => {
+		const replies = getAllDescendants(comment.children || []);
+		return replies.sort((a, b) => a.created_at - b.created_at);
+	}, [comment.children]);
+	const hasReplies = allReplies.length > 0;
 
-	const handleReplyToComment = () => {
+	const handleReplyToParent = () => {
+		const targetUsername = comment.author ?? 'anonymous';
 		setReplyTarget({
 			commentId: comment.id,
-			username: comment.username,
+			username: targetUsername,
 		});
 	};
 
-	const handleReplyToReply = (replyUsername: string) => {
+	const handleReplyToReply = (replyAuthor: string | null) => {
 		setReplyTarget({
 			commentId: comment.id,
-			username: replyUsername,
+			username: replyAuthor ?? 'anonymous',
 		});
 	};
 
@@ -75,12 +60,8 @@ export function CommentItem({ comment, setReplyTarget }: CommentItemProps) {
 			className={styles.commentItemContainer}
 		>
 			<CommentContent
-				username={comment.username}
-				avatar={comment.avatar}
-				content={comment.content}
-				time={comment.time}
-				likes={comment.likes}
-				onReply={handleReplyToComment}
+				comment={comment}
+				onReply={handleReplyToParent}
 			/>
 
 			{hasReplies && (
@@ -96,8 +77,8 @@ export function CommentItem({ comment, setReplyTarget }: CommentItemProps) {
 				>
 					{showReplies
 						? 'Hide replies'
-						: `View ${flattenedReplies.length} ${
-								flattenedReplies.length === 1 ? 'reply' : 'replies'
+						: `View ${allReplies.length} ${
+								allReplies.length === 1 ? 'reply' : 'replies'
 						  }`}
 				</Button>
 			)}
@@ -113,12 +94,11 @@ export function CommentItem({ comment, setReplyTarget }: CommentItemProps) {
 						ml={20}
 						className={styles.repliesContainer}
 					>
-						{flattenedReplies.map((reply) => (
-							<ReplyItem
+						{allReplies.map((reply) => (
+							<CommentContent
 								key={reply.id}
-								reply={reply}
-								commentId={comment.id}
-								setReplyTarget={setReplyTarget}
+								comment={reply}
+								onReply={() => handleReplyToReply(reply.author)}
 							/>
 						))}
 					</Stack>

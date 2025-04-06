@@ -29,10 +29,12 @@ class UpdateCommentAction
             'id' => (string) $comment->id,
             'author' => $comment->user?->username,
             'points' => $comment->votes->sum('value'),
-            'timeAgo' => $comment->updated_at->diffForHumans(now(), CarbonInterface::DIFF_RELATIVE_TO_NOW, true),
             'content' => $comment->body,
             'isEdited' => true,
             'isDeleted' => false,
+            'created_at' => $comment->created_at->timestamp,
+            'updated_at' => now()->timestamp,
+            'deleted_at' => null
         ];
     }
 }

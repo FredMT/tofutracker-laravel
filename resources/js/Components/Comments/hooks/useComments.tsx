@@ -1,8 +1,9 @@
-import { AllContentTypes, Auth } from "@/types";
+import { AllContentTypes } from "@/types";
 import { useCommentStore } from "@/Components/Comments/store/commentStore";
 import { notifications } from "@mantine/notifications";
 import { InfoIcon } from "lucide-react";
 import React from "react";
+import { useAuth } from "@/propsHooks/useAuth";
 
 export const useComments = (
 	type: AllContentTypes,
@@ -11,9 +12,9 @@ export const useComments = (
 		anidb_id?: string;
 		map_id?: string;
 	},
-	auth: Auth,
 ) => {
 	const { addComment, editComment } = useCommentStore();
+	const auth = useAuth();
 
 	const getContentId = () => {
 		switch (type) {

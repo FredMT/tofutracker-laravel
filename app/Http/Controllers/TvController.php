@@ -28,10 +28,10 @@ class TvController extends Controller
         $userLists = null;
         $user = null;
         $configuration = (object) [
-            'hide_episode_description' => false,
-            'hide_character_name' => false,
-            'hide_anime_character_picture' => false,
-        ];
+                'hide_episode_description' => false,
+                'hide_character_name' => false,
+                'hide_anime_character_picture' => false,
+            ];
 
         if ($request->user()) {
             $user = $request->user();

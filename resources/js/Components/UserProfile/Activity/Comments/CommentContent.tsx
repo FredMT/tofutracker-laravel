@@ -10,44 +10,80 @@ import {
 	Text,
 } from '@mantine/core';
 import { Heart } from 'lucide-react';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
 import styles from './CommentContent.module.css';
+import { Comment } from './commentTypes';
+
+dayjs.extend(relativeTime);
 
 interface CommentContentProps {
-	username: string;
-	avatar: string;
-	content: string;
-	time: string;
-	likes: number;
+	comment: Comment;
 	onReply: () => void;
-	// Add onLike prop if needed
+	// Add onLike prop if needed, passing commentId or full object
 }
 
-export function CommentContent({
-	username,
-	avatar,
-	content,
-	time,
-	likes,
-	onReply,
-}: CommentContentProps) {
-	// TODO: Replace with actual like state management (e.g., from parent or hook)
-	const [liked, setLiked] = useState(false);
-	const [likeCount, setLikeCount] = useState(likes);
+export function CommentContent({ comment, onReply }: CommentContentProps) {
+	// Destructure necessary fields from comment object
+	const {
+		author,
+		avatar,
+		created_at,
+		updated_at,
+		deleted_at,
+		content,
+		points,
+		replyingTo, // Can be used to show "Replying to @..."
+		direction, // Destructure direction
+	} = comment;
+
+	const isEdited = created_at !== updated_at;
+	const isDeleted = deleted_at !== null;
+
+	// Initialize liked state based on comment.direction
+	const [liked, setLiked] = useState(direction === 1);
+	const [likeCount, setLikeCount] = useState(points);
 
 	const handleLike = () => {
-		// TODO: Implement API call for like/unlike
-		setLiked(!liked);
-		setLikeCount(liked ? likeCount - 1 : likeCount + 1);
+		// TODO: Implement API call for like/unlike, passing comment.id
+		// The API should return the new direction and points
+		const newLiked = !liked;
+		const newLikeCount = newLiked ? likeCount + 1 : likeCount - 1;
+
+		setLiked(newLiked);
+		setLikeCount(newLikeCount);
+
+		// OPTIONAL: Update comment object directly for immediate UI feedback
+		// (Be cautious if passing comment object down mutably)
+		// comment.direction = newLiked ? 1 : 0;
+		// comment.points = newLikeCount;
 	};
+
+	// Handle deleted comments
+	if (isDeleted) {
+		return (
+			<Text
+				size='sm'
+				c='dimmed'
+				fs='italic'
+			>
+				Comment deleted
+			</Text>
+		);
+	}
 
 	return (
 		<Flex
 			gap='sm'
 			className={styles.commentContentContainer}
+			py='md'
 		>
 			<Avatar
-				src={avatar}
-				alt={`${username} avatar`}
+				src={
+					avatar ??
+					`https://api.dicebear.com/9.x/open-peeps/svg?seed=tofutracker-${author}`
+				}
+				alt={`${author ?? 'Anonymous'}'s avatar`}
 				radius='xl'
 				size='md'
 			/>
@@ -69,9 +105,28 @@ export function CommentContent({
 								fw={600}
 								mr={4}
 							>
-								{username}
+								{author ?? 'Removed'} {/* Handle null author */}
 							</Text>
+							{replyingTo && (
+								<Text
+									span
+									color='blue' // Style as needed
+									mr={4}
+								>
+									@{replyingTo}
+								</Text>
+							)}
 							{content}
+							{isEdited && (
+								<Text
+									span
+									size='xs'
+									c='dimmed'
+									ml={4}
+								>
+									(edited)
+								</Text>
+							)}
 						</Text>
 						<Group
 							gap='xs'
@@ -82,14 +137,14 @@ export function CommentContent({
 								span
 								size='xs'
 							>
-								{time}
+								{dayjs.unix(created_at).fromNow()}
 							</Text>
 							{likeCount > 0 && (
 								<Text
 									span
 									size='xs'
 								>
-									{likeCount} likes
+									{likeCount} points
 								</Text>
 							)}
 							<Button

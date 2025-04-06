@@ -1,91 +1,38 @@
-import { useState, useRef } from 'react';
+import { useRef, useState } from 'react';
 import {
 	Box,
-	Stack,
-	Title,
-	Divider,
-	Text,
-	Button,
-	Flex,
 	CloseButton,
+	Divider,
+	Flex,
+	Stack,
+	Text,
+	Title,
 } from '@mantine/core';
 
-import { CommentType } from '@/Components/UserProfile/Activity/Comments/commentTypes';
+import {
+	Comment,
+	ReplyTarget,
+} from '@/Components/UserProfile/Activity/Comments/commentTypes';
 import styles from './CommentSection.module.css';
 import { CommentList } from './CommentList';
 import { CommentInput } from './CommentInput';
-
-// Sample nested comment data (replace with actual data fetching)
-const sampleComments: CommentType[] = [
-	{
-		id: '1',
-		username: 'johndoe',
-		avatar: '/placeholder.svg?height=40&width=40',
-		content: 'This is amazing! 🔥',
-		time: '2h',
-		likes: 24,
-		replies: [
-			{
-				id: '1-1',
-				username: 'sarahsmith',
-				avatar: '/placeholder.svg?height=40&width=40',
-				content: 'I totally agree with you!',
-				replyingTo: 'johndoe',
-				time: '1h 50m',
-				likes: 5,
-				replies: [
-					{
-						id: '1-1-1',
-						username: 'photoexpert',
-						avatar: '/placeholder.svg?height=40&width=40',
-						content: 'The lighting is perfect too',
-						replyingTo: 'sarahsmith',
-						time: '1h 45m',
-						likes: 2,
-					},
-				],
-			},
-			// ... other replies ...
-		],
-	},
-	{
-		id: '2',
-		username: 'sarahsmith',
-		avatar: '/placeholder.svg?height=40&width=40',
-		content:
-			'Love the composition and lighting in this shot! What camera did you use?',
-		time: '1h',
-		likes: 12,
-		replies: [
-			{
-				id: '2-1',
-				username: 'creator',
-				avatar: '/placeholder.svg?height=40&width=40',
-				content: 'Thanks! I used a Sony A7IV with a 24-70mm lens',
-				replyingTo: 'sarahsmith',
-				time: '45m',
-				likes: 3,
-			},
-		],
-	},
-];
+import { useAuth } from '@/propsHooks/useAuth';
 
 interface CommentSectionProps {
 	activityId: string | number; // Or whatever identifier is needed
-	// Add props for initial comments if fetching outside
+	initialComments?: Comment[]; // Add optional prop for initial comments
 }
 
-interface ReplyTarget {
-	commentId: string; // ID of the top-level comment the reply belongs to
-	username: string; // Username being replied to (could be comment author or another replier)
-}
-
-export function CommentSection({ activityId }: CommentSectionProps) {
-	// TODO: Replace sampleComments with actual data fetching based on activityId
-	const [comments, setComments] = useState<CommentType[]>(sampleComments);
+export function CommentSection({
+	activityId,
+	initialComments = [],
+}: CommentSectionProps) {
+	// Initialize state with initialComments prop, default to empty array
+	const [comments, setComments] = useState<Comment[]>(initialComments);
 	const [replyTarget, setReplyTarget] = useState<ReplyTarget | null>(null);
 	const [inputValue, setInputValue] = useState('');
 	const inputRef = useRef<HTMLInputElement>(null);
+	const auth = useAuth();
 
 	const handleSetReplyTarget = (target: ReplyTarget | null) => {
 		setReplyTarget(target);
@@ -98,8 +45,15 @@ export function CommentSection({ activityId }: CommentSectionProps) {
 	};
 
 	const handlePost = () => {
+		if (!auth.user) return; // Guard: Do nothing if not logged in
+
 		const content = inputValue.trim();
 		if (!content) return;
+
+		const authorUsername = auth.user.username;
+		const authorAvatar = auth.user.avatar
+			? `/storage/${auth.user.avatar}`
+			: `https://api.dicebear.com/9.x/open-peeps/svg?seed=tofutracker-${authorUsername}`;
 
 		if (replyTarget) {
 			// --- Post Reply Logic ---
@@ -108,46 +62,67 @@ export function CommentSection({ activityId }: CommentSectionProps) {
 				content
 			);
 			// TODO: Implement API call to post reply
-			const newReply = {
+			const newReply: Comment = {
 				id: Date.now().toString(),
-				username: 'currentUser',
-				avatar: '/placeholder.svg?height=40&width=40',
-				content: content.replace(`@${replyTarget.username} `, ''), // Remove mention if desired
+				author: authorUsername,
+				avatar: authorAvatar, // Use consistent avatar
+				content: content.replace(`@${replyTarget.username} `, ''),
 				replyingTo: replyTarget.username,
-				time: 'Just now',
-				likes: 0,
+				points: 0,
+				created_at: Math.floor((Date.now() - 2000) / 1000),
+				updated_at: Math.floor((Date.now() - 2000) / 1000),
+				deleted_at: null,
+				direction: 0,
 			};
 
-			setComments((prevComments) =>
-				prevComments.map((comment) => {
-					if (comment.id === replyTarget.commentId) {
+			const addReplyRecursively = (
+				commentList: Comment[],
+				parentId: string,
+				reply: Comment
+			): Comment[] => {
+				return commentList.map((comment) => {
+					if (comment.id === parentId) {
 						return {
 							...comment,
-							replies: [newReply, ...(comment.replies || [])],
+							children: [reply, ...(comment.children || [])],
+						};
+					}
+					if (comment.children) {
+						return {
+							...comment,
+							children: addReplyRecursively(comment.children, parentId, reply),
 						};
 					}
 					return comment;
-				})
+				});
+			};
+
+			setComments((prevComments) =>
+				addReplyRecursively(prevComments, replyTarget.commentId, newReply)
 			);
 			// --- End Post Reply Logic ---
 		} else {
 			// --- Post Comment Logic ---
 			console.log(`Posting comment for activity ${activityId}:`, content);
 			// TODO: Implement API call to post comment
-			const newComment: CommentType = {
+			const newComment: Comment = {
 				id: Date.now().toString(),
-				username: 'currentUser',
-				avatar: '/placeholder.svg?height=40&width=40',
+				author: authorUsername,
+				avatar: authorAvatar, // Use consistent avatar
 				content,
-				time: 'Just now',
-				likes: 0,
-				replies: [],
+				created_at: Math.floor((Date.now() - 2000) / 1000),
+				updated_at: Math.floor((Date.now() - 2000) / 1000),
+				deleted_at: null,
+				points: 0,
+				children: [],
+				direction: 0,
 			};
 			setComments([newComment, ...comments]);
 			// --- End Post Comment Logic ---
 		}
 
-		handleSetReplyTarget(null); // Clear reply state and input
+		setInputValue('');
+		handleSetReplyTarget(null);
 	};
 
 	// TODO: Implement like/unlike logic for comments and replies
@@ -155,20 +130,33 @@ export function CommentSection({ activityId }: CommentSectionProps) {
 	return (
 		<Box
 			mt='md'
-			p='md'
 			className={styles.commentSectionContainer}
 		>
-			<Stack gap='md'>
+			<Stack gap={0}>
 				<Title
-					order={5}
+					order={3}
 					className={styles.title}
+					pl='md'
 				>
 					Comments
 				</Title>
-				<CommentList
-					comments={comments}
-					setReplyTarget={handleSetReplyTarget}
-				/>
+
+				{comments.length > 0 ? (
+					<CommentList
+						comments={comments}
+						setReplyTarget={handleSetReplyTarget}
+					/>
+				) : (
+					<Text
+						size='sm'
+						c='dimmed'
+						ta='center'
+						pb='md'
+					>
+						No comments yet. Be the first!
+					</Text>
+				)}
+
 				<Divider my='xs' />
 
 				{/* Reply Indicator */}
@@ -197,7 +185,14 @@ export function CommentSection({ activityId }: CommentSectionProps) {
 					value={inputValue}
 					onValueChange={setInputValue}
 					onPost={handlePost}
-					placeholder={replyTarget ? 'Add reply...' : 'Add a comment...'}
+					placeholder={
+						!auth.user
+							? 'Log in to comment...'
+							: replyTarget
+							? 'Add reply...'
+							: 'Add a comment...'
+					}
+					disabled={!auth.user} // Disable if not logged in
 				/>
 			</Stack>
 		</Box>

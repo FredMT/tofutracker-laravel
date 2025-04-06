@@ -54,7 +54,7 @@ class MovieController extends Controller
                 $userLists = null;
             }
 
-            $configuration = $user?->configuration()->first();
+            $configuration = $user?->configuration->first();
         }
 
         if (Cache::has($cacheKey)) {

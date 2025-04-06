@@ -1,14 +1,13 @@
-import { AllContentTypes, Auth } from "@/types";
-
 export interface Comment {
 	id: string;
 	author: string | null;
+	avatar: string | null;
 	points: number;
-	timeAgo: string;
+	created_at: number;
+	updated_at: number;
+	deleted_at: number | null;
 	content: string;
 	children?: Comment[];
-	isEdited: boolean;
-	isDeleted: boolean;
 	direction: number;
 }
 
@@ -20,18 +19,16 @@ export interface CommentUIState {
 	isReplying: string | null;
 	isEditing: string | null;
 	isCollapsed: string[];
-	votes: Record<string, "up" | "down" | null>;
+	votes: Record<string, 'up' | 'down' | null>;
 }
 
 export interface CommentsProps {
 	comments: Comment[];
-	type: AllContentTypes;
 	data: {
 		id?: string;
 		anidb_id?: string;
 		map_id?: string;
 	};
-	auth: Auth;
 
 	[key: string]: any;
 }

@@ -13,6 +13,7 @@ import {
 	Stack,
 	Text,
 	Collapse,
+	Center,
 } from '@mantine/core';
 import { useDisclosure, useHover, useMediaQuery } from '@mantine/hooks';
 import { Clock, MessageCircle } from 'lucide-react';
@@ -37,9 +38,8 @@ export function ActivityListItem({ activity }: ActivityListItemProps) {
 	const min_sm_width = useMediaQuery('(min-width: 640px)');
 	const [commentsOpened, { toggle: toggleComments }] = useDisclosure(false);
 	const { hovered, ref } = useHover();
-	const [opened, { open, close }] = useDisclosure(false);
 
-	const commentCount = 2;
+	const commentCount = activity.comments?.length ?? 0;
 
 	const isEpisodeWatch =
 		itemType === 'tv_episode' || itemType === 'anime_episode';
@@ -88,18 +88,20 @@ export function ActivityListItem({ activity }: ActivityListItemProps) {
 							className={styles.imageColumn}
 							data-expanded={hovered}
 						>
-							{isListItemAdd ? (
-								<CardFanReveal items={activity.metadata.items} />
-							) : (
-								posterPath &&
-								(itemLink ? (
-									<Link href={itemLink}>
-										<ImageComponent />
-									</Link>
+							<Center>
+								{isListItemAdd ? (
+									<CardFanReveal items={activity.metadata.items} />
 								) : (
-									<ImageComponent />
-								))
-							)}
+									posterPath &&
+									(itemLink ? (
+										<Link href={itemLink}>
+											<ImageComponent />
+										</Link>
+									) : (
+										<ImageComponent />
+									))
+								)}
+							</Center>
 						</Box>
 					</Grid.Col>
 				)}
@@ -166,30 +168,32 @@ export function ActivityListItem({ activity }: ActivityListItemProps) {
 								variant='subtle'
 								size='compact-xs'
 								color='gray'
-								onClick={toggleComments} // Use toggle function
-								leftSection={<MessageCircle size={16} />}
+								onClick={toggleComments}
 								className={styles.commentButton}
 							>
-								{commentCount > 0 && (
-									<Text
-										span
-										size='xs'
-									>
-										{commentCount}
-									</Text>
-								)}
+								<Group gap={4}>
+									<MessageCircle size={16} />
+									{commentCount > 0 && (
+										<Text
+											span
+											size='sm'
+										>
+											{commentCount}
+										</Text>
+									)}
+								</Group>
 							</Button>
 						</Group>
 					</Stack>
 				</Grid.Col>
 			</Grid>
 
-			{/* Collapsible Comment Section */}
 			<Collapse in={commentsOpened}>
-				<Box pt='sm'>
-					{' '}
-					{/* Add some padding top */}
-					<CommentSection activityId={activity.id} />
+				<Box>
+					<CommentSection
+						activityId={activity.id}
+						initialComments={activity.comments}
+					/>
 				</Box>
 			</Collapse>
 		</Card>

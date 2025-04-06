@@ -1,26 +1,19 @@
-export interface ReplyType {
+export interface Comment {
 	id: string;
-	username: string;
-	avatar: string;
+	author: string | null;
+	avatar: string | null;
+	created_at: number;
+	updated_at: number;
+	deleted_at: number | null;
+	points: number;
 	content: string;
-	replyingTo: string;
-	time: string; // Consider using Date type in a real app
-	likes: number;
-	replies?: ReplyType[]; // Support for nested replies
+	children?: Comment[]; // Renamed from replies
+	direction: 0 | 1; // What does this represent? This represent whether a user has liked or not liked a comment.
+	replyingTo?: string; // Added to keep reply functionality, might need adjustment based on API
 }
 
-export interface CommentType {
-	id: string;
-	username: string;
-	avatar: string;
-	content: string;
-	time: string; // Consider using Date type in a real app
-	likes: number;
-	replies?: ReplyType[];
-}
-
-// Add ReplyTarget interface
+// Keep ReplyTarget for now, might need adjustment
 export interface ReplyTarget {
-	commentId: string; // ID of the top-level comment the reply belongs to
-	username: string; // Username being replied to (could be comment author or another replier)
+	commentId: string; // ID of the top-level comment or parent comment being replied to
+	username: string; // Username being replied to
 }
