@@ -1,4 +1,4 @@
-import { Auth, ContentType } from '@/types';
+import { AllContentTypes, Auth } from "@/types";
 
 export interface Comment {
 	id: string;
@@ -20,17 +20,18 @@ export interface CommentUIState {
 	isReplying: string | null;
 	isEditing: string | null;
 	isCollapsed: string[];
-	votes: Record<string, 'up' | 'down' | null>;
+	votes: Record<string, "up" | "down" | null>;
 }
 
 export interface CommentsProps {
 	comments: Comment[];
-	type: ContentType;
+	type: AllContentTypes;
 	data: {
 		id?: string;
 		anidb_id?: string;
 		map_id?: string;
 	};
 	auth: Auth;
+
 	[key: string]: any;
 }

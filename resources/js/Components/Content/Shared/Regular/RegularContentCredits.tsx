@@ -1,67 +1,63 @@
 import { Tabs, Text } from "@mantine/core";
 import { useState } from "react";
 import PersonCard from "./PersonCard";
-import {
-    ContentCreditsProps,
-    RegularContentDataType,
-    TmdbPerson,
-} from "@/types";
-import { usePage } from "@inertiajs/react";
+import { ContentCreditsProps, Person } from "@/types";
 import { CustomCarousel } from "@/Components/Shared/CustomCarousel";
 import { Carousel } from "@mantine/carousel";
 import { useSpoilerConfiguration } from "@/stores/useSpoilerConfiguration";
+import { useRegularContentData } from "@/propsHooks/useRegularContentData";
 
 export function RegularContentCredits({
-    containerWidth,
-    slideSize = "0%",
-}: ContentCreditsProps) {
-    const { data } = usePage<{ data: RegularContentDataType }>().props;
+																				containerWidth,
+																				slideSize = "0%",
+																			}: ContentCreditsProps) {
+	const data = useRegularContentData();
 
-    const [activeTab, setActiveTab] = useState<"cast" | "crew">("cast");
+	const [activeTab, setActiveTab] = useState<"cast" | "crew">("cast");
 
-    const people: TmdbPerson[] =
-        activeTab === "cast" ? data.credits.cast : data.credits.crew;
+	const people: Person[] =
+		activeTab === "cast" ? data.credits.cast : data.credits.crew;
 
-    const configuration = useSpoilerConfiguration().configuration;
+	const configuration = useSpoilerConfiguration().configuration;
 
-    return (
-        <>
-            <Tabs
-                value={activeTab}
-                onChange={(value) => setActiveTab(value as "cast" | "crew")}
-                variant="outline"
-            >
-                <Tabs.List>
-                    <Tabs.Tab value="cast">
-                        <Text fw={500}>Cast</Text>
-                    </Tabs.Tab>
-                    <Tabs.Tab value="crew">
-                        <Text fw={500}>Crew</Text>
-                    </Tabs.Tab>
-                </Tabs.List>
-            </Tabs>
+	return (
+		<>
+			<Tabs
+				value={activeTab}
+				onChange={(value) => setActiveTab(value as "cast" | "crew")}
+				variant="outline"
+			>
+				<Tabs.List>
+					<Tabs.Tab value="cast">
+						<Text fw={500}>Cast</Text>
+					</Tabs.Tab>
+					<Tabs.Tab value="crew">
+						<Text fw={500}>Crew</Text>
+					</Tabs.Tab>
+				</Tabs.List>
+			</Tabs>
 
-            <CustomCarousel
-                containerWidth={containerWidth}
-                slideSize={slideSize}
-                height={300}
-                slidesToScroll={3}
-            >
-                {people
-                    .filter((person) => person.profile_path)
-                    .map((person) => (
-                        <Carousel.Slide key={person.id}>
-                            <PersonCard
-                                person={person}
-                                type={activeTab}
-                                isAnime={false}
-                                hideCharacterName={
-                                    configuration.hide_character_name
-                                }
-                            />
-                        </Carousel.Slide>
-                    ))}
-            </CustomCarousel>
-        </>
-    );
+			<CustomCarousel
+				containerWidth={containerWidth}
+				slideSize={slideSize}
+				height={300}
+				slidesToScroll={3}
+			>
+				{people
+					.filter((person) => person.profile_path)
+					.map((person) => (
+						<Carousel.Slide key={person.id}>
+							<PersonCard
+								person={person}
+								type={activeTab}
+								isAnime={false}
+								hideCharacterName={
+									configuration.hide_character_name
+								}
+							/>
+						</Carousel.Slide>
+					))}
+			</CustomCarousel>
+		</>
+	);
 }

@@ -22,9 +22,6 @@ return new class extends Migration
             // Composite unique index to prevent duplicate entries
             $table->unique(['user_id', 'media_id', 'media_type']);
         });
-
-        // Add the check constraint using raw SQL
-        DB::statement('ALTER TABLE user_library ADD CONSTRAINT check_rating CHECK (rating IS NULL OR (rating >= 1 AND rating <= 10))');
     }
 
     public function down(): void

@@ -1,6 +1,5 @@
-import { Box, Container, Paper, Title, Text, Space } from "@mantine/core";
+import { Box, Container, Paper, Space, Text, Title } from "@mantine/core";
 import { AnimeCollectionTable } from "@/Components/AnimeCollection/AnimeCollectionTable";
-import { AnimeCollectionsResponse } from "@/Components/AnimeCollection/types/animeCollections";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import { CollectionPagination } from "@/Components/AnimeCollection/components/CollectionPagination";
@@ -9,86 +8,77 @@ import { CollectionFilters } from "@/Components/AnimeCollection/components/Colle
 import { useAnimeCollectionStore } from "@/Components/AnimeCollection/store/animeCollectionStore";
 import { initializeStoreFromUrl } from "@/Components/AnimeCollection/utils/initializeStoreFromUrl";
 import { useCallback, useEffect, useState } from "react";
+import { useAnimeCollectionsPageData } from "@/propsHooks/useAnimeCollectionsPageData";
 
-interface AnimeCollectionPageProps {
-    collections: AnimeCollectionsResponse;
-}
+function AnimeCollectionPage() {
+	const [isLoading, setIsLoading] = useState(false);
+	const collections = useAnimeCollectionsPageData();
 
-function AnimeCollectionPage({ collections }: AnimeCollectionPageProps) {
-    // Track loading state
-    const [isLoading, setIsLoading] = useState(false);
+	const { applyFilters } = useAnimeCollectionStore();
 
-    // Access the collection store for applying filters
-    const { applyFilters } = useAnimeCollectionStore();
+	useEffect(() => {
+		initializeStoreFromUrl();
 
-    // Setup router event listeners for page loads and initialize store from URL
-    useEffect(() => {
-        // Initialize store from URL parameters
-        initializeStoreFromUrl();
+		const handleStart = () => setIsLoading(true);
+		const handleFinish = () => setIsLoading(false);
 
-        // Setup loading state handlers
-        const handleStart = () => setIsLoading(true);
-        const handleFinish = () => setIsLoading(false);
+		document.addEventListener("inertia:start", handleStart);
+		document.addEventListener("inertia:finish", handleFinish);
 
-        document.addEventListener("inertia:start", handleStart);
-        document.addEventListener("inertia:finish", handleFinish);
+		return () => {
+			document.removeEventListener("inertia:start", handleStart);
+			document.removeEventListener("inertia:finish", handleFinish);
+		};
+	}, []);
 
-        // Clean up event listeners
-        return () => {
-            document.removeEventListener("inertia:start", handleStart);
-            document.removeEventListener("inertia:finish", handleFinish);
-        };
-    }, []);
+	const handlePageChange = useCallback(
+		(page: number) => {
+			applyFilters(page);
+		},
+		[applyFilters],
+	);
 
-    // Handle page changes
-    const handlePageChange = useCallback(
-        (page: number) => {
-            applyFilters(page);
-        },
-        [applyFilters]
-    );
+	return (
+		<>
+			<Head title="Anime Collections" />
 
-    return (
-        <>
-            <Head title="Anime Collections" />
+			<Space h={64} />
 
-            <Space h={64} />
+			<Container size="xl" py="md">
+				<Paper p="md">
+					<Title order={1} mb="xs">
+						Anime Collections
+					</Title>
+					<Text c="dimmed" mb="lg">
+						Browse all anime collections with their chains and
+						related entries.
+					</Text>
 
-            <Container size="xl" py="md">
-                <Paper p="md">
-                    <Title order={1} mb="xs">
-                        Anime Collections
-                    </Title>
-                    <Text color="dimmed" mb="lg">
-                        Browse all anime collections with their chains and
-                        related entries.
-                    </Text>
+					<CollectionFilters />
 
-                    <CollectionFilters />
+					<Box>
+						{isLoading ? (
+							<CollectionLoader />
+						) : (
+							<AnimeCollectionTable
+								collections={collections.data}
+							/>
+						)}
+					</Box>
 
-                    <Box>
-                        {isLoading ? (
-                            <CollectionLoader />
-                        ) : (
-                            <AnimeCollectionTable
-                                collections={collections.data}
-                            />
-                        )}
-                    </Box>
-
-                    <CollectionPagination
-                        meta={collections.meta}
-                        onPageChange={handlePageChange}
-                        isLoading={isLoading}
-                    />
-                </Paper>
-            </Container>
-        </>
-    );
+					<CollectionPagination
+						meta={collections.meta}
+						onPageChange={handlePageChange}
+						isLoading={isLoading}
+					/>
+				</Paper>
+			</Container>
+		</>
+	);
 }
 
 AnimeCollectionPage.layout = (page: any) => (
-    <AuthenticatedLayout>{page}</AuthenticatedLayout>
+	<AuthenticatedLayout>{page}</AuthenticatedLayout>
 );
 
 export default AnimeCollectionPage;

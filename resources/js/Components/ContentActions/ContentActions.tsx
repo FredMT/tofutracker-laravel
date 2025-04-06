@@ -1,5 +1,5 @@
-import {ContentType} from "@/types";
-import {usePage} from "@inertiajs/react";
+import { AllContentTypes } from "@/types";
+import { usePage } from "@inertiajs/react";
 import MovieActions from "./components/MovieActions";
 import TvShowActions from "./components/TvShowActions";
 import TvSeasonActions from "./components/TvSeasonActions";
@@ -8,24 +8,24 @@ import AnimeTvActions from "@/Components/ContentActions/components/AnimeTvAction
 import AnimeSeasonActions from "@/Components/ContentActions/components/AnimeSeasonActions";
 
 function ContentActions() {
-    const { type } = usePage<{type: ContentType}>().props;
+	const { type } = usePage<{ type: AllContentTypes }>().props;
 
-    switch (type) {
-        case "movie":
-            return <MovieActions />;
-        case "tv":
-            return <TvShowActions />;
-        case "tvseason":
-            return <TvSeasonActions />;
-        case "animemovie":
-            return <AnimeMovieActions />;
-        case "animetv":
-            return <AnimeTvActions />;
-        case "animeseason":
-            return <AnimeSeasonActions />;
-        default:
-            return null;
-    }
+	switch (type) {
+		case "movie":
+			return <MovieActions />;
+		case "tv":
+			return <TvShowActions />;
+		case "tvseason":
+			return <TvSeasonActions />;
+		case "animemovie":
+			return <AnimeMovieActions />;
+		case "animetv":
+			return <AnimeTvActions />;
+		case "animeseason":
+			return <AnimeSeasonActions />;
+		default:
+			return null;
+	}
 }
 
 export default ContentActions;

@@ -12,8 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('anime_episode_mappings', function (Blueprint $table) {
-            // Drop existing non-unique composite index
-            $table->dropIndex('anime_episode_mappings_id_anidb_id_tvdb_series_id_is_special_in');
 
             // Add new unique composite index for the three columns needed for upsert
             $table->unique(['anidb_id', 'tvdb_series_id', 'is_special'], 'anime_episode_unique_mapping');

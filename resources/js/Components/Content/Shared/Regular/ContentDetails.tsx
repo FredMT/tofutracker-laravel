@@ -1,100 +1,99 @@
-import { RegularContentDataType } from "@/types";
-import { usePage } from "@inertiajs/react";
 import { Grid, Group, Switch, Text, Title } from "@mantine/core";
 import { useSpoilerConfiguration } from "@/stores/useSpoilerConfiguration";
+import { useRegularTypes } from "@/propsHooks/useRegularTypes";
+import { useOnlyMovieAndTvShowData } from "@/propsHooks/useOnlyMovieAndTvShowData";
 
 type DetailsField = {
-    key: string;
-    label: string;
+	key: string;
+	label: string;
 };
 
 export function ContentDetails() {
-    const { data, type } = usePage<{
-        data: RegularContentDataType;
-        type: "movie" | "tv";
-    }>().props;
-    const { mustShowSpoilerSwitch, setShowSpoilers } =
-        useSpoilerConfiguration();
+	const data = useOnlyMovieAndTvShowData();
+	const type = useRegularTypes();
 
-    const getDetailsFields = (): DetailsField[] => {
-        switch (type) {
-            case "movie":
-                return [
-                    { key: "directors", label: "Director" },
-                    { key: "writers", label: "Writer" },
-                    { key: "screenplays", label: "Screenplay" },
-                    { key: "novels", label: "Novel" },
-                    { key: "original_stories", label: "Original Story" },
-                    { key: "producers", label: "Producer" },
-                    { key: "budget", label: "Budget" },
-                    { key: "revenue", label: "Revenue" },
-                ];
-            case "tv":
-                return [
-                    { key: "creators", label: "Creators" },
-                    { key: "episodes", label: "Episodes" },
-                    { key: "seasons", label: "Seasons" },
-                    { key: "status", label: "Status" },
-                    { key: "networks", label: "Networks" },
-                    {
-                        key: "production_companies",
-                        label: "Production Companies",
-                    },
-                ];
-            default:
-                return [];
-        }
-    };
+	const { mustShowSpoilerSwitch, setShowSpoilers } =
+		useSpoilerConfiguration();
 
-    const formatValue = (key: string, value: any): string => {
-        if (key === "budget" || key === "revenue") {
-            return `$${value.toLocaleString()}`;
-        }
-        return value.toString();
-    };
+	const getDetailsFields = (): DetailsField[] => {
+		switch (type) {
+			case "movie":
+				return [
+					{ key: "directors", label: "Director" },
+					{ key: "writers", label: "Writer" },
+					{ key: "screenplays", label: "Screenplay" },
+					{ key: "novels", label: "Novel" },
+					{ key: "original_stories", label: "Original Story" },
+					{ key: "producers", label: "Producer" },
+					{ key: "budget", label: "Budget" },
+					{ key: "revenue", label: "Revenue" },
+				];
+			case "tv":
+				return [
+					{ key: "creators", label: "Creators" },
+					{ key: "episodes", label: "Episodes" },
+					{ key: "seasons", label: "Seasons" },
+					{ key: "status", label: "Status" },
+					{ key: "networks", label: "Networks" },
+					{
+						key: "production_companies",
+						label: "Production Companies",
+					},
+				];
+			default:
+				return [];
+		}
+	};
 
-    return (
-        <>
-            <Group justify="space-between">
-                <Title order={3} my={16} style={{ letterSpacing: "0.5px" }}>
-                    Details
-                </Title>
-                {mustShowSpoilerSwitch && (
-                    <Switch
-                        label="Show spoilers"
-                        onChange={(event) =>
-                            setShowSpoilers(event.currentTarget.checked)
-                        }
-                    />
-                )}
-            </Group>
+	const formatValue = (key: string, value: any): string => {
+		if (key === "budget" || key === "revenue") {
+			return `$${value.toLocaleString()}`;
+		}
+		return value.toString();
+	};
 
-            <Grid columns={6}>
-                {getDetailsFields().map(
-                    ({ key, label }) =>
-                        data.details[key as keyof typeof data.details] && (
-                            <Grid.Col key={key} span={6}>
-                                <Grid columns={6}>
-                                    <Grid.Col span={2}>
-                                        <Text fw={500}>{label}</Text>
-                                    </Grid.Col>
-                                    <Grid.Col span={4}>
-                                        <Text>
-                                            {formatValue(
-                                                key,
-                                                data.details[
-                                                    key as keyof typeof data.details
-                                                ]
-                                            )}
-                                        </Text>
-                                    </Grid.Col>
-                                </Grid>
-                            </Grid.Col>
-                        )
-                )}
-            </Grid>
-        </>
-    );
+	return (
+		<>
+			<Group justify="space-between">
+				<Title order={3} my={16} style={{ letterSpacing: "0.5px" }}>
+					Details
+				</Title>
+				{mustShowSpoilerSwitch && (
+					<Switch
+						label="Show spoilers"
+						onChange={(event) =>
+							setShowSpoilers(event.currentTarget.checked)
+						}
+					/>
+				)}
+			</Group>
+
+			<Grid columns={6}>
+				{getDetailsFields().map(
+					({ key, label }) =>
+						data.details[key as keyof typeof data.details] && (
+							<Grid.Col key={key} span={6}>
+								<Grid columns={6}>
+									<Grid.Col span={2}>
+										<Text fw={500}>{label}</Text>
+									</Grid.Col>
+									<Grid.Col span={4}>
+										<Text>
+											{formatValue(
+												key,
+												data.details[
+													key as keyof typeof data.details
+													],
+											)}
+										</Text>
+									</Grid.Col>
+								</Grid>
+							</Grid.Col>
+						),
+				)}
+			</Grid>
+		</>
+	);
 }
 
 export default ContentDetails;

@@ -21,8 +21,6 @@ return new class extends Migration
 
             $table->unique(['user_id', 'comment_id']);
         });
-
-        DB::statement('ALTER TABLE votes ADD CONSTRAINT check_value CHECK (value IN (1, -1))');
     }
 
     /**

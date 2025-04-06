@@ -1,7 +1,7 @@
-import { BannerImageOverlay } from '@/Components/Content/Shared/BannerImageOverlay';
-import { Genre } from '@/types';
-import { Flex, Image } from '@mantine/core';
-import RepeatedImage from './RepeatedImage';
+import { BannerImageOverlay } from "@/Components/Content/Shared/BannerImageOverlay";
+import { Genre } from "@/types";
+import { Flex } from "@mantine/core";
+import RepeatedImage from "./RepeatedImage";
 
 interface BannerImageProps {
 	title: string;
@@ -12,16 +12,15 @@ interface BannerImageProps {
 }
 
 export function BannerImage({
-	title,
-	backdrop_path,
-	logo_path,
-	genres,
-	height,
-}: BannerImageProps) {
+															title,
+															backdrop_path,
+															logo_path,
+															genres,
+														}: BannerImageProps) {
 	return (
 		<Flex
-			direction='column'
-			pos='relative'
+			direction="column"
+			pos="relative"
 		>
 			<RepeatedImage
 				backdrop_path={
