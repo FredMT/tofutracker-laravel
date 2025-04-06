@@ -9,21 +9,29 @@ import { CommentItem } from './CommentItem';
 interface CommentListProps {
 	comments: Comment[];
 	setReplyTarget: (target: ReplyTarget | null) => void;
-	level?: number;
+	onEditRequest: (commentId: string, newContent: string) => void;
+	onDeleteRequest: (commentId: string) => void;
 }
 
 export function CommentList({
 	comments,
 	setReplyTarget,
-	level = 0,
+	onEditRequest,
+	onDeleteRequest,
 }: CommentListProps) {
 	return (
-		<Stack gap='md'>
+		<Stack
+			gap={0}
+			mt='md'
+			pl='md'
+		>
 			{comments.map((comment) => (
 				<CommentItem
 					key={comment.id}
 					comment={comment}
 					setReplyTarget={setReplyTarget}
+					onEditRequest={onEditRequest}
+					onDeleteRequest={onDeleteRequest}
 				/>
 			))}
 		</Stack>

@@ -1,56 +1,51 @@
-import { useMemo, useState } from 'react';
-import { Box, Button, Collapse, Stack } from '@mantine/core';
+import dayjs from 'dayjs';
 import {
 	Comment,
 	ReplyTarget,
 } from '@/Components/UserProfile/Activity/Comments/commentTypes';
+import { Stack } from '@mantine/core';
 
-import { ChevronDown, ChevronUp } from 'lucide-react';
-import styles from './CommentItem.module.css';
 import { CommentContent } from './CommentContent';
+import styles from './CommentItem.module.css';
 
 interface CommentItemProps {
 	comment: Comment;
 	setReplyTarget: (target: ReplyTarget | null) => void;
+	onEditRequest: (commentId: string, newContent: string) => void;
+	onDeleteRequest: (commentId: string) => void;
 }
 
-function getAllDescendants(comments: Comment[]): Comment[] {
-	const descendants: Comment[] = [];
-	const queue = [...comments];
-
-	while (queue.length > 0) {
-		const current = queue.shift();
-		if (current) {
-			descendants.push(current);
-			if (current.children && current.children.length > 0) {
-				queue.push(...current.children);
-			}
+// Helper function to flatten replies
+const flattenReplies = (comment: Comment): Comment[] => {
+	let replies: Comment[] = [];
+	if (comment.children) {
+		for (const child of comment.children) {
+			replies.push(child);
+			replies = replies.concat(flattenReplies(child));
 		}
 	}
-	return descendants;
-}
+	return replies;
+};
 
-export function CommentItem({ comment, setReplyTarget }: CommentItemProps) {
-	const [showReplies, setShowReplies] = useState(false);
-
-	const allReplies = useMemo(() => {
-		const replies = getAllDescendants(comment.children || []);
-		return replies.sort((a, b) => a.created_at - b.created_at);
-	}, [comment.children]);
+export function CommentItem({
+	comment,
+	setReplyTarget,
+	onEditRequest,
+	onDeleteRequest,
+}: CommentItemProps) {
+	// Flatten and sort replies
+	const allReplies = flattenReplies(comment).sort((a, b) =>
+		dayjs(a.created_at).diff(dayjs(b.created_at))
+	);
 	const hasReplies = allReplies.length > 0;
 
-	const handleReplyToParent = () => {
-		const targetUsername = comment.author ?? 'anonymous';
+	// Always target the top-level comment for replies
+	const handleReplyClick = (replyComment?: Comment) => {
 		setReplyTarget({
-			commentId: comment.id,
-			username: targetUsername,
-		});
-	};
-
-	const handleReplyToReply = (replyAuthor: string | null) => {
-		setReplyTarget({
-			commentId: comment.id,
-			username: replyAuthor ?? 'anonymous',
+			commentId: comment.id, // Target the parent comment ID
+			username: replyComment
+				? replyComment.author ?? '[removed]'
+				: comment.author ?? '[removed]',
 		});
 	};
 
@@ -61,49 +56,30 @@ export function CommentItem({ comment, setReplyTarget }: CommentItemProps) {
 		>
 			<CommentContent
 				comment={comment}
-				onReply={handleReplyToParent}
+				onReply={() => handleReplyClick()} // Pass parent comment info
+				onEditRequest={onEditRequest}
+				onDeleteRequest={onDeleteRequest}
 			/>
 
 			{hasReplies && (
-				<Button
-					variant='subtle'
-					size='xs'
-					onClick={() => setShowReplies(!showReplies)}
-					leftSection={
-						showReplies ? <ChevronUp size={14} /> : <ChevronDown size={14} />
-					}
-					ml={50}
-					className={styles.viewRepliesButton}
+				<Stack
+					gap='sm'
+					mt='xs'
+					ml={30}
+					className={styles.repliesContainer}
 				>
-					{showReplies
-						? 'Hide replies'
-						: `View ${allReplies.length} ${
-								allReplies.length === 1 ? 'reply' : 'replies'
-						  }`}
-				</Button>
+					{allReplies.map((reply) => (
+						<CommentContent
+							key={reply.id}
+							comment={reply}
+							// Pass the specific reply info for context, but target parent
+							onReply={() => handleReplyClick(reply)}
+							onEditRequest={onEditRequest}
+							onDeleteRequest={onDeleteRequest}
+						/>
+					))}
+				</Stack>
 			)}
-
-			<Collapse
-				in={showReplies}
-				transitionDuration={200}
-			>
-				{hasReplies && (
-					<Stack
-						gap='sm'
-						mt='xs'
-						ml={20}
-						className={styles.repliesContainer}
-					>
-						{allReplies.map((reply) => (
-							<CommentContent
-								key={reply.id}
-								comment={reply}
-								onReply={() => handleReplyToReply(reply.author)}
-							/>
-						))}
-					</Stack>
-				)}
-			</Collapse>
 		</Stack>
 	);
 }

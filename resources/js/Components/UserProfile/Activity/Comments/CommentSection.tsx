@@ -36,12 +36,85 @@ export function CommentSection({
 
 	const handleSetReplyTarget = (target: ReplyTarget | null) => {
 		setReplyTarget(target);
-		inputRef.current?.focus();
+		if (target) {
+			// Set input value for replying, and focus
+			setInputValue(`@${target.username} `);
+			inputRef.current?.focus();
+		} else {
+			setInputValue(''); // Clear input on cancel
+			inputRef.current?.blur();
+		}
 	};
 
 	const handleCancelReply = () => {
 		handleSetReplyTarget(null);
-		inputRef.current?.blur();
+	};
+
+	// Recursive function helper to find and update/delete comment
+	const updateCommentRecursively = (
+		commentList: Comment[],
+		commentId: string,
+		action: (comment: Comment) => Comment | null // Return null to delete
+	): Comment[] => {
+		return commentList
+			.map((comment) => {
+				if (comment.id === commentId) {
+					return action(comment);
+				}
+				if (comment.children) {
+					const updatedChildren = updateCommentRecursively(
+						comment.children,
+						commentId,
+						action
+					);
+					// Check if the children array reference has changed. If it has,
+					// it means an update occurred within the children, so we must
+					// return a new parent comment object with the updated children.
+					if (updatedChildren !== comment.children) {
+						return { ...comment, children: updatedChildren };
+					}
+				}
+				// Return the original comment reference if it wasn't the target
+				// and its children array reference hasn't changed.
+				return comment;
+			})
+			.filter((comment): comment is Comment => comment !== null); // Remove nulls (deleted comments)
+	};
+
+	const handleEdit = (commentId: string, newContent: string) => {
+		console.log(`Editing comment ${commentId}:`, newContent);
+		// TODO: Implement API call to edit comment
+		setComments((prevComments) =>
+			updateCommentRecursively(prevComments, commentId, (comment) => ({
+				...comment,
+				content: newContent,
+				updated_at: Math.floor(Date.now() / 1000), // Update timestamp (seconds)
+			}))
+		);
+	};
+
+	const handleDelete = (commentId: string) => {
+		console.log(`Deleting comment ${commentId}`);
+		// TODO: Implement API call to delete comment
+
+		// Optimistic update: Soft delete
+		setComments((prevComments) =>
+			updateCommentRecursively(prevComments, commentId, (comment) => ({
+				...comment,
+				author: null, // Anonymize
+				avatar: null, // Remove avatar
+				content: '[removed]', // Set content to removed placeholder
+				deleted_at: Math.floor(Date.now() / 1000), // Mark as deleted now (seconds)
+				// Keep children/replies intact
+			}))
+		);
+
+		// Option 2: Hard delete (filter out from list) - Commented out
+		/*
+		setComments((prevComments) =>
+			updateCommentRecursively(prevComments, commentId, () => null)
+		);
+		*/
 	};
 
 	const handlePost = () => {
@@ -145,6 +218,8 @@ export function CommentSection({
 					<CommentList
 						comments={comments}
 						setReplyTarget={handleSetReplyTarget}
+						onEditRequest={handleEdit}
+						onDeleteRequest={handleDelete}
 					/>
 				) : (
 					<Text
@@ -189,10 +264,10 @@ export function CommentSection({
 						!auth.user
 							? 'Log in to comment...'
 							: replyTarget
-							? 'Add reply...'
+							? `Reply to @${replyTarget.username}...`
 							: 'Add a comment...'
 					}
-					disabled={!auth.user} // Disable if not logged in
+					disabled={!auth.user}
 				/>
 			</Stack>
 		</Box>
