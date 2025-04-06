@@ -180,6 +180,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/store', [UserAnimeEpisodeController::class, 'store'])->name('store');
         Route::delete('/delete', [UserAnimeEpisodeController::class, 'destroy'])->name('destroy');
     });
+
+    // Activity Comments
+    Route::prefix('activities/{activity}/comments')->name('activities.comments.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\ActivityCommentController::class, 'index'])->name('index'); // Publicly viewable
+        Route::post('/', [\App\Http\Controllers\ActivityCommentController::class, 'store'])->name('store');
+        Route::patch('/{comment}', [\App\Http\Controllers\ActivityCommentController::class, 'update'])->name('update');
+        Route::delete('/{comment}', [\App\Http\Controllers\ActivityCommentController::class, 'destroy'])->name('destroy');
+        Route::post('/{comment}/like', [\App\Http\Controllers\ActivityCommentController::class, 'like'])->name('like');
+        Route::post('/{comment}/unlike', [\App\Http\Controllers\ActivityCommentController::class, 'unlike'])->name('unlike');
+    });
 });
 
 // User List Routes
