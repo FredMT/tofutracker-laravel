@@ -1,9 +1,9 @@
-import { Recommended } from "@/types";
-import { Carousel } from "@mantine/carousel";
-import { Divider, Stack, Title } from "@mantine/core";
-import RecommendedContentCard from "./RecommendedContentCard";
-import CustomCarousel from "@/Components/Shared/CustomCarousel";
-import { useRegularContentData } from "@/propsHooks/useRegularContentData";
+import { Recommended } from '@/types';
+import { Carousel } from '@mantine/carousel';
+import { Divider, Stack, Title } from '@mantine/core';
+import RecommendedContentCard from './RecommendedContentCard';
+import CustomCarousel from '@/Components/Shared/CustomCarousel';
+import { useRegularContentData } from '@/propsHooks/useRegularContentData';
 
 interface RecommendedContentProps {
 	containerWidth: number;
@@ -11,9 +11,9 @@ interface RecommendedContentProps {
 }
 
 export default function RecommendedContent({
-																						 containerWidth,
-																						 slideSize = "0%",
-																					 }: RecommendedContentProps) {
+	containerWidth,
+	slideSize = '0%',
+}: RecommendedContentProps) {
 	const data = useRegularContentData();
 
 	if (!data.recommended || data.recommended.length < 1) return null;

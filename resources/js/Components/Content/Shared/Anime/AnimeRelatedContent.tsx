@@ -1,8 +1,8 @@
-import { Carousel } from "@mantine/carousel";
-import { Stack, Tabs, Title } from "@mantine/core";
-import AnimeRelatedContentCard from "@/Components/Content/Shared/Anime/AnimeRelatedContentCard";
-import { CustomCarousel } from "@/Components/Shared/CustomCarousel";
-import { useAnimeSeasonPageData } from "@/propsHooks/useAnimeSeasonPageData";
+import { Carousel } from '@mantine/carousel';
+import { Stack, Tabs, Title } from '@mantine/core';
+import AnimeRelatedContentCard from '@/Components/Content/Shared/Anime/AnimeRelatedContentCard';
+import { CustomCarousel } from '@/Components/Shared/CustomCarousel';
+import { useAnimeSeasonPageData } from '@/propsHooks/useAnimeSeasonPageData';
 
 interface AnimeRelatedContentProps {
 	containerWidth: number;
@@ -10,17 +10,18 @@ interface AnimeRelatedContentProps {
 }
 
 export default function AnimeRelatedContent({
-																							containerWidth, slideSize = "0%",
-																						}: AnimeRelatedContentProps) {
+	containerWidth,
+	slideSize = '0%',
+}: AnimeRelatedContentProps) {
 	const data = useAnimeSeasonPageData();
 
 	if (!data) return null;
 
 	const validRelatedAnime = data.related_anime.filter(
-		(anime) => anime.id != null && anime.map_id != null,
+		(anime) => anime.id != null && anime.map_id != null
 	);
 	const validSimilarAnime = data.similar_anime.filter(
-		(anime) => anime.id != null && anime.map_id != null,
+		(anime) => anime.id != null && anime.map_id != null
 	);
 
 	if (!validRelatedAnime.length && !validSimilarAnime.length) return null;
@@ -29,21 +30,17 @@ export default function AnimeRelatedContent({
 		<Stack>
 			<Title order={3}>Related Content</Title>
 
-			<Tabs
-				defaultValue={
-					validRelatedAnime.length > 0 ? "related" : "similar"
-				}
-			>
+			<Tabs defaultValue={validRelatedAnime.length > 0 ? 'related' : 'similar'}>
 				<Tabs.List>
 					{validRelatedAnime.length > 0 && (
-						<Tabs.Tab value="related">Related Anime</Tabs.Tab>
+						<Tabs.Tab value='related'>Related Anime</Tabs.Tab>
 					)}
 					{validSimilarAnime.length > 0 && (
-						<Tabs.Tab value="similar">Similar Anime</Tabs.Tab>
+						<Tabs.Tab value='similar'>Similar Anime</Tabs.Tab>
 					)}
 				</Tabs.List>
 				{validRelatedAnime.length > 0 && (
-					<Tabs.Panel value="related">
+					<Tabs.Panel value='related'>
 						<CustomCarousel
 							containerWidth={containerWidth}
 							slideSize={slideSize}
@@ -54,7 +51,7 @@ export default function AnimeRelatedContent({
 								<Carousel.Slide key={anime.id}>
 									<AnimeRelatedContentCard
 										content={anime}
-										type="related"
+										type='related'
 									/>
 								</Carousel.Slide>
 							))}
@@ -63,7 +60,7 @@ export default function AnimeRelatedContent({
 				)}
 
 				{validSimilarAnime.length > 0 && (
-					<Tabs.Panel value="similar">
+					<Tabs.Panel value='similar'>
 						<CustomCarousel
 							containerWidth={containerWidth}
 							slideSize={slideSize}
@@ -74,7 +71,7 @@ export default function AnimeRelatedContent({
 								<Carousel.Slide key={anime.id}>
 									<AnimeRelatedContentCard
 										content={anime}
-										type="similar"
+										type='similar'
 									/>
 								</Carousel.Slide>
 							))}

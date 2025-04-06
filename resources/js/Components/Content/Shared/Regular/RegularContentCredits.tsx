@@ -1,22 +1,22 @@
-import { Tabs, Text } from "@mantine/core";
-import { useState } from "react";
-import PersonCard from "./PersonCard";
-import { ContentCreditsProps, Person } from "@/types";
-import { CustomCarousel } from "@/Components/Shared/CustomCarousel";
-import { Carousel } from "@mantine/carousel";
-import { useSpoilerConfiguration } from "@/stores/useSpoilerConfiguration";
-import { useRegularContentData } from "@/propsHooks/useRegularContentData";
+import { Tabs, Text } from '@mantine/core';
+import { useState } from 'react';
+import PersonCard from './PersonCard';
+import { ContentCreditsProps, Person } from '@/types';
+import { CustomCarousel } from '@/Components/Shared/CustomCarousel';
+import { Carousel } from '@mantine/carousel';
+import { useSpoilerConfiguration } from '@/stores/useSpoilerConfiguration';
+import { useRegularContentData } from '@/propsHooks/useRegularContentData';
 
 export function RegularContentCredits({
-																				containerWidth,
-																				slideSize = "0%",
-																			}: ContentCreditsProps) {
+	containerWidth,
+	slideSize = '0%',
+}: ContentCreditsProps) {
 	const data = useRegularContentData();
 
-	const [activeTab, setActiveTab] = useState<"cast" | "crew">("cast");
+	const [activeTab, setActiveTab] = useState<'cast' | 'crew'>('cast');
 
 	const people: Person[] =
-		activeTab === "cast" ? data.credits.cast : data.credits.crew;
+		activeTab === 'cast' ? data.credits.cast : data.credits.crew;
 
 	const configuration = useSpoilerConfiguration().configuration;
 
@@ -24,14 +24,14 @@ export function RegularContentCredits({
 		<>
 			<Tabs
 				value={activeTab}
-				onChange={(value) => setActiveTab(value as "cast" | "crew")}
-				variant="outline"
+				onChange={(value) => setActiveTab(value as 'cast' | 'crew')}
+				variant='outline'
 			>
 				<Tabs.List>
-					<Tabs.Tab value="cast">
+					<Tabs.Tab value='cast'>
 						<Text fw={500}>Cast</Text>
 					</Tabs.Tab>
-					<Tabs.Tab value="crew">
+					<Tabs.Tab value='crew'>
 						<Text fw={500}>Crew</Text>
 					</Tabs.Tab>
 				</Tabs.List>
@@ -51,9 +51,7 @@ export function RegularContentCredits({
 								person={person}
 								type={activeTab}
 								isAnime={false}
-								hideCharacterName={
-									configuration.hide_character_name
-								}
+								hideCharacterName={configuration.hide_character_name}
 							/>
 						</Carousel.Slide>
 					))}

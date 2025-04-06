@@ -1,8 +1,8 @@
-import { Carousel } from "@mantine/carousel";
-import { Stack, Title } from "@mantine/core";
-import SeasonCard from "./SeasonCard";
-import { CustomCarousel } from "@/Components/Shared/CustomCarousel";
-import { useTvShowPageData } from "@/propsHooks/useTvShowPageData";
+import { Carousel } from '@mantine/carousel';
+import { Stack, Title } from '@mantine/core';
+import SeasonCard from './SeasonCard';
+import { CustomCarousel } from '@/Components/Shared/CustomCarousel';
+import { useTvShowPageData } from '@/propsHooks/useTvShowPageData';
 
 interface SeasonsProps {
 	containerWidth: number;
@@ -10,9 +10,9 @@ interface SeasonsProps {
 }
 
 export default function RegularSeasons({
-																				 containerWidth,
-																				 slideSize = "0%",
-																			 }: SeasonsProps) {
+	containerWidth,
+	slideSize = '0%',
+}: SeasonsProps) {
 	const data = useTvShowPageData();
 
 	return (
