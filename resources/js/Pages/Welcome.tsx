@@ -1,16 +1,16 @@
-import DiscoverWatchProviders from "@/Components/Welcome/DiscoverWatchProvider";
-import TrendingSection from "@/Components/Welcome/TrendingSection";
-import WelcomeCarouselSlide from "@/Components/Welcome/WelcomeCarouselSlide";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
-import { Head } from "@inertiajs/react";
-import { Carousel } from "@mantine/carousel";
-import { Space } from "@mantine/core";
-import Autoplay from "embla-carousel-autoplay";
-import { useRef } from "react";
-import DiscoverByGenre from "@/Components/Welcome/DiscoverByGenre";
-import ResponsiveContainer from "@/Components/ResponsiveContainer";
-import { useTrendingContentData } from "@/propsHooks/useTrendingContentData";
-import { useWelcomePageGenresAndWatchProviders } from "@/propsHooks/useWelcomePageGenresAndWatchProviders";
+import TrendingSection from '@/Components/Welcome/TrendingSection';
+import WelcomeCarouselSlide from '@/Components/Welcome/WelcomeCarouselSlide';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout/AuthenticatedLayout';
+import { Head } from '@inertiajs/react';
+import { Carousel } from '@mantine/carousel';
+import { Space } from '@mantine/core';
+import Autoplay from 'embla-carousel-autoplay';
+import { useRef } from 'react';
+import DiscoverByGenre from '@/Components/Welcome/DiscoverByGenre';
+import ResponsiveContainer from '@/Components/ResponsiveContainer';
+import { useTrendingContentData } from '@/propsHooks/useTrendingContentData';
+import { useWelcomePageGenresAndWatchProviders } from '@/propsHooks/useWelcomePageGenresAndWatchProviders';
+import DiscoverWatchProviders from '@/Components/Welcome/DiscoverWatchProviders';
 
 interface MediaItem {
 	title: string;
@@ -30,15 +30,15 @@ function Welcome() {
 	const autoplay = useRef(Autoplay({ delay: 5000 }));
 
 	const sortedMovies = [...data.movies]
-		.map((item) => ({ ...item, type: "movie" }))
+		.map((item) => ({ ...item, type: 'movie' }))
 		.sort((a, b) => b.popularity - a.popularity);
 
 	const sortedTv = [...data.tv_shows]
-		.map((item) => ({ ...item, type: "tv" }))
+		.map((item) => ({ ...item, type: 'tv' }))
 		.sort((a, b) => b.popularity - a.popularity);
 
 	const sortedAnime = [...data.anime]
-		.map((item) => ({ ...item, type: "anime" }))
+		.map((item) => ({ ...item, type: 'anime' }))
 		.sort((a, b) => b.popularity - a.popularity);
 
 	// Create final slides array starting with most popular TV show
@@ -54,7 +54,7 @@ function Welcome() {
 		movieIndex < sortedMovies.length ||
 		tvIndex < sortedTv.length ||
 		animeIndex < sortedAnime.length
-		) {
+	) {
 		if (movieIndex < sortedMovies.length) {
 			finalSlides.push(sortedMovies[movieIndex]);
 			movieIndex++;
@@ -73,8 +73,8 @@ function Welcome() {
 
 	return (
 		<>
-			<Head title="Welcome" />
-			<div style={{ position: "relative" }}>
+			<Head title='Welcome' />
+			<div style={{ position: 'relative' }}>
 				<Carousel
 					height={540}
 					mih={540}
@@ -84,7 +84,7 @@ function Welcome() {
 					onMouseLeave={autoplay.current.reset}
 					loop
 					withControls={false}
-					style={{ position: "relative", zIndex: 1 }}
+					style={{ position: 'relative', zIndex: 1 }}
 				>
 					{finalSlides.map((item, index) => (
 						<Carousel.Slide key={`${item.type}-${item.link}-${index}`}>
@@ -93,18 +93,18 @@ function Welcome() {
 					))}
 				</Carousel>
 			</div>
-			<Space h="xl" />
+			<Space h='xl' />
 			<TrendingSection />
-			<Space h="xl" />
+			<Space h='xl' />
 			<DiscoverWatchProviders providers={genresandwatchproviders.by_provider} />
-			<Space h="xl" />
+			<Space h='xl' />
 			<ResponsiveContainer>
 				<DiscoverByGenre
 					genres={genresandwatchproviders.by_genre}
-					slideSize="200px"
+					slideSize='200px'
 				/>
 			</ResponsiveContainer>
-			<Space h="xl" />
+			<Space h='xl' />
 		</>
 	);
 }

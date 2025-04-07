@@ -1,18 +1,21 @@
 import { Carousel } from '@mantine/carousel';
 import {
+	Box,
+	Center,
 	Container,
 	ContainerProps,
 	Group,
 	Image,
-	Menu,
+	Indicator,
 	Space,
 	Stack,
 	Title,
+	useMantineTheme,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { ReactNode } from 'react';
 import classes from './WelcomeCustomCarousel.module.css';
-import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface WelcomeProviderCarouselProps {
 	children: ReactNode;
@@ -28,26 +31,15 @@ interface WelcomeProviderCarouselProps {
 	onProviderChange?: (providerId: string) => void;
 }
 
-const getProviderLogo = (providerId: string): string => {
-	switch (providerId) {
-		case '8':
-			return '/icons/welcome/netflix.png';
-		case '1899':
-			return '/icons/welcome/hbomax.png';
-		case '9':
-			return '/icons/welcome/primevideo.png';
-		case '283':
-			return '/icons/welcome/crunchyroll.svg';
-		case '337':
-			return '/icons/welcome/disney.png';
-		case '350':
-			return '/icons/welcome/appletv.png';
-		case '531':
-			return '/icons/welcome/paramount.png';
-		default:
-			return '';
-	}
-};
+const providers = [
+	{ id: '8', name: 'Netflix', logoSrc: '/icons/welcome/netflix.png' },
+	{ id: '1899', name: 'HBO Max', logoSrc: '/icons/welcome/hbomax.png' },
+	{ id: '9', name: 'Prime Video', logoSrc: '/icons/welcome/primevideo.png' },
+	{ id: '283', name: 'Crunchyroll', logoSrc: '/icons/welcome/crunchyroll.svg' },
+	{ id: '337', name: 'Disney+', logoSrc: '/icons/welcome/disney.png' },
+	{ id: '350', name: 'Apple TV+', logoSrc: '/icons/welcome/appletv.png' },
+	{ id: '531', name: 'Paramount+', logoSrc: '/icons/welcome/paramount.png' },
+];
 
 export function WelcomeProviderCarousel({
 	children,
@@ -62,56 +54,83 @@ export function WelcomeProviderCarousel({
 	providerId,
 	onProviderChange,
 }: WelcomeProviderCarouselProps) {
+	const theme = useMantineTheme();
 	const isMobile = useMediaQuery('(max-width: 500px)');
 	const mobileSlidesToScroll = isMobile ? 1 : slidesToScroll;
+	const providerSlidesToScroll = isMobile ? 3 : 5;
+
+	const activeProviderName =
+		providers.find((p) => p.id === providerId)?.name || '';
 
 	return (
 		<Stack gap='xs'>
 			<Group gap={12}>
-				<Title order={3}>Discover Content From</Title>
-				<Menu shadow='md'>
-					<Menu.Target>
-						<Group
-							gap='xs'
-							style={{ cursor: 'pointer' }}
-						>
-							<Image
-								src={getProviderLogo(providerId)}
-								h={50}
-								w='auto'
-								loading='lazy'
-								fit='contain'
-								style={{ cursor: 'pointer' }}
-							/>
-							<ChevronDown size={24} />
-						</Group>
-					</Menu.Target>
-					<Menu.Dropdown>
-						<Menu.Item onClick={() => onProviderChange?.('8')}>
-							Netflix
-						</Menu.Item>
-						<Menu.Item onClick={() => onProviderChange?.('1899')}>
-							HBO Max
-						</Menu.Item>
-						<Menu.Item onClick={() => onProviderChange?.('9')}>
-							Prime Video
-						</Menu.Item>
-						<Menu.Item onClick={() => onProviderChange?.('283')}>
-							Crunchyroll
-						</Menu.Item>
-						<Menu.Item onClick={() => onProviderChange?.('337')}>
-							Disney+
-						</Menu.Item>
-						<Menu.Item onClick={() => onProviderChange?.('350')}>
-							Apple TV+
-						</Menu.Item>
-						<Menu.Item onClick={() => onProviderChange?.('531')}>
-							Paramount+
-						</Menu.Item>
-					</Menu.Dropdown>
-				</Menu>
+				<Title order={3}>Discover Content From {activeProviderName}</Title>
 			</Group>
-			<Space h='xs' />
+
+			<Carousel
+				slideSize='200px'
+				align='start'
+				slidesToScroll={providerSlidesToScroll}
+				containScroll='keepSnaps'
+				withControls
+				controlsOffset={0}
+				previousControlIcon={<ChevronLeft size={24} />}
+				nextControlIcon={<ChevronRight size={24} />}
+				classNames={{
+					control: classes.carouselControlSmall,
+					controls: classes.carouselControlsSmall,
+				}}
+				styles={{
+					viewport: { overflow: 'visible' },
+				}}
+				slideGap='md'
+				withIndicators={false}
+				loop={false}
+			>
+				{providers.map((provider, index) => {
+					const isActive = provider.id === providerId;
+					return (
+						<Carousel.Slide
+							key={provider.id}
+							className={index === 0 ? classes.firstProviderItem : ''}
+						>
+							<Indicator
+								size={15}
+								offset={-15}
+								position='bottom-center'
+								color='white'
+								withBorder
+								disabled={!isActive}
+								styles={{ indicator: { zIndex: 1 } }}
+							>
+								<Center
+									className={classes.providerLogoContainer}
+									style={{
+										height: '100%',
+										cursor: 'pointer',
+										transition: 'transform 0.2s ease',
+									}}
+									onClick={() => onProviderChange?.(provider.id)}
+								>
+									<Image
+										className={classes.providerLogoImage}
+										src={provider.logoSrc}
+										h={50}
+										w='130px'
+										fit='contain'
+										alt={provider.name}
+										loading='lazy'
+									/>
+								</Center>
+							</Indicator>
+						</Carousel.Slide>
+					);
+				})}
+			</Carousel>
+
+			<Space h='md' />
+
 			<Container
 				size={containerWidth}
 				className='select-none'

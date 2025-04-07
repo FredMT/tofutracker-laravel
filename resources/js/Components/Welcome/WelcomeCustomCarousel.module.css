@@ -131,3 +131,41 @@
 .firstItem {
 	margin-left: 100px;
 }
+
+.firstProviderItem {
+	margin-left: 20px;
+}
+
+.providerLogoImage {
+	transition: transform 0.2s ease;
+}
+
+.providerLogoContainer:hover .providerLogoImage {
+	transform: scale(1.5);
+}
+
+.carouselControlsSmall {
+	position: absolute;
+	top: 0;
+	height: 100%;
+	width: 100%;
+}
+
+.carouselControlSmall {
+	background-color: rgba(10, 14, 25, 1);
+	border: none;
+	color: var(--mantine-color-gray-3);
+	z-index: 5;
+	border-radius: 0;
+	height: 100%;
+	width: 5px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: background-color 0.2s ease;
+}
+
+.carouselControlSmall:hover {
+	background-color: rgba(10, 14, 25, 1);
+	color: white;
+}
