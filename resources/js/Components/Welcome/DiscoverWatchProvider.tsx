@@ -1,6 +1,7 @@
 import { Box, Image } from '@mantine/core';
 import React from 'react';
 import { Carousel } from '@mantine/carousel';
+import { AnimatePresence, motion } from 'framer-motion';
 import WelcomeCarouselCard from './WelcomeCarouselCard';
 import ResponsiveContainer from '@/Components/ResponsiveContainer';
 import { WelcomeProviderCarousel } from './WelcomeProviderCarousel';
@@ -11,6 +12,12 @@ interface DiscoverWatchProviderProps {
 	data: WatchProviderData;
 	onProviderChange: (providerId: string) => void;
 }
+
+const backgroundVariants = {
+	initial: { opacity: 0 },
+	animate: { opacity: 1, transition: { duration: 0.5 } },
+	exit: { opacity: 0, transition: { duration: 0.5 } },
+};
 
 export function DiscoverWatchProvider({
 	providerId,
@@ -27,16 +34,33 @@ export function DiscoverWatchProvider({
 			h={700}
 			mb='xl'
 		>
-			<Image
-				src={backgroundImage}
-				h='100%'
-				w='100%'
-				fit='cover'
-				style={{
-					filter: 'brightness(0.7)',
-				}}
-				loading='lazy'
-			/>
+			<AnimatePresence initial={false}>
+				<motion.div
+					key={backgroundImage}
+					variants={backgroundVariants}
+					initial='initial'
+					animate='animate'
+					exit='exit'
+					style={{
+						position: 'absolute',
+						top: 0,
+						left: 0,
+						width: '100%',
+						height: '100%',
+					}}
+				>
+					<Image
+						src={backgroundImage}
+						h='100%'
+						w='100%'
+						fit='cover'
+						style={{
+							filter: 'brightness(0.7)',
+						}}
+						loading='lazy'
+					/>
+				</motion.div>
+			</AnimatePresence>
 			<Box
 				pos='absolute'
 				bottom={0}

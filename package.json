@@ -53,6 +53,7 @@
         "dayjs": "^1.11.13",
         "embla-carousel-autoplay": "^7.1.0",
         "embla-carousel-react": "^7.1.0",
+        "framer-motion": "^12.6.3",
         "lucide-react": "^0.468.0",
         "mantine-form-zod-resolver": "^1.1.0",
         "typescript-plugin-css-modules": "^5.1.0",
