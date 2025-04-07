@@ -9,6 +9,7 @@ use App\Models\Movie;
 use App\Models\TvSeason;
 use App\Models\TvShow;
 use App\Models\User;
+use App\Models\UserActivity;
 use App\Notifications\CommentReplyNotification;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -22,9 +23,11 @@ class CreateCommentAction
         $commentable = $modelClass::findOrFail($id);
 
         try {
-            return DB::transaction(function () use ($data, $commentable, $user) {
+            return DB::transaction(function () use ($data, $commentable, $user, $type) {
                 $comment = $this->createComment($data, $commentable, $user);
-                $this->createInitialVote($comment, $user);
+                if ($type !== 'useractivity') {
+                    $this->createInitialVote($comment, $user);
+                }
                 $this->notifyParentCommentAuthor($comment, $data['parent_id'] ?? null);
 
                 return $this->formatResponse($comment);
@@ -44,7 +47,7 @@ class CreateCommentAction
             'animemovie' => AnidbAnime::class,
             'animetv' => AnimeMap::class,
             'animeseason' => AnidbAnime::class,
-            'user' => User::class,
+            'useractivity' => UserActivity::class,
             default => throw new ModelNotFoundException("Invalid type: {$type}"),
         };
     }

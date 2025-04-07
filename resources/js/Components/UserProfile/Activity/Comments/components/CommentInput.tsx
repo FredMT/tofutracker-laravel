@@ -9,7 +9,7 @@ interface CommentInputProps {
 	value: string;
 	onValueChange: (value: string) => void;
 	autoFocus?: boolean;
-	disabled?: boolean;
+	isLoggedIn: boolean;
 }
 
 export const CommentInput = forwardRef<HTMLInputElement, CommentInputProps>(
@@ -20,20 +20,22 @@ export const CommentInput = forwardRef<HTMLInputElement, CommentInputProps>(
 			value,
 			onValueChange,
 			autoFocus = false,
-			disabled = false,
+			isLoggedIn,
 		},
 		ref
 	) => {
 		const auth = useAuth();
 
+		const isDisabled = !isLoggedIn;
+
 		const handlePostClick = () => {
-			if (value.trim() && !disabled) {
+			if (value.trim() && !isDisabled) {
 				onPost();
 			}
 		};
 
 		const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-			if (event.key === 'Enter' && !event.shiftKey && !disabled) {
+			if (event.key === 'Enter' && !event.shiftKey && !isDisabled) {
 				event.preventDefault();
 				handlePostClick();
 			}
@@ -59,11 +61,11 @@ export const CommentInput = forwardRef<HTMLInputElement, CommentInputProps>(
 				/>
 				<TextInput
 					ref={ref}
-					placeholder={placeholder}
+					placeholder={!isLoggedIn ? 'Log in to comment...' : placeholder}
 					value={value}
 					onChange={(event) => onValueChange(event.currentTarget.value)}
 					onKeyDown={handleKeyDown}
-					disabled={disabled}
+					disabled={isDisabled}
 					style={{ flex: 1 }}
 					styles={{
 						input: { padding: 10 },
@@ -75,7 +77,7 @@ export const CommentInput = forwardRef<HTMLInputElement, CommentInputProps>(
 						<Button
 							variant='subtle'
 							size='sm'
-							disabled={disabled || !value.trim()}
+							disabled={isDisabled || !value.trim()}
 							onClick={handlePostClick}
 							className={styles.postButton}
 						>

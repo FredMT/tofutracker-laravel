@@ -9,6 +9,7 @@ use App\Models\Movie;
 use App\Models\TvSeason;
 use App\Models\TvShow;
 use App\Models\User;
+use App\Models\UserActivity;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -24,8 +25,8 @@ class FetchCommentsAction
             ->where('commentable_id', $commentable->id)
             ->count();
 
-        // If showCommentId is provided but parentId is not, use showCommentId as parentId
-        if ($showCommentId && ! $parentId) {
+        // If showCommentId is provided but parentId is not, use showCommentId as parentId.. disabled for useractivity
+        if ($showCommentId && ! $parentId && $type !== 'useractivity') {
             $parentId = $showCommentId;
         }
 
@@ -92,7 +93,7 @@ class FetchCommentsAction
             'animemovie' => AnidbAnime::class,
             'animetv' => AnimeMap::class,
             'animeseason' => AnidbAnime::class,
-            'user' => User::class,
+            'useractivity' => UserActivity::class,
             default => throw new ModelNotFoundException("Invalid type: {$type}"),
         };
     }

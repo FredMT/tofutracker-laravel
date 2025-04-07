@@ -1,14 +1,14 @@
-import { router } from "@inertiajs/react";
-import { Card, Stack, Text } from "@mantine/core";
-import { ActivityListItem } from "@/Components/UserProfile/Activity/ActivityListItem";
-import { useIntersection } from "@mantine/hooks";
-import React from "react";
-import { useActivities } from "@/propsHooks/useActivities";
-import { useActivitiesPagination } from "@/propsHooks/useActivitiesPagination";
+import { router, usePage } from '@inertiajs/react';
+import { Card, Stack, Text } from '@mantine/core';
+import { ActivityListItem } from '@/Components/UserProfile/Activity/ActivityListItem';
+import { useIntersection } from '@mantine/hooks';
+import React from 'react';
+import { useActivitiesPagination } from '@/propsHooks/useActivitiesPagination';
 
 export default function ActivitySection() {
-	const activities = useActivities();
-	const activities_pagination = useActivitiesPagination();
+	const url = usePage().url;
+	const activitiesPagination = useActivitiesPagination();
+	const activities = activitiesPagination.data;
 	const { ref, entry } = useIntersection({
 		threshold: 1,
 	});
@@ -16,7 +16,7 @@ export default function ActivitySection() {
 	React.useEffect(() => {
 		if (
 			entry?.isIntersecting &&
-			activities_pagination.current_page < activities_pagination.last_page
+			activitiesPagination.current_page < activitiesPagination.last_page
 		) {
 			handleLoadMore();
 		}
@@ -24,12 +24,12 @@ export default function ActivitySection() {
 
 	const handleLoadMore = () => {
 		router.reload({
-			data: { page: activities_pagination.current_page + 1 },
-			only: ["activities", "activities_pagination"],
+			data: { page: activitiesPagination.current_page + 1 },
+			only: ['activities', 'activities_pagination'],
 			onSuccess: () => {
 				const url = new URL(window.location.href);
-				url.searchParams.delete("page");
-				window.history.pushState({}, "", url);
+				url.searchParams.delete('page');
+				window.history.pushState({}, '', url);
 			},
 		});
 	};
@@ -44,22 +44,24 @@ export default function ActivitySection() {
 					);
 				})
 				.map((activity) => (
-					<ActivityListItem key={activity.id} activity={activity} />
+					<ActivityListItem
+						key={activity.id}
+						activity={activity}
+					/>
 				))}
 
-			{activities_pagination.current_page <
-				activities_pagination.last_page && (
-					<Card
-						ref={ref}
-						radius="md"
-						withBorder={false}
-						bg="transparent"
-						py={2}
-						px={0}
-					>
-						<Text>Loading more...</Text>
-					</Card>
-				)}
+			{activitiesPagination.current_page < activitiesPagination.last_page && (
+				<Card
+					ref={ref}
+					radius='md'
+					withBorder={false}
+					bg='transparent'
+					py={2}
+					px={0}
+				>
+					<Text>Loading more...</Text>
+				</Card>
+			)}
 		</Stack>
 	);
 }

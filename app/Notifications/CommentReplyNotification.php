@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\Comment;
+use App\Models\UserActivity;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\BroadcastMessage;
@@ -51,9 +52,18 @@ class CommentReplyNotification extends Notification implements ShouldQueue
     private function generateLink(): string
     {
         $type = strtolower(class_basename($this->reply->commentable_type));
-        $url = "/{$type}/{$this->reply->commentable_id}?showCommentId={$this->reply->id}";
+        
+        if ($type === 'useractivity') {
+            $userActivity = UserActivity::find($this->reply->commentable_id);
+            $user = $userActivity->user;
+            $activityId = $this->reply->commentable_id;
 
-        if ($this->parentComment) {
+            $url = "/user/{$user->username}?activityId={$activityId}&showCommentId={$this->reply->id}";
+        } else {
+            $url = "/{$type}/{$this->reply->commentable_id}?showCommentId={$this->reply->id}";
+        }
+
+        if ($type !== 'useractivity' && $this->parentComment) {
             $url .= "&parentId={$this->parentComment->id}";
         }
 

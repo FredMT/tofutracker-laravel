@@ -9,6 +9,7 @@ use App\Actions\UserController\Tv\GetUserData;
 use App\Actions\UserController\Tv\GetUserTvGenres;
 use App\Actions\UserController\Tv\ValidateShowFilters;
 use App\Enums\WatchStatus;
+use App\Http\Controllers\Comment\CommentController;
 use App\Models\User;
 use App\Models\UserAnime\UserAnimeCollection;
 use App\Models\UserMovie\UserMovie;
@@ -19,6 +20,10 @@ use Inertia\Inertia;
 
 class UserController extends Controller
 {
+    public function __construct(
+        private readonly CommentController $commentController
+    ) {}
+
     /**
      * Display the user's profile.
      *
@@ -38,9 +43,12 @@ class UserController extends Controller
         $activities->through(function ($activity) use ($request) {
             $array = $activity->toArray();
 
+            $comments = $this->commentController->index($request, 'useractivity', $activity->id);
+
             return [
                 'id' => $activity->id,
                 'description' => $activity->description,
+                'comments' => $comments,
                 'occurred_at_diff' => $activity->occurred_at->diffForHumans(now(), CarbonInterface::DIFF_RELATIVE_TO_NOW, true),
                 'activity_type' => $activity->activity_type,
                 'metadata' => $array['metadata'] ?? [],
@@ -66,8 +74,7 @@ class UserController extends Controller
 
         return Inertia::render('UserProfile', [
             'userData' => $userData,
-            'activities' => Inertia::merge(fn () => $activities->items()),
-            'activities_pagination' => $activities->toArray(),
+            'activities' => $activities->toArray(),
         ]);
     }
 

@@ -1,21 +1,37 @@
 .linkedTitle {
-    color: light-dark(#5f3dc4, #d0bfff);
-    text-decoration: none;
+	color: light-dark(#5f3dc4, #d0bfff);
+	text-decoration: none;
 }
 
 .linkedTitle:hover {
-    text-decoration: underline;
+	text-decoration: underline;
 }
 
 .card {
-    background-color: light-dark(#eeeeeede, #222222);
+	background-color: light-dark(#eeeeeede, #222222);
 }
 
 .imageColumn {
-    min-width: 120px;
-    transition: min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	min-width: 120px;
+	transition: min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.imageColumn[data-expanded="true"] {
-    min-width: 170px;
+.imageColumn[data-expanded='true'] {
+	min-width: 170px;
+}
+
+.highlightActivity {
+	animation: highlightPulse 2s ease-in-out;
+}
+
+@keyframes highlightPulse {
+	0% {
+		background-color: rgba(59, 130, 246, 0.1);
+	}
+	50% {
+		background-color: rgba(59, 130, 246, 0.2);
+	}
+	100% {
+		background-color: transparent;
+	}
 }

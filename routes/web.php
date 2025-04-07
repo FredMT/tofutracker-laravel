@@ -180,16 +180,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/store', [UserAnimeEpisodeController::class, 'store'])->name('store');
         Route::delete('/delete', [UserAnimeEpisodeController::class, 'destroy'])->name('destroy');
     });
-
-    // Activity Comments
-    Route::prefix('activities/{activity}/comments')->name('activities.comments.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\ActivityCommentController::class, 'index'])->name('index'); // Publicly viewable
-        Route::post('/', [\App\Http\Controllers\ActivityCommentController::class, 'store'])->name('store');
-        Route::patch('/{comment}', [\App\Http\Controllers\ActivityCommentController::class, 'update'])->name('update');
-        Route::delete('/{comment}', [\App\Http\Controllers\ActivityCommentController::class, 'destroy'])->name('destroy');
-        Route::post('/{comment}/like', [\App\Http\Controllers\ActivityCommentController::class, 'like'])->name('like');
-        Route::post('/{comment}/unlike', [\App\Http\Controllers\ActivityCommentController::class, 'unlike'])->name('unlike');
-    });
 });
 
 // User List Routes
@@ -228,18 +218,19 @@ Route::get('/quicksearch', QuickSearchController::class)->name('quicksearch');
 Route::get('/list/{list}', [ListController::class, 'show'])->name('list.show');
 
 Route::get('/{type}/{id}/comments', [CommentController::class, 'index'])
-    ->where('type', 'movie|tv|user')
+    ->where('type', 'movie|tv|tvseason|animemovie|animetv|animeseason|useractivity')
     ->name('comments.index');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/{type}/{id}/comments', [CommentController::class, 'store'])
-        ->where('type', 'movie|tv|tvseason|animemovie|animetv|animeseason|user')
+        ->where('type', 'movie|tv|tvseason|animemovie|animetv|animeseason|useractivity')
         ->name('comments.store');
     Route::patch('/comments/{comment}', [CommentController::class, 'update'])
         ->name('comments.update');
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])
         ->name('comments.destroy');
-    Route::post('/votes', [VoteController::class, 'store']);
+    Route::post('/votes', [VoteController::class, 'store'])->name('votes.store');
+    Route::delete('/votes/{comment}', [VoteController::class, 'destroy'])->name('votes.destroy');
 });
 
 Route::middleware(['auth', 'verified'])->prefix('notifications')->name('notifications.')->group(function () {

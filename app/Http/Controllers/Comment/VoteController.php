@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Comment;
 
 use App\Actions\Comments\UpdateVoteAction;
 use App\Http\Controllers\Controller;
+use App\Models\Comment;
+use App\Models\Vote;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
-use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Http\Response;
 
 class VoteController extends Controller
 {
@@ -34,5 +37,32 @@ class VoteController extends Controller
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
+    }
+
+    public function destroy(Comment $comment): Response|JsonResponse
+    {
+        abort_if(!Auth::id(), 401, 'Unauthorized');
+
+        try {
+
+            Vote::where('user_id', Auth::id())
+                ->where('comment_id', $comment->id)
+                ->delete();
+
+            return response()->noContent();
+        } catch (\Exception $e) {
+            $this->logError($e);
+
+            return response()->json(
+                ['message' => 'Failed to remove vote'],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    private function logError(\Throwable $th)
+    {
+        logger()->error($th->getMessage());
+        logger()->error($th->getTraceAsString());
     }
 }

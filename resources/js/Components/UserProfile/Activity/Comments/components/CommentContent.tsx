@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
 	ActionIcon,
 	Avatar,
@@ -24,6 +24,8 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import styles from './CommentContent.module.css';
 import { Comment } from './commentTypes';
 import { useAuth } from '@/propsHooks/useAuth';
+import axios from 'axios';
+import { notifications } from '@mantine/notifications';
 
 dayjs.extend(relativeTime);
 
@@ -32,6 +34,7 @@ interface CommentContentProps {
 	onReply: () => void;
 	onEditRequest: (commentId: string, newContent: string) => void;
 	onDeleteRequest: (commentId: string) => void;
+	isHighlighted?: boolean;
 }
 
 export function CommentContent({
@@ -39,10 +42,22 @@ export function CommentContent({
 	onReply,
 	onEditRequest,
 	onDeleteRequest,
+	isHighlighted = false,
 }: CommentContentProps) {
 	const auth = useAuth();
 	const [isEditing, setIsEditing] = useState(false);
 	const [editedContent, setEditedContent] = useState(comment.content);
+	const [shouldPulse, setShouldPulse] = useState(false);
+
+	useEffect(() => {
+		if (isHighlighted) {
+			setShouldPulse(true);
+			const timer = setTimeout(() => {
+				setShouldPulse(false);
+			}, 2000);
+			return () => clearTimeout(timer);
+		}
+	}, [isHighlighted]);
 
 	const {
 		id,
@@ -64,11 +79,30 @@ export function CommentContent({
 	const [liked, setLiked] = useState(direction === 1);
 	const [likeCount, setLikeCount] = useState(points);
 
-	const handleLike = () => {
-		const newLiked = !liked;
-		const newLikeCount = newLiked ? likeCount + 1 : likeCount - 1;
-		setLiked(newLiked);
-		setLikeCount(newLikeCount);
+	const handleLike = async () => {
+		try {
+			if (!liked) {
+				await axios.post(route('votes.store'), {
+					commentId: id,
+					direction: 1,
+				});
+			} else {
+				await axios.delete(route('votes.destroy', { comment: id }));
+			}
+
+			const newLiked = !liked;
+			const newLikeCount = newLiked ? likeCount + 1 : likeCount - 1;
+			setLiked(newLiked);
+			setLikeCount(newLikeCount);
+		} catch (error: any) {
+			console.log(error);
+			notifications.show({
+				title: 'Error',
+				message: 'Failed to update vote. Please try again later.',
+				color: 'red',
+				icon: <X />,
+			});
+		}
 	};
 
 	const handleEditClick = () => {
@@ -95,16 +129,19 @@ export function CommentContent({
 	return (
 		<Flex
 			gap='sm'
-			className={styles.commentContentContainer}
-			pb='md'
+			className={`${styles.commentContentContainer} ${
+				shouldPulse ? styles.highlightComment : ''
+			}`}
+			pt={0}
 			style={{ opacity: isDeleted ? 0.6 : 1 }}
 		>
 			<Avatar
 				src={
 					isDeleted
 						? undefined
-						: avatar ??
-						  `https://api.dicebear.com/9.x/open-peeps/svg?seed=tofutracker-${author}`
+						: avatar
+						? `/storage/${avatar}`
+						: `https://api.dicebear.com/9.x/open-peeps/svg?seed=tofutracker-${author}`
 				}
 				alt={isDeleted ? 'Deleted user' : `${author ?? 'Anonymous'}'s avatar`}
 				radius='xl'

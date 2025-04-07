@@ -15,7 +15,7 @@ class Comment extends Model
 
     protected $with = ['user', 'votes'];
 
-    protected $appends = ['points', 'time_ago'];
+    protected $appends = ['points'];
 
     protected $fillable = ['body', 'parent_id', 'user_id', 'deleted_at', 'vote_milestone'];
 

@@ -5,6 +5,7 @@ namespace App\Actions\Comments;
 use App\Jobs\ProcessCommentVoteMilestoneJob;
 use App\Models\Comment;
 use App\Models\User;
+use App\Models\UserActivity;
 use App\Models\Vote;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -54,8 +55,8 @@ class UpdateVoteAction
             ['value' => $direction]
         );
 
-        // Only dispatch job if this is a new vote (not an update)
-        if (! $existingVote) {
+        // Only dispatch job if this is a new vote (not an update) and comment type is not UserActivity
+        if (!$existingVote && $comment->commentable_type !== UserActivity::class) {
             ProcessCommentVoteMilestoneJob::dispatch($comment)
                 ->onQueue('notifications')
                 ->afterCommit();

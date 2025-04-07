@@ -1,0 +1,23 @@
+.commentText {
+	word-break: break-word; /* Prevent long words from overflowing */
+}
+
+.commentMeta {
+	color: var(--mantine-color-gray-6);
+}
+
+.highlightComment {
+	animation: highlightPulse 2s ease-in-out;
+}
+
+@keyframes highlightPulse {
+	0% {
+		background-color: rgba(59, 130, 246, 0.1);
+	}
+	50% {
+		background-color: rgba(59, 130, 246, 0.2);
+	}
+	100% {
+		background-color: transparent;
+	}
+}

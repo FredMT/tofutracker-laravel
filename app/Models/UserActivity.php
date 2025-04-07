@@ -7,6 +7,7 @@ use App\Models\UserAnime\UserAnime;
 use App\Traits\Likeable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class UserActivity extends Model
@@ -90,6 +91,11 @@ class UserActivity extends Model
 
         // Only return the array if we have a valid poster path
         return ($poster && isset($poster['path']) && ! is_null($poster['path'])) ? $poster : null;
+    }
+
+    public function comments(): MorphMany
+    {
+        return $this->morphMany(Comment::class, 'commentable');
     }
 
     /**

@@ -1,4 +1,10 @@
-import { Comment } from './Comments/commentTypes';
+import { Comment } from './Comments/components/commentTypes';
+
+type ActivityComment = {
+	comments: Comment[];
+	showCommentId: number | null;
+	commentCount: number;
+};
 
 export type Activity = {
 	activity_type: string;
@@ -8,7 +14,7 @@ export type Activity = {
 	metadata: Record<string, any>;
 	likes_count: number;
 	is_liked: boolean;
-	comments?: Comment[];
+	comments: ActivityComment;
 };
 
 export type PaginationData = {
