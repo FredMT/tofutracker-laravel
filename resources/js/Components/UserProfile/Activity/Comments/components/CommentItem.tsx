@@ -11,7 +11,7 @@ import { useScrollIntoView } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import axios from 'axios';
 import { X } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { CommentContent } from './CommentContent';
 import styles from './CommentItem.module.css';
 
@@ -42,6 +42,7 @@ export function CommentItem({
 		store,
 		(state) => state.updateComment
 	);
+	const hasScrolled = useRef(false);
 
 	const { scrollIntoView, targetRef } = useScrollIntoView<HTMLDivElement>({
 		offset: 60,
@@ -113,16 +114,16 @@ export function CommentItem({
 		}
 	};
 
-	// Scroll to highlighted comment
 	useEffect(() => {
 		const shouldHighlight =
-			(highlightCommentId && comment.id === highlightCommentId) || 
+			(highlightCommentId && comment.id === highlightCommentId) ||
 			(highlightCommentId &&
-				allReplies.some((reply) => reply.id === highlightCommentId)); 
+				allReplies.some((reply) => reply.id === highlightCommentId));
 
-		if (shouldHighlight && targetRef.current) {
+		if (shouldHighlight && targetRef.current && !hasScrolled.current) {
 			const timer = setTimeout(() => {
 				scrollIntoView({ alignment: 'center' });
+				hasScrolled.current = true;
 			}, 100);
 
 			return () => clearTimeout(timer);
