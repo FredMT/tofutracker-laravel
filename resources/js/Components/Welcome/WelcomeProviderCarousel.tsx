@@ -1,6 +1,5 @@
 import { Carousel } from '@mantine/carousel';
 import {
-	Box,
 	Center,
 	Container,
 	ContainerProps,
@@ -10,12 +9,12 @@ import {
 	Space,
 	Stack,
 	Title,
-	useMantineTheme,
+	UnstyledButton,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { ReactNode } from 'react';
 import classes from './WelcomeCustomCarousel.module.css';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface WelcomeProviderCarouselProps {
 	children: ReactNode;
@@ -54,87 +53,97 @@ export function WelcomeProviderCarousel({
 	providerId,
 	onProviderChange,
 }: WelcomeProviderCarouselProps) {
-	const theme = useMantineTheme();
 	const isMobile = useMediaQuery('(max-width: 500px)');
 	const mobileSlidesToScroll = isMobile ? 1 : slidesToScroll;
-	const providerSlidesToScroll = isMobile ? 3 : 5;
 
 	const activeProviderName =
 		providers.find((p) => p.id === providerId)?.name || '';
 
 	return (
 		<Stack gap='xs'>
-			<Group gap={12}>
-				<Title order={3}>Discover Content From {activeProviderName}</Title>
-			</Group>
-
-			<Carousel
-				slideSize='200px'
-				align='start'
-				slidesToScroll={providerSlidesToScroll}
-				containScroll='keepSnaps'
-				withControls
-				controlsOffset={0}
-				previousControlIcon={<ChevronLeft size={24} />}
-				nextControlIcon={<ChevronRight size={24} />}
-				classNames={{
-					control: classes.carouselControlSmall,
-					controls: classes.carouselControlsSmall,
-				}}
-				styles={{
-					viewport: { overflow: 'visible' },
-				}}
-				slideGap='md'
-				withIndicators={false}
-				loop={false}
+			<Container
+				size={containerWidth}
+				className='select-none'
+				px={40}
+				mx={0}
 			>
-				{providers.map((provider, index) => {
-					const isActive = provider.id === providerId;
-					return (
-						<Carousel.Slide
-							key={provider.id}
-							className={index === 0 ? classes.firstProviderItem : ''}
-						>
-							<Indicator
-								size={15}
-								offset={-15}
-								position='bottom-center'
-								color='white'
-								withBorder
-								disabled={!isActive}
-								styles={{ indicator: { zIndex: 1 } }}
+				<Group
+					gap={12}
+					mb='md'
+				>
+					<Title order={3}>Discover Content From: {activeProviderName}</Title>
+				</Group>
+			</Container>
+			<Container
+				size={containerWidth}
+				className='select-none'
+				px={40}
+				mx={0}
+			>
+				<Carousel
+					slideSize='200px'
+					h={80}
+					align={align}
+					slidesToScroll={mobileSlidesToScroll}
+					withControls={withControls}
+					controlsOffset={0}
+					classNames={{
+						control: classes.carouselControl,
+						controls: classes.carouselControls,
+					}}
+					previousControlIcon={<ChevronLeft size={40} />}
+					nextControlIcon={<ChevronRight size={40} />}
+					className={className}
+					slideGap={slideGap}
+				>
+					{providers.map((provider, index) => {
+						const isActive = provider.id === providerId;
+						return (
+							<Carousel.Slide
+								key={provider.id}
+								className={index === 0 ? classes.firstItem : ''}
 							>
-								<Center
-									className={classes.providerLogoContainer}
-									style={{
-										height: '100%',
-										cursor: 'pointer',
-										transition: 'transform 0.2s ease',
-									}}
-									onClick={() => onProviderChange?.(provider.id)}
+								<Indicator
+									size={15}
+									offset={-15}
+									position='bottom-center'
+									color='white'
+									withBorder
+									disabled={!isActive}
+									styles={{ indicator: { zIndex: 1 } }}
 								>
-									<Image
-										className={classes.providerLogoImage}
-										src={provider.logoSrc}
-										h={50}
-										w='130px'
-										fit='contain'
-										alt={provider.name}
-										loading='lazy'
-									/>
-								</Center>
-							</Indicator>
-						</Carousel.Slide>
-					);
-				})}
-			</Carousel>
+									<Center
+										className={classes.providerLogoContainer}
+										style={{
+											height: '100%',
+											cursor: 'pointer',
+											transition: 'transform 0.2s ease',
+										}}
+										onClick={() => onProviderChange?.(provider.id)}
+									>
+										<Image
+											className={classes.providerLogoImage}
+											src={provider.logoSrc}
+											h={50}
+											w='130px'
+											fit='contain'
+											alt={provider.name}
+											loading='lazy'
+										/>
+									</Center>
+								</Indicator>
+							</Carousel.Slide>
+						);
+					})}
+				</Carousel>
+			</Container>
 
 			<Space h='md' />
 
 			<Container
 				size={containerWidth}
 				className='select-none'
-				px={0}
+				px={40}
 				mx={0}
 			>
 				<Carousel

@@ -1,11 +1,11 @@
-import { Box, Image } from '@mantine/core';
-import React from 'react';
 import { Carousel } from '@mantine/carousel';
+import { Box, Image } from '@mantine/core';
 import { AnimatePresence, motion } from 'framer-motion';
-import WelcomeCarouselCard from './WelcomeCarouselCard';
-import ResponsiveContainer from '@/Components/ResponsiveContainer';
-import { WelcomeProviderCarousel } from './WelcomeProviderCarousel';
 import { WatchProviderData, WatchProviderItem } from './DiscoverWatchProviders';
+import WelcomeCarouselCard from './WelcomeCarouselCard';
+import { WelcomeProviderCarousel } from './WelcomeProviderCarousel';
+import classes from './WelcomeCustomCarousel.module.css';
+import ResponsiveContainer from '../ResponsiveContainer';
 
 interface DiscoverWatchProviderProps {
 	providerId: string;
@@ -17,6 +17,12 @@ const backgroundVariants = {
 	initial: { opacity: 0 },
 	animate: { opacity: 1, transition: { duration: 0.5 } },
 	exit: { opacity: 0, transition: { duration: 0.5 } },
+};
+
+const cardVariants = {
+	initial: { opacity: 0 },
+	animate: { opacity: 1, transition: { duration: 0.3 } },
+	exit: { opacity: 0, transition: { duration: 0.3 } },
 };
 
 export function DiscoverWatchProvider({
@@ -69,7 +75,7 @@ export function DiscoverWatchProvider({
 				style={{
 					background:
 						'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%)',
-					padding: '20px 0',
+					padding: '20px ',
 				}}
 			>
 				<ResponsiveContainer>
@@ -78,18 +84,29 @@ export function DiscoverWatchProvider({
 						slideSize='200px'
 						onProviderChange={onProviderChange}
 					>
-						{data.items.map((item: WatchProviderItem) => (
-							<Carousel.Slide key={`${item.media_type}-${item.id}`}>
-								<WelcomeCarouselCard
-									id={item.id}
-									anime_id={item.anime_id}
-									title={item.title}
-									posterPath={item.poster_path}
-									type={item.media_type}
-									vote_average={item.vote_average}
-								/>
-							</Carousel.Slide>
-						))}
+						<AnimatePresence mode='wait'>
+							{data.items.map((item: WatchProviderItem, index) => (
+								<motion.div
+									key={`${item.media_type}-${item.id}`}
+									variants={cardVariants}
+									initial='initial'
+									animate='animate'
+									exit='exit'
+									className={index === 0 ? classes.firstItem : ''}
+								>
+									<Carousel.Slide>
+										<WelcomeCarouselCard
+											id={item.id}
+											anime_id={item.anime_id}
+											title={item.title}
+											posterPath={item.poster_path}
+											type={item.media_type}
+											vote_average={item.vote_average}
+										/>
+									</Carousel.Slide>
+								</motion.div>
+							))}
+						</AnimatePresence>
 					</WelcomeProviderCarousel>
 				</ResponsiveContainer>
 			</Box>

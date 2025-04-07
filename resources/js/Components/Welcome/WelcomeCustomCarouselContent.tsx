@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import React from 'react';
 import WelcomeCarouselCard from './WelcomeCarouselCard';
 import classes from './WelcomeCustomCarousel.module.css';
+import ResponsiveContainer from '../ResponsiveContainer';
 
 interface ContentItem {
 	title: string;
@@ -76,7 +77,10 @@ export function WelcomeCustomCarouselContent({
 	};
 
 	return (
-		<Box className={classes.container}>
+		<Box
+			className={classes.container}
+			px={20}
+		>
 			<div className={classes.header}>
 				<div className={classes.sectionHeaderTextWrapper}>
 					<h2 className={classes.top10Text}>TOP 10</h2>
@@ -106,51 +110,51 @@ export function WelcomeCustomCarouselContent({
 					/>
 				</div>
 			</div>
-
-			<Carousel
-				key={activeTab}
-				height={height}
-				slideSize={slideSize}
-				align={align}
-				withControls={withControls}
-				slideGap={slideGap}
-				controlsOffset={0}
-				previousControlIcon={<ChevronLeft size={40} />}
-				nextControlIcon={<ChevronRight size={40} />}
-				classNames={{
-					root: classes.carouselRoot,
-					controls: classes.carouselControls,
-					control: classes.carouselControl,
-				}}
-				className={className}
-			>
-				{currentContent.slice(0, 10).map((content, index) => (
-					<Carousel.Slide key={`${content.type}-${content.link}`}>
-						<div
-							className={`${classes.itemContainer} ${
-								index === 0 ? classes.firstItem : ''
-							}`}
-						>
-							<div className={classes.numberMarker}>{index + 1}</div>
+			<ResponsiveContainer>
+				<Carousel
+					key={activeTab}
+					height={height}
+					slideSize={slideSize}
+					align={align}
+					withControls={withControls}
+					slideGap={slideGap}
+					controlsOffset={0}
+					previousControlIcon={<ChevronLeft size={40} />}
+					nextControlIcon={<ChevronRight size={40} />}
+					classNames={{
+						controls: classes.carouselControls,
+						control: classes.carouselControl,
+					}}
+					className={className}
+				>
+					{currentContent.slice(0, 10).map((content, index) => (
+						<Carousel.Slide key={`${content.type}-${content.link}`}>
 							<div
-								className={classes.cardContainer}
-								style={{
-									marginLeft:
-										index === currentContent.length - 1 ? '90px' : '40px',
-								}}
+								className={`${classes.itemContainer} ${
+									index === 0 ? classes.firstItem : ''
+								}`}
 							>
-								<WelcomeCarouselCard
-									id={Number(content.link)}
-									title={content.title}
-									posterPath={content.poster_path}
-									type={content.type}
-									vote_average={content.vote_average}
-								/>
+								<div className={classes.numberMarker}>{index + 1}</div>
+								<div
+									className={classes.cardContainer}
+									style={{
+										marginLeft:
+											index === currentContent.length - 1 ? '90px' : '40px',
+									}}
+								>
+									<WelcomeCarouselCard
+										id={Number(content.link)}
+										title={content.title}
+										posterPath={content.poster_path}
+										type={content.type}
+										vote_average={content.vote_average}
+									/>
+								</div>
 							</div>
-						</div>
-					</Carousel.Slide>
-				))}
-			</Carousel>
+						</Carousel.Slide>
+					))}
+				</Carousel>
+			</ResponsiveContainer>
 		</Box>
 	);
 }

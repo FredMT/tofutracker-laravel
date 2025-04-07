@@ -1,21 +1,29 @@
-import AnimeRecommendedContent from "@/Components/Content/Shared/Anime/AnimeRecommendedContent";
-import { AnimeBannerImageContainer } from "@/Components/Content/Shared/Anime/AnimeBannerImageContainer";
-import ContentActions from "@/Components/ContentActions/ContentActions";
-import ResponsiveContainer from "@/Components/ResponsiveContainer";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
-import ContentLayout from "@/Layouts/ContentLayout";
-import { Head } from "@inertiajs/react";
-import { Box, Divider, Space, Spoiler, Stack, Text, Title } from "@mantine/core";
-import { useMounted, useViewportSize } from "@mantine/hooks";
-import Seasons from "@/Components/Content/TV/Seasons/Seasons";
-import { AnimeContentCredits } from "@/Components/Content/Shared/Anime/AnimeContentCredits";
-import { AnimeContentSummary } from "@/Components/Content/Shared/Regular/AnimeContentSummary";
-import AnimePosterImage from "@/Components/Content/Shared/Anime/AnimePosterImage";
-import Trailer from "@/Components/Content/TV/Trailer";
-import { lazy, Suspense } from "react";
-import { useAnimeContent } from "@/propsHooks/useAnimeContent";
+import AnimeRecommendedContent from '@/Components/Content/Shared/Anime/AnimeRecommendedContent';
+import { AnimeBannerImageContainer } from '@/Components/Content/Shared/Anime/AnimeBannerImageContainer';
+import ContentActions from '@/Components/ContentActions/ContentActions';
+import ResponsiveContainer from '@/Components/ResponsiveContainer';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout/AuthenticatedLayout';
+import ContentLayout from '@/Layouts/ContentLayout';
+import { Head } from '@inertiajs/react';
+import {
+	Box,
+	Divider,
+	Space,
+	Spoiler,
+	Stack,
+	Text,
+	Title,
+} from '@mantine/core';
+import { useMounted, useViewportSize } from '@mantine/hooks';
+import Seasons from '@/Components/Content/TV/Seasons/Seasons';
+import { AnimeContentCredits } from '@/Components/Content/Shared/Anime/AnimeContentCredits';
+import { AnimeContentSummary } from '@/Components/Content/Shared/Regular/AnimeContentSummary';
+import AnimePosterImage from '@/Components/Content/Shared/Anime/AnimePosterImage';
+import Trailer from '@/Components/Content/TV/Trailer';
+import { lazy, Suspense } from 'react';
+import { useAnimeContent } from '@/propsHooks/useAnimeContent';
 
-const Comments = lazy(() => import("@/Components/Comments/Comments"));
+const Comments = lazy(() => import('@/Components/Comments/Comments'));
 
 function AnimeContent() {
 	const { width } = useViewportSize();
@@ -32,57 +40,47 @@ function AnimeContent() {
 					left={
 						<Stack gap={24}>
 							<AnimePosterImage />
-							<Box hiddenFrom="sm">
-								<Title order={2} ta="center">
+							<Box hiddenFrom='sm'>
+								<Title
+									order={2}
+									ta='center'
+								>
 									{data.collection_name}
 								</Title>
 
 								{data.tmdbData.data.tagline && (
-									<Text ta={"center"}>
-										{data.tmdbData.data.tagline}
-									</Text>
+									<Text ta={'center'}>{data.tmdbData.data.tagline}</Text>
 								)}
 								<Space h={16} />
 								<AnimeContentSummary />
 							</Box>
 							<Stack>
-								{data.trailer && (
-									<Trailer trailer={data.trailer} />
-								)}
+								{data.trailer && <Trailer trailer={data.trailer} />}
 								<ContentActions />
 							</Stack>
-							<Box hiddenFrom="sm">
+							<Box hiddenFrom='sm'>
 								<Stack mt={16}>
 									<Title order={3}>Overview</Title>
 									<Spoiler
 										maxHeight={120}
-										showLabel="Show more"
-										hideLabel="Hide"
+										showLabel='Show more'
+										hideLabel='Hide'
 									>
 										<Text>
-											{data.tmdbData.data.overview ??
-												"No overview available"}
+											{data.tmdbData.data.overview ?? 'No overview available'}
 										</Text>
 									</Spoiler>
 								</Stack>
 								<Space h={24} />
-								<AnimeContentCredits
-									containerWidth={width * 0.95}
-								/>
+								<AnimeContentCredits containerWidth={width * 0.95} />
 								<Divider my={24} />
 
 								<Seasons containerWidth={width * 0.95} />
 
-								<AnimeRecommendedContent
-									containerWidth={width * 0.95}
-								/>
+								<AnimeRecommendedContent containerWidth={width * 0.95} />
 								<Divider my={16} />
 								{mounted && (
-									<Suspense
-										fallback={
-											<div>Loading comments...</div>
-										}
-									>
+									<Suspense fallback={<div>Loading comments...</div>}>
 										<Comments />
 									</Suspense>
 								)}
@@ -90,11 +88,9 @@ function AnimeContent() {
 						</Stack>
 					}
 					right={
-						<Box visibleFrom="sm">
+						<Box visibleFrom='sm'>
 							<Stack gap={8}>
-								<Title order={2}>
-									{data.tmdbData.data.title}
-								</Title>
+								<Title order={2}>{data.tmdbData.data.title}</Title>
 								{data.tmdbData.data.tagline && (
 									<Text>{data.tmdbData.data.tagline}</Text>
 								)}
@@ -105,30 +101,23 @@ function AnimeContent() {
 								<Title order={3}>Overview</Title>
 								<Spoiler
 									maxHeight={120}
-									showLabel="Show more"
-									hideLabel="Hide"
+									showLabel='Show more'
+									hideLabel='Hide'
 								>
 									<Text>
-										{data.tmdbData.data.overview ??
-											"No overview available"}
+										{data.tmdbData.data.overview ?? 'No overview available'}
 									</Text>
 								</Spoiler>
 							</Stack>
 							<Space h={24} />
-							<AnimeContentCredits
-								containerWidth={width * 0.67}
-							/>
+							<AnimeContentCredits containerWidth={width * 0.67} />
 							<Divider my={16} />
 
 							<Seasons containerWidth={width * 0.67} />
-							<AnimeRecommendedContent
-								containerWidth={width * 0.67}
-							/>
+							<AnimeRecommendedContent containerWidth={width * 0.67} />
 							<Divider my={16} />
 							{mounted && (
-								<Suspense
-									fallback={<div>Loading comments...</div>}
-								>
+								<Suspense fallback={<div>Loading comments...</div>}>
 									<Comments />
 								</Suspense>
 							)}

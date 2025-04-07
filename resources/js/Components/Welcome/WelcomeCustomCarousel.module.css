@@ -1,21 +1,8 @@
-.fade-in-image {
-	opacity: 0;
-	transition: opacity 0.5s ease-in-out;
-}
-
-.fade-in-image.visible {
-	opacity: 1;
-}
-
 .sectionHeaderTextWrapper {
 	display: flex;
 	align-items: flex-end;
 	gap: 12px;
 	margin-bottom: 20px;
-}
-
-.carouselRoot {
-	--carousel-control-size: 100%;
 }
 
 .carouselControls {
@@ -36,10 +23,23 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	opacity: 1;
+	position: absolute;
+
+	&[data-inactive] {
+		opacity: 0.8;
+		color: gray;
+		cursor: not-allowed;
+		pointer-events: none;
+	}
 }
 
-.container {
-	margin-bottom: 48px;
+.carouselControls :first-child {
+	left: -80px;
+}
+
+.carouselControls :last-child {
+	right: -80px;
 }
 
 .header {
@@ -136,36 +136,6 @@
 	margin-left: 20px;
 }
 
-.providerLogoImage {
-	transition: transform 0.2s ease;
-}
-
-.providerLogoContainer:hover .providerLogoImage {
-	transform: scale(1.5);
-}
-
-.carouselControlsSmall {
-	position: absolute;
-	top: 0;
-	height: 100%;
-	width: 100%;
-}
-
-.carouselControlSmall {
-	background-color: rgba(10, 14, 25, 1);
-	border: none;
-	color: var(--mantine-color-gray-3);
-	z-index: 5;
-	border-radius: 0;
-	height: 100%;
-	width: 5px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	transition: background-color 0.2s ease;
-}
-
-.carouselControlSmall:hover {
-	background-color: rgba(10, 14, 25, 1);
-	color: white;
+.providerLogoContainer:hover {
+	transform: scale(1.1);
 }

@@ -198,7 +198,7 @@ export function DiscoverByGenre({
 			<Container
 				size={containerWidth}
 				className='select-none'
-				px={0}
+				px={60}
 				mx={0}
 			>
 				<Carousel
