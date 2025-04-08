@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use App\Models\Tmdb\Genre;
 use App\Models\Tmdb\TmdbContentGenre;
 use App\Models\TmdbSchedule;
+use App\Models\TmdbScheduleEpisode;
 
 class TvShow extends Model
 {
@@ -291,6 +292,16 @@ class TvShow extends Model
             ->all();
     }
 
+    private function getNextEpisodeTimestamp(): ?int
+    {
+        $nextEpisode = TmdbScheduleEpisode::where('show_id', $this->id)
+            ->where('episode_date', '>', now())
+            ->orderBy('episode_date', 'asc')
+            ->first();
+
+        return $nextEpisode ? $nextEpisode->episode_date->timestamp : null;
+    }
+
     public function filteredData(): Attribute
     {
         return Attribute::get(function () {
@@ -366,6 +377,7 @@ class TvShow extends Model
                 'trailer' => $this->trailer,
                 'number_of_episodes' => $data['number_of_episodes'] ?? null,
                 'number_of_seasons' => $data['number_of_seasons'] ?? null,
+                'countdown' => $this->getNextEpisodeTimestamp(),
             ];
         });
     }

@@ -1,78 +1,72 @@
-import { PropsWithChildren, useEffect, useState } from "react";
-import styles from "./AuthenticatedLayout.module.css";
-import Logo from "@/Layouts/AuthenticatedLayout/components/Logo";
-import MobileMenuButton from "@/Layouts/AuthenticatedLayout/components/MobileMenuButton";
-import MobileMenu from "@/Layouts/AuthenticatedLayout/components/MobileMenu";
-import { Box, Group } from "@mantine/core";
-import SearchBar from "@/Layouts/AuthenticatedLayout/components/UserMenu/SearchBar/SearchBar";
-import NavbarRight from "@/Layouts/AuthenticatedLayout/components/UserMenu/NavbarRight";
+import { PropsWithChildren, useEffect, useState, useRef } from 'react';
+import styles from './AuthenticatedLayout.module.css';
+import Logo from '@/Layouts/AuthenticatedLayout/components/Logo';
+import MobileMenuButton from '@/Layouts/AuthenticatedLayout/components/MobileMenuButton';
+import MobileMenu from '@/Layouts/AuthenticatedLayout/components/MobileMenu';
+import { Box, Group } from '@mantine/core';
+import SearchBar from '@/Layouts/AuthenticatedLayout/components/UserMenu/SearchBar/SearchBar';
+import NavbarRight from '@/Layouts/AuthenticatedLayout/components/UserMenu/NavbarRight';
 
 export default function AuthenticatedLayout({
-    children,
+	children,
 }: PropsWithChildren<{}>) {
-    const [showingNavigationDropdown, setShowingNavigationDropdown] =
-        useState(false);
-    const [isVisible, setIsVisible] = useState(true);
-    const [lastScrollY, setLastScrollY] = useState(0);
-    const [isSearchOpen, setIsSearchOpen] = useState(false);
+	const [showingNavigationDropdown, setShowingNavigationDropdown] =
+		useState(false);
+	const [isVisible, setIsVisible] = useState(true);
+	const lastScrollY = useRef(0);
+	const [isSearchOpen, setIsSearchOpen] = useState(false);
 
-    useEffect(() => {
-        const controlNavbar = () => {
-            const currentScrollY = window.scrollY;
+	useEffect(() => {
+		const controlNavbar = () => {
+			const currentScrollY = window.scrollY;
 
-            if (isSearchOpen || currentScrollY <= 64) {
-                setIsVisible(true);
-                return;
-            }
+			if (isSearchOpen || currentScrollY <= 64) {
+				setIsVisible(true);
+				return;
+			}
 
-            if (currentScrollY < lastScrollY || currentScrollY < 10) {
-                setIsVisible(true);
-            } else {
-                setIsVisible(false);
-            }
+			if (currentScrollY < lastScrollY.current || currentScrollY < 10) {
+				setIsVisible(true);
+			} else {
+				setIsVisible(false);
+			}
 
-            setLastScrollY(currentScrollY);
-        };
+			lastScrollY.current = currentScrollY;
+		};
 
-        window.addEventListener("scroll", controlNavbar);
+		window.addEventListener('scroll', controlNavbar);
 
-        return () => {
-            window.removeEventListener("scroll", controlNavbar);
-        };
-    }, [lastScrollY, isSearchOpen]);
+		return () => {
+			window.removeEventListener('scroll', controlNavbar);
+		};
+	}, [isSearchOpen]);
 
-    return (
-        <div className="min-h-screen relative">
-            <nav
-                className={`border-b fixed w-full transition-transform duration-300 z-50 backdrop-blur-md ${
-                    styles.navbar
-                } ${isVisible ? "translate-y-0" : "-translate-y-full"}`}
-            >
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="flex h-16 justify-between">
-                        <Group>
-                            <Logo />
-                            <Box visibleFrom="sixtyem">
-                                <SearchBar onOpenChange={setIsSearchOpen} />
-                            </Box>
-                        </Group>
-                        <NavbarRight />
-                        <MobileMenuButton
-                            showingNavigationDropdown={
-                                showingNavigationDropdown
-                            }
-                            setShowingNavigationDropdown={
-                                setShowingNavigationDropdown
-                            }
-                        />
-                    </div>
-                </div>
-                <MobileMenu
-                    showingNavigationDropdown={showingNavigationDropdown}
-                />
-            </nav>
+	return (
+		<div className='min-h-screen relative'>
+			<nav
+				className={`border-b fixed w-full transition-transform duration-300 z-50 backdrop-blur-md ${
+					styles.navbar
+				} ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}
+			>
+				<div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
+					<div className='flex h-16 justify-between'>
+						<Group>
+							<Logo />
+							<Box visibleFrom='sixtyem'>
+								<SearchBar onOpenChange={setIsSearchOpen} />
+							</Box>
+						</Group>
+						<NavbarRight />
+						<MobileMenuButton
+							showingNavigationDropdown={showingNavigationDropdown}
+							setShowingNavigationDropdown={setShowingNavigationDropdown}
+						/>
+					</div>
+				</div>
+				<MobileMenu showingNavigationDropdown={showingNavigationDropdown} />
+			</nav>
 
-            <main>{children}</main>
-        </div>
-    );
+			<main>{children}</main>
+		</div>
+	);
 }

@@ -163,6 +163,15 @@ class TvSeason extends Model
             ->all();
     }
 
+    private function getNextEpisodeTimestamp(): ?int
+    {
+        return TmdbScheduleEpisode::where('show_id', $this->show->id)
+            ->where('season_number', $this->season_number)
+            ->where('episode_date', '>', now())
+            ->orderBy('episode_date', 'asc')
+            ->first()?->episode_date->timestamp;
+    }
+
     public function filteredData(): Attribute
     {
         return Attribute::get(function () {
@@ -207,6 +216,7 @@ class TvSeason extends Model
                 'certification' => $show->getUSCertification(),
                 'runtime' => $runtime ?: null,
                 'vote_average' => $data['vote_average'] ?: null,
+                'countdown' => $this->getNextEpisodeTimestamp(),
                 'episodes' => $this->episodes->map(function ($episode) {
                     return [
                         'id' => $episode->data['id'],

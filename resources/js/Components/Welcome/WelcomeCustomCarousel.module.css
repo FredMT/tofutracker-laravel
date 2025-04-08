@@ -25,6 +25,7 @@
 	justify-content: center;
 	opacity: 1;
 	position: absolute;
+	cursor: pointer;
 
 	&[data-inactive] {
 		opacity: 0.8;

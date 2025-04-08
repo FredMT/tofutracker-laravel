@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\AnimeScheduleMap;
+use App\Models\AnimeSchedule;
 
 class AnimeSeasonController extends Controller
 {
@@ -21,6 +23,23 @@ class AnimeSeasonController extends Controller
         $this->action = $action;
         $this->repository = $repository;
         $this->commentController = $commentController;
+    }
+
+    private function getCountdown($seasonId): ?int 
+    {
+        $scheduleId = AnimeScheduleMap::where('anidb_id', $seasonId)
+            ->value('animeschedule_id');
+
+        if (!$scheduleId) {
+            return null;
+        }
+
+        $nextEpisode = AnimeSchedule::where('animeschedule_id', $scheduleId)
+            ->futureEpisodes()
+            ->orderBy('episode_date')
+            ->first();
+
+        return $nextEpisode ? $nextEpisode->episode_date->timestamp : null;
     }
 
     public function show(Request $request, $accessId, $seasonId): Response
@@ -41,6 +60,8 @@ class AnimeSeasonController extends Controller
                 'hide_character_name' => false,
                 'hide_anime_character_picture' => false,
             ];
+
+            $processedData['countdown'] = $this->getCountdown($seasonId);
 
             return Inertia::render('AnimeSeasonContent', [
                 'data' => $processedData,

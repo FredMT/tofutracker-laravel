@@ -1,7 +1,7 @@
-import { Anime } from "@/types/anime";
-import { Config } from "ziggy-js";
-import { WatchStatus } from "./enums";
-import { AnimeSeason } from "@/types/animeseason";
+import { Anime } from '@/types/anime';
+import { Config } from 'ziggy-js';
+import { WatchStatus } from './enums';
+import { AnimeSeason } from '@/types/animeseason';
 
 export interface Auth {
 	user: User | null;
@@ -24,7 +24,7 @@ interface FlashMessage {
 }
 
 interface BaseUserLibrary {
-	type: "movie" | "tv" | "tvseason";
+	type: 'movie' | 'tv' | 'tvseason';
 	id: number;
 	watch_status: string | null;
 	rating: number | null;
@@ -51,7 +51,7 @@ export interface AnimeSeasonUserLibrary {
 }
 
 interface AnimeUserLibrary {
-	type: "animemovie" | "animetv" | "animeseason";
+	type: 'animemovie' | 'animetv' | 'animeseason';
 	collection: {
 		id: number;
 		user_library_id: number;
@@ -70,13 +70,13 @@ interface AnimeUserLibrary {
 
 type UserLibrary = BaseUserLibrary | AnimeUserLibrary;
 
-type ContentTypeToLibrary<T> = T extends { type: "movie" | "tv" | "tvseason" }
+type ContentTypeToLibrary<T> = T extends { type: 'movie' | 'tv' | 'tvseason' }
 	? BaseUserLibrary
-	: T extends { type: "animeseason" }
-		? AnimeSeasonUserLibrary
-		: T extends { type: "animemovie" | "animetv" }
-			? AnimeUserLibrary
-			: never;
+	: T extends { type: 'animeseason' }
+	? AnimeSeasonUserLibrary
+	: T extends { type: 'animemovie' | 'animetv' }
+	? AnimeUserLibrary
+	: never;
 
 export interface Links {
 	show: {
@@ -103,11 +103,11 @@ export type PageProps<
 		is_superuser: boolean;
 	};
 } & (
-	| { type: "movie" }
-	| { type: "tv" }
-	| { type: "tvseason" }
-	| { type: "animetv" }
-	| { type: "animemovie" }
+		| { type: 'movie' }
+		| { type: 'tv' }
+		| { type: 'tvseason' }
+		| { type: 'animetv' }
+		| { type: 'animemovie' }
 	);
 
 interface BaseContent {
@@ -139,6 +139,7 @@ export type TvSeason = BaseContent & {
 	air_date: string;
 	episodes: Episode[];
 	show_id: number;
+	countdown: number | null;
 };
 
 export type Movie = BaseContent & {
@@ -161,6 +162,7 @@ export type TvShow = BaseContent & {
 	number_of_episodes: number;
 	number_of_seasons: number;
 	trailer: Trailer | null;
+	countdown: number | null;
 };
 
 interface Trailer {
@@ -305,13 +307,13 @@ interface AnimePerson extends BasePerson {
 }
 
 export type AllContentTypes =
-	| "movie"
-	| "tv"
-	| "tvseason"
-	| "animetv"
-	| "animemovie"
-	| "animeseason";
-export type AnimeType = "animemovie" | "animetv" | "animeseason";
-export type RegularType = "movie" | "tv" | "tvseason";
+	| 'movie'
+	| 'tv'
+	| 'tvseason'
+	| 'animetv'
+	| 'animemovie'
+	| 'animeseason';
+export type AnimeType = 'animemovie' | 'animetv' | 'animeseason';
+export type RegularType = 'movie' | 'tv' | 'tvseason';
 export type AnimeContentDataType = Anime | AnimeSeason;
 export type RegularContentDataType = Movie | TvShow | TvSeason;

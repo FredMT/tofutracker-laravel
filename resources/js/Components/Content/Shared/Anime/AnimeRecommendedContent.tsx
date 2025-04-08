@@ -1,10 +1,10 @@
+import AnimeRecommendedContentCard from '@/Components/Content/Shared/Anime/AnimeRecommendedContentCard';
+import { CustomCarousel } from '@/Components/Shared/CustomCarousel';
+import { useAnimeContent } from '@/propsHooks/useAnimeContent';
 import { AnimeRecommendation } from '@/types/anime';
+import { usePage } from '@inertiajs/react';
 import { Carousel } from '@mantine/carousel';
 import { Stack, Title } from '@mantine/core';
-import AnimeRecommendedContentCard from '@/Components/Content/Shared/Anime/AnimeRecommendedContentCard';
-import { usePage } from '@inertiajs/react';
-import { CustomCarousel } from '@/Components/Shared/CustomCarousel';
-import { useAnimePageData } from '@/propsHooks/useAnimePageData';
 
 interface AnimeRecommendedContentProps {
 	containerWidth: number;
@@ -15,8 +15,11 @@ export default function AnimeRecommendedContent({
 	containerWidth,
 	slideSize = '0%',
 }: AnimeRecommendedContentProps) {
-	const data = useAnimePageData();
+	const data = useAnimeContent();
 	const currentMapId: number = usePage().url.split('/').pop();
+	const recommendations = data.tmdbData.data.recommendations;
+
+	if (!Boolean(recommendations.length)) return null;
 
 	return (
 		<Stack>

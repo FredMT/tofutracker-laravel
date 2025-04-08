@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\Anidb\AnidbAnime;
+use App\Models\AnimeScheduleMap;
+use App\Models\AnimeSchedule;
 
 class AnimeController extends Controller
 {
@@ -16,6 +19,32 @@ class AnimeController extends Controller
         private AnimeControllerAction $action,
         private AnimeControllerRepository $repository
     ) {}
+
+    private function getCountdown($accessId): ?int 
+    {
+        // Find all AnidbAnime entries with this map_id
+        $animeEntries = AnidbAnime::where('map_id', $accessId)->pluck('id');
+
+        if ($animeEntries->isEmpty()) {
+            return null;
+        }
+
+        // Get all schedule mappings for these anidb_ids
+        $scheduleIds = AnimeScheduleMap::whereIn('anidb_id', $animeEntries)
+            ->pluck('animeschedule_id');
+
+        if ($scheduleIds->isEmpty()) {
+            return null;
+        }
+
+        // Find the closest future episode
+        $nextEpisode = AnimeSchedule::whereIn('animeschedule_id', $scheduleIds)
+            ->futureEpisodes()
+            ->orderBy('episode_date')
+            ->first();
+
+        return $nextEpisode ? $nextEpisode->episode_date->timestamp : null;
+    }
 
     public function show(Request $request, $accessId): Response
     {
@@ -44,6 +73,9 @@ class AnimeController extends Controller
                 'hide_anime_character_picture' => false,
             ];
 
+            // Get countdown value
+            $countdown = $this->getCountdown($accessId);
+
             // Prepare and return response
             return Inertia::render(
                 'AnimeContent',
@@ -56,6 +88,7 @@ class AnimeController extends Controller
                         'map_id' => $firstChainEntry ? $firstChainEntry['map_id'] : $animeData['animeMap']->id,
                         'anidb_id' => $firstChainEntry ? $firstChainEntry['id'] : null,
                         'trailer' => $animeData['animeMap']->trailer,
+                        'countdown' => $countdown,
                     ],
                     'user_library' => $userContent['library'],
                     'user_lists' => $userContent['lists'],
