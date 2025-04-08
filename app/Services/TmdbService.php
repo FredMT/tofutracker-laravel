@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\Anidb\AnidbAnime;
+use App\Models\Anime\AnimeMap;
 use App\Models\Anime\AnimeMappingExternalId;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Cache;
@@ -261,7 +263,7 @@ class TmdbService
     {
         try {
 
-            $response = $this->client->get('/trending/all/week', [
+            $response = $this->client->get('/trending/all/day', [
                 'language' => 'en-US',
                 'page' => $page,
             ]);
@@ -302,42 +304,34 @@ class TmdbService
     public function getBackdropAndLogoForAnidbId(int $anidbId): ?array
     {
         try {
-            $externalId = AnimeMappingExternalId::where('anidb_id', $anidbId)
-                ->whereNotNull('themoviedb_id')
-                ->first();
-
-            if (! $externalId) {
+            $anidbAnime = AnidbAnime::find($anidbId);
+            
+            if (!$anidbAnime) {
                 return null;
             }
 
-            $endpoint = $externalId->type === 'MOVIE' ? 'movie' : 'tv';
-
-
-            $response = $this->client->get("/{$endpoint}/{$externalId->themoviedb_id}/images", [
-                'include_image_language' => 'en,null',
-            ]);
-
-            if (! $response->successful()) {
+            $mapId = $anidbAnime->map();
+            if (!$mapId) {
                 return null;
             }
 
-            $data = $response->json();
+            $animeMap = AnimeMap::find($mapId);
+            if (!$animeMap) {
+                return null;
+            }
 
-            $backdrop = collect($data['backdrops'])
-                ->sortByDesc('vote_count')
-                ->first();
-
-            $logo = collect($data['logos'])
-                ->sortByDesc('vote_count')
-                ->first();
+            $tmdbModel = $animeMap->getTmdbModel();
+            if (!$tmdbModel) {
+                return null;
+            }
 
             return [
-                'backdrop_path' => $backdrop['file_path'] ?? null,
-                'logo_path' => $logo['file_path'] ?? null,
+                'backdrop_path' => $tmdbModel->backdrop ?? "",
+                'logo_path' => $tmdbModel->highestVotedLogoPath ?? "",
             ];
-        } catch (\Exception $e) {
-            logger()->error("Error getting TMDB ID for AniDB ID {$anidbId}: ".$e->getMessage());
 
+        } catch (\Exception $e) {
+            logger()->error("Error getting backdrop and logo for AniDB ID {$anidbId}: ".$e->getMessage());
             return null;
         }
     }

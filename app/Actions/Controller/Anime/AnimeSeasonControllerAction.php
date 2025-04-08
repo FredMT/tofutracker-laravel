@@ -7,6 +7,7 @@ use App\Models\Anidb\AnidbAnime;
 use App\Models\Anime\AnimeChainEntry;
 use App\Models\Anime\AnimeMap;
 use App\Repositories\Anime\AnimeSeasonControllerRepository;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -27,7 +28,7 @@ class AnimeSeasonControllerAction
 
         $animeType = $this->repository->getAnimeType($seasonId);
         if ($animeType === 'Music Video' || $animeType === 'unknown') {
-            throw new \Exception('Music videos or unknown type are not supported');
+            throw new Exception('Music videos or unknown type are not supported');
         }
     }
 
@@ -327,7 +328,7 @@ class AnimeSeasonControllerAction
             }
 
             return null;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             logger()->error('Error generating navigation links', [
                 'error' => $e->getMessage(),
                 'access_id' => $accessId,

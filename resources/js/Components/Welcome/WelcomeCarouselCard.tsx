@@ -2,6 +2,7 @@ import { Card, Group, Image, Stack, Text, Title } from '@mantine/core';
 import { Star } from 'lucide-react';
 import classes from './WelcomeCarouselCard.module.css';
 import { Link } from '@inertiajs/react';
+import { useState } from 'react';
 
 interface WelcomeCarouselCardProps {
 	id: string | number;
@@ -32,6 +33,8 @@ function WelcomeCarouselCard({
 	type,
 	vote_average,
 }: WelcomeCarouselCardProps) {
+	const [isLoaded, setIsLoaded] = useState(false);
+
 	return (
 		<Card
 			w={200}
@@ -45,34 +48,45 @@ function WelcomeCarouselCard({
 			shadow='none'
 		>
 			<div className={classes.cardWrapper}>
-				<Image
-					src={`https://image.tmdb.org/t/p/w440_and_h660_face${posterPath}`}
-					alt={title}
-					height={350}
-					mih={300}
-					maw={200}
-					loading='lazy'
-				/>
-				<div className={classes.cardOverlay}>
-					<Stack
-						gap='xs'
-						className={classes.overlayText}
-					>
-						<Title
-							order={4}
-							fw={600}
-						>
-							{title}
-						</Title>
-						<Group justify='space-between'>
-							<Text size='sm'>{getContentType(type)}</Text>
-							<Group gap={4}>
-								<Star size={16} />
-								<Text>{vote_average.toFixed(1)}</Text>
-							</Group>
-						</Group>
-					</Stack>
+				<div
+					style={{
+						opacity: isLoaded ? 1 : 0,
+						transition: 'opacity 0.3s ease-in-out',
+					}}
+				>
+					<Image
+						src={`https://image.tmdb.org/t/p/w440_and_h660_face${posterPath}`}
+						alt={title}
+						height={350}
+						mih={300}
+						maw={200}
+						loading='lazy'
+						onLoad={() => setIsLoaded(true)}
+					/>
 				</div>
+
+				{isLoaded && (
+					<div className={classes.cardOverlay}>
+						<Stack
+							gap='xs'
+							className={classes.overlayText}
+						>
+							<Title
+								order={4}
+								fw={600}
+							>
+								{title}
+							</Title>
+							<Group justify='space-between'>
+								<Text size='sm'>{getContentType(type)}</Text>
+								<Group gap={4}>
+									<Star size={16} />
+									<Text>{vote_average.toFixed(1)}</Text>
+								</Group>
+							</Group>
+						</Stack>
+					</div>
+				)}
 			</div>
 		</Card>
 	);

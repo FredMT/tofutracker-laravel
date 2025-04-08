@@ -21,8 +21,9 @@ export default function NavbarRight() {
 			<Group gap={16}>
 				{permissions.is_superuser && !path.startsWith('/admin') && (
 					<ActionIcon
-						variant='outline'
+						variant='light'
 						size='lg'
+						color='red'
 						component='a'
 						href={route('admin.show')}
 						target='_blank'

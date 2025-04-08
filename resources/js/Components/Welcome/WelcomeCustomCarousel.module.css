@@ -13,11 +13,11 @@
 }
 
 .carouselControl {
-	background-color: rgba(10, 14, 25, 1);
+	background-color: light-dark(black, var(--mantine-color-dark-7));
 	border: none;
 	color: red;
 	z-index: 5;
-	border-radius: 0;
+	border-radius: 5px;
 	height: 100%;
 	width: 60px;
 	display: flex;

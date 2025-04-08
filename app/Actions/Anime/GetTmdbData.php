@@ -6,17 +6,16 @@ use App\Models\Anime\AnimeChainEntry;
 use App\Models\Anime\AnimeMappingExternalId;
 use App\Models\Anime\AnimePrequelSequelChain;
 use App\Models\Anime\AnimeRelatedEntry;
-use App\Services\TmdbService;
+use App\Models\Movie;
+use App\Models\TvShow;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
 
 class GetTmdbData
 {
     public function __construct(
-        private TmdbService $tmdbService,
         private GetMostCommonTmdbId $getMostCommonTmdbId
     ) {
-        $this->tmdbService = $tmdbService;
         $this->getMostCommonTmdbId = $getMostCommonTmdbId;
     }
 
@@ -30,15 +29,25 @@ class GetTmdbData
                 $type = $result['tmdb_type'];
 
                 if ($type === 'movie') {
-                    $tmdbData = $this->tmdbService->getMovieAnime($tmdbId);
-                    $tmdbData['data']['recommendations'] = $this->transformRecommendations($tmdbData['data']['recommendations']['results'] ?? [], $type);
+                    $movie = Movie::find($tmdbId);
+                    if (!$movie) {
+                        return response()->json(['error' => 'Movie not found']);
+                    }
 
-                    return response()->json($tmdbData);
+                    $data = $movie->filteredData;
+                    $data['recommendations'] = $this->transformRecommendations($movie->data['recommendations']['results'] ?? [], $type);
+
+                    return response()->json(['data' => $data]);
                 } elseif ($type === 'tv') {
-                    $tmdbData = $this->tmdbService->getTvAnime($tmdbId);
-                    $tmdbData['data']['recommendations'] = $this->transformRecommendations($tmdbData['data']['recommendations']['results'] ?? [], $type);
+                    $tvShow = TvShow::find($tmdbId);
+                    if (!$tvShow) {
+                        return response()->json(['error' => 'TV Show not found']);
+                    }
 
-                    return response()->json($tmdbData);
+                    $data = $tvShow->filteredData;
+                    $data['recommendations'] = $this->transformRecommendations($tvShow->data['recommendations']['results'] ?? [], $type);
+
+                    return response()->json(['data' => $data]);
                 }
             }
 
