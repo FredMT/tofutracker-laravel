@@ -42,9 +42,9 @@ export function RegularContentSummary() {
 					<Text>{getLanguageName(data.original_language)}</Text>
 				)}
 				{data.certification && <Text>{data.certification}</Text>}
-				{/* {type !== 'movie' && countdown && (
+				{type !== 'movie' && countdown && (
 					<EpisodeCountdown timestamp={countdown} />
-				)} */}
+				)}
 			</Group>
 		</Paper>
 	);
