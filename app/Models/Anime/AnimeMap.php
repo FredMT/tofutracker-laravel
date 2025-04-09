@@ -26,6 +26,20 @@ class AnimeMap extends Model
         });
     }
 
+    public function rating(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->getTmdbModel()?->voteAverage;
+        });
+    }
+
+    public function overview(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->getTmdbModel()?->overview;
+        });
+    }
+
     public function chains(): HasMany
     {
         return $this->hasMany(AnimePrequelSequelChain::class, 'map_id');

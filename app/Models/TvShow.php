@@ -52,6 +52,13 @@ class TvShow extends Model
         });
     }
 
+    public function overview(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->data['overview'] ?? null;
+        });
+    }
+
     public function backdrop(): Attribute
     {
         return Attribute::get(function () {
