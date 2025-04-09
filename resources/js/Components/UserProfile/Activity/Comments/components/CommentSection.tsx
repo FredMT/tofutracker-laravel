@@ -163,7 +163,7 @@ export function CommentSection({
 						className={styles.title}
 						pl='md'
 					>
-						Comments ({comments.length})
+						Comments
 					</Title>
 
 					{comments.length > 0 ? (
