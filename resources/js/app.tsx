@@ -47,6 +47,7 @@ createInertiaApp({
 					</QueryClientProvider>
 				</MantineProvider>
 			);
+			delete el.dataset.page;
 			return;
 		}
 
@@ -61,6 +62,7 @@ createInertiaApp({
 				</QueryClientProvider>
 			</MantineProvider>
 		);
+		delete el.dataset.page;
 	},
 	progress: {
 		color: '#b485e5',

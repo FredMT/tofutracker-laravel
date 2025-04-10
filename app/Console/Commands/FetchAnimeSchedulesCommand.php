@@ -2,18 +2,20 @@
 
 namespace App\Console\Commands;
 
+use App\Actions\Schedule\ProcessScheduleWithTimestamps;
 use App\Jobs\FetchAnimeSchedulesJob;
 use App\Models\AnimeSchedule;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
-class FetchAnimeSchedules extends Command
+class FetchAnimeSchedulesCommand extends Command
 {
     protected $signature = 'anime:fetch-schedules {--year= : The year to fetch schedules for} {--week= : The week to fetch schedules for}';
 
     protected $description = 'Queue a job to fetch anime schedules and store AniDB IDs for the next 4 weeks';
 
-    public function handle()
+    public function handle(ProcessScheduleWithTimestamps $processScheduleWithTimestamps)
     {
         $year = $this->option('year') ? (int) $this->option('year') : now()->year;
         $week = $this->option('week') ? (int) $this->option('week') : now()->weekOfYear;
@@ -47,6 +49,9 @@ class FetchAnimeSchedules extends Command
         $firstJob->chain($jobs);
         dispatch($firstJob);
 
+        // Clear all schedule cache values after fetching new data
+        $this->clearScheduleCache($processScheduleWithTimestamps);
+
         return Command::SUCCESS;
     }
 
@@ -64,6 +69,26 @@ class FetchAnimeSchedules extends Command
             Log::channel('animeschedulelog')->info("Deleted {$count} past episodes from the anime schedule.");
         } else {
             Log::channel('animeschedulelog')->info('No past episodes to delete.');
+        }
+    }
+
+    /**
+     * Clear all schedule-related cache
+     */
+    private function clearScheduleCache(ProcessScheduleWithTimestamps $processScheduleWithTimestamps): void
+    {
+        try {
+            // Clear cache using the ProcessScheduleWithTimestamps action
+            $processScheduleWithTimestamps->clearCache();
+            
+            // Also clear the GetCombinedSchedules cache
+            Cache::forget('combined_schedules');
+
+            Log::info('Schedule cache cleared after fetching new anime schedules.');
+            $this->info('Schedule cache cleared.');
+        } catch (\Throwable $e) {
+            Log::error('Failed to clear schedule cache: ' . $e->getMessage());
+            $this->error('Failed to clear schedule cache: ' . $e->getMessage());
         }
     }
 }
