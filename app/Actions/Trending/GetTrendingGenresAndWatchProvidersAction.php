@@ -27,10 +27,13 @@ class GetTrendingGenresAndWatchProvidersAction
 
     public function store(): void
     {
-        $trendingIds = $this->getTrendingIds();
-        $withAnime = $this->processAnimeMapping($trendingIds);
-        $withProviders = $this->appendWatchProviders($withAnime);
-        $organizedData = $this->organizeResults($withProviders);
+        $trendingItems = $this->getTrendingItems();
+     
+        $withProviders = $this->appendWatchProviders($trendingItems);
+     
+        $processedItems = $this->processAnimeMapping($withProviders);
+     
+        $organizedData = $this->organizeResults($processedItems);
 
         Cache::put('trending_organized', $organizedData, now()->addDay());
     }
@@ -44,11 +47,10 @@ class GetTrendingGenresAndWatchProvidersAction
         });
     }
 
-    private function getTrendingIds(): array
+    private function getTrendingItems(): array
     {
         $ids = [];
         $page = 1;
-        $genreMap = config('genres');
 
         while (count($ids) < 1000 && ($trendingData = $this->tmdbService->getTrendingAllPaginated($page++))) {
             if (! isset($trendingData['results']) || empty($trendingData['results'])) {
@@ -56,28 +58,7 @@ class GetTrendingGenresAndWatchProvidersAction
             }
 
             foreach ($trendingData['results'] as $item) {
-                $genres = collect($item['genre_ids'])
-                    ->map(function ($genreId) use ($genreMap) {
-                        return [
-                            'id' => $genreId,
-                            'name' => $genreMap[$genreId] ?? null,
-                        ];
-                    })
-                    ->filter(fn ($genre) => ! is_null($genre['name']))
-                    ->values()
-                    ->all();
-
-                $ids[] = [
-                    'id' => $item['id'],
-                    'media_type' => $item['media_type'],
-                    'title' => $item['media_type'] === 'movie' ? $item['title'] : $item['name'],
-                    'release_date' => $item['media_type'] === 'movie' ? $item['release_date'] : $item['first_air_date'],
-                    'vote_average' => $item['vote_average'],
-                    'popularity' => $item['popularity'],
-                    'genres' => $genres,
-                    'poster_path' => $item['poster_path'],
-                    'backdrop_path' => $item['backdrop_path'],
-                ];
+                $ids[] = $item['id'];
 
                 if (count($ids) >= 1000) {
                     break;
@@ -85,33 +66,66 @@ class GetTrendingGenresAndWatchProvidersAction
             }
         }
 
-        return array_slice($ids, 0, 1000);
+        $ids = array_slice($ids, 0, 1000);
+        Cache::put('trending_ids', $ids, now()->addDay());
+
+        return $ids;
     }
 
-    private function processAnimeMapping(array $trendingIds): array
+    private function appendWatchProviders(array $items): array
     {
-        // Get all anime mappings
-        $animeMaps = AnimeMap::whereIn('most_common_tmdb_id', array_column($trendingIds, 'id'))
+        return array_map(function ($item) {
+            // Skip if not a movie or TV show
+            if (!in_array($item['media_type'], ['movie', 'tv'])) {
+                return array_merge($item, ['us_watch_providers' => []]);
+            }
+
+            $model = $item['media_type'] === 'movie'
+                ? Movie::find($item['id'])
+                : TvShow::find($item['id']);
+
+            if (! $model) {
+                return array_merge($item, ['us_watch_providers' => []]);
+            }
+
+            // Get US providers and filter for our supported providers
+            $providers = $model->getWatchProvidersForCountry('US');
+            $filteredProviders = array_filter($providers, function ($provider) {
+                return isset($this->watchProviderIds[$provider['provider_id']]);
+            });
+
+            return array_merge($item, ['us_watch_providers' => $filteredProviders]);
+        }, $items);
+    }
+
+    private function processAnimeMapping(array $items): array
+    {
+        // Get all anime mappings for the IDs we have
+        $tmdbIds = array_column($items, 'id');
+        $animeMaps = AnimeMap::whereIn('most_common_tmdb_id', $tmdbIds)
             ->get(['id', 'most_common_tmdb_id', 'tmdb_type'])
             ->keyBy('most_common_tmdb_id');
-
+        
+        // Use this to track already processed anime IDs
         $processedAnimeIds = [];
+        
+        // Process each item
         $result = [];
-
-        foreach ($trendingIds as $item) {
+        foreach ($items as $item) {
             $tmdbId = (string) $item['id'];
-
+            
             // Check if this is an anime
             if (isset($animeMaps[$tmdbId])) {
                 $animeMapId = $animeMaps[$tmdbId]->id;
-
+                
                 // Skip if we already processed this anime
                 if (in_array($animeMapId, $processedAnimeIds)) {
                     continue;
                 }
-
+                
                 $processedAnimeIds[] = $animeMapId;
-
+                
+                // Mark as anime but preserve original media type
                 $result[] = array_merge($item, [
                     'media_type' => 'anime',
                     'original_media_type' => $item['media_type'],
@@ -121,29 +135,8 @@ class GetTrendingGenresAndWatchProvidersAction
                 $result[] = $item;
             }
         }
-
+        
         return $result;
-    }
-
-    private function appendWatchProviders(array $items): array
-    {
-        return array_map(function ($item) {
-            $mediaType = $item['media_type'] === 'anime'
-                ? $item['original_media_type']
-                : $item['media_type'];
-
-            $model = $mediaType === 'movie'
-                ? Movie::find($item['id'])
-                : TvShow::find($item['id']);
-
-            if (! $model) {
-                return array_merge($item, ['us_watch_providers' => []]);
-            }
-
-            return array_merge($item, [
-                'us_watch_providers' => $model->getWatchProvidersForCountry('US'),
-            ]);
-        }, $items);
     }
 
     private function organizeResults(array $items): array
@@ -171,7 +164,7 @@ class GetTrendingGenresAndWatchProvidersAction
         }
 
         foreach ($items as $item) {
-            // Create clean item data without genres and providers
+            // Create clean item data for output
             $cleanItem = [
                 'id' => $item['id'],
                 'media_type' => $item['media_type'],
@@ -190,34 +183,38 @@ class GetTrendingGenresAndWatchProvidersAction
             }
 
             // Process by genre
-            foreach ($item['genres'] as $genre) {
-                if (! isset($byGenre[$genre['id']])) {
-                    $byGenre[$genre['id']] = [
-                        'genre_name' => $genre['name'],
-                        'items' => [],
-                    ];
-                }
+            if (!empty($item['genres'])) {
+                foreach ($item['genres'] as $genre) {
+                    if (!isset($byGenre[$genre['id']])) {
+                        $byGenre[$genre['id']] = [
+                            'genre_name' => $genre['name'],
+                            'items' => [],
+                        ];
+                    }
 
-                // Check if this ID already exists in this genre
-                $existingIds = array_column($byGenre[$genre['id']]['items'], 'id');
-                if (! in_array($item['id'], $existingIds) && count($byGenre[$genre['id']]['items']) < 20) {
-                    $byGenre[$genre['id']]['items'][] = $cleanItem;
+                    // Check if this ID already exists in this genre
+                    $existingIds = array_column($byGenre[$genre['id']]['items'], 'id');
+                    if (!in_array($item['id'], $existingIds) && count($byGenre[$genre['id']]['items']) < 20) {
+                        $byGenre[$genre['id']]['items'][] = $cleanItem;
+                    }
                 }
             }
 
             // Process by provider
-            foreach ($item['us_watch_providers'] as $provider) {
-                $providerId = $provider['provider_id'];
-                if (isset($this->watchProviderIds[$providerId])) {
-                    // Set provider logo if not already set
-                    if ($byProvider[$providerId]['provider_logo'] === null) {
-                        $byProvider[$providerId]['provider_logo'] = $provider['logo_path'];
-                    }
+            if (!empty($item['us_watch_providers'])) {
+                foreach ($item['us_watch_providers'] as $provider) {
+                    $providerId = $provider['provider_id'];
+                    if (isset($this->watchProviderIds[$providerId])) {
+                        // Set provider logo if not already set
+                        if ($byProvider[$providerId]['provider_logo'] === null) {
+                            $byProvider[$providerId]['provider_logo'] = $provider['logo_path'];
+                        }
 
-                    // Check if this ID already exists in this provider
-                    $existingIds = array_column($byProvider[$providerId]['items'], 'id');
-                    if (! in_array($item['id'], $existingIds) && count($byProvider[$providerId]['items']) < 20) {
-                        $byProvider[$providerId]['items'][] = $cleanItem;
+                        // Check if this ID already exists in this provider
+                        $existingIds = array_column($byProvider[$providerId]['items'], 'id');
+                        if (!in_array($item['id'], $existingIds) && count($byProvider[$providerId]['items']) < 20) {
+                            $byProvider[$providerId]['items'][] = $cleanItem;
+                        }
                     }
                 }
             }

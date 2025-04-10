@@ -317,25 +317,28 @@ class AnidbXmlDatabaseService
 
     private function processTags(AnidbAnime $anime, array $tags): void
     {
-        $tagIds = [];
-        foreach ($tags as $tagData) {
+        $tagData = [];
+        foreach ($tags as $tagInfo) {
             try {
-                if (empty($tagData['tag_id']) || empty($tagData['name'])) {
+                if (empty($tagInfo['tag_id']) || empty($tagInfo['name'])) {
                     continue; 
                 }
 
                 AnidbTag::updateOrCreate(
-                    ['id' => (int) $tagData['tag_id']], // ID comes from XML
+                    ['id' => (int) $tagInfo['tag_id']], // ID comes from XML
                     [
-                        'name' => $tagData['name'],
-                        'description' => $tagData['description'],
+                        'name' => $tagInfo['name'],
+                        'description' => $tagInfo['description'],
                     ]
                 );
     
-                $tagIds[] = (int) $tagData['tag_id'];
+                // Store tag ID and weight for syncing - use the weight value from XML
+                $tagData[(int) $tagInfo['tag_id']] = [
+                    'weight' => (int) $tagInfo['weight']
+                ];
             } catch (\Exception $e) {
                 logger()->channel('anidbupdate')->error('Error processing or saving tag definition', [
-                    'tag_id' => $tagData['tag_id'] ?? 'unknown',
+                    'tag_id' => $tagInfo['tag_id'] ?? 'unknown',
                     'error' => $e->getMessage(),
                 ]);
 
@@ -344,11 +347,11 @@ class AnidbXmlDatabaseService
         }
 
         try {
-            $anime->tags()->sync($tagIds);
+            $anime->tags()->sync($tagData);
         } catch (\Exception $e) {
             logger()->channel('anidbupdate')->error('Error syncing tags for anime', [
                 'anime_id' => $anime->id,
-                'tag_ids' => $tagIds,
+                'tag_data' => $tagData,
                 'error' => $e->getMessage(),
             ]);
         }

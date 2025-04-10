@@ -290,6 +290,7 @@ class AnidbXmlService
 
             $parsedTags[] = [
                 'tag_id' => (string) ($tag['id'] ?? ''),
+                'weight' => (int) ($tag['weight'] ?? 0),
                 'name' => (string) ($tag->name ?? ''),
                 'description' => (string) ($tag->description ?? ''),
             ];

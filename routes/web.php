@@ -6,6 +6,7 @@ use App\Http\Controllers\Activity\ToggleActivityLikeController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AnimeCollectionController;
 use App\Http\Controllers\AnimeController;
+use App\Http\Controllers\AnimeGenresController;
 use App\Http\Controllers\AnimeSeasonController;
 use App\Http\Controllers\Comment\CommentController;
 use App\Http\Controllers\Comment\VoteController;
@@ -48,6 +49,9 @@ Route::get('/', function () {
         'data' => app(GetTrendingAction::class)->execute(),
     ]);
 })->name('welcome');
+
+Route::get('/animegenres', [AnimeGenresController::class, 'show']);
+Route::get('/animebytag', [AnimeGenresController::class, 'topRatedByTags']);
 
 Route::prefix('admin')->middleware(CheckSuperuserEmail::class)->name('admin.')->group(function () {
     Route::controller(AdminController::class)->group(function () {

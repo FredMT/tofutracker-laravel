@@ -4,6 +4,8 @@ namespace App\Actions\Tv;
 
 use App\Jobs\UpdateTvSeason;
 use App\Jobs\UpdateTvShow;
+use App\Models\Tmdb\Genre;
+use App\Models\TmdbProvider;
 use App\Models\TvEpisode;
 use App\Models\TvSeason;
 use App\Models\TvShow;
@@ -161,6 +163,12 @@ class TvShowActions
                 'etag' => $data['etag'],
             ]);
 
+            // Process watch providers
+            $this->processWatchProviders($tvShow);
+            
+            // Process genres
+            $this->processGenres($tvShow);
+
             // Update or create seasons
             foreach ($seasons as $seasonData) {
                 $season = $tvShow->seasons()->firstWhere('season_number', $seasonData['season_number']);
@@ -176,6 +184,78 @@ class TvShowActions
         } catch (\Exception $e) {
             logger()->error('Error updating TV show: '.$e->getMessage());
             throw $e;
+        }
+    }
+
+    /**
+     * Process watch providers for the TV show and store them in the database
+     */
+    private function processWatchProviders(TvShow $tvShow): void
+    {
+        $watchProviders = $tvShow->data['watch/providers']['results'] ?? [];
+        
+        if (empty($watchProviders)) {
+            return;
+        }
+
+        // Loop through each country's providers
+        foreach ($watchProviders as $countryCode => $countryData) {
+            // Process each provider type (flatrate, buy, rent, ads, free)
+            foreach (['flatrate', 'buy', 'rent', 'ads', 'free'] as $providerType) {
+                if (!isset($countryData[$providerType])) {
+                    continue;
+                }
+
+                // Process providers of this type
+                foreach ($countryData[$providerType] as $providerData) {
+                    $providerId = $providerData['provider_id'];
+                    
+                    // Ensure the provider exists in our database
+                    $provider = TmdbProvider::updateOrCreate(
+                        ['id' => $providerId],
+                        [
+                            'name' => $providerData['provider_name'],
+                            'logo_path' => $providerData['logo_path']
+                        ]
+                    );
+                    
+                    // Attach provider to the TV show
+                    $tvShow->attachProvider($provider, $providerType, $countryCode);
+                }
+            }
+        }
+    }
+
+    /**
+     * Process genres for the TV show and store them in the database
+     */
+    private function processGenres(TvShow $tvShow): void
+    {
+        $genres = $tvShow->data['genres'] ?? [];
+        
+        if (empty($genres)) {
+            return;
+        }
+
+        // Remove existing genre associations to prevent duplicates
+        $tvShow->genreRelations()->delete();
+
+        // Loop through each genre and ensure it exists in our database
+        foreach ($genres as $genreData) {
+            if (!isset($genreData['id']) || !isset($genreData['name'])) {
+                continue;
+            }
+            
+            // Ensure the genre exists in our database
+            $genre = Genre::updateOrCreate(
+                ['id' => $genreData['id']],
+                [
+                    'name' => $genreData['name'],
+                ]
+            );
+            
+            // Attach genre to the TV show
+            $tvShow->attachGenre($genre);
         }
     }
 

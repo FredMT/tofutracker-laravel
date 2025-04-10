@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use App\Models\Tmdb\Genre;
 use App\Models\Tmdb\TmdbContentGenre;
 use App\Models\TmdbSchedule;
+use App\Models\TmdbContentProvider;
+use App\Models\TmdbProvider;
 
 class Movie extends Model
 {
@@ -550,5 +552,69 @@ class Movie extends Model
         return TmdbSchedule::where('tmdb_type', 'movie')
                           ->where('tmdb_id', $this->id)
                           ->get();
+    }
+
+    /**
+     * Get all content providers for this movie.
+     */
+    public function contentProviders(): MorphMany
+    {
+        return $this->morphMany(TmdbContentProvider::class, 'content');
+    }
+
+    /**
+     * Get the providers for this movie.
+     */
+    public function providers()
+    {
+        return $this->morphToMany(TmdbProvider::class, 'content', 'tmdb_content_providers', 'content_id', 'provider_id');
+    }
+
+    /**
+     * Get content providers for a specific country.
+     */
+    public function getProvidersForCountry(string $countryCode)
+    {
+        return $this->contentProviders()
+            ->where('country_code', $countryCode)
+            ->get();
+    }
+
+    /**
+     * Get content providers by type.
+     */
+    public function getProvidersByType(string $type)
+    {
+        return $this->contentProviders()
+            ->where('provider_type', $type)
+            ->get();
+    }
+
+    /**
+     * Attach a provider to this movie.
+     *
+     * @param TmdbProvider $provider The provider to attach
+     * @param string $providerType One of: 'ads', 'buy', 'rent', 'flatrate', 'free'
+     * @param string $countryCode Two-letter country code
+     * @return TmdbContentProvider
+     */
+    public function attachProvider(TmdbProvider $provider, string $providerType, string $countryCode)
+    {
+        return $provider->attachToContent($this, $providerType, $countryCode);
+    }
+
+    /**
+     * Attach a genre to this movie.
+     *
+     * @param Genre $genre The genre to attach
+     * @return TmdbContentGenre
+     */
+    public function attachGenre(Genre $genre)
+    {
+        return TmdbContentGenre::firstOrCreate([
+            'content_type' => get_class($this),
+            'content_id' => $this->id,
+            'genre_id' => $genre->id,
+        ]);
     }
 }
