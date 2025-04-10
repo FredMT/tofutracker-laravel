@@ -8,23 +8,9 @@ use Illuminate\Console\Command;
 
 class UpdateTvShowsCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'tvshows:update {id? : The ID of the TV show to update} {--all : Update all TV shows}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
+    protected $signature = 'tvshows:update {id?} {--all}';
     protected $description = 'Force update TV show data and process watch providers';
 
-    /**
-     * Execute the console command.
-     */
     public function handle(TvShowActions $tvShowActions)
     {
         $tvShowId = $this->argument('id');
@@ -44,9 +30,6 @@ class UpdateTvShowsCommand extends Command
         return 0;
     }
 
-    /**
-     * Update a single TV show by ID
-     */
     private function updateSingleTvShow(string $tvShowId, TvShowActions $tvShowActions): void
     {
         $this->info("Updating TV show {$tvShowId}...");
@@ -56,7 +39,6 @@ class UpdateTvShowsCommand extends Command
             $this->warn("TV show with ID {$tvShowId} not found. Will attempt to fetch it.");
             
             try {
-                // This will fetch the TV show from TMDB and create it in our database
                 $tvShow = $tvShowActions->getShowAndQueueUpdateIfNeeded($tvShowId);
                 $this->info("TV show {$tvShowId} created.");
             } catch (\Exception $e) {
@@ -65,15 +47,11 @@ class UpdateTvShowsCommand extends Command
             }
         }
         
-        // Force update by setting checkETag to false
         $tvShowActions->updateTvShow($tvShow, null, false);
         
         $this->info("TV show {$tvShowId} has been updated with providers");
     }
 
-    /**
-     * Update all TV shows in the database
-     */
     private function updateAllTvShows(TvShowActions $tvShowActions): void
     {
         $totalTvShows = TvShow::count();
@@ -84,7 +62,6 @@ class UpdateTvShowsCommand extends Command
         
         TvShow::select('id')->chunkById(100, function($tvShows) use ($progressBar, $tvShowActions) {
             foreach ($tvShows as $tvShow) {
-                // Force update by setting checkETag to false
                 try {
                     $tvShowActions->updateTvShow($tvShow, null, false);
                 } catch (\Exception $e) {

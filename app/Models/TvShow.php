@@ -50,7 +50,7 @@ class TvShow extends Model
     public function poster(): Attribute
     {
         return Attribute::get(function () {
-            return $this->data['poster_path'];
+            return $this->data['poster_path'] ?? "";
         });
     }
 

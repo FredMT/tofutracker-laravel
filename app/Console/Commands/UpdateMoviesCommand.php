@@ -9,23 +9,10 @@ use Illuminate\Support\Facades\DB;
 
 class UpdateMoviesCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $signature = 'movies:update {id? : The ID of the movie to update} {--all : Update all movies}';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
     protected $description = 'Force update movie data and process watch providers';
 
-    /**
-     * Execute the console command.
-     */
     public function handle()
     {
         $movieId = $this->argument('id');
@@ -45,9 +32,6 @@ class UpdateMoviesCommand extends Command
         return 0;
     }
 
-    /**
-     * Update a single movie by ID
-     */
     private function updateSingleMovie(string $movieId): void
     {
         $this->info("Updating movie {$movieId}...");
@@ -57,15 +41,11 @@ class UpdateMoviesCommand extends Command
             $this->warn("Movie with ID {$movieId} not found. Will attempt to fetch it.");
         }
         
-        // Force update by setting checkETag to false
         UpdateOrCreateMovieData::dispatch($movieId, false);
         
         $this->info("Update job dispatched for movie {$movieId}");
     }
 
-    /**
-     * Update all movies in the database
-     */
     private function updateAllMovies(): void
     {
         $totalMovies = Movie::count();
@@ -76,7 +56,6 @@ class UpdateMoviesCommand extends Command
         
         Movie::select('id')->chunkById(100, function($movies) use ($progressBar) {
             foreach ($movies as $movie) {
-                // Force update by setting checkETag to false
                 UpdateOrCreateMovieData::dispatch($movie->id, false);
                 $progressBar->advance();
             }

@@ -1,12 +1,34 @@
-import { useTypedPageProps } from "@/propsHooks/useTypedPageProps";
-import { DailySchedule, TypeCounts } from "@/types/schedule";
+import { useTypedPageProps } from '@/propsHooks/useTypedPageProps';
 
-type ScheduleData = {
-	schedule: DailySchedule[];
+export interface ScheduleItem {
+	id: number;
+	title: string;
+	episode_date: number;
+	episode_number: number;
+	episode_name?: string;
+	season_number?: number;
+	backdrop?: string;
+	logo?: string;
+	link?: string;
+	type: 'tv' | 'anime';
+}
+
+export interface ScheduleData {
 	counts: TypeCounts;
-};
+	schedules: ScheduleItem[];
+	success: boolean;
+}
+
+export interface TypeCounts {
+	tv: number;
+	anime: number;
+	formatted_start_date?: string;
+	formatted_end_date?: string;
+}
 
 export function useSchedulePageData() {
 	const props = useTypedPageProps();
-	return props.data as unknown as ScheduleData;
+	return {
+		data: props.data as unknown as ScheduleData,
+	};
 }
