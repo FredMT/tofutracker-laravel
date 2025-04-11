@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use App\Models\Tmdb\Genre;
 use App\Models\Tmdb\TmdbContentGenre;
+use App\Models\Tmdb\TmdbKeyword;
+use App\Models\Tmdb\TmdbContentKeyword;
 use App\Models\TmdbSchedule;
 use App\Models\TmdbContentProvider;
 use App\Models\TmdbProvider;
@@ -123,18 +125,6 @@ class Movie extends Model
                 return [
                     'id' => $genre['id'],
                     'name' => $genre['name'],
-                ];
-            })->values();
-        });
-    }
-
-    public function keywords(): Attribute
-    {
-        return Attribute::get(function () {
-            return collect($this->data['keywords']['keywords'] ?? [])->map(function ($keyword) {
-                return [
-                    'id' => $keyword['id'],
-                    'name' => $keyword['name'],
                 ];
             })->values();
         });
@@ -615,6 +605,37 @@ class Movie extends Model
             'content_type' => get_class($this),
             'content_id' => $this->id,
             'genre_id' => $genre->id,
+        ]);
+    }
+
+    /**
+     * Get all content keywords for this movie.
+     */
+    public function keywordRelations(): MorphMany
+    {
+        return $this->morphMany(TmdbContentKeyword::class, 'content');
+    }
+
+    /**
+     * Get the keywords for this movie.
+     */
+    public function keywords()
+    {
+        return $this->morphToMany(TmdbKeyword::class, 'content', 'tmdb_content_keywords', 'content_id', 'keyword_id');
+    }
+
+    /**
+     * Attach a keyword to this movie.
+     *
+     * @param TmdbKeyword $keyword The keyword to attach
+     * @return TmdbContentKeyword
+     */
+    public function attachKeyword(TmdbKeyword $keyword)
+    {
+        return TmdbContentKeyword::firstOrCreate([
+            'content_type' => get_class($this),
+            'content_id' => $this->id,
+            'keyword_id' => $keyword->id,
         ]);
     }
 }

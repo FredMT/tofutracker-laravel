@@ -51,6 +51,7 @@ class GetTrendingGenresAndWatchProvidersAction
     {
         $ids = [];
         $page = 1;
+        $genreMap = config('genres');
 
         while (count($ids) < 1000 && ($trendingData = $this->tmdbService->getTrendingAllPaginated($page++))) {
             if (! isset($trendingData['results']) || empty($trendingData['results'])) {
@@ -58,7 +59,28 @@ class GetTrendingGenresAndWatchProvidersAction
             }
 
             foreach ($trendingData['results'] as $item) {
-                $ids[] = $item['id'];
+                $genres = collect($item['genre_ids'])
+                    ->map(function ($genreId) use ($genreMap) {
+                        return [
+                            'id' => $genreId,
+                            'name' => $genreMap[$genreId] ?? null,
+                        ];
+                    })
+                    ->filter(fn ($genre) => ! is_null($genre['name']))
+                    ->values()
+                    ->all();
+
+                $ids[] = [
+                    'id' => $item['id'],
+                    'media_type' => $item['media_type'],
+                    'title' => $item['media_type'] === 'movie' ? $item['title'] : $item['name'],
+                    'release_date' => $item['media_type'] === 'movie' ? $item['release_date'] : $item['first_air_date'],
+                    'vote_average' => $item['vote_average'],
+                    'popularity' => $item['popularity'],
+                    'genres' => $genres,
+                    'poster_path' => $item['poster_path'],
+                    'backdrop_path' => $item['backdrop_path'],
+                ];
 
                 if (count($ids) >= 1000) {
                     break;
@@ -66,10 +88,9 @@ class GetTrendingGenresAndWatchProvidersAction
             }
         }
 
-        $ids = array_slice($ids, 0, 1000);
-        Cache::put('trending_ids', $ids, now()->addDay());
+        Cache::put('trending_ids', array_map(fn($item) => ['id' => $item['id'], 'media_type' => $item['media_type']], $ids), now()->addDay());
 
-        return $ids;
+        return array_slice($ids, 0, 1000);
     }
 
     private function appendWatchProviders(array $items): array

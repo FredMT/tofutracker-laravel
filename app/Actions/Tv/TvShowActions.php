@@ -5,6 +5,7 @@ namespace App\Actions\Tv;
 use App\Jobs\UpdateTvSeason;
 use App\Jobs\UpdateTvShow;
 use App\Models\Tmdb\Genre;
+use App\Models\Tmdb\TmdbKeyword;
 use App\Models\TmdbProvider;
 use App\Models\TvEpisode;
 use App\Models\TvSeason;
@@ -163,6 +164,8 @@ class TvShowActions
             $this->processWatchProviders($tvShow);
             
             $this->processGenres($tvShow);
+            
+            $this->processKeywords($tvShow);
 
             foreach ($seasons as $seasonData) {
                 $season = $tvShow->seasons()->firstWhere('season_number', $seasonData['season_number']);
@@ -235,6 +238,33 @@ class TvShowActions
             );
             
             $tvShow->attachGenre($genre);
+        }
+    }
+
+    private function processKeywords(TvShow $tvShow): void
+    {
+        // TV show keywords are nested in 'keywords.results'
+        $keywords = $tvShow->data['keywords']['results'] ?? [];
+        
+        if (empty($keywords)) {
+            return;
+        }
+
+        $tvShow->keywordRelations()->delete();
+
+        foreach ($keywords as $keywordData) {
+            if (!isset($keywordData['id']) || !isset($keywordData['name'])) {
+                continue;
+            }
+            
+            $keyword = TmdbKeyword::updateOrCreate(
+                ['id' => $keywordData['id']],
+                [
+                    'name' => $keywordData['name'],
+                ]
+            );
+            
+            $tvShow->attachKeyword($keyword);
         }
     }
 

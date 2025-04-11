@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\Movie;
 use App\Models\Tmdb\Genre;
+use App\Models\Tmdb\TmdbKeyword;
 use App\Models\TmdbProvider;
 use App\Services\TmdbService;
 use Illuminate\Bus\Queueable;
@@ -49,6 +50,7 @@ class UpdateOrCreateMovieData implements ShouldQueue
 
                 $this->processWatchProviders($movie);
                 $this->processGenres($movie);
+                $this->processKeywords($movie);
 
                 $filteredData = $movie->filteredData;
                 if ($filteredData) {
@@ -127,6 +129,37 @@ class UpdateOrCreateMovieData implements ShouldQueue
             
             // Attach genre to the movie
             $movie->attachGenre($genre);
+        }
+    }
+
+    /**
+     * Process keywords for the movie and store them in the database
+     */
+    private function processKeywords(Movie $movie): void
+    {
+        // Keywords in movies are under 'keywords.keywords'
+        $keywords = $movie->data['keywords']['keywords'] ?? [];
+        
+        if (empty($keywords)) {
+            return;
+        }
+
+        // Remove existing keyword associations to prevent duplicates
+        $movie->keywordRelations()->delete();
+        
+        foreach ($keywords as $keywordData) {
+            if (!isset($keywordData['id']) || !isset($keywordData['name'])) {
+                continue;
+            }
+            
+            // Ensure the keyword exists in our database
+            $keyword = TmdbKeyword::updateOrCreate(
+                ['id' => $keywordData['id']],
+                ['name' => $keywordData['name']]
+            );
+            
+            // Attach keyword to the movie
+            $movie->attachKeyword($keyword);
         }
     }
 }
