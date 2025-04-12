@@ -1,0 +1,46 @@
+.carouselControls {
+	position: absolute;
+	top: 0;
+	height: 100%;
+	width: 100%;
+	pointer-events: none;
+}
+
+.carouselControl {
+	background-color: rgba(0, 0, 0, 0.5);
+	border: none;
+	color: white;
+	z-index: 5;
+	border-radius: 5px;
+	height: 100%;
+	width: 60px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	opacity: 1;
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	cursor: pointer;
+	pointer-events: all;
+	transition: background-color 0.2s ease;
+	color: red;
+
+	&:hover {
+		background-color: rgba(0, 0, 0, 0.7);
+	}
+
+	&[data-inactive] {
+		opacity: 0.5;
+		cursor: not-allowed;
+		pointer-events: none;
+	}
+}
+
+.carouselControls > button:first-of-type {
+	left: -70px;
+}
+
+.carouselControls > button:last-of-type {
+	right: -70px;
+}

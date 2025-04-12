@@ -7,6 +7,7 @@ use App\Models\Tmdb\Genre;
 use App\Models\Tmdb\TmdbKeyword;
 use App\Models\TmdbProvider;
 use App\Services\TmdbService;
+use App\Models\Tmdb\TmdbVideo;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -45,12 +46,16 @@ class UpdateOrCreateMovieData implements ShouldQueue
                     [
                         'data' => $movieData,
                         'etag' => $etag,
+                        'popularity' => $movieData['popularity'] ?? null,
+                        'vote_average' => $movieData['vote_average'] ?? null,
+                        'vote_count' => $movieData['vote_count'] ?? null,
                     ]
                 );
 
                 $this->processWatchProviders($movie);
                 $this->processGenres($movie);
                 $this->processKeywords($movie);
+                $this->processVideos($movie);
 
                 $filteredData = $movie->filteredData;
                 if ($filteredData) {
@@ -160,6 +165,47 @@ class UpdateOrCreateMovieData implements ShouldQueue
             
             // Attach keyword to the movie
             $movie->attachKeyword($keyword);
+        }
+    }
+
+    /**
+     * Process videos for the movie and store them in the database
+     */
+    private function processVideos(Movie $movie): void
+    {
+        // Videos in movies are under 'videos.results'
+        $videos = $movie->data['videos']['results'] ?? [];
+        
+        if (empty($videos)) {
+            return;
+        }
+
+        // Remove existing video associations to prevent duplicates
+        $movie->videoRelations()->delete();
+        
+        foreach ($videos as $videoData) {
+            if (!isset($videoData['id'])) {
+                continue;
+            }
+            
+            // Ensure the video exists in our database
+            $video = TmdbVideo::updateOrCreate(
+                ['id' => $videoData['id']],
+                [
+                    'key' => $videoData['key'] ?? null,
+                    'name' => $videoData['name'] ?? null,
+                    'site' => $videoData['site'] ?? null,
+                    'size' => $videoData['size'] ?? null,
+                    'type' => $videoData['type'] ?? null,
+                    'official' => $videoData['official'] ?? false,
+                    'iso_639_1' => $videoData['iso_639_1'] ?? null,
+                    'iso_3166_1' => $videoData['iso_3166_1'] ?? null,
+                    'published_at' => isset($videoData['published_at']) ? \Carbon\Carbon::parse($videoData['published_at']) : null,
+                ]
+            );
+            
+            // Attach video to the movie
+            $movie->attachVideo($video);
         }
     }
 }

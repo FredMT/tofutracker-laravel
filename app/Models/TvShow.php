@@ -14,12 +14,22 @@ use App\Models\TmdbSchedule;
 use App\Models\TmdbScheduleEpisode;
 use App\Models\TmdbContentProvider;
 use App\Models\TmdbProvider;
+use App\Models\Tmdb\TmdbContentVideo;
+use App\Models\Tmdb\TmdbVideo;
 
 class TvShow extends Model
 {
     protected $table = 'tv_shows';
 
-    protected $fillable = ['id', 'data', 'etag', 'tvdb_id'];
+    protected $fillable = [
+        'id',
+        'data',
+        'etag',
+        'tvdb_id',
+        'popularity',
+        'vote_average',
+        'vote_count',
+    ];
 
     public $incrementing = false;
 
@@ -666,6 +676,37 @@ class TvShow extends Model
             'content_type' => get_class($this),
             'content_id' => $this->id,
             'keyword_id' => $keyword->id,
+        ]);
+    }
+
+    /**
+     * Get all content videos for this TV show.
+     */
+    public function videoRelations(): MorphMany
+    {
+        return $this->morphMany(TmdbContentVideo::class, 'content');
+    }
+
+    /**
+     * Get the videos for this TV show.
+     */
+    public function videos()
+    {
+        return $this->morphToMany(TmdbVideo::class, 'content', 'tmdb_content_videos', 'content_id', 'video_id');
+    }
+
+    /**
+     * Attach a video to this TV show.
+     *
+     * @param TmdbVideo $video The video to attach
+     * @return TmdbContentVideo
+     */
+    public function attachVideo(TmdbVideo $video)
+    {
+        return TmdbContentVideo::firstOrCreate([
+            'content_type' => get_class($this),
+            'content_id' => $this->id,
+            'video_id' => $video->id,
         ]);
     }
 }

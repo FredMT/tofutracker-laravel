@@ -11,6 +11,7 @@ use App\Models\TvEpisode;
 use App\Models\TvSeason;
 use App\Models\TvShow;
 use App\Services\TmdbService;
+use App\Models\Tmdb\TmdbVideo;
 use Illuminate\Support\Facades\Cache;
 
 class TvShowActions
@@ -159,6 +160,9 @@ class TvShowActions
                 'data' => $showData,
                 'tvdb_id' => $showData['external_ids']['tvdb_id'] ?? null,
                 'etag' => $data['etag'],
+                'popularity' => $showData['popularity'] ?? null,
+                'vote_average' => $showData['vote_average'] ?? null,
+                'vote_count' => $showData['vote_count'] ?? null,
             ]);
 
             $this->processWatchProviders($tvShow);
@@ -166,6 +170,8 @@ class TvShowActions
             $this->processGenres($tvShow);
             
             $this->processKeywords($tvShow);
+
+            $this->processVideos($tvShow);
 
             foreach ($seasons as $seasonData) {
                 $season = $tvShow->seasons()->firstWhere('season_number', $seasonData['season_number']);
@@ -265,6 +271,41 @@ class TvShowActions
             );
             
             $tvShow->attachKeyword($keyword);
+        }
+    }
+
+    private function processVideos(TvShow $tvShow): void
+    {
+        // TV show videos are nested in 'videos.results'
+        $videos = $tvShow->data['videos']['results'] ?? [];
+        
+        if (empty($videos)) {
+            return;
+        }
+
+        $tvShow->videoRelations()->delete();
+
+        foreach ($videos as $videoData) {
+            if (!isset($videoData['id']) || !isset($videoData['name'])) {
+                continue;
+            }
+            
+            $video = TmdbVideo::updateOrCreate(
+                ['id' => $videoData['id']],
+                [
+                    'key' => $videoData['key'] ?? null,
+                    'name' => $videoData['name'] ?? null,
+                    'site' => $videoData['site'] ?? null,
+                    'size' => $videoData['size'] ?? null,
+                    'type' => $videoData['type'] ?? null,
+                    'official' => $videoData['official'] ?? false,
+                    'iso_639_1' => $videoData['iso_639_1'] ?? null,
+                    'iso_3166_1' => $videoData['iso_3166_1'] ?? null,
+                    'published_at' => isset($videoData['published_at']) ? \Carbon\Carbon::parse($videoData['published_at']) : null,
+                ]
+            );
+            
+            $tvShow->attachVideo($video);
         }
     }
 

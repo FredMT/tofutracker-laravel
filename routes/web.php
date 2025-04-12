@@ -23,6 +23,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\Search\QuickSearchController;
 use App\Http\Controllers\Search\SearchController;
+use App\Http\Controllers\ShowsController;
 use App\Http\Controllers\TvController;
 use App\Http\Controllers\TvSeasonController;
 use App\Http\Controllers\UserAnime\UserAnimeEpisodeController;
@@ -251,5 +252,11 @@ Route::prefix('anime-collections')->name('anime-collections.')->group(function (
 Route::prefix('schedule')->name('schedule.')->group(function () {
     Route::get('/', [ScheduleController::class, 'index'])->name('index');
 });
+
+Route::prefix('shows')->name('shows.')->controller(ShowsController::class)->group(function () {
+    Route::get('/', 'index')->name('index');
+});
+
+
 
 require __DIR__ . '/auth.php';

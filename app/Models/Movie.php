@@ -13,10 +13,19 @@ use App\Models\Tmdb\TmdbContentKeyword;
 use App\Models\TmdbSchedule;
 use App\Models\TmdbContentProvider;
 use App\Models\TmdbProvider;
+use App\Models\Tmdb\TmdbContentVideo;
+use App\Models\Tmdb\TmdbVideo;
 
 class Movie extends Model
 {
-    protected $fillable = ['id', 'data', 'etag'];
+    protected $fillable = [
+        'id',
+        'data',
+        'etag',
+        'popularity',
+        'vote_average',
+        'vote_count',
+    ];
 
     public $incrementing = false;
 
@@ -636,6 +645,37 @@ class Movie extends Model
             'content_type' => get_class($this),
             'content_id' => $this->id,
             'keyword_id' => $keyword->id,
+        ]);
+    }
+
+    /**
+     * Get all content videos for this movie.
+     */
+    public function videoRelations(): MorphMany
+    {
+        return $this->morphMany(TmdbContentVideo::class, 'content');
+    }
+
+    /**
+     * Get the videos for this movie.
+     */
+    public function videos()
+    {
+        return $this->morphToMany(TmdbVideo::class, 'content', 'tmdb_content_videos', 'content_id', 'video_id');
+    }
+
+    /**
+     * Attach a video to this movie.
+     *
+     * @param TmdbVideo $video The video to attach
+     * @return TmdbContentVideo
+     */
+    public function attachVideo(TmdbVideo $video)
+    {
+        return TmdbContentVideo::firstOrCreate([
+            'content_type' => get_class($this),
+            'content_id' => $this->id,
+            'video_id' => $video->id,
         ]);
     }
 }
