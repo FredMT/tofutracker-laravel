@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
 import { Carousel } from '@mantine/carousel';
 import '@mantine/carousel/styles.css';
-import { Container, Select, Box, Title, Space, Group } from '@mantine/core';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Container, Select, Space, Title } from '@mantine/core';
 import { motion } from 'framer-motion';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import carouselClasses from './Carousel.module.css';
 import classes from './StreamingSection.module.css';
 import ShowCard from './components/ShowCard';
@@ -27,7 +27,7 @@ const mockShows = [
 	{
 		id: '1',
 		title: 'Breaking Code',
-		image:
+		poster:
 			'https://images.unsplash.com/photo-1542204637-e67bc7d41e48?ixlib=rb-4.0.3&auto=format&fit=crop&w=1035&q=80',
 		rating: '9.4',
 		genre: 'Drama',
@@ -36,7 +36,7 @@ const mockShows = [
 	{
 		id: '2',
 		title: 'The Last Algorithm',
-		image:
+		poster:
 			'https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=925&q=80',
 		rating: '8.9',
 		genre: 'Science Fiction',
@@ -45,7 +45,7 @@ const mockShows = [
 	{
 		id: '3',
 		title: 'Digital Dreams',
-		image:
+		poster:
 			'https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=870&q=80',
 		rating: '8.6',
 		genre: 'Mystery',
@@ -54,7 +54,7 @@ const mockShows = [
 	{
 		id: '4',
 		title: 'Tech Titans',
-		image:
+		poster:
 			'https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=870&q=80',
 		rating: '9.1',
 		genre: 'Drama',
@@ -63,7 +63,7 @@ const mockShows = [
 	{
 		id: '5',
 		title: 'Cyber Detectives',
-		image:
+		poster:
 			'https://images.unsplash.com/photo-1604144894893-530398584365?ixlib=rb-4.0.3&auto=format&fit=crop&w=724&q=80',
 		rating: '8.8',
 		genre: 'Crime',
@@ -72,7 +72,7 @@ const mockShows = [
 	{
 		id: '6',
 		title: 'Future Forward',
-		image:
+		poster:
 			'https://images.unsplash.com/photo-1563089145-599997674d42?ixlib=rb-4.0.3&auto=format&fit=crop&w=870&q=80',
 		rating: '9.2',
 		genre: 'Science Fiction',
@@ -90,7 +90,6 @@ const mockCountries = [
 const StreamingSection = () => {
 	const [selectedCountry, setSelectedCountry] = useState<string | null>('us');
 	const [selectedProvider, setSelectedProvider] = useState(mockProviders[0].id);
-	const [hasAnimated, setHasAnimated] = useState(false);
 	const tabsRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -109,13 +108,6 @@ const StreamingSection = () => {
 			}
 		}
 	}, [selectedProvider]);
-
-	useEffect(() => {
-		console.log(
-			`Fetching shows for country: ${selectedCountry}, provider: ${selectedProvider}`
-		);
-		setHasAnimated(true);
-	}, [selectedCountry, selectedProvider]);
 
 	return (
 		<>
@@ -193,10 +185,7 @@ const StreamingSection = () => {
 									hidden: { opacity: 0, y: 30 },
 								}}
 							>
-								<ShowCard
-									show={show}
-									index={index}
-								/>
+								<ShowCard show={show} />
 							</motion.div>
 						</Carousel.Slide>
 					))}

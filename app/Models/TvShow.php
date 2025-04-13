@@ -2,20 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Tmdb\Genre;
+use App\Models\Tmdb\TmdbContentGenre;
+use App\Models\Tmdb\TmdbContentKeyword;
+use App\Models\Tmdb\TmdbContentVideo;
+use App\Models\Tmdb\TmdbKeyword;
+use App\Models\Tmdb\TmdbVideo;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use App\Models\Tmdb\Genre;
-use App\Models\Tmdb\TmdbContentGenre;
-use App\Models\Tmdb\TmdbKeyword;
-use App\Models\Tmdb\TmdbContentKeyword;
-use App\Models\TmdbSchedule;
-use App\Models\TmdbScheduleEpisode;
-use App\Models\TmdbContentProvider;
-use App\Models\TmdbProvider;
-use App\Models\Tmdb\TmdbContentVideo;
-use App\Models\Tmdb\TmdbVideo;
 
 class TvShow extends Model
 {
@@ -62,7 +58,7 @@ class TvShow extends Model
     public function poster(): Attribute
     {
         return Attribute::get(function () {
-            return $this->data['poster_path'] ?? "";
+            return $this->data['poster_path'] ?? '';
         });
     }
 
@@ -76,14 +72,14 @@ class TvShow extends Model
     public function backdrop(): Attribute
     {
         return Attribute::get(function () {
-            return $this->data['backdrop_path'] ?? "";
+            return $this->data['backdrop_path'] ?? '';
         });
     }
 
     public function voteAverage(): Attribute
     {
         return Attribute::get(function () {
-            return number_format($this->data['vote_average'], 2, '.', '');
+            return isset($this->data['vote_average']) ? number_format($this->data['vote_average'], 2, '.', '') : null;
         });
     }
 
@@ -580,8 +576,8 @@ class TvShow extends Model
     public function schedules()
     {
         return TmdbSchedule::where('tmdb_type', 'tv')
-                          ->where('tmdb_id', $this->id)
-                          ->get();
+            ->where('tmdb_id', $this->id)
+            ->get();
     }
 
     /**
@@ -623,9 +619,9 @@ class TvShow extends Model
     /**
      * Attach a provider to this TV show.
      *
-     * @param TmdbProvider $provider The provider to attach
-     * @param string $providerType One of: 'ads', 'buy', 'rent', 'flatrate', 'free'
-     * @param string $countryCode Two-letter country code
+     * @param  TmdbProvider  $provider  The provider to attach
+     * @param  string  $providerType  One of: 'ads', 'buy', 'rent', 'flatrate', 'free'
+     * @param  string  $countryCode  Two-letter country code
      * @return TmdbContentProvider
      */
     public function attachProvider(TmdbProvider $provider, string $providerType, string $countryCode)
@@ -636,7 +632,7 @@ class TvShow extends Model
     /**
      * Attach a genre to this TV show.
      *
-     * @param Genre $genre The genre to attach
+     * @param  Genre  $genre  The genre to attach
      * @return TmdbContentGenre
      */
     public function attachGenre(Genre $genre)
@@ -667,7 +663,7 @@ class TvShow extends Model
     /**
      * Attach a keyword to this TV show.
      *
-     * @param TmdbKeyword $keyword The keyword to attach
+     * @param  TmdbKeyword  $keyword  The keyword to attach
      * @return TmdbContentKeyword
      */
     public function attachKeyword(TmdbKeyword $keyword)
@@ -698,7 +694,7 @@ class TvShow extends Model
     /**
      * Attach a video to this TV show.
      *
-     * @param TmdbVideo $video The video to attach
+     * @param  TmdbVideo  $video  The video to attach
      * @return TmdbContentVideo
      */
     public function attachVideo(TmdbVideo $video)

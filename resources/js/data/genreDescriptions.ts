@@ -43,5 +43,8 @@ export const genreDescriptions: Record<string, string> = {
 	isekai:
 		'One world not enough? Dive into new realms with these portal-hopping adventures.',
 	kids: "Fun, friendly, and full of wonder—Tofutracker's picks for young (and young-at-heart) viewers!",
+	talk: 'Conversations, confessions, and connections — talk shows are all about the chat.',
+	'action & adventure':
+		'Action, adventure, and excitement—Tofutracker’s action & adventure shows are all about the thrill.',
 	default: 'Explore the best content on TofuTracker.',
 };

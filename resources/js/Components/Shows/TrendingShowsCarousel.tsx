@@ -7,76 +7,13 @@ import { Container, AspectRatio, Box } from '@mantine/core';
 import classes from './TrendingShowsCarousel.module.css';
 import carouselClasses from './Carousel.module.css';
 import ShowCard from './components/ShowCard';
-
-interface ShowProps {
-	id: string;
-	title: string;
-	image: string;
-	rating: string;
-	genre: string;
-	year: string;
-}
+import { useShowsPageTrendingData } from '@/propsHooks/useShowsPageTrending';
 
 interface TrendingShowsCarouselProps {}
 
-const shows: ShowProps[] = [
-	{
-		id: '1',
-		title: 'Breaking Code',
-		image:
-			'https://images.unsplash.com/photo-1542204637-e67bc7d41e48?ixlib=rb-4.0.3&auto=format&fit=crop&w=1035&q=80',
-		rating: '9.4',
-		genre: 'Drama',
-		year: '2023',
-	},
-	{
-		id: '2',
-		title: 'The Last Algorithm',
-		image:
-			'https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=925&q=80',
-		rating: '8.9',
-		genre: 'Science Fiction',
-		year: '2023',
-	},
-	{
-		id: '3',
-		title: 'Digital Dreams',
-		image:
-			'https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=870&q=80',
-		rating: '8.6',
-		genre: 'Mystery',
-		year: '2023',
-	},
-	{
-		id: '4',
-		title: 'Tech Titans',
-		image:
-			'https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=870&q=80',
-		rating: '9.1',
-		genre: 'Drama',
-		year: '2023',
-	},
-	{
-		id: '5',
-		title: 'Cyber Detectives',
-		image:
-			'https://images.unsplash.com/photo-1604144894893-530398584365?ixlib=rb-4.0.3&auto=format&fit=crop&w=724&q=80',
-		rating: '8.8',
-		genre: 'Crime',
-		year: '2023',
-	},
-	{
-		id: '6',
-		title: 'Future Forward',
-		image:
-			'https://images.unsplash.com/photo-1563089145-599997674d42?ixlib=rb-4.0.3&auto=format&fit=crop&w=870&q=80',
-		rating: '9.2',
-		genre: 'Science Fiction',
-		year: '2023',
-	},
-];
-
 const TrendingShowsCarousel = ({}: TrendingShowsCarouselProps) => {
+	const shows = useShowsPageTrendingData();
+
 	return (
 		<Box h={386}>
 			<Container
@@ -121,8 +58,13 @@ const TrendingShowsCarousel = ({}: TrendingShowsCarouselProps) => {
 									}}
 								>
 									<ShowCard
-										show={show}
-										index={index}
+										show={{
+											id: String(show.id),
+											title: show.title,
+											poster: show.poster,
+											rating: show.rating,
+											year: show.year,
+										}}
 									/>
 								</motion.div>
 							</Carousel.Slide>

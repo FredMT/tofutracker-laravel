@@ -4,12 +4,10 @@ namespace App\Services;
 
 use App\Models\Anidb\AnidbAnime;
 use App\Models\Anime\AnimeMap;
-use App\Models\Anime\AnimeMappingExternalId;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\RateLimiter;
 
 class TmdbService
 {
@@ -54,7 +52,7 @@ class TmdbService
     public function getTvBasic(string $id)
     {
         try {
-            return Cache::remember("tmdb_tv_basic_{$id}", now()->addMonth(), function () use ($id) {
+            return Cache::remember("tmdb_tv_basic_{$id}", now()->addDay(), function () use ($id) {
 
                 $response = $this->client->get("/tv/{$id}");
 
@@ -68,6 +66,7 @@ class TmdbService
                         'name' => $genre['name'],
                     ]),
                     'release_date' => substr($tvData['first_air_date'], 0, 4),
+                    'popularity' => $tvData['popularity'],
                 ];
             });
         } catch (\Exception $e) {
@@ -108,17 +107,17 @@ class TmdbService
 
             $data = $response->json();
 
-            // Extract logo path
+            
             $highestVotedLogo = collect($data['images']['logos'])->sortByDesc('vote_count')->first();
             $data['logo_path'] = $highestVotedLogo['file_path'];
             unset($data['images']);
 
-            // Extract US certification
+            
             $usCertification = collect($data['release_dates']['results'])->firstWhere('iso_3166_1', 'US');
             $data['certification'] = $usCertification['release_dates'][0]['certification'];
             unset($data['release_dates']);
 
-            // Extract year from release_date
+            
             $data['year'] = substr($data['release_date'], 0, 4);
 
             return [
@@ -163,7 +162,7 @@ class TmdbService
 
             $data = $response->json();
 
-            // Extract logo path
+            
             try {
                 $logos = $data['images']['logos'] ?? [];
                 $highestVotedLogo = collect($logos)->sortByDesc('vote_count')->first();
@@ -176,7 +175,7 @@ class TmdbService
             }
             unset($data['images']);
 
-            // Extract US rating
+            
             try {
                 $contentRatings = $data['content_ratings']['results'] ?? [];
                 $usRating = collect($contentRatings)->firstWhere('iso_3166_1', 'US');
@@ -190,7 +189,7 @@ class TmdbService
             unset($data['content_ratings']);
             unset($data['seasons']);
 
-            // Set title
+            
             try {
                 $data['title'] = $data['name'] ?? null;
                 unset($data['name']);
@@ -274,7 +273,7 @@ class TmdbService
 
             $data = $response->json();
 
-            // Filter out items with media_type "person"
+            
             $data['results'] = collect($data['results'])
                 ->filter(fn ($item) => $item['media_type'] !== 'person')
                 ->values()
@@ -283,6 +282,25 @@ class TmdbService
             return $data;
         } catch (\Exception $e) {
             logger()->error('TMDB Trending API error: '.$e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function getTrendingTvPaginated(int $page = 1): array
+    {
+        try {
+            $response = $this->client->get('/trending/tv/day', [
+                'language' => 'en-US',
+                'page' => $page,
+            ]);
+
+            if (! $response->successful()) {
+                throw new \Exception('TMDB trending TV request failed');
+            }
+
+            return $response->json();
+        } catch (\Exception $e) {
+            logger()->error('TMDB Trending TV API error: '.$e->getMessage());
             throw $e;
         }
     }
@@ -305,33 +323,34 @@ class TmdbService
     {
         try {
             $anidbAnime = AnidbAnime::find($anidbId);
-            
-            if (!$anidbAnime) {
+
+            if (! $anidbAnime) {
                 return null;
             }
 
             $mapId = $anidbAnime->map();
-            if (!$mapId) {
+            if (! $mapId) {
                 return null;
             }
 
             $animeMap = AnimeMap::find($mapId);
-            if (!$animeMap) {
+            if (! $animeMap) {
                 return null;
             }
 
             $tmdbModel = $animeMap->getTmdbModel();
-            if (!$tmdbModel) {
+            if (! $tmdbModel) {
                 return null;
             }
 
             return [
-                'backdrop_path' => $tmdbModel->backdrop ?? "",
-                'logo_path' => $tmdbModel->highestVotedLogoPath ?? "",
+                'backdrop_path' => $tmdbModel->backdrop ?? '',
+                'logo_path' => $tmdbModel->highestVotedLogoPath ?? '',
             ];
 
         } catch (\Exception $e) {
             logger()->error("Error getting backdrop and logo for AniDB ID {$anidbId}: ".$e->getMessage());
+
             return null;
         }
     }
@@ -367,7 +386,6 @@ class TmdbService
 
             $today = now()->format('Y-m-d');
             $yesterday = now()->subDay()->format('Y-m-d');
-
 
             $response = $this->client->get("/{$type}/changes", [
                 'start_date' => $yesterday,
@@ -411,7 +429,6 @@ class TmdbService
     public function getAiringTvShows(int $timeframeInDays = 30): array
     {
         try {
-            // Get today's date and specified timeframe later in YYYY-MM-DD format
             $today = now()->format('Y-m-d');
             $endDate = now()->addDays($timeframeInDays)->format('Y-m-d');
 
@@ -433,10 +450,10 @@ class TmdbService
                     'sort_by' => 'vote_count.desc',
                 ]);
 
-                if (!$response->successful()) {
-                    Log::error('TMDB Airing TV Shows API error: Failed to fetch page ' . $currentPage, [
+                if (! $response->successful()) {
+                    Log::error('TMDB Airing TV Shows API error: Failed to fetch page '.$currentPage, [
                         'status' => $response->status(),
-                        'response' => $response->body()
+                        'response' => $response->body(),
                     ]);
                     break;
                 }
@@ -444,18 +461,15 @@ class TmdbService
                 $data = $response->json();
                 $totalPages = $data['total_pages'] ?? 1;
 
-                // Process each TV show to prevent duplicates
                 foreach ($data['results'] as $show) {
                     $showId = $show['id'];
 
-                    // Stop when we hit the first show with vote_count 10 or below
                     if ($show['vote_count'] <= 10) {
                         Log::info("Stopping at show ID: {$showId} with vote_count: {$show['vote_count']}");
-                        break 2; // Break out of both the foreach and do-while loops
+                        break 2;
                     }
 
-                    // Prevent duplicate processing
-                    if (!in_array($showId, $processedIds)) {
+                    if (! in_array($showId, $processedIds)) {
                         $processedIds[] = $showId;
                         $results[] = $show;
                     }
@@ -467,10 +481,10 @@ class TmdbService
             return [
                 'results' => $results,
                 'total_pages' => $totalPages,
-                'total_results' => count($results)
+                'total_results' => count($results),
             ];
         } catch (\Exception $e) {
-            Log::error('TMDB Airing TV Shows API error: ' . $e->getMessage());
+            Log::error('TMDB Airing TV Shows API error: '.$e->getMessage());
             throw $e;
         }
     }
