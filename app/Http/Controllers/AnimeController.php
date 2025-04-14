@@ -3,15 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Controller\Anime\AnimeControllerAction;
+use App\Models\Anidb\AnidbAnime;
+use App\Models\Anime\AnimeMap;
+use App\Models\AnimeSchedule;
+use App\Models\AnimeScheduleMap;
 use App\Repositories\Anime\AnimeControllerRepository;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
-use App\Models\Anidb\AnidbAnime;
-use App\Models\AnimeScheduleMap;
-use App\Models\AnimeSchedule;
 
 class AnimeController extends Controller
 {
@@ -20,7 +21,7 @@ class AnimeController extends Controller
         private AnimeControllerRepository $repository
     ) {}
 
-    private function getCountdown($accessId): ?int 
+    private function getCountdown($accessId): ?int
     {
         // Find all AnidbAnime entries with this map_id
         $animeEntries = AnidbAnime::where('map_id', $accessId)->pluck('id');
@@ -76,10 +77,13 @@ class AnimeController extends Controller
             // Get countdown value
             $countdown = $this->getCountdown($accessId);
 
+            $color = AnimeMap::find($accessId)->getColorPalette();
+
             // Prepare and return response
             return Inertia::render(
                 'AnimeContent',
                 [
+                    'navbar_color' => $color,
                     'type' => $animeData['type'],
                     'data' => [
                         'tmdbData' => json_decode($animeData['tmdbData']->getContent(), true),

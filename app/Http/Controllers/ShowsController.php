@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\ShowsPage\FetchAndGroupShowsAction;
 use App\Actions\ShowsPage\FetchGenreShowData;
 use App\Models\Anime\AnimeMap;
 use App\Models\Tmdb\TmdbContentVideo;
@@ -9,20 +10,47 @@ use App\Models\Tmdb\TmdbVideo;
 use App\Models\TmdbScheduleEpisode;
 use App\Models\TvShow;
 use App\Services\TmdbService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+use Stevebauman\Location\Facades\Location;
 
 class ShowsController extends Controller
 {
     protected TmdbService $tmdbService;
 
-    public function __construct(TmdbService $tmdbService)
+    protected FetchAndGroupShowsAction $fetchAndGroupShowsAction;
+
+    public function __construct(TmdbService $tmdbService, FetchAndGroupShowsAction $fetchAndGroupShowsAction)
     {
         $this->tmdbService = $tmdbService;
+        $this->fetchAndGroupShowsAction = $fetchAndGroupShowsAction;
     }
 
-    public function index()
+    public function index(Request $request)
     {
+
+        $validCountryCodes = array_keys(Config::get('countries.countries', []));
+
+        $validated = $request->validate([
+            'providerCountry' => [
+                'nullable',
+                'string',
+                'size:2',
+                'uppercase',
+                Rule::in($validCountryCodes),
+            ],
+        ]);
+
+        $countryCode = $validated['providerCountry'] ?? null;
+
+        if ($countryCode && ! array_key_exists(strtoupper($countryCode), config('countries.countries'))) {
+            $countryCode = null;
+        }
+
         try {
             $showsData = $this->getTrendingShowsData();
         } catch (\Exception $e) {
@@ -35,6 +63,8 @@ class ShowsController extends Controller
             'trailers' => $this->getDeferredTrailerData(),
             'genres' => app(FetchGenreShowData::class)->execute(),
             'airingShows' => $this->getDeferredScheduleData(),
+            'providers' => $this->getDeferredStreamingData($countryCode),
+            'user_region' => Location::get()?->countryCode ?? 'US',
         ]);
     }
 
@@ -248,6 +278,18 @@ class ShowsController extends Controller
                     'type' => 'tv',
                 ];
             })->all();
+        });
+    }
+
+    private function getDeferredStreamingData(?string $countryCode = null): callable
+    {
+        $countryCode = $countryCode ?? Location::get()?->countryCode ?? 'US';
+        $countryCode = strtoupper($countryCode);
+
+        return Inertia::defer(function () use ($countryCode) {
+            return Cache::remember("shows_page_providers_{$countryCode}", now()->addWeek(), function () use ($countryCode) {
+                return $this->fetchAndGroupShowsAction->execute($countryCode);
+            });
         });
     }
 }

@@ -71,8 +71,8 @@ const AiringShowsList: React.FC<AiringShowsListProps> = ({ items }) => {
 				align='start'
 				loop={false}
 				slideSize={itemWidth}
+				slidesToScroll='auto'
 				slideGap={slideGap}
-				slidesToScroll={2}
 				withControls={items.length > 4}
 				controlsOffset={0}
 				classNames={{
@@ -89,7 +89,7 @@ const AiringShowsList: React.FC<AiringShowsListProps> = ({ items }) => {
 							initial='hidden'
 							whileInView='visible'
 							viewport={{ once: true }}
-							transition={{ duration: 0.4, delay: index * 0.1 }}
+							transition={{ duration: 0.4, delay: index * 0.05 }}
 							variants={{
 								visible: { opacity: 1, scale: 1 },
 								hidden: { opacity: 0, scale: 0.95 },

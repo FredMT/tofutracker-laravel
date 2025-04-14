@@ -182,7 +182,7 @@ export function GenresCarousels({ genresProp }: GenresCarouselsProps) {
 											slideGap='md'
 											align='start'
 											loop={false}
-											slidesToScroll={1}
+											slidesToScroll='auto'
 											withControls={currentGenre.shows.length > 5}
 											controlsOffset={0}
 											classNames={{

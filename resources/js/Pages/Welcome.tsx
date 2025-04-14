@@ -74,6 +74,7 @@ function Welcome() {
 	return (
 		<>
 			<Head title='Welcome' />
+			<Space h={64} />
 			<div style={{ position: 'relative' }}>
 				<Carousel
 					height={540}

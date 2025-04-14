@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Kiritokatklian\LaravelColorPalette\Facades\ColorPalette;
 
 class TvShow extends Model
 {
@@ -704,5 +705,12 @@ class TvShow extends Model
             'content_id' => $this->id,
             'video_id' => $video->id,
         ]);
+    }
+
+    public function getColorPalette(): array
+    {
+        $backdropPath = 'https://image.tmdb.org/t/p/original'.$this->backdrop;
+
+        return ColorPalette::getPalette($backdropPath);
     }
 }

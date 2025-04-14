@@ -1,9 +1,8 @@
+import ResponsiveContainer from '@/Components/ResponsiveContainer';
 import { Link } from '@inertiajs/react';
 import { Badge, Button, Flex, Image, Stack, Text, Title } from '@mantine/core';
-import classes from './WelcomeCarouselSlide.module.css';
 import { useMediaQuery } from '@mantine/hooks';
-import ResponsiveContainer from '@/Components/ResponsiveContainer';
-import RepeatedImage from '../Content/Shared/Regular/RepeatedImage';
+import classes from './WelcomeCarouselSlide.module.css';
 
 interface MediaItem {
 	title: string;
@@ -28,18 +27,20 @@ export default function WelcomeCarouselSlide({
 }: MediaItem) {
 	const allBadges = [...(genres || []), release_date];
 	const mobile = useMediaQuery('(max-width: 400px)');
+	const fallbackSrc = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1920' height='540' viewBox='0 0 1920 540'><rect width='1920' height='540' fill='%23cccccc'/><text x='50%25' y='50%25' font-size='48' font-family='Arial,sans-serif' fill='%23000000' text-anchor='middle' alignment-baseline='central'>${title}</text></svg>`;
 
 	return (
 		<div className={classes.slideContainer}>
 			<div>
-				<RepeatedImage
-					backdrop_path={
-						backdrop_path
-							? `https://image.tmdb.org/t/p/original${backdrop_path}`
-							: undefined
-					}
-					title={title}
+				<Image
+					src={`https://image.tmdb.org/t/p/original${backdrop_path}`}
+					alt={title}
+					fit='cover'
+					h={540}
+					mah={540}
+					mih={540}
 					height={540}
+					fallbackSrc={fallbackSrc}
 				/>
 			</div>
 			<ResponsiveContainer>

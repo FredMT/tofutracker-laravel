@@ -83,7 +83,7 @@ class TvSeasonController extends Controller
                 'hide_anime_character_picture' => false,
             ];
 
-
+            $navbar_color = TvSeason::find($seasonData['id'])->getColorPalette();
             
             return Inertia::render('TVSeason', [
                 'data' => $seasonData,
@@ -92,7 +92,8 @@ class TvSeasonController extends Controller
                 'type' => 'tvseason',
                 'links' => $links,
                 'comments' => $comments,
-                'configuration' => $configuration
+                'configuration' => $configuration,
+                'navbar_color' => $navbar_color,
             ]);
         } catch (\Exception $e) {
             logger()->error('Failed to retrieve TV season: ' . $e->getMessage());

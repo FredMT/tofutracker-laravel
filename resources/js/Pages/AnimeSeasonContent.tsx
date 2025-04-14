@@ -1,20 +1,20 @@
-import AnimeContentEpisodes from "@/Components/Content/Shared/Anime/AnimeContentEpisodes";
-import AnimeRelatedContent from "@/Components/Content/Shared/Anime/AnimeRelatedContent";
-import { AnimeBannerImageContainer } from "@/Components/Content/Shared/Anime/AnimeBannerImageContainer";
-import ContentActions from "@/Components/ContentActions/ContentActions";
-import ResponsiveContainer from "@/Components/ResponsiveContainer";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
-import ContentLayout from "@/Layouts/ContentLayout";
-import AnimeSeasonDetails from "@/Components/Content/Anime/AnimeSeasonDetails";
-import { Head } from "@inertiajs/react";
-import { Box, Divider, Space, Stack, Title } from "@mantine/core";
-import { useViewportSize } from "@mantine/hooks";
-import SeasonBreadcrumbs from "@/Components/Content/TV/Seasons/SeasonBreadcrumbs";
-import AnimePosterImage from "@/Components/Content/Shared/Anime/AnimePosterImage";
-import { AnimeContentSummary } from "@/Components/Content/Shared/Regular/AnimeContentSummary";
-import Comments from "@/Components/Comments/Comments";
-import { AnimeContentCredits } from "@/Components/Content/Shared/Anime/AnimeContentCredits";
-import { useAnimeSeasonPageData } from "@/propsHooks/useAnimeSeasonPageData";
+import AnimeContentEpisodes from '@/Components/Content/Shared/Anime/AnimeContentEpisodes';
+import AnimeRelatedContent from '@/Components/Content/Shared/Anime/AnimeRelatedContent';
+import { AnimeBannerImageContainer } from '@/Components/Content/Shared/Anime/AnimeBannerImageContainer';
+import ContentActions from '@/Components/ContentActions/ContentActions';
+import ResponsiveContainer from '@/Components/ResponsiveContainer';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout/AuthenticatedLayout';
+import ContentLayout from '@/Layouts/ContentLayout';
+import AnimeSeasonDetails from '@/Components/Content/Anime/AnimeSeasonDetails';
+import { Head } from '@inertiajs/react';
+import { Box, Divider, Space, Stack, Title } from '@mantine/core';
+import { useViewportSize } from '@mantine/hooks';
+import SeasonBreadcrumbs from '@/Components/Content/TV/Seasons/SeasonBreadcrumbs';
+import AnimePosterImage from '@/Components/Content/Shared/Anime/AnimePosterImage';
+import { AnimeContentSummary } from '@/Components/Content/Shared/Regular/AnimeContentSummary';
+import Comments from '@/Components/Comments/Comments';
+import { AnimeContentCredits } from '@/Components/Content/Shared/Anime/AnimeContentCredits';
+import { useAnimeSeasonPageData } from '@/propsHooks/useAnimeSeasonPageData';
 
 function AnimeSeasonContent() {
 	const data = useAnimeSeasonPageData();
@@ -23,62 +23,62 @@ function AnimeSeasonContent() {
 	return (
 		<>
 			<Head title={data.title_main} />
+			<Space h={64} />
 			<AnimeBannerImageContainer />
 			<ResponsiveContainer>
-				<Box hiddenFrom="sm" mt={12}>
+				<Box
+					hiddenFrom='sm'
+					mt={12}
+				>
 					<SeasonBreadcrumbs />
 				</Box>
 				<Space h={24} />
 				<ContentLayout
 					left={
-						<Stack gap={24} align="stretch">
+						<Stack
+							gap={24}
+							align='stretch'
+						>
 							<AnimePosterImage />
-							<Box hiddenFrom="sm">
-								<Title order={2} ta="center">
+							<Box hiddenFrom='sm'>
+								<Title
+									order={2}
+									ta='center'
+								>
 									{`${data.title_main} (${
-										data.startdate &&
-										data.startdate.split(", ").pop()
+										data.startdate && data.startdate.split(', ').pop()
 									})`}
 								</Title>
 								<AnimeContentSummary />
 							</Box>
 							<ContentActions />
-							<Box hiddenFrom="sm">
+							<Box hiddenFrom='sm'>
 								<AnimeSeasonDetails />
-								<AnimeContentCredits
-									containerWidth={width * 0.95}
-								/>
+								<AnimeContentCredits containerWidth={width * 0.95} />
 								<AnimeContentEpisodes />
-								<AnimeRelatedContent
-									containerWidth={width * 0.95}
-								/>
+								<AnimeRelatedContent containerWidth={width * 0.95} />
 								<Divider my={16} />
 								<Comments />
 							</Box>
 						</Stack>
 					}
 					right={
-						<Box visibleFrom="sm">
+						<Box visibleFrom='sm'>
 							<Stack gap={8}>
 								<SeasonBreadcrumbs />
 								<Title order={2}>
 									{`${data.title_main} (${
-										data.startdate &&
-										data.startdate.split(", ").pop()
+										data.startdate && data.startdate.split(', ').pop()
 									})`}
 								</Title>
 								<AnimeContentSummary />
 								<Space h={16} />
 								<AnimeSeasonDetails />
 							</Stack>
-							<AnimeContentCredits
-								containerWidth={width * 0.67}
-							/>
+							<AnimeContentCredits containerWidth={width * 0.67} />
 							<AnimeContentEpisodes />
 							<Space h={16} />
-							<AnimeRelatedContent
-								containerWidth={width * 0.67}
-							/>
+							<AnimeRelatedContent containerWidth={width * 0.67} />
 							<Divider my={16} />
 							<Comments />
 						</Box>

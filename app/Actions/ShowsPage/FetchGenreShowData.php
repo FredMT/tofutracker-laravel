@@ -26,7 +26,8 @@ class FetchGenreShowData
 
     public function execute()
     {
-        return Cache::remember('shows_page_genre_data', now()->addWeek(), function () {             $topRatedShows = $this->getTopRatedShows();
+        return Cache::remember('shows_page_genre_data', now()->addWeek(), function () {
+            $topRatedShows = $this->getTopRatedShows();
 
             $topShowIds = $topRatedShows->pluck('id')->all();
 
@@ -222,7 +223,7 @@ class FetchGenreShowData
             'id' => $show->id,
             'title' => $show->title,
             'poster' => $show->poster,
-            'rating' => $show->voteAverage,
+            'rating' => number_format($show->voteAverage, 1, '.', ''),
             'year' => $show->year,
         ];
     }

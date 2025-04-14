@@ -6,6 +6,7 @@ import MobileMenu from '@/Layouts/AuthenticatedLayout/components/MobileMenu';
 import { Box, Group } from '@mantine/core';
 import SearchBar from '@/Layouts/AuthenticatedLayout/components/UserMenu/SearchBar/SearchBar';
 import NavbarRight from '@/Layouts/AuthenticatedLayout/components/UserMenu/NavbarRight';
+import { useNavbarColor } from '@/propsHooks/useNavbarColor';
 
 export default function AuthenticatedLayout({
 	children,
@@ -15,6 +16,7 @@ export default function AuthenticatedLayout({
 	const [isVisible, setIsVisible] = useState(true);
 	const lastScrollY = useRef(0);
 	const [isSearchOpen, setIsSearchOpen] = useState(false);
+	const { backgroundStyle, gradientStyle } = useNavbarColor();
 
 	useEffect(() => {
 		const controlNavbar = () => {
@@ -46,7 +48,12 @@ export default function AuthenticatedLayout({
 			<nav
 				className={`border-b fixed w-full transition-transform duration-300 z-50 backdrop-blur-md ${
 					styles.navbar
-				} ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}
+				} ${backgroundStyle} ${
+					isVisible ? 'translate-y-0' : '-translate-y-full'
+				}`}
+				style={{
+					background: gradientStyle || undefined,
+				}}
 			>
 				<div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
 					<div className='flex h-16 justify-between'>

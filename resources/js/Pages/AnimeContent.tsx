@@ -33,6 +33,7 @@ function AnimeContent() {
 	return (
 		<>
 			<Head title={data.collection_name} />
+			<Space h={64} />
 			<AnimeBannerImageContainer />
 			<ResponsiveContainer>
 				<Space h={24} />

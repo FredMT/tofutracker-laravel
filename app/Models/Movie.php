@@ -2,19 +2,17 @@
 
 namespace App\Models;
 
+use App\Models\Tmdb\Genre;
+use App\Models\Tmdb\TmdbContentGenre;
+use App\Models\Tmdb\TmdbContentKeyword;
+use App\Models\Tmdb\TmdbContentVideo;
+use App\Models\Tmdb\TmdbKeyword;
+use App\Models\Tmdb\TmdbVideo;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use App\Models\Tmdb\Genre;
-use App\Models\Tmdb\TmdbContentGenre;
-use App\Models\Tmdb\TmdbKeyword;
-use App\Models\Tmdb\TmdbContentKeyword;
-use App\Models\TmdbSchedule;
-use App\Models\TmdbContentProvider;
-use App\Models\TmdbProvider;
-use App\Models\Tmdb\TmdbContentVideo;
-use App\Models\Tmdb\TmdbVideo;
+use Kiritokatklian\LaravelColorPalette\Facades\ColorPalette;
 
 class Movie extends Model
 {
@@ -549,8 +547,8 @@ class Movie extends Model
     public function schedules()
     {
         return TmdbSchedule::where('tmdb_type', 'movie')
-                          ->where('tmdb_id', $this->id)
-                          ->get();
+            ->where('tmdb_id', $this->id)
+            ->get();
     }
 
     /**
@@ -592,9 +590,9 @@ class Movie extends Model
     /**
      * Attach a provider to this movie.
      *
-     * @param TmdbProvider $provider The provider to attach
-     * @param string $providerType One of: 'ads', 'buy', 'rent', 'flatrate', 'free'
-     * @param string $countryCode Two-letter country code
+     * @param  TmdbProvider  $provider  The provider to attach
+     * @param  string  $providerType  One of: 'ads', 'buy', 'rent', 'flatrate', 'free'
+     * @param  string  $countryCode  Two-letter country code
      * @return TmdbContentProvider
      */
     public function attachProvider(TmdbProvider $provider, string $providerType, string $countryCode)
@@ -605,7 +603,7 @@ class Movie extends Model
     /**
      * Attach a genre to this movie.
      *
-     * @param Genre $genre The genre to attach
+     * @param  Genre  $genre  The genre to attach
      * @return TmdbContentGenre
      */
     public function attachGenre(Genre $genre)
@@ -636,7 +634,7 @@ class Movie extends Model
     /**
      * Attach a keyword to this movie.
      *
-     * @param TmdbKeyword $keyword The keyword to attach
+     * @param  TmdbKeyword  $keyword  The keyword to attach
      * @return TmdbContentKeyword
      */
     public function attachKeyword(TmdbKeyword $keyword)
@@ -667,7 +665,7 @@ class Movie extends Model
     /**
      * Attach a video to this movie.
      *
-     * @param TmdbVideo $video The video to attach
+     * @param  TmdbVideo  $video  The video to attach
      * @return TmdbContentVideo
      */
     public function attachVideo(TmdbVideo $video)
@@ -677,5 +675,12 @@ class Movie extends Model
             'content_id' => $this->id,
             'video_id' => $video->id,
         ]);
+    }
+
+    public function getColorPalette(): array
+    {
+        $backdropPath = 'https://image.tmdb.org/t/p/original'.$this->backdrop;
+
+        return ColorPalette::getPalette($backdropPath);
     }
 }

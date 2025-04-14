@@ -17,7 +17,7 @@ import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import React, { useRef, useState } from 'react';
 import carouselClasses from './Carousel.module.css';
-import { Deferred } from '@inertiajs/react';
+import { Deferred, Link } from '@inertiajs/react';
 import { useShowsPageTrailers } from '@/propsHooks/useShowsPageTrailers';
 
 interface Trailer {
@@ -120,7 +120,8 @@ const TrailerList: React.FC<TrailerListProps> = ({ trailers }) => {
 						slideGap={{ base: 'md', sm: 'xl' }}
 						align='start'
 						loop={false}
-						slidesToScroll={1}
+						slidesToScroll='auto'
+						inViewThreshold={0.9}
 						withControls={true}
 						controlsOffset={0}
 						classNames={{
@@ -138,7 +139,7 @@ const TrailerList: React.FC<TrailerListProps> = ({ trailers }) => {
 									initial='hidden'
 									whileInView='visible'
 									viewport={{ once: true }}
-									transition={{ duration: 0.5, delay: index * 0.1 }}
+									transition={{ duration: 0.5, delay: index * 0.05 }}
 									variants={{
 										visible: { opacity: 1, scale: 1, y: 0 },
 										hidden: { opacity: 0, scale: 0.95, y: 30 },
@@ -180,13 +181,15 @@ const TrailerList: React.FC<TrailerListProps> = ({ trailers }) => {
 										</Box>
 
 										<div className='p-3 text-center'>
-											<Title
-												order={5}
-												className='mb-1 truncate'
-												lineClamp={1}
-											>
-												{trailer.showName}
-											</Title>
+											<Link href={`/tv/${trailer.showId}`}>
+												<Title
+													order={5}
+													className='mb-1 truncate'
+													lineClamp={1}
+												>
+													{trailer.showName}
+												</Title>
+											</Link>
 											<Text
 												size='sm'
 												className='text-gray-400 truncate'

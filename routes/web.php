@@ -10,6 +10,8 @@ use App\Http\Controllers\AnimeGenresController;
 use App\Http\Controllers\AnimeSeasonController;
 use App\Http\Controllers\Comment\CommentController;
 use App\Http\Controllers\Comment\VoteController;
+use App\Http\Controllers\CrawlerController;
+use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\List\ListBackdropsController;
 use App\Http\Controllers\List\ListBannerController;
 use App\Http\Controllers\List\ListBannerRemoveController;
@@ -43,13 +45,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'genresandwatchproviders' => app(GetTrendingGenresAndWatchProvidersAction::class)->execute(),
-        'data' => app(GetTrendingAction::class)->execute(),
-    ]);
-})->name('welcome');
+Route::get('/', HomepageController::class)->name('welcome');
 
 Route::get('/animegenres', [AnimeGenresController::class, 'show']);
 Route::get('/animebytag', [AnimeGenresController::class, 'topRatedByTags']);
@@ -84,9 +80,10 @@ Route::prefix('admin')->middleware(CheckSuperuserEmail::class)->name('admin.')->
 });
 
 Route::get('/me', function () {
-    if (!Auth::check()) {
+    if (! Auth::check()) {
         return redirect()->route('login');
     }
+
     return redirect()->route('user.profile', ['username' => Auth::user()->username]);
 })->name('me');
 
@@ -258,5 +255,4 @@ Route::prefix('shows')->name('shows.')->controller(ShowsController::class)->grou
 });
 
 
-
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

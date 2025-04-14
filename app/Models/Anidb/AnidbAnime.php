@@ -5,8 +5,11 @@ namespace App\Models\Anidb;
 use App\Actions\Anime\GetAnimeEpisodes;
 use App\Models\Anime\AnimeChainEntry;
 use App\Models\Anime\AnimeMap;
+use App\Models\Anime\AnimeMappingExternalId;
 use App\Models\Anime\AnimeRelatedEntry;
 use App\Models\Comment;
+use App\Models\Movie;
+use App\Models\TvShow;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Znck\Eloquent\Relations\BelongsToThrough;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Kiritokatklian\LaravelColorPalette\Facades\ColorPalette;
 
 class AnidbAnime extends Model
 {
@@ -273,5 +277,35 @@ class AnidbAnime extends Model
 
             return [];
         }
+    }
+
+    public function getColorPalette(): array
+    {
+        $backdrop = 'https://picsum.photos/200/300';
+
+        $externalIds = AnimeMappingExternalId::where('anidb_id', $this->id)->first();
+        if ($externalIds && $externalIds->themoviedb_id) {
+            $type = $this->type === 'Movie' ? 'movie' : 'tv';
+            
+            if ($type === 'Movie') {
+                $movie = Movie::find($externalIds->themoviedb_id);
+                if ($movie) {
+                    $backdrop = $movie->backdrop;
+                    logger()->info("Movie $backdrop");
+                }
+            } else {
+                $tvShow = TvShow::find($externalIds->themoviedb_id);
+                if ($tvShow) {
+                    $backdrop = $tvShow->backdrop;
+                    logger()->info("Tv $backdrop");
+                }
+            }
+
+            if (!empty($backdrop)) {
+                $backdrop = 'https://image.tmdb.org/t/p/original'.$backdrop;
+            }
+        }
+
+        return ColorPalette::getPalette($backdrop);
     }
 }

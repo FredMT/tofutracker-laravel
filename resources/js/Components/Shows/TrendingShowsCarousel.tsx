@@ -34,8 +34,9 @@ const TrendingShowsCarousel = ({}: TrendingShowsCarouselProps) => {
 						slideSize={200}
 						align='start'
 						loop={false}
-						slidesToScroll={1}
+						slidesToScroll='auto'
 						withControls={true}
+						inViewThreshold={0.9}
 						controlsOffset={0}
 						classNames={{
 							control: carouselClasses.carouselControl,
@@ -51,7 +52,7 @@ const TrendingShowsCarousel = ({}: TrendingShowsCarouselProps) => {
 									initial='hidden'
 									whileInView='visible'
 									viewport={{ once: true }}
-									transition={{ duration: 0.5, delay: index * 0.1 }}
+									transition={{ duration: 0.5, delay: index * 0.05 }}
 									variants={{
 										visible: { opacity: 1, y: 0 },
 										hidden: { opacity: 0, y: 30 },

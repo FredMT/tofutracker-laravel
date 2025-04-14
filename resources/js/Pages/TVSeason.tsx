@@ -1,81 +1,90 @@
-import ContentActions from "@/Components/ContentActions/ContentActions";
-import { RegularContentSummary } from "@/Components/Content/Shared/Regular/RegularContentSummary";
-import ResponsiveContainer from "@/Components/ResponsiveContainer";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
-import ContentLayout from "@/Layouts/ContentLayout";
-import { Head } from "@inertiajs/react";
-import { Box, Divider, Group, Space, Spoiler, Stack, Switch, Text, Title } from "@mantine/core";
-import { useViewportSize } from "@mantine/hooks";
-import ContentEpisodes from "@/Components/Content/Episodes/ContentEpisodes";
-import SeasonBreadcrumbs from "@/Components/Content/TV/Seasons/SeasonBreadcrumbs";
-import { RegularContentCredits } from "@/Components/Content/Shared/Regular/RegularContentCredits";
-import RegularPosterImage from "@/Components/Content/Shared/Regular/RegularPosterImage";
-import { RegularBannerImageContainer } from "@/Components/Content/Shared/Regular/RegularBannerImageContainer";
-import Comments from "@/Components/Comments/Comments";
-import { useSpoilerConfiguration } from "@/stores/useSpoilerConfiguration";
-import { useTvSeasonPageData } from "@/propsHooks/useTvSeasonPageData";
+import ContentActions from '@/Components/ContentActions/ContentActions';
+import { RegularContentSummary } from '@/Components/Content/Shared/Regular/RegularContentSummary';
+import ResponsiveContainer from '@/Components/ResponsiveContainer';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout/AuthenticatedLayout';
+import ContentLayout from '@/Layouts/ContentLayout';
+import { Head } from '@inertiajs/react';
+import {
+	Box,
+	Divider,
+	Group,
+	Space,
+	Spoiler,
+	Stack,
+	Switch,
+	Text,
+	Title,
+} from '@mantine/core';
+import { useViewportSize } from '@mantine/hooks';
+import ContentEpisodes from '@/Components/Content/Episodes/ContentEpisodes';
+import SeasonBreadcrumbs from '@/Components/Content/TV/Seasons/SeasonBreadcrumbs';
+import { RegularContentCredits } from '@/Components/Content/Shared/Regular/RegularContentCredits';
+import RegularPosterImage from '@/Components/Content/Shared/Regular/RegularPosterImage';
+import { RegularBannerImageContainer } from '@/Components/Content/Shared/Regular/RegularBannerImageContainer';
+import Comments from '@/Components/Comments/Comments';
+import { useSpoilerConfiguration } from '@/stores/useSpoilerConfiguration';
+import { useTvSeasonPageData } from '@/propsHooks/useTvSeasonPageData';
 
 function TVSeason() {
 	const { width } = useViewportSize();
 	const data = useTvSeasonPageData();
-	const { mustShowSpoilerSwitch, setShowSpoilers } =
-		useSpoilerConfiguration();
+	const { mustShowSpoilerSwitch, setShowSpoilers } = useSpoilerConfiguration();
 	return (
 		<>
 			<Head title={data.title} />
+			<Space h={64} />
 			<RegularBannerImageContainer />
 			<ResponsiveContainer>
-				<Box hiddenFrom="sm" mt={12}>
+				<Box
+					hiddenFrom='sm'
+					mt={12}
+				>
 					<SeasonBreadcrumbs />
 				</Box>
 				<Space h={24} />
 				<ContentLayout
 					left={
-						<Stack gap={24} align="center">
+						<Stack
+							gap={24}
+							align='center'
+						>
 							<RegularPosterImage />
-							<Box hiddenFrom="sm">
-								<Title order={2} ta="center">
+							<Box hiddenFrom='sm'>
+								<Title
+									order={2}
+									ta='center'
+								>
 									{data.title} ({data.year})
 								</Title>
 								<Space h={8} />
-								{data.tagline && (
-									<Text ta={"center"}>{data.tagline}</Text>
-								)}
+								{data.tagline && <Text ta={'center'}>{data.tagline}</Text>}
 								<Space h={16} />
 								<RegularContentSummary />
 							</Box>
 							<ContentActions />
-							<Box hiddenFrom="sm">
+							<Box hiddenFrom='sm'>
 								<Stack mt={16}>
-									<Group justify="space-between">
+									<Group justify='space-between'>
 										<Title order={3}>Overview</Title>
 										{mustShowSpoilerSwitch && (
 											<Switch
-												label="Show spoilers"
+												label='Show spoilers'
 												onChange={(event) =>
-													setShowSpoilers(
-														event.currentTarget
-															.checked,
-													)
+													setShowSpoilers(event.currentTarget.checked)
 												}
 											/>
 										)}
 									</Group>
 									<Spoiler
 										maxHeight={120}
-										showLabel="Show more"
-										hideLabel="Hide"
+										showLabel='Show more'
+										hideLabel='Hide'
 									>
-										<Text>
-											{data.overview ??
-												"No overview available"}
-										</Text>
+										<Text>{data.overview ?? 'No overview available'}</Text>
 									</Spoiler>
 								</Stack>
 								<Space h={24} />
-								<RegularContentCredits
-									containerWidth={width * 0.95}
-								/>
+								<RegularContentCredits containerWidth={width * 0.95} />
 								<ContentEpisodes />
 								<Divider my={16} />
 								<Comments />
@@ -83,7 +92,7 @@ function TVSeason() {
 						</Stack>
 					}
 					right={
-						<Box visibleFrom="sm">
+						<Box visibleFrom='sm'>
 							<Stack gap={8}>
 								<SeasonBreadcrumbs />
 								<Title order={2}>
@@ -93,34 +102,27 @@ function TVSeason() {
 								<RegularContentSummary />
 							</Stack>
 							<Stack mt={16}>
-								<Group justify="space-between">
+								<Group justify='space-between'>
 									<Title order={3}>Overview</Title>
 									{mustShowSpoilerSwitch && (
 										<Switch
-											label="Show spoilers"
+											label='Show spoilers'
 											onChange={(event) =>
-												setShowSpoilers(
-													event.currentTarget.checked,
-												)
+												setShowSpoilers(event.currentTarget.checked)
 											}
 										/>
 									)}
 								</Group>
 								<Spoiler
 									maxHeight={120}
-									showLabel="Show more"
-									hideLabel="Hide"
+									showLabel='Show more'
+									hideLabel='Hide'
 								>
-									<Text>
-										{data.overview ??
-											"No overview available"}
-									</Text>
+									<Text>{data.overview ?? 'No overview available'}</Text>
 								</Spoiler>
 							</Stack>
 							<Space h={24} />
-							<RegularContentCredits
-								containerWidth={width * 0.67}
-							/>
+							<RegularContentCredits containerWidth={width * 0.67} />
 							<ContentEpisodes />
 							<Divider my={16} />
 							<Comments />

@@ -25,6 +25,7 @@ class MovieController extends Controller
         $userLibraryData = null;
         $userLists = null;
         $existingMovie = Movie::find($id);
+        $color = $existingMovie->getColorPalette();
         $comments = $this->commentController->index($request, 'movie', $id);
 
         $user = null;
@@ -60,6 +61,7 @@ class MovieController extends Controller
         if (Cache::has($cacheKey)) {
             return Inertia::render('Movie', [
                 'data' => Cache::get($cacheKey),
+                'navbar_color' => $color,
                 'type' => 'movie',
                 'user_library' => $userLibraryData,
                 'user_lists' => $userLists,
@@ -74,6 +76,7 @@ class MovieController extends Controller
             }
 
             return Inertia::render('Movie', [
+                'navbar_color' => $color,
                 'data' => $existingMovie->filteredData,
                 'type' => 'movie',
                 'user_library' => $userLibraryData,
@@ -88,7 +91,10 @@ class MovieController extends Controller
         $movie = Movie::find($id);
         Cache::put($cacheKey, $movie->filteredData, now()->addHours(6));
 
+        $color = $movie->getColorPalette();
+
         return Inertia::render('Movie', [
+            'navbar_color' => $color,
             'data' => Cache::get($cacheKey),
             'type' => 'movie',
             'user_library' => $userLibraryData,

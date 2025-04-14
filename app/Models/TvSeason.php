@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Kiritokatklian\LaravelColorPalette\Facades\ColorPalette;
 
 class TvSeason extends Model
 {
@@ -242,6 +243,22 @@ class TvSeason extends Model
     public function comments(): MorphMany
     {
         return $this->morphMany(Comment::class, 'commentable');
+    }
+
+    public function getColorPalette(): array
+    {
+        $backdrop = $this->show->backdrop;
+        if (empty($backdrop)) {
+            $backdrop = $this->poster;
+        }
+
+        if (empty($backdrop)) {
+            $backdrop = 'https://picsum.photos/200/300';
+        } else {
+            $backdrop = 'https://image.tmdb.org/t/p/original'.$backdrop;
+        }
+
+        return ColorPalette::getPalette($backdrop);
     }
 
     protected static function booted()
