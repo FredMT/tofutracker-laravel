@@ -6,6 +6,7 @@ use App\Actions\ShowsPage\FetchGenreShowData;
 use App\Models\Anime\AnimeMap;
 use App\Models\Tmdb\TmdbContentVideo;
 use App\Models\Tmdb\TmdbVideo;
+use App\Models\TmdbScheduleEpisode;
 use App\Models\TvShow;
 use App\Services\TmdbService;
 use Illuminate\Support\Facades\Log;
@@ -33,6 +34,7 @@ class ShowsController extends Controller
             'shows' => $showsData,
             'trailers' => $this->getDeferredTrailerData(),
             'genres' => app(FetchGenreShowData::class)->execute(),
+            'airingShows' => $this->getDeferredScheduleData(),
         ]);
     }
 
@@ -207,6 +209,43 @@ class ShowsController extends Controller
                     'videoTitle' => $video->name,
                     'showId' => $show ? $show->id : null,
                     'publishedAt' => $video->published_at->timestamp,
+                ];
+            })->all();
+        });
+    }
+
+    private function getDeferredScheduleData(): callable
+    {
+        return Inertia::defer(function () {
+            $upcomingEpisodes = TmdbScheduleEpisode::where('episode_date', '>', now())
+                ->orderBy('episode_date', 'asc')
+                ->with(['tvShow:id,data'])
+                ->take(10)
+                ->get();
+
+            if ($upcomingEpisodes->isEmpty()) {
+                return [];
+            }
+
+            return $upcomingEpisodes->map(function (TmdbScheduleEpisode $episode) {
+                $show = $episode->tvShow;
+
+                $backdropPath = $show?->backdrop ?? null;
+                $logoPath = $show?->highestVotedLogoPath ?? null;
+                $showId = $show?->id ?? $episode->show_id;
+                $seasonNumber = $episode->season_number ?? 0;
+
+                return [
+                    'id' => $episode->id,
+                    'title' => $episode->episode_name ?? ($show?->title ?? 'Episode '.$episode->episode_number),
+                    'episode_date' => $episode->episode_date->timestamp,
+                    'episode_number' => $episode->episode_number,
+                    'episode_name' => $episode->episode_name,
+                    'season_number' => $seasonNumber,
+                    'backdrop' => $backdropPath,
+                    'logo' => $logoPath,
+                    'link' => $showId ? "/tv/{$showId}/season/{$seasonNumber}" : null,
+                    'type' => 'tv',
                 ];
             })->all();
         });

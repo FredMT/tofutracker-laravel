@@ -1,156 +1,61 @@
-import { useState, useEffect } from 'react';
+import ScheduleItem from '@/Components/Schedule/ScheduleItem';
+import { ScheduleItem as ScheduleItemType } from '@/propsHooks/useSchedulePageData';
+import { useShowsAiringScheduleCarousel } from '@/propsHooks/useShowsAiringScheduleCarousel';
+import { Deferred } from '@inertiajs/react';
 import { Carousel } from '@mantine/carousel';
 import '@mantine/carousel/styles.css';
-import { Card, Container, Paper, Space, Title, Text } from '@mantine/core';
+import { Container, Skeleton, Space, Title } from '@mantine/core';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import dayjs from 'dayjs';
 import carouselClasses from './Carousel.module.css';
-import cardClasses from './AiringShowsCard.module.css';
 
-interface ShowProps {
-	id: string;
-	title: string;
-	image: string;
-	countdown: number;
-	network: string;
-	episodeNumber: number;
-}
-
-interface AiringShowsCarouselProps {}
-
-const exampleCountdown = (days: number) =>
-	dayjs().add(days, 'day').add(5, 'hour').unix();
-
-const shows: ShowProps[] = [
-	{
-		id: '1',
-		title: 'Silicon Valley Chronicles',
-		image:
-			'https://images.unsplash.com/photo-1496346651079-8c87a4178237?ixlib=rb-4.0.3&auto=format&fit=crop&w=870&q=80',
-		countdown: exampleCountdown(2),
-		network: 'HBO',
-		episodeNumber: 5,
-	},
-	{
-		id: '2',
-		title: 'Coding Conundrums',
-		image:
-			'https://images.unsplash.com/photo-1517373116369-9bdb8cdc9f62?ixlib=rb-4.0.3&auto=format&fit=crop&w=870&q=80',
-		countdown: exampleCountdown(3),
-		network: 'Netflix',
-		episodeNumber: 7,
-	},
-	{
-		id: '3',
-		title: 'The Startup',
-		image:
-			'https://images.unsplash.com/photo-1559132137-f8a4842e6a4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=870&q=80',
-		countdown: exampleCountdown(4),
-		network: 'Amazon',
-		episodeNumber: 3,
-	},
-	{
-		id: '4',
-		title: 'Algo Wars',
-		image:
-			'https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-4.0.3&auto=format&fit=crop&w=870&q=80',
-		countdown: exampleCountdown(5),
-		network: 'Hulu',
-		episodeNumber: 2,
-	},
-	{
-		id: '5',
-		title: 'Quantum Code',
-		image:
-			'https://images.unsplash.com/photo-1504639725590-34d0984388bd?ixlib=rb-4.0.3&auto=format&fit=crop&w=774&q=80',
-		countdown: exampleCountdown(6),
-		network: 'Apple TV+',
-		episodeNumber: 1,
-	},
-	{
-		id: '6',
-		title: 'Error 404',
-		image:
-			'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=869&q=80',
-		countdown: exampleCountdown(7),
-		network: 'Disney+',
-		episodeNumber: 8,
-	},
-];
-
-interface CountdownTime {
-	days: number;
-	hours: number;
-	minutes: number;
-	seconds: number;
-}
-
-function ShowCountdown({ countdown: targetTimestamp }: { countdown: number }) {
-	const [countdown, setCountdown] = useState<CountdownTime>(() => {
-		const now = dayjs();
-		const target = dayjs.unix(targetTimestamp);
-		const diff = target.diff(now, 'second');
-		if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
-		const days = Math.floor(diff / (3600 * 24));
-		const hours = Math.floor((diff % (3600 * 24)) / 3600);
-		const minutes = Math.floor((diff % 3600) / 60);
-		const seconds = diff % 60;
-		return { days, hours, minutes, seconds };
-	});
-
-	useEffect(() => {
-		const calculateTimeLeft = () => {
-			const now = dayjs();
-			const target = dayjs.unix(targetTimestamp);
-			const diff = target.diff(now, 'second');
-
-			if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
-
-			const days = Math.floor(diff / (3600 * 24));
-			const hours = Math.floor((diff % (3600 * 24)) / 3600);
-			const minutes = Math.floor((diff % 3600) / 60);
-			const seconds = diff % 60;
-
-			return { days, hours, minutes, seconds };
-		};
-
-		setCountdown(calculateTimeLeft());
-		const timer = setInterval(() => {
-			setCountdown(calculateTimeLeft());
-		}, 1000);
-
-		return () => clearInterval(timer);
-	}, [targetTimestamp]);
-
-	if (
-		countdown.days === 0 &&
-		countdown.hours === 0 &&
-		countdown.minutes === 0 &&
-		countdown.seconds === 0
-	) {
-		return (
-			<Text
-				size='sm'
-				c='green.5'
-			>
-				Airing now!
-			</Text>
-		);
-	}
+const AiringShowsCarouselSkeleton = () => {
+	const itemWidth = 238;
+	const itemHeight = 229;
+	const slideGap = 20;
 
 	return (
-		<Text
-			size='sm'
-			c='dimmed'
+		<Container
+			size='100%'
+			px={60}
+			mx={0}
 		>
-			{countdown.days > 0 ? `${countdown.days}d ` : ''}
-			{countdown.hours}h {countdown.minutes}m {countdown.seconds}s
-		</Text>
+			<Skeleton
+				height={30}
+				width={250}
+				mb='xl'
+			/>
+			<Carousel
+				height={itemHeight}
+				align='start'
+				slideSize={itemWidth}
+				slideGap={slideGap}
+				withControls={false}
+				className='w-full pointer-events-none'
+			>
+				{Array.from({ length: 5 }).map((_, index) => (
+					<Carousel.Slide key={index}>
+						<Skeleton
+							height={itemHeight}
+							width={itemWidth}
+							radius='md'
+						/>
+					</Carousel.Slide>
+				))}
+			</Carousel>
+		</Container>
 	);
+};
+
+interface AiringShowsListProps {
+	items: ScheduleItemType[];
 }
 
-const AiringShowsCarousel = ({}: AiringShowsCarouselProps) => {
+const AiringShowsList: React.FC<AiringShowsListProps> = ({ items }) => {
+	const itemWidth = 238;
+	const itemHeight = 229;
+	const slideGap = 20;
+
 	return (
 		<Container
 			size='100%'
@@ -162,13 +67,13 @@ const AiringShowsCarousel = ({}: AiringShowsCarouselProps) => {
 			<Space h='xl' />
 
 			<Carousel
-				height={250}
+				height={itemHeight}
 				align='start'
 				loop={false}
-				slideSize={270}
-				slideGap={20}
+				slideSize={itemWidth}
+				slideGap={slideGap}
 				slidesToScroll={2}
-				withControls={true}
+				withControls={items.length > 4}
 				controlsOffset={0}
 				classNames={{
 					control: carouselClasses.carouselControl,
@@ -176,9 +81,10 @@ const AiringShowsCarousel = ({}: AiringShowsCarouselProps) => {
 				}}
 				previousControlIcon={<ChevronLeft size={40} />}
 				nextControlIcon={<ChevronRight size={40} />}
+				className='w-full'
 			>
-				{shows.map((show, index) => (
-					<Carousel.Slide key={show.id}>
+				{items.map((item, index) => (
+					<Carousel.Slide key={item.id}>
 						<motion.div
 							initial='hidden'
 							whileInView='visible'
@@ -188,46 +94,27 @@ const AiringShowsCarousel = ({}: AiringShowsCarouselProps) => {
 								visible: { opacity: 1, scale: 1 },
 								hidden: { opacity: 0, scale: 0.95 },
 							}}
+							style={{ width: itemWidth, height: itemHeight }}
 						>
-							<Paper>
-								<div className='relative'>
-									<img
-										src={show.image}
-										alt={show.title}
-										className='aspect-video w-full object-cover'
-									/>
-									<div className='absolute bottom-0 w-full bg-gradient-to-t from-black to-transparent p-4'>
-										<div className='flex items-baseline justify-between'>
-											<span className='rounded bg-accent/80 px-2 py-1 text-xs font-semibold '>
-												Episode {show.episodeNumber}
-											</span>
-											<span className='text-xs font-medium '>
-												{show.network}
-											</span>
-										</div>
-									</div>
-								</div>
-
-								<Card
-									unstyled
-									className={`rounded-md rounded-t-none p-4 ${cardClasses.cardBackground}`}
-								>
-									<h3 className='mb-2 line-clamp-1 text-lg font-bold '>
-										{show.title}
-									</h3>
-
-									<div className='mt-auto flex items-center justify-between'>
-										<div className='flex items-center space-x-2'>
-											<ShowCountdown countdown={show.countdown} />
-										</div>
-									</div>
-								</Card>
-							</Paper>
+							<ScheduleItem item={item} />
 						</motion.div>
 					</Carousel.Slide>
 				))}
 			</Carousel>
 		</Container>
+	);
+};
+
+const AiringShowsCarousel = () => {
+	const airingShows = useShowsAiringScheduleCarousel();
+
+	return (
+		<Deferred
+			data='airingShows'
+			fallback={<AiringShowsCarouselSkeleton />}
+		>
+			<AiringShowsList items={airingShows} />
+		</Deferred>
 	);
 };
 

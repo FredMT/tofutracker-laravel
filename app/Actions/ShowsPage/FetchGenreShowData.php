@@ -8,7 +8,7 @@ use App\Models\Tmdb\TmdbContentGenre;
 use App\Models\Tmdb\TmdbContentKeyword;
 use App\Models\TvShow;
 use Illuminate\Support\Collection;
-use Inertia\Inertia;
+use Illuminate\Support\Facades\Cache;
 
 class FetchGenreShowData
 {
@@ -19,15 +19,14 @@ class FetchGenreShowData
     private int $showsPerGenreLimit = 20;
 
     private array $preferredGenreOrder = [
-        'Western', 'Horror', 'Kids', 'Comedy', 'Family', 'Sci-Fi & Fantasy', 'Talk', 'Action & Adventure', 'Romance',
+        'Western', 'Horror', 'Kids', 'Drama', 'Comedy', 'Family', 'Sci-Fi & Fantasy', 'Talk', 'Action & Adventure', 'Romance',
     ];
 
     private array $excludedGenreIds = [16]; // Animation
 
-    public function execute(): callable
+    public function execute()
     {
-        return Inertia::defer(function () {
-            $topRatedShows = $this->getTopRatedShows();
+        return Cache::remember('shows_page_genre_data', now()->addWeek(), function () {             $topRatedShows = $this->getTopRatedShows();
 
             $topShowIds = $topRatedShows->pluck('id')->all();
 
