@@ -9,9 +9,9 @@ return [
     | Provider Merge Map
     |--------------------------------------------------------------------------
     |
-    | Defines how related streaming providers should be merged into a main provider.
-    | The format is:
-    | 'main_provider_id' => [array_of_related_provider_ids]
+    | Defines how streaming providers are merged and managed within the system.
+    | It includes a merge map that specifies how related provider IDs are consolidated into a
+    | main provider ID, along with standalone provider IDs that are not merged.
     |
     | Shows from each 'related_provider_id' will be added to the 'main_provider_id',
     | ensuring uniqueness. The related provider entries will then be removed
@@ -21,6 +21,13 @@ return [
     |          Roku Apple TV Channel ( hypothetical 123) into Apple TV (337).
     |          337 => [2243, 123],
     |
+    | These providers are not merged into any other provider and remain independent in the final list:
+    |
+    | Hulu (ID: 15)
+    | Spectrum (ID: 486)
+    | Adult Swim (ID: 318)
+    | Rakuten (ID: 344)
+    | Youtube Premium (ID: 188)
     */
 
     'merge_map' => [
@@ -72,9 +79,6 @@ return [
             2406,
         ],
 
-        // Hulu
-        15,
-
         // Disney
         337 => [
             508,
@@ -91,6 +95,21 @@ return [
         // Peacock
         387 => [386],
 
+        // Crave
+        230 => [305],
+
+        // WOW - Germany
+        30 => [546],
+
+        // Hotstar - India
+        122 => [2336],
+
+        // Sky
+        29 => [210, 130, 321, 1773],
+
+        // Hulu
+        15,
+
         // Spectrum
         486,
 
@@ -102,6 +121,147 @@ return [
 
         // Youtube Premium
         188,
+
+        // Okko - Russia
+        115,
+
+        // Amediateka - Russia
+        116,
+
+        // Peacock
+        387 => [386],
+
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Standalone Providers (Reference)
+    |--------------------------------------------------------------------------
+    | A list of provider IDs not typically merged. Any ID not in merge_map
+    | values is technically standalone.
+    */
+    'standalone_providers' => [
+        // Hulu
+        15,
+
+        // Spectrum
+        486,
+
+        // Adult Swim
+        318,
+
+        // Rakuten
+        344,
+
+        // Youtube Premium
+        188,
+
+        // Okko - Russia
+        115,
+
+        // Amediateka - Russia
+        116,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Link Prefixes Map
+    |--------------------------------------------------------------------------
+    | Maps provider IDs (main or related) to an array of unique URL prefixes
+    | associated with that specific provider for the scraping job.
+    */
+    'link_prefixes' => [
+
+        // --- Amazon Group ---
+        9 => ['https://watch.amazon.', 'https://www.amazon.', 'https://primevideo.com', 'https://app.primevideo.com'],
+
+        // --- Max Group ---
+        1899 => ['https://play.max.com', 'https://video.unext.jp', 'https://play.hbomax.com'],
+
+        // --- Sky Group ---
+        29 => ['https://skygo.sky.it', 'https://www.sky.de', 'https://www.sky.com', 'https://www.sky.at', 'https://skyx.sky.at', 'https://show.sky.ch'], // Sky
+
+        // WOW DE
+        30 => ['https://wowtv.de'],
+
+        // SkyShowtime
+        1773 => ['https://www.skyshowtime.com'],
+
+        // Crave
+        23 => ['https://www.crave.ca'],
+
+        // Hotstar
+        122 => ['https://www.hotstar.com'],
+
+        // --- Netflix Group ---
+        8 => ['https://www.netflix.com'],
+
+        // --- Disney Group ---
+        337 => ['https://www.disneyplus.com', 'https://disneyplus.bn5x.net'],
+
+        // --- Apple---
+        350 => ['https://tv.apple.com'],
+
+        // --- Paramount+ Group ---
+        531 => ['https://www.paramountplus.com'],
+
+        // Hulu
+        15 => ['https://www.hulu.com'],
+
+        // Youtube Premium
+        188 => ['https://www.youtube.com/watch', 'https://www.youtube.com/movie'],
+
+        // Okko - Russia
+        115 => ['https://okko.tv'],
+
+        // Amediateka - Russia
+        116 => ['https://www.amediateka.ru'],
+
+        // Peacock
+        387 => ['https://www.peacocktv.com'],
+
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Blacklisted Link Prefixes
+    |--------------------------------------------------------------------------
+    | Defines URL prefixes that should be *ignored* by the scraping job, even
+    | if they match a provider's domain. Useful for excluding links to
+    | help pages, account settings, sign-up flows, generic homepages etc.
+    | Structure can be Provider ID => [prefixes] or just a flat array of prefixes.
+    | Using Provider ID keys can make it more organized.
+    */
+    'blacklisted_link_prefixes' => [
+        // Generic (apply to any provider if matched)
+        // Use a specific key like 0 or -1 for generic blacklist
+        // Example using key 0 for generic blacklist:
+        0 => [
+            'https://skyx.sky.at/',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | URL Normalization Patterns
+    |--------------------------------------------------------------------------
+    | Defines patterns for normalizing affiliate/tracking URLs to their base provider URLs.
+    | Each entry contains:
+    | - pattern: The regex pattern to match the URL
+    | - extract: The regex pattern to extract the actual content URL
+    | - provider_id: The associated provider ID
+    | - transform: (optional) A transformation rule to apply to the extracted URL
+    */
+    'url_normalization_patterns' => [
+        [
+            'pattern' => '#^https?://disneyplus\.bn5x\.net/c/\d+/\d+/\d+\?u=([^&]+)#i',
+            'extract' => 'u=([^&]+)',
+            'provider_id' => 337,
+            'transform' => [
+                'from' => ['%3A', '%2F'],
+                'to' => [':', '/'],
+            ],
+        ],
     ],
 
 ];

@@ -13,44 +13,12 @@ export default function AuthenticatedLayout({
 }: PropsWithChildren<{}>) {
 	const [showingNavigationDropdown, setShowingNavigationDropdown] =
 		useState(false);
-	const [isVisible, setIsVisible] = useState(true);
-	const lastScrollY = useRef(0);
-	const [isSearchOpen, setIsSearchOpen] = useState(false);
 	const { backgroundStyle, gradientStyle } = useNavbarColor();
-
-	useEffect(() => {
-		const controlNavbar = () => {
-			const currentScrollY = window.scrollY;
-
-			if (isSearchOpen || currentScrollY <= 64) {
-				setIsVisible(true);
-				return;
-			}
-
-			if (currentScrollY < lastScrollY.current || currentScrollY < 10) {
-				setIsVisible(true);
-			} else {
-				setIsVisible(false);
-			}
-
-			lastScrollY.current = currentScrollY;
-		};
-
-		window.addEventListener('scroll', controlNavbar);
-
-		return () => {
-			window.removeEventListener('scroll', controlNavbar);
-		};
-	}, [isSearchOpen]);
 
 	return (
 		<div className='min-h-screen relative'>
 			<nav
-				className={`border-b fixed w-full transition-transform duration-300 z-50 backdrop-blur-md ${
-					styles.navbar
-				} ${backgroundStyle} ${
-					isVisible ? 'translate-y-0' : '-translate-y-full'
-				}`}
+				className={`border-b fixed w-full transition-transform duration-300 z-50 backdrop-blur-md ${styles.navbar} ${backgroundStyle}`}
 				style={{
 					background: gradientStyle || undefined,
 				}}
@@ -60,7 +28,7 @@ export default function AuthenticatedLayout({
 						<Group>
 							<Logo />
 							<Box visibleFrom='sixtyem'>
-								<SearchBar onOpenChange={setIsSearchOpen} />
+								<SearchBar />
 							</Box>
 						</Group>
 						<NavbarRight />

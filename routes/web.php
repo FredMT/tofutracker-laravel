@@ -1,7 +1,5 @@
 <?php
 
-use App\Actions\Trending\GetTrendingAction;
-use App\Actions\Trending\GetTrendingGenresAndWatchProvidersAction;
 use App\Http\Controllers\Activity\ToggleActivityLikeController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AnimeCollectionController;
@@ -10,7 +8,6 @@ use App\Http\Controllers\AnimeGenresController;
 use App\Http\Controllers\AnimeSeasonController;
 use App\Http\Controllers\Comment\CommentController;
 use App\Http\Controllers\Comment\VoteController;
-use App\Http\Controllers\CrawlerController;
 use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\List\ListBackdropsController;
 use App\Http\Controllers\List\ListBannerController;
@@ -43,7 +40,6 @@ use App\Http\Middleware\CheckAnimeMapping;
 use App\Http\Middleware\CheckSuperuserEmail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::get('/', HomepageController::class)->name('welcome');
 
@@ -207,6 +203,10 @@ Route::get('/tv/{id}', [TvController::class, 'show'])
     ->middleware(CheckAnimeMapping::class)
     ->name('tv.show');
 
+Route::get('/tv/providers/{id}/{location}', [TvController::class, 'getProviderLinks'])
+    ->where('id', '[0-9]+')
+    ->name('tv.providers');
+
 Route::get('/tv/{id}/season/{seasonNumber}', [TvSeasonController::class, 'show'])
     ->middleware(CheckAnimeMapping::class)
     ->name('tv.season.show');
@@ -253,6 +253,5 @@ Route::prefix('schedule')->name('schedule.')->group(function () {
 Route::prefix('shows')->name('shows.')->controller(ShowsController::class)->group(function () {
     Route::get('/', 'index')->name('index');
 });
-
 
 require __DIR__.'/auth.php';

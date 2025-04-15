@@ -22,14 +22,14 @@ export function BannerImage({
 		<Flex
 			direction='column'
 			pos='relative'
+			h={540}
+			mih={540}
 		>
 			<Image
 				src={`https://image.tmdb.org/t/p/original${backdrop_path}`}
 				alt={title}
 				fit='cover'
 				h={540}
-				mah={540}
-				mih={540}
 				height={540}
 				fallbackSrc={fallbackSrc}
 			/>
