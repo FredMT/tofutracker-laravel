@@ -38,7 +38,7 @@ class SearchController extends Controller
         $this->tmdbService = $tmdbService;
     }
 
-    public function search(Request $request): Response
+    public function search(Request $request)
     {
         // If no query parameter, return with null results
         if (! $request->has('q') || empty($request->query('q'))) {
