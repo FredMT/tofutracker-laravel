@@ -24,7 +24,7 @@ class DeleteAnimeMovieAction
         return DB::transaction(function () use ($validated, $user) {
             // Verify map_id is related to anidb_id
             $anime = AnidbAnime::findOrFail($validated['anidb_id']);
-            $mapId = $anime->map();
+            $mapId = $anime->map;
 
             if ($mapId !== $validated['map_id']) {
                 return [

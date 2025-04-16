@@ -58,7 +58,7 @@ class ListBackdropsController extends Controller
 
                 case AnidbAnime::class:
                     try {
-                        $mapId = $item->listable->map();
+                        $mapId = $item->listable->map;
                         if ($mapId) {
                             $map = AnimeMap::find($mapId);
                             if ($map) {

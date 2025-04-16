@@ -31,8 +31,7 @@ class ShowsController extends Controller
     }
 
     public function index(Request $request)
-    {
-
+    {   
         $validCountryCodes = array_keys(Config::get('countries.countries', []));
 
         $validated = $request->validate([
@@ -77,10 +76,6 @@ class ShowsController extends Controller
 
         $ignoredIds = config('trending.ignored_ids', []);
         $genreMap = config('genres', []);
-        $animeTvShowTmdbIds = AnimeMap::where('tmdb_type', 'tv')
-            ->whereNotNull('most_common_tmdb_id')
-            ->pluck('most_common_tmdb_id')
-            ->all();
 
         while ($validShows->count() < $targetShowCount) {
             $response = $this->tmdbService->getTrendingTvPaginated($page);
@@ -91,18 +86,30 @@ class ShowsController extends Controller
                 break;
             }
 
-            $filteredBatch = collect($showsFromApi)->filter(function ($show) use ($processedShowIds, $ignoredIds, $animeTvShowTmdbIds) {
+            $apiShowIds = collect($showsFromApi)->pluck('id')->filter()->all();
+            
+            if (empty($apiShowIds)) {
+                $page++;
+                continue;
+            }
+
+            $animeShowIds = AnimeMap::where('tmdb_type', 'tv')
+                ->whereNotNull('most_common_tmdb_id')
+                ->whereIn('most_common_tmdb_id', $apiShowIds)
+                ->pluck('most_common_tmdb_id')
+                ->all();
+            
+            $filteredBatch = collect($showsFromApi)->filter(function ($show) use ($processedShowIds, $ignoredIds, $animeShowIds) {
                 return isset($show['id'])
                     && ! in_array($show['id'], $processedShowIds)
                     && ! in_array($show['id'], $ignoredIds)
-                    && ! in_array($show['id'], $animeTvShowTmdbIds);
+                    && ! in_array($show['id'], $animeShowIds);
             });
 
             $batchIds = $filteredBatch->pluck('id')->all();
 
             if (empty($batchIds)) {
                 $page++;
-
                 continue;
             }
 
@@ -156,8 +163,6 @@ class ShowsController extends Controller
                         'genres' => $genres->all(),
                         'rating' => $rating,
                     ]);
-                } else {
-                    $processedShowIds[] = $show['id'];
                 }
             }
 

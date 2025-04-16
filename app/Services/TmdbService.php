@@ -288,9 +288,13 @@ class TmdbService
 
     public function getTrendingTvPaginated(int $page = 1): array
     {
-        try {
-            $response = $this->client->get('/trending/tv/day', [
-                'language' => 'en-US',
+        $CACHE_KEY = 'trending_tv_paginated_'.$page;
+        $CACHE_TTL = seconds_until('tomorrow 8 am');
+
+        return cache()->remember($CACHE_KEY, $CACHE_TTL, function () use ($page) {
+            try {
+                $response = $this->client->get('/trending/tv/day', [
+                    'language' => 'en-US',
                 'page' => $page,
             ]);
 
@@ -298,16 +302,20 @@ class TmdbService
                 throw new \Exception('TMDB trending TV request failed');
             }
 
-            return $response->json();
-        } catch (\Exception $e) {
-            logger()->error('TMDB Trending TV API error: '.$e->getMessage());
-            throw $e;
-        }
+                return $response->json();
+            } catch (\Exception $e) {
+                logger()->error('TMDB Trending TV API error: '.$e->getMessage());
+                throw $e;
+            }
+        });
     }
 
     public function getRandomTrendingBackdropImage(): ?string
     {
-        return cache()->remember('trending_backdrops', now()->addDay(), function () {
+        $CACHE_KEY = 'trending_backdrops';
+        $CACHE_TTL = seconds_until('tomorrow 8 am');
+
+        return cache()->remember($CACHE_KEY, $CACHE_TTL, function () {
             $trending = $this->getTrendingAll();
             $allBackdrops = array_merge($trending['movies'], $trending['tv']);
 
@@ -316,7 +324,7 @@ class TmdbService
                 ->filter()
                 ->values()
                 ->all();
-        })[array_rand(cache()->get('trending_backdrops', []))] ?? null;
+        })[array_rand(cache()->get($CACHE_KEY, []))] ?? null;
     }
 
     public function getBackdropAndLogoForAnidbId(int $anidbId): ?array
@@ -328,7 +336,7 @@ class TmdbService
                 return null;
             }
 
-            $mapId = $anidbAnime->map();
+            $mapId = $anidbAnime->map;
             if (! $mapId) {
                 return null;
             }

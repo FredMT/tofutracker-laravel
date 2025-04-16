@@ -4,7 +4,7 @@ namespace App\Actions\ShowsPage;
 
 use App\Models\TvShow;
 use Carbon\Carbon;
-use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -25,16 +25,6 @@ class FetchAndGroupShowsAction
 
     private string $providerType = 'flatrate';
 
-    private array $showsById = [];
-
-    private array $providersWithShowsRaw = [];
-
-    private array $processedMergeMap = [];
-
-    private array $mainProviderIdsFromConfig = [];
-
-    private array $orderedMainProviderIds = [];
-
     public function __construct()
     {
         $this->excludedGenreIds = Config::get('genres.excluded_tv_ids', [99, 10751, 10762, 10763, 10764, 10766, 10767, 10770]);
@@ -43,35 +33,38 @@ class FetchAndGroupShowsAction
     public function execute(string $countryCode = 'US'): array
     {
         try {
-            if (! $this->fetchAndProcessInitialShows()) {
+            $showsById = $this->fetchAndProcessInitialShows();
+            if (empty($showsById)) {
                 return [];
             }
 
-            $providerDataRaw = $this->fetchProviderData($countryCode);
+            logger(json_encode($showsById));
+
+            $providerDataRaw = $this->fetchProviderData($countryCode, $showsById);
             if ($providerDataRaw->isEmpty()) {
                 Log::info('No providers found for filtered shows.', ['country' => $countryCode, 'action' => __CLASS__]);
-
                 return [];
             }
 
-            $this->groupShowsByProvider($providerDataRaw);
-
-            $this->preprocessConfigAndMergeProviders();
-
-            return $this->finalizeProviderList();
-
+            $providersWithShowsRaw = $this->groupShowsByProvider($providerDataRaw, $showsById);
+            $mergeConfig = $this->processMergeConfig();
+            $providersWithShowsRaw = $this->mergeProviders($providersWithShowsRaw, $mergeConfig['processedMergeMap']);
+            $finalProvidersList = $this->buildFinalProviderList(
+                $providersWithShowsRaw,
+                $mergeConfig['mainProviderIdsFromConfig'],
+                $mergeConfig['orderedMainProviderIds']
+            );
+            return $finalProvidersList;
         } catch (\Illuminate\Database\QueryException $ex) {
             Log::error('DB Error in FetchAndGroupShowsAction: '.$ex->getMessage(), ['exception' => $ex, 'sql' => $ex->getSql() ?? 'N/A', 'bindings' => $ex->getBindings() ?? []]);
-
             return [];
         } catch (\Throwable $ex) {
             Log::error('General Error in FetchAndGroupShowsAction: '.$ex->getMessage(), ['exception' => $ex]);
-
             return [];
         }
     }
 
-    private function fetchAndProcessInitialShows(): bool
+    private function fetchAndProcessInitialShows(): array
     {
         $genrePlaceholders = implode(',', array_fill(0, count($this->excludedGenreIds), '?'));
         $sqlShows = <<<SQL
@@ -80,7 +73,15 @@ class FetchAndGroupShowsAction
             FROM tv_shows
             WHERE popularity IS NOT NULL AND vote_count > ? ORDER BY popularity DESC LIMIT ?
         )
-        SELECT tps.id, tps.data, tps.popularity, tps.vote_average, tps.vote_count
+        SELECT 
+            tps.id, 
+            tps.popularity, 
+            tps.vote_average, 
+            tps.vote_count,
+            tps.data->>'name' as name,
+            tps.data->>'poster_path' as poster_path,
+            tps.data->>'first_air_date' as first_air_date,
+            tps.data->>'last_air_date' as last_air_date
         FROM top_popular_shows tps
         WHERE
             NOT EXISTS (SELECT 1 FROM anime_maps am WHERE am.most_common_tmdb_id = tps.id AND am.tmdb_type = ?)
@@ -91,46 +92,52 @@ class FetchAndGroupShowsAction
                 AND tcg.genre_id IN ({$genrePlaceholders})
             );
         SQL;
-        $bindingsShows = array_merge([$this->minVoteCount, $this->initialLimit, $this->animeMapType, $this->contentType], $this->excludedGenreIds);
+        $bindingsShows = array_merge([
+            $this->minVoteCount,
+            $this->initialLimit,
+            $this->animeMapType,
+            $this->contentType
+        ], $this->excludedGenreIds);
 
         $showsResult = DB::select($sqlShows, $bindingsShows);
         if (empty($showsResult)) {
             Log::info('No initial shows found from DB.', ['action' => __CLASS__]);
-
-            return false;
+            return [];
         }
 
-        foreach ($showsResult as $show) {
-            $jsonData = json_decode($show->data ?? '{}', true);
-            $posterPath = Arr::get($jsonData, 'poster_path');
-            if (empty($posterPath)) {
-                continue;
-            }
-
-            $firstAirDateStr = Arr::get($jsonData, 'first_air_date');
-            $lastAirDateStr = Arr::get($jsonData, 'last_air_date');
-            $yearString = $this->calculateYearString($firstAirDateStr, $lastAirDateStr, $show->id);
-            $rating = $show->vote_average !== null ? round((float) $show->vote_average, 1) : null;
-
-            $this->showsById[$show->id] = ['id' => $show->id, 'name' => Arr::get($jsonData, 'name'), 'poster' => $posterPath,
-                'rating' => $rating, 'year' => $yearString, 'popularity' => $show->popularity,
-            ];
-        }
-
-        if (empty($this->showsById)) {
+        $showsById = $this->processShowResultsWithDirectData($showsResult);
+        if (empty($showsById)) {
             Log::info('No shows remaining after poster filtering.', ['action' => __CLASS__]);
-
-            return false;
+            return [];
         }
-
-        Log::info('Shows processed/filtered.', ['count' => count($this->showsById), 'action' => __CLASS__]);
-
-        return true;
+        Log::info('Shows processed/filtered.', ['count' => count($showsById), 'action' => __CLASS__]);
+        return $showsById;
     }
 
-    private function fetchProviderData(string $countryCode): \Illuminate\Support\Collection
+    private function processShowResultsWithDirectData(array $showsResult): array
     {
-        $showIds = array_keys($this->showsById);
+        $showsById = [];
+        foreach ($showsResult as $show) {
+            if (empty($show->poster_path)) {
+                continue;
+            }
+            $yearString = $this->calculateYearString($show->first_air_date, $show->last_air_date, $show->id);
+            $rating = $show->vote_average !== null ? round((float) $show->vote_average, 1) : null;
+            $showsById[$show->id] = [
+                'id' => $show->id,
+                'name' => $show->name,
+                'poster' => $show->poster_path,
+                'rating' => $rating,
+                'year' => $yearString,
+                'popularity' => $show->popularity,
+            ];
+        }
+        return $showsById;
+    }
+
+    private function fetchProviderData(string $countryCode, array $showsById): Collection
+    {
+        $showIds = array_keys($showsById);
         $providerDataRaw = DB::table('tmdb_content_providers as tcp')
             ->join('tmdb_providers as tp', 'tcp.provider_id', '=', 'tp.id')
             ->where('tcp.content_type', $this->contentType)
@@ -139,42 +146,43 @@ class FetchAndGroupShowsAction
             ->whereIn('tcp.content_id', $showIds)
             ->select('tcp.content_id', 'tcp.provider_id', 'tp.name as provider_name', 'tp.logo_path as provider_logo_path')
             ->get();
-
         Log::info('Provider data fetched.', ['count' => $providerDataRaw->count(), 'country' => $countryCode, 'action' => __CLASS__]);
-
         return $providerDataRaw;
     }
 
-    private function groupShowsByProvider(\Illuminate\Support\Collection $providerDataRaw): void
+    private function groupShowsByProvider(Collection $providerDataRaw, array $showsById): array
     {
-        $this->providersWithShowsRaw = [];
+        $providersWithShowsRaw = [];
         foreach ($providerDataRaw as $providerEntry) {
             $providerId = $providerEntry->provider_id;
             $showId = $providerEntry->content_id;
-            if (! isset($this->showsById[$showId])) {
+            if (! isset($showsById[$showId])) {
                 continue;
             }
-            if (! isset($this->providersWithShowsRaw[$providerId])) {
-                $this->providersWithShowsRaw[$providerId] = ['provider_id' => $providerId, 'provider_name' => $providerEntry->provider_name,
-                    'provider_logo_path' => $providerEntry->provider_logo_path, 'provider_type' => $this->providerType,
-                    'shows' => [], 'show_ids' => [],
+            if (! isset($providersWithShowsRaw[$providerId])) {
+                $providersWithShowsRaw[$providerId] = [
+                    'provider_id' => $providerId,
+                    'provider_name' => $providerEntry->provider_name,
+                    'provider_type' => $this->providerType,
+                    'shows' => [],
+                    'show_ids' => [],
                 ];
             }
-            if (! isset($this->providersWithShowsRaw[$providerId]['show_ids'][$showId])) {
-                $this->providersWithShowsRaw[$providerId]['shows'][] = $this->showsById[$showId];
-                $this->providersWithShowsRaw[$providerId]['show_ids'][$showId] = true;
+            if (! isset($providersWithShowsRaw[$providerId]['show_ids'][$showId])) {
+                $providersWithShowsRaw[$providerId]['shows'][] = $showsById[$showId];
+                $providersWithShowsRaw[$providerId]['show_ids'][$showId] = true;
             }
         }
-        Log::info('Initial provider grouping complete.', ['count' => count($this->providersWithShowsRaw), 'action' => __CLASS__]);
+        Log::info('Initial provider grouping complete.', ['count' => count($providersWithShowsRaw), 'action' => __CLASS__]);
+        return $providersWithShowsRaw;
     }
 
-    private function preprocessConfigAndMergeProviders(): void
+    private function processMergeConfig(): array
     {
-        $this->processedMergeMap = [];
-        $this->mainProviderIdsFromConfig = [];
-        $this->orderedMainProviderIds = [];
-
-        $rawMergeMapConfig = Config::get('providers.merge_map', []);
+        $processedMergeMap = [];
+        $mainProviderIdsFromConfig = [];
+        $orderedMainProviderIds = [];
+        $rawMergeMapConfig = \Illuminate\Support\Facades\Config::get('providers.merge_map', []);
         foreach ($rawMergeMapConfig as $key => $value) {
             $mainId = null;
             $relatedIds = [];
@@ -185,93 +193,98 @@ class FetchAndGroupShowsAction
                 $mainId = $value;
             } else {
                 Log::warning('Skipping invalid config entry.', ['key' => $key, 'value' => $value]);
-
                 continue;
             }
             if (! is_int($mainId) || $mainId <= 0) {
                 Log::warning('Invalid main ID in config.', ['id' => $mainId]);
-
                 continue;
             }
-
-            $this->processedMergeMap[$mainId] = $relatedIds;
-            $this->mainProviderIdsFromConfig[$mainId] = true;
-            $this->orderedMainProviderIds[] = $mainId;
+            $processedMergeMap[$mainId] = $relatedIds;
+            $mainProviderIdsFromConfig[$mainId] = true;
+            $orderedMainProviderIds[] = $mainId;
         }
-        Log::debug('Provider config map processed.', ['main_ids_count' => count($this->mainProviderIdsFromConfig), 'action' => __CLASS__]);
+        Log::debug('Provider config map processed.', ['main_ids_count' => count($mainProviderIdsFromConfig), 'action' => __CLASS__]);
+        return [
+            'processedMergeMap' => $processedMergeMap,
+            'mainProviderIdsFromConfig' => $mainProviderIdsFromConfig,
+            'orderedMainProviderIds' => $orderedMainProviderIds,
+        ];
+    }
 
-        foreach ($this->processedMergeMap as $mainProviderId => $relatedProviderIds) {
+    private function mergeProviders(array $providersWithShowsRaw, array $processedMergeMap): array
+    {
+        foreach ($processedMergeMap as $mainProviderId => $relatedProviderIds) {
             if (empty($relatedProviderIds)) {
                 continue;
             }
-            if (! isset($this->providersWithShowsRaw[$mainProviderId])) {
+            if (! isset($providersWithShowsRaw[$mainProviderId])) {
                 continue;
             }
             foreach ($relatedProviderIds as $relatedProviderId) {
-                if (isset($this->providersWithShowsRaw[$relatedProviderId])) {
-                    foreach ($this->providersWithShowsRaw[$relatedProviderId]['shows'] as $showToMerge) {
+                if (isset($providersWithShowsRaw[$relatedProviderId])) {
+                    foreach ($providersWithShowsRaw[$relatedProviderId]['shows'] as $showToMerge) {
                         $showIdToMerge = $showToMerge['id'];
-                        if (! isset($this->providersWithShowsRaw[$mainProviderId]['show_ids'][$showIdToMerge])) {
-                            $this->providersWithShowsRaw[$mainProviderId]['shows'][] = $showToMerge;
-                            $this->providersWithShowsRaw[$mainProviderId]['show_ids'][$showIdToMerge] = true;
+                        if (! isset($providersWithShowsRaw[$mainProviderId]['show_ids'][$showIdToMerge])) {
+                            $providersWithShowsRaw[$mainProviderId]['shows'][] = $showToMerge;
+                            $providersWithShowsRaw[$mainProviderId]['show_ids'][$showIdToMerge] = true;
                         }
                     }
-                    unset($this->providersWithShowsRaw[$relatedProviderId]);
+                    unset($providersWithShowsRaw[$relatedProviderId]);
                 }
             }
         }
-        Log::info('Provider merging complete.', ['count_after_merge' => count($this->providersWithShowsRaw), 'action' => __CLASS__]);
+        Log::info('Provider merging complete.', ['count_after_merge' => count($providersWithShowsRaw), 'action' => __CLASS__]);
+        return $providersWithShowsRaw;
     }
 
-    private function finalizeProviderList(): array
+    private function buildFinalProviderList(array $providersWithShowsRaw, array $mainProviderIdsFromConfig, array $orderedMainProviderIds): array
     {
         $processedProviders = [];
-        foreach ($this->providersWithShowsRaw as $providerId => $providerData) {
-            if (! isset($this->mainProviderIdsFromConfig[$providerId])) {
+        foreach ($providersWithShowsRaw as $providerId => $providerData) {
+            if (! isset($mainProviderIdsFromConfig[$providerId])) {
                 continue;
             }
-
-            usort($providerData['shows'], fn ($a, $b) => ($b['popularity'] ?? 0) <=> ($a['popularity'] ?? 0));
-
-            $currentShowCount = count($providerData['shows']);
-            if ($currentShowCount < $this->maxShowsPerProvider) {
-                $neededCount = $this->maxShowsPerProvider - $currentShowCount;
-                $existingShowIds = array_column($providerData['shows'], 'id');
-
-                $fillShows = $this->fetchFillShows(
-                    $providerId,
-                    $this->contentType, $providerData['country_code'] ?? 'US', $this->providerType, $this->minVoteCount, $existingShowIds,
-                    $neededCount
-                );
-
-                if (! empty($fillShows)) {
-                    $providerData['shows'] = array_merge($providerData['shows'], $fillShows);
-                }
-            }
-
-            $providerData['shows'] = array_slice($providerData['shows'], 0, $this->maxShowsPerProvider);
-
-            foreach ($providerData['shows'] as $index => $show) {
-                unset($providerData['shows'][$index]['popularity']);
-            }
-
+            $providerData['shows'] = $this->sortAndFillProviderShows($providerData);
             unset($providerData['show_ids'], $providerData['provider_type']);
-
             if (! empty($providerData['shows'])) {
                 $processedProviders[$providerId] = $providerData;
             }
         }
-
         $finalProvidersList = [];
-        foreach ($this->orderedMainProviderIds as $mainId) {
+        foreach ($orderedMainProviderIds as $mainId) {
             if (isset($processedProviders[$mainId])) {
                 $finalProvidersList[] = $processedProviders[$mainId];
             }
         }
-
         Log::info('Final provider list created and ordered.', ['final_count' => count($finalProvidersList), 'action' => __CLASS__]);
-
         return $finalProvidersList;
+    }
+
+    private function sortAndFillProviderShows(array $providerData): array
+    {
+        usort($providerData['shows'], fn ($a, $b) => ($b['popularity'] ?? 0) <=> ($a['popularity'] ?? 0));
+        $currentShowCount = count($providerData['shows']);
+        if ($currentShowCount < $this->maxShowsPerProvider) {
+            $neededCount = $this->maxShowsPerProvider - $currentShowCount;
+            $existingShowIds = array_column($providerData['shows'], 'id');
+            $fillShows = $this->fetchFillShows(
+                $providerData['provider_id'],
+                $this->contentType,
+                $providerData['country_code'] ?? 'US',
+                $this->providerType,
+                $this->minVoteCount,
+                $existingShowIds,
+                $neededCount
+            );
+            if (! empty($fillShows)) {
+                $providerData['shows'] = array_merge($providerData['shows'], $fillShows);
+            }
+        }
+        $providerData['shows'] = array_slice($providerData['shows'], 0, $this->maxShowsPerProvider);
+        foreach ($providerData['shows'] as $index => $show) {
+            unset($providerData['shows'][$index]['popularity']);
+        }
+        return $providerData['shows'];
     }
 
     private function fetchFillShows(
@@ -306,9 +319,12 @@ class FetchAndGroupShowsAction
         $sqlFill = '
             SELECT
                 ts.id,
-                ts.data,
-                ts.vote_average
-                -- ts.popularity -- Only needed if re-sorting combined list later
+                ts.data->>\'name\' as name,
+                ts.data->>\'poster_path\' as poster_path,
+                ts.data->>\'first_air_date\' as first_air_date,
+                ts.data->>\'last_air_date\' as last_air_date,
+                ts.vote_average,
+                ts.popularity
             FROM tmdb_content_providers tcp
             JOIN tv_shows ts ON tcp.content_id = ts.id
             WHERE tcp.provider_id = ?
@@ -331,36 +347,28 @@ class FetchAndGroupShowsAction
             $fillResults = DB::select($sqlFill, $bindings);
             $processedFillShows = [];
             foreach ($fillResults as $show) {
-
-                $jsonData = json_decode($show->data ?? '{}', true);
-                $posterPath = Arr::get($jsonData, 'poster_path');
+                $posterPath = $show->poster_path;
                 if (empty($posterPath)) {
                     continue;
                 }
-
-                $firstAirDateStr = Arr::get($jsonData, 'first_air_date');
-                $lastAirDateStr = Arr::get($jsonData, 'last_air_date');
+                $firstAirDateStr = $show->first_air_date;
+                $lastAirDateStr = $show->last_air_date;
                 $yearString = $this->calculateYearString($firstAirDateStr, $lastAirDateStr, $show->id);
                 $rating = $show->vote_average !== null ? round((float) $show->vote_average, 1) : null;
-
                 $processedFillShows[] = [
                     'id' => $show->id,
-                    'name' => Arr::get($jsonData, 'name'),
+                    'name' => $show->name,
                     'poster' => $posterPath,
                     'rating' => $rating,
                     'year' => $yearString,
                 ];
             }
-
             return $processedFillShows;
-
         } catch (\Illuminate\Database\QueryException $ex) {
             Log::error('DB Error fetching fill shows: '.$ex->getMessage(), ['provider_id' => $providerId, 'sql' => $sqlFill, 'bindings' => $bindings, 'exception' => $ex]);
-
             return [];
         } catch (\Throwable $ex) {
             Log::error('General error fetching fill shows: '.$ex->getMessage(), ['provider_id' => $providerId, 'exception' => $ex]);
-
             return [];
         }
     }

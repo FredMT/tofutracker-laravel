@@ -19,7 +19,7 @@ class RateAnimeMovieAction
     {
         return DB::transaction(function () use ($validated, $user) {
             $anime = AnidbAnime::findOrFail($validated['anidb_id']);
-            $mapId = $anime->map();
+            $mapId = $anime->map;
 
             if ($mapId !== (int) $validated['map_id']) {
                 return [

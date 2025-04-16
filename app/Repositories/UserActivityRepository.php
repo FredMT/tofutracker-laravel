@@ -276,9 +276,9 @@ class UserActivityRepository
             'anidb_id' => $episode->userAnime->anidb_id,
             'poster_path' => $episode->episode->poster ?? $anime?->poster,
             'poster_from' => $episode->episode->poster ? 'tvdb' : 'anidb',
-            'map_id' => $anime?->map(),
+            'map_id' => $anime?->map,
             'anime_title' => $anime?->title,
-            'anime_link' => $anime ? "/anime/{$anime->map()}/season/{$anime->id}" : null,
+            'anime_link' => $anime ? "/anime/{$anime->map}/season/{$anime->id}" : null,
             'type' => 'anime_episode',
         ]);
 
@@ -302,12 +302,12 @@ class UserActivityRepository
         $metadata = array_merge($metadata ?? [], [
             'user_anime_id' => $userAnime->id,
             'anidb_id' => $userAnime->anidb_id,
-            'map_id' => $anime?->map(),
+            'map_id' => $anime?->map,
             'is_movie' => $userAnime->is_movie,
             'poster_path' => $anime?->poster,
             'poster_from' => 'anidb',
             'anime_title' => $anime?->title,
-            'anime_link' => $anime ? "/anime/{$anime->map()}/season/{$anime->id}" : null,
+            'anime_link' => $anime ? "/anime/{$anime->map}/season/{$anime->id}" : null,
             'type' => 'anime_season',
         ]);
 

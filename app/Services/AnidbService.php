@@ -6,6 +6,7 @@ use App\Models\Anidb\AnidbAnime;
 use App\Models\Anidb\AnidbSeiyuu;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
 
 class AnidbService
 {
@@ -440,5 +441,24 @@ class AnidbService
                 continue;
             }
         }
+    }
+
+    public function getHotAnime()
+    {
+        $cacheKey = 'anidb_hot_anime';
+        $cacheDuration = seconds_until('tomorrow 8 am');
+        $clientName = config('services.anidb.client_name');
+
+        return cache()->remember($cacheKey, $cacheDuration, function () use ($clientName) {
+            $url = "http://api.anidb.net:9001/httpapi?client={$clientName}&clientver=1&protover=1&request=hotanime";
+
+        $response = Http::get($url);
+        $xml = simplexml_load_string($response->body());
+        $animeIds = [];
+        foreach ($xml->anime as $anime) {
+                $animeIds[] = (int) $anime['id'];
+            }
+            return $animeIds;
+        });
     }
 }

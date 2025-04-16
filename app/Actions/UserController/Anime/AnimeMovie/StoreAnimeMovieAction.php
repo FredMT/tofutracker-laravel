@@ -16,7 +16,7 @@ class StoreAnimeMovieAction
     {
         return DB::transaction(function () use ($validated, $user) {
             $anime = AnidbAnime::findOrFail($validated['anidb_id']);
-            $mapId = $anime->map();
+            $mapId = $anime->map;
 
             if ($mapId !== $validated['map_id']) {
                 return [

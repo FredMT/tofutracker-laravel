@@ -189,7 +189,7 @@ class SearchController extends Controller
 
                 foreach ($animeMappings as $tmdbId => $mapping) {
                     $anidbAnime = $anidbAnimes->get($mapping->anidb_id);
-                    if ($anidbAnime && ($mapId = $anidbAnime->map())) {
+                    if ($anidbAnime && ($mapId = $anidbAnime->map)) {
                         $categorizations[$tmdbId] = [
                             'type' => 'anime',
                             'map_id' => $mapId,

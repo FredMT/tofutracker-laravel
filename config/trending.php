@@ -18,6 +18,13 @@ return [
         12971, // Dragon Ball Z
         236994, // Dragon Ball DAIMA
         62715, // Dragon Ball Super
+        61709, // Dragon Ball Z Kai
+        30983, // Detective Conan
+        3570, // Sailor Moon
+        57911, // Doraemon
+        57912, // Doraemon
+        65733, // Doraemon
+
     ],
 
     /*

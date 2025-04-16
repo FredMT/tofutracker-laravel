@@ -35,13 +35,13 @@ class CreateUserAnimePlayAction
                 metadata: [
                     'user_anime_id' => $playable->userAnime->id,
                     'anidb_id' => $playable->userAnime->anidb_id,
-                    'map_id' => $anime?->map(),
+                    'map_id' => $anime?->map,
                     'user_anime_episode_ids' => [$playable->id],
                     'count' => 1,
                     'poster_path' => $playable?->episode->poster,
                     'poster_from' => 'tvdb',
                     'anime_title' => $anime?->title,
-                    'anime_link' => "/anime/{$anime?->map()}/season/{$anime->id}",
+                    'anime_link' => "/anime/{$anime?->map}/season/{$anime->id}",
                     'type' => 'anime_episode',
                 ]
             );
@@ -53,12 +53,12 @@ class CreateUserAnimePlayAction
                 metadata: [
                     'user_anime_id' => $playable->id,
                     'anidb_id' => $playable->anidb_id,
-                    'map_id' => $anime?->map(),
+                    'map_id' => $anime?->map,
                     'is_movie' => $playable->is_movie,
                     'poster_path' => $anime->poster,
                     'poster_from' => 'anidb',
                     'anime_title' => $anime?->title,
-                    'anime_link' => "/anime/{$anime?->map()}/season/{$anime->id}",
+                    'anime_link' => "/anime/{$anime?->map}/season/{$anime->id}",
                     'type' => 'anime_season',
                 ]
             );

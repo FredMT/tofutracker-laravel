@@ -5,6 +5,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AnimeCollectionController;
 use App\Http\Controllers\AnimeController;
 use App\Http\Controllers\AnimeGenresController;
+use App\Http\Controllers\AnimesController;
 use App\Http\Controllers\AnimeSeasonController;
 use App\Http\Controllers\Comment\CommentController;
 use App\Http\Controllers\Comment\VoteController;
@@ -251,6 +252,10 @@ Route::prefix('schedule')->name('schedule.')->group(function () {
 });
 
 Route::prefix('shows')->name('shows.')->controller(ShowsController::class)->group(function () {
+    Route::get('/', 'index')->name('index');
+});
+
+Route::prefix('animes')->name('animes.')->controller(AnimesController::class)->group(function () {
     Route::get('/', 'index')->name('index');
 });
 

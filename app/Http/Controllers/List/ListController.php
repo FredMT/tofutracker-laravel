@@ -228,7 +228,7 @@ class ListController extends Controller
         ];
 
         try {
-            $mapId = $anime->map();
+            $mapId = $anime->map;
             if ($mapId) {
                 $data['link'] = "{$baseUrl}/anime/{$mapId}/season/{$anime->id}";
             }
@@ -305,7 +305,7 @@ class ListController extends Controller
 
             case AnidbAnime::class:
                 try {
-                    $mapId = $listable->map();
+                    $mapId = $listable->map;
                     if (! $mapId || ! in_array($mapId, $this->processedAnimeIds)) {
                         return $listable->runtime ?? 0;
                     }

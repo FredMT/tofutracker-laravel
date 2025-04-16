@@ -37,7 +37,7 @@ class CheckAnimeMapping
             return $next($request);
         }
 
-        $mapId = AnidbAnime::find($anidbId)->map();
+        $mapId = AnidbAnime::find($anidbId)->map;
 
         return $mapId
             ? redirect()->to("/anime/{$mapId}")

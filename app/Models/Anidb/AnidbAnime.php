@@ -43,7 +43,7 @@ class AnidbAnime extends Model
         'rating',
         'rating_count',
         'picture',
-        'map_id'
+        'map_id',
     ];
 
     protected $casts = [
@@ -107,7 +107,7 @@ class AnidbAnime extends Model
     {
         return Attribute::get(function () {
             try {
-                $mapId = $this->map();
+                $mapId = $this->map_id;
                 if ($mapId) {
                     $map = AnimeMap::find($mapId);
 
@@ -200,46 +200,6 @@ class AnidbAnime extends Model
         );
     }
 
-    private function getMapId($anidbId)
-    {
-        $mapId = AnimeChainEntry::where('anime_id', $anidbId)
-            ->join('anime_prequel_sequel_chains', 'anime_chain_entries.chain_id', '=', 'anime_prequel_sequel_chains.id')
-            ->value('anime_prequel_sequel_chains.map_id');
-
-        if ($mapId) {
-            return $mapId;
-        }
-
-        $mapId = AnimeRelatedEntry::where('anime_id', $anidbId)->value('map_id');
-
-        if ($mapId) {
-            return $mapId;
-        }
-
-        throw new \Exception('Map ID not found for Anidb ID: '.$anidbId);
-    }
-
-    public function map()
-    {
-        return AnimeMap::query()
-            ->where(function ($query) {
-                // Through anime_chain_entries
-                $query->whereExists(function ($subquery) {
-                    $subquery->from('anime_prequel_sequel_chains')
-                        ->join('anime_chain_entries', 'anime_chain_entries.chain_id', '=', 'anime_prequel_sequel_chains.id')
-                        ->whereColumn('anime_prequel_sequel_chains.map_id', '=', 'anime_maps.id')
-                        ->where('anime_chain_entries.anime_id', '=', $this->id);
-                })
-                    // Through anime_related_entries
-                    ->orWhereExists(function ($subquery) {
-                        $subquery->from('anime_related_entries')
-                            ->whereColumn('anime_related_entries.map_id', '=', 'anime_maps.id')
-                            ->where('anime_related_entries.anime_id', '=', $this->id);
-                    });
-            })
-            ->select('anime_maps.id as map_id')
-            ->value('map_id');
-    }
 
     public function comments(): MorphMany
     {
@@ -263,6 +223,13 @@ class AnidbAnime extends Model
 
             return [];
         }
+    }
+
+    public function map(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->map_id;
+        });
     }
 
     public function specialEpisodes(): array
@@ -307,5 +274,13 @@ class AnidbAnime extends Model
         }
 
         return ColorPalette::getPalette($backdrop);
+    }
+
+    public function logo(): Attribute
+    {
+        return Attribute::get(function () {
+            $map = AnimeMap::find($this->map_id);
+            return $map->getTmdbModel()->highestVotedLogoPath ?? null;
+        });
     }
 }

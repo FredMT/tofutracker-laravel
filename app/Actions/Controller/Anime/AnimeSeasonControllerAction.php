@@ -44,7 +44,7 @@ class AnimeSeasonControllerAction
         unset($animeData['characters']);
 
         return array_merge($animeData, [
-            'map_id' => $anime->map(),
+            'map_id' => $anime->map,
             'credits' => $credits,
             'related_anime' => $relatedAnime,
             'similar_anime' => $similarAnime,

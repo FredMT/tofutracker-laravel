@@ -205,7 +205,10 @@ export function AddNewChainEntryDrawer({
 										<Image
 											src={`https://anidb.net/images/main/${animeResult.picture}`}
 											alt={animeResult.title_main}
-											mah={150}
+											w={100}
+											h={150}
+											width={100}
+											height={150}
 										/>
 									</AspectRatio>
 									<Stack>

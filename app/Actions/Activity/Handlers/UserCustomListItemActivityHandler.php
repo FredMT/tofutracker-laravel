@@ -162,8 +162,8 @@ class UserCustomListItemActivityHandler implements ActivityHandlerInterface
             'App\Models\TvSeason' => "/tv/{$item->show->id}/season/{$item->season_number}",
             'App\Models\TvEpisode' => "/tv/{$item->show->id}/season/{$item->season_number}",
             'App\Models\Anime\AnimeMap' => "/anime/{$item->id}",
-            'App\Models\Anidb\AnidbAnime' => "/anime/{$item->map()}/season/{$item->id}",
-            'App\Models\Anime\AnimeEpisodeMapping' => "/anime/{$item->anime->map()}/season/{$item->anime->id}",
+            'App\Models\Anidb\AnidbAnime' => "/anime/{$item->map}/season/{$item->id}",
+            'App\Models\Anime\AnimeEpisodeMapping' => "/anime/{$item->anime->map}/season/{$item->anime->id}",
             default => ''
         };
     }
