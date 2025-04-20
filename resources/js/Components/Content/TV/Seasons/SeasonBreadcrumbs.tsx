@@ -1,19 +1,19 @@
-import { Box, Breadcrumbs, Group, Menu, Text, Tooltip } from "@mantine/core";
-import { Link } from "@inertiajs/react";
-import { Links } from "@/types";
-import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
-import classes from "./SeasonBreadcrumbs.module.css";
-import { useBreadcrumbLinks } from "@/propsHooks/useBreadcrumbLinks";
-import { useAllContentTypes } from "@/propsHooks/useAllContentTypes";
+import { Box, Breadcrumbs, Group, Menu, Text, Tooltip } from '@mantine/core';
+import { Link } from '@inertiajs/react';
+import { Links } from '@/types';
+import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import classes from './SeasonBreadcrumbs.module.css';
+import { useBreadcrumbLinks } from '@/propsHooks/useBreadcrumbLinks';
+import { useAllContentTypes } from '@/propsHooks/useAllContentTypes';
 
 export default function SeasonBreadcrumbs() {
 	const type = useAllContentTypes();
 	const links = useBreadcrumbLinks();
 
-	if (!links || (type !== "tvseason" && type !== "animeseason")) return null;
+	if (!links || (type !== 'tvseason' && type !== 'animeseason')) return null;
 
 	const currentSeasonIndex = links.seasons.findIndex(
-		(season) => season.is_current,
+		(season) => season.is_current
 	);
 	const previousSeason =
 		currentSeasonIndex > 0 ? links.seasons[currentSeasonIndex - 1] : null;
@@ -23,42 +23,40 @@ export default function SeasonBreadcrumbs() {
 			: null;
 	const currentSeason = links.seasons[currentSeasonIndex];
 
-	const getSeasonName = (season: Links["seasons"][0], isDropdown = false) => {
+	const getSeasonName = (season: Links['seasons'][0], isDropdown = false) => {
 		if (isDropdown) {
-			if (type === "animeseason") {
+			if (type === 'animeseason') {
 				const truncatedName =
 					season.name.length > 50
 						? `${season.name.slice(0, 50)}...`
 						: season.name;
-				return `Season ${
-					season.season_number ?? ""
-				} - ${truncatedName}`;
+				return `Season ${season.season_number ?? ''} - ${truncatedName}`;
 			}
 			return season.name;
 		}
-		// return `Season ${season.season_number}`;
 		return `${
-			season.season_number
-				? `Season ${season.season_number}`
-				: season.name
+			season.season_number ? `Season ${season.season_number}` : season.name
 		}`;
 	};
 
 	const items = [
-		<Link href={links.show.url} key="show" prefetch>
+		<Link
+			href={links.show.url}
+			key='show'
+			prefetch
+		>
 			<Text className={classes.seasonBreadcrumbs}>
-				{links.show.name ??
-					(type === "animeseason" ? "Anime" : "TV Show")}
+				{links.show.name ?? (type === 'animeseason' ? 'Anime' : 'TV Show')}
 			</Text>
 		</Link>,
 		links.seasons.length > 1 ? (
 			<Menu
-				key="season"
-				trigger="click-hover"
+				key='season'
+				trigger='click-hover'
 				openDelay={100}
 				closeDelay={200}
 			>
-				<Box style={{ cursor: "pointer" }}>
+				<Box style={{ cursor: 'pointer' }}>
 					<Menu.Target>
 						<Group gap={4}>
 							<Text className={classes.seasonBreadcrumbs}>
@@ -68,7 +66,7 @@ export default function SeasonBreadcrumbs() {
 						</Group>
 					</Menu.Target>
 				</Box>
-				<Menu.Dropdown maw="95%">
+				<Menu.Dropdown maw='95%'>
 					{links.seasons.map((season) => (
 						<Menu.Item
 							key={season.url}
@@ -82,9 +80,8 @@ export default function SeasonBreadcrumbs() {
 										w={6}
 										h={6}
 										style={{
-											borderRadius: "50%",
-											backgroundColor:
-												"var(--mantine-primary-color-filled)",
+											borderRadius: '50%',
+											backgroundColor: 'var(--mantine-primary-color-filled)',
 										}}
 									/>
 								)
@@ -100,12 +97,18 @@ export default function SeasonBreadcrumbs() {
 				</Menu.Dropdown>
 			</Menu>
 		) : (
-			<Text key="season" className={classes.seasonBreadcrumbs}>
+			<Text
+				key='season'
+				className={classes.seasonBreadcrumbs}
+			>
 				{getSeasonName(currentSeason)}
 			</Text>
 		),
 		links.seasons.length > 1 && (
-			<Group gap={2} key="navigation">
+			<Group
+				gap={2}
+				key='navigation'
+			>
 				{previousSeason && (
 					<Link href={previousSeason.url}>
 						<Text className={classes.seasonBreadcrumbs}>
@@ -125,7 +128,7 @@ export default function SeasonBreadcrumbs() {
 	];
 
 	return (
-		<Group align="center">
+		<Group align='center'>
 			<Breadcrumbs>{items}</Breadcrumbs>
 		</Group>
 	);

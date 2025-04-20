@@ -6,12 +6,12 @@ use App\Jobs\UpdateTvSeason;
 use App\Jobs\UpdateTvShow;
 use App\Models\Tmdb\Genre;
 use App\Models\Tmdb\TmdbKeyword;
+use App\Models\Tmdb\TmdbVideo;
 use App\Models\TmdbProvider;
 use App\Models\TvEpisode;
 use App\Models\TvSeason;
 use App\Models\TvShow;
 use App\Services\TmdbService;
-use App\Models\Tmdb\TmdbVideo;
 use Illuminate\Support\Facades\Cache;
 
 class TvShowActions
@@ -22,7 +22,7 @@ class TvShowActions
 
     public function fetchTvShow(string $id): array
     {
-        return Cache::remember("tv.{$id}", now()->addMinutes(15), function () use ($id) {
+        return Cache::remember("tv.{$id}", now()->addDay(), function () use ($id) {
 
             $tvShow = $this->getShowAndQueueUpdateIfNeeded($id);
 
@@ -37,15 +37,16 @@ class TvShowActions
     {
         $tvShow = TvShow::find($tvId);
 
-        $showData = $this->tmdbService->getTv($tvId);
-
         if (! $tvShow) {
+            $showData = $this->tmdbService->getTv($tvId);
+
             return $this->createTvShow($showData);
         }
 
-        if ($tvShow->etag !== $showData['etag']) {
-            UpdateTvShow::dispatch($tvShow, $showData)
-                ->afterCommit();
+        $showData = $this->tmdbService->getTv($tvId, $tvShow->etag);
+
+        if ($showData !== null) {
+            UpdateTvShow::dispatch($tvShow, $showData, false);
         }
 
         return $tvShow;
@@ -64,11 +65,10 @@ class TvShowActions
             return $this->createTvSeason($tvShow, (int) $seasonNumber);
         }
 
-        // Check if season needs update
-        $latestSeasonData = $this->tmdbService->getSeason($tvShow->id, $seasonNumber);
-        if ($season->etag !== $latestSeasonData['etag']) {
-            UpdateTvSeason::dispatch($season, $latestSeasonData)
-                ->afterCommit();
+        $latestSeasonData = $this->tmdbService->getSeason($tvShow->id, $seasonNumber, $season->etag);
+
+        if ($latestSeasonData !== null) {
+            UpdateTvSeason::dispatch($season, $latestSeasonData);
         }
 
         return $season;
@@ -92,6 +92,9 @@ class TvShowActions
             'id' => $data['data']['id'],
             'data' => $showData,
             'etag' => $data['etag'],
+            'popularity' => $showData['popularity'] ?? null,
+            'vote_average' => $showData['vote_average'] ?? null,
+            'vote_count' => $showData['vote_count'] ?? null,
         ]);
 
         foreach ($seasons as $seasonData) {
@@ -143,10 +146,18 @@ class TvShowActions
         try {
             if (! $data) {
                 $tmdbService = app(TmdbService::class);
-                $response = $tmdbService->getTv($tvShow->id);
 
-                if ($checkETag && $tvShow->etag === $response['etag']) {
-                    return $tvShow;
+                if ($checkETag) {
+                    // Use the existing ETag for conditional request
+                    $response = $tmdbService->getTv($tvShow->id, $tvShow->etag);
+
+                    // If null is returned, it means the resource has not changed (304 Not Modified)
+                    if ($response === null) {
+                        return $tvShow;
+                    }
+                } else {
+                    // Standard request without ETag check
+                    $response = $tmdbService->getTv($tvShow->id);
                 }
 
                 $data = $response;
@@ -166,9 +177,9 @@ class TvShowActions
             ]);
 
             $this->processWatchProviders($tvShow);
-            
+
             $this->processGenres($tvShow);
-            
+
             $this->processKeywords($tvShow);
 
             $this->processVideos($tvShow);
@@ -193,28 +204,28 @@ class TvShowActions
     private function processWatchProviders(TvShow $tvShow): void
     {
         $watchProviders = $tvShow->data['watch/providers']['results'] ?? [];
-        
+
         if (empty($watchProviders)) {
             return;
         }
 
         foreach ($watchProviders as $countryCode => $countryData) {
             foreach (['flatrate', 'buy', 'rent', 'ads', 'free'] as $providerType) {
-                if (!isset($countryData[$providerType])) {
+                if (! isset($countryData[$providerType])) {
                     continue;
                 }
 
                 foreach ($countryData[$providerType] as $providerData) {
                     $providerId = $providerData['provider_id'];
-                    
+
                     $provider = TmdbProvider::updateOrCreate(
                         ['id' => $providerId],
                         [
                             'name' => $providerData['provider_name'],
-                            'logo_path' => $providerData['logo_path']
+                            'logo_path' => $providerData['logo_path'],
                         ]
                     );
-                    
+
                     $tvShow->attachProvider($provider, $providerType, $countryCode);
                 }
             }
@@ -224,7 +235,7 @@ class TvShowActions
     private function processGenres(TvShow $tvShow): void
     {
         $genres = $tvShow->data['genres'] ?? [];
-        
+
         if (empty($genres)) {
             return;
         }
@@ -232,17 +243,17 @@ class TvShowActions
         $tvShow->genreRelations()->delete();
 
         foreach ($genres as $genreData) {
-            if (!isset($genreData['id']) || !isset($genreData['name'])) {
+            if (! isset($genreData['id']) || ! isset($genreData['name'])) {
                 continue;
             }
-            
+
             $genre = Genre::updateOrCreate(
                 ['id' => $genreData['id']],
                 [
                     'name' => $genreData['name'],
                 ]
             );
-            
+
             $tvShow->attachGenre($genre);
         }
     }
@@ -251,7 +262,7 @@ class TvShowActions
     {
         // TV show keywords are nested in 'keywords.results'
         $keywords = $tvShow->data['keywords']['results'] ?? [];
-        
+
         if (empty($keywords)) {
             return;
         }
@@ -259,17 +270,17 @@ class TvShowActions
         $tvShow->keywordRelations()->delete();
 
         foreach ($keywords as $keywordData) {
-            if (!isset($keywordData['id']) || !isset($keywordData['name'])) {
+            if (! isset($keywordData['id']) || ! isset($keywordData['name'])) {
                 continue;
             }
-            
+
             $keyword = TmdbKeyword::updateOrCreate(
                 ['id' => $keywordData['id']],
                 [
                     'name' => $keywordData['name'],
                 ]
             );
-            
+
             $tvShow->attachKeyword($keyword);
         }
     }
@@ -278,7 +289,7 @@ class TvShowActions
     {
         // TV show videos are nested in 'videos.results'
         $videos = $tvShow->data['videos']['results'] ?? [];
-        
+
         if (empty($videos)) {
             return;
         }
@@ -286,10 +297,10 @@ class TvShowActions
         $tvShow->videoRelations()->delete();
 
         foreach ($videos as $videoData) {
-            if (!isset($videoData['id']) || !isset($videoData['name'])) {
+            if (! isset($videoData['id']) || ! isset($videoData['name'])) {
                 continue;
             }
-            
+
             $video = TmdbVideo::updateOrCreate(
                 ['id' => $videoData['id']],
                 [
@@ -304,7 +315,7 @@ class TvShowActions
                     'published_at' => isset($videoData['published_at']) ? \Carbon\Carbon::parse($videoData['published_at']) : null,
                 ]
             );
-            
+
             $tvShow->attachVideo($video);
         }
     }
@@ -314,10 +325,15 @@ class TvShowActions
         try {
             if (! $data) {
                 $tmdbService = app(TmdbService::class);
-                $response = $tmdbService->getSeason($tvSeason->show_id, $tvSeason->season_number);
 
-                if ($checkETag && $tvSeason->etag === $response['etag']) {
-                    return $tvSeason;
+                if ($checkETag) {
+                    $response = $tmdbService->getSeason($tvSeason->show_id, $tvSeason->season_number, $tvSeason->etag);
+
+                    if ($response === null) {
+                        return $tvSeason;
+                    }
+                } else {
+                    $response = $tmdbService->getSeason($tvSeason->show_id, $tvSeason->season_number);
                 }
 
                 $data = $response;

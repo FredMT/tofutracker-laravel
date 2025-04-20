@@ -49,7 +49,7 @@ class Movie extends Model
     public function backdrop(): Attribute
     {
         return Attribute::get(function () {
-            return $this->data['backdrop_path'];
+            return $this->data['backdrop_path'] ?? null;
         });
     }
 
@@ -72,13 +72,6 @@ class Movie extends Model
             $releaseYear = Carbon::parse($releaseDate)->year;
 
             return $releaseYear;
-        });
-    }
-
-    public function voteAverage(): Attribute
-    {
-        return Attribute::get(function () {
-            return number_format($this->data['vote_average'], 2, '.', '');
         });
     }
 
@@ -122,18 +115,6 @@ class Movie extends Model
     {
         return Attribute::get(function () {
             return $this->data['popularity'] ?? null;
-        });
-    }
-
-    public function genres(): Attribute
-    {
-        return Attribute::get(function () {
-            return collect($this->data['genres'] ?? [])->map(function ($genre) {
-                return [
-                    'id' => $genre['id'],
-                    'name' => $genre['name'],
-                ];
-            })->values();
         });
     }
 
@@ -409,7 +390,7 @@ class Movie extends Model
                 'trailer' => $this->trailer,
                 'vote_average' => $data['vote_average'],
                 'vote_count' => $data['vote_count'],
-                'genres' => $this->genres,
+                'genres' => $this->genres(),
                 'details' => $this->getDetails(),
                 'credits' => [
                     'cast' => $this->cast,
@@ -511,9 +492,17 @@ class Movie extends Model
         return $this->morphMany(TmdbContentGenre::class, 'content');
     }
 
-    public function genreModels()
+    public function genres()
     {
-        return $this->morphToMany(Genre::class, 'content', 'tmdb_content_genres', 'content_id', 'genre_id');
+        return $this->morphToMany(Genre::class, 'content', 'tmdb_content_genres', 'content_id', 'genre_id')
+            ->select('genres.id', 'genres.name')
+            ->get()
+            ->map(function ($genre) {
+                return (object) [
+                    'id' => $genre->id,
+                    'name' => $genre->name,
+                ];
+            });
     }
 
     public function trailer(): Attribute
@@ -675,12 +664,5 @@ class Movie extends Model
             'content_id' => $this->id,
             'video_id' => $video->id,
         ]);
-    }
-
-    public function getColorPalette(): array
-    {
-        $backdropPath = 'https://image.tmdb.org/t/p/original'.$this->backdrop;
-
-        return ColorPalette::getPalette($backdropPath);
     }
 }

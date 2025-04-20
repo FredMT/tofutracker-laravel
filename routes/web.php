@@ -257,6 +257,9 @@ Route::prefix('shows')->name('shows.')->controller(ShowsController::class)->grou
 
 Route::prefix('animes')->name('animes.')->controller(AnimesController::class)->group(function () {
     Route::get('/', 'index')->name('index');
+    Route::get('/school-romcom', 'schoolRomcom')->name('school-romcom');
+    // mecha route
+    Route::get('/mecha', 'mecha')->name('mecha');
 });
 
 require __DIR__.'/auth.php';

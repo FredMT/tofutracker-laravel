@@ -75,15 +75,28 @@ class TmdbService
         }
     }
 
-    public function getMovie(string $id): array
+    public function getMovie(string $id, ?string $etag = null)
     {
         try {
+            $request = $this->client;
 
-            $response = $this->client->get("/movie/{$id}", [
+            if ($etag) {
+                $request = $request->withHeaders([
+                    'If-None-Match' => $etag,
+                ]);
+            }
+
+            $response = $request->get("/movie/{$id}", [
                 'append_to_response' => 'credits,external_ids,images,keywords,release_dates,similar,videos,translations,watch/providers,recommendations',
                 'include_image_language' => 'en,null',
                 'include_video_language' => 'en',
             ]);
+
+            if ($response->status() === 304) {
+                Log::info("TMDB movie ID {$id} not modified");
+
+                return null;
+            }
 
             return [
                 'data' => $response->json(),
@@ -95,29 +108,39 @@ class TmdbService
         }
     }
 
-    public function getMovieAnime(string $id): array
+    public function getMovieAnime(string $id, ?string $etag = null)
     {
         try {
+            $request = $this->client;
 
-            $response = $this->client->get("/movie/{$id}", [
+            if ($etag) {
+                $request = $request->withHeaders([
+                    'If-None-Match' => $etag,
+                ]);
+            }
+
+            $response = $request->get("/movie/{$id}", [
                 'append_to_response' => 'images,recommendations,videos,release_dates',
                 'include_image_language' => 'en,null',
                 'include_video_language' => 'en',
             ]);
 
+            if ($response->status() === 304) {
+                Log::info("TMDB movie ID {$id} not modified");
+
+                return null;
+            }
+
             $data = $response->json();
 
-            
             $highestVotedLogo = collect($data['images']['logos'])->sortByDesc('vote_count')->first();
             $data['logo_path'] = $highestVotedLogo['file_path'];
             unset($data['images']);
 
-            
             $usCertification = collect($data['release_dates']['results'])->firstWhere('iso_3166_1', 'US');
             $data['certification'] = $usCertification['release_dates'][0]['certification'];
             unset($data['release_dates']);
 
-            
             $data['year'] = substr($data['release_date'], 0, 4);
 
             return [
@@ -130,15 +153,28 @@ class TmdbService
         }
     }
 
-    public function getTv(string $id)
+    public function getTv(string $id, ?string $etag = null)
     {
         try {
+            $request = $this->client;
 
-            $response = $this->client->get("/tv/{$id}", [
+            if ($etag) {
+                $request = $request->withHeaders([
+                    'If-None-Match' => $etag,
+                ]);
+            }
+
+            $response = $request->get("/tv/{$id}", [
                 'append_to_response' => 'aggregate_credits,external_ids,images,keywords,content_ratings,similar,videos,translations,watch/providers,recommendations',
                 'include_image_language' => 'en,null',
                 'include_video_language' => 'en',
             ]);
+
+            if ($response->status() === 304) {
+                Log::info("TMDB TV show ID {$id} not modified");
+
+                return null;
+            }
 
             return [
                 'data' => $response->json(),
@@ -162,7 +198,6 @@ class TmdbService
 
             $data = $response->json();
 
-            
             try {
                 $logos = $data['images']['logos'] ?? [];
                 $highestVotedLogo = collect($logos)->sortByDesc('vote_count')->first();
@@ -175,7 +210,6 @@ class TmdbService
             }
             unset($data['images']);
 
-            
             try {
                 $contentRatings = $data['content_ratings']['results'] ?? [];
                 $usRating = collect($contentRatings)->firstWhere('iso_3166_1', 'US');
@@ -189,7 +223,6 @@ class TmdbService
             unset($data['content_ratings']);
             unset($data['seasons']);
 
-            
             try {
                 $data['title'] = $data['name'] ?? null;
                 unset($data['name']);
@@ -210,14 +243,25 @@ class TmdbService
         }
     }
 
-    public function getSeason(int $tvShowId, int $seasonNumber)
+    public function getSeason(int $tvShowId, int $seasonNumber, ?string $etag = null)
     {
         try {
+            $request = $this->client;
 
-            $response = $this->client->get("/tv/{$tvShowId}/season/{$seasonNumber}", [
+            if ($etag) {
+                $request = $request->withHeaders([
+                    'If-None-Match' => $etag,
+                ]);
+            }
+
+            $response = $request->get("/tv/{$tvShowId}/season/{$seasonNumber}", [
                 'language' => 'en-US',
                 'append_to_response' => 'credits,external_ids,images,videos',
             ]);
+
+            if ($response->status() === 304) {
+                return null;
+            }
 
             return [
                 'data' => $response->json(),
@@ -273,7 +317,6 @@ class TmdbService
 
             $data = $response->json();
 
-            
             $data['results'] = collect($data['results'])
                 ->filter(fn ($item) => $item['media_type'] !== 'person')
                 ->values()
@@ -295,12 +338,12 @@ class TmdbService
             try {
                 $response = $this->client->get('/trending/tv/day', [
                     'language' => 'en-US',
-                'page' => $page,
-            ]);
+                    'page' => $page,
+                ]);
 
-            if (! $response->successful()) {
-                throw new \Exception('TMDB trending TV request failed');
-            }
+                if (! $response->successful()) {
+                    throw new \Exception('TMDB trending TV request failed');
+                }
 
                 return $response->json();
             } catch (\Exception $e) {

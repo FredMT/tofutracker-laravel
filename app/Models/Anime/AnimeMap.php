@@ -37,7 +37,7 @@ class AnimeMap extends Model
     public function rating(): Attribute
     {
         return Attribute::get(function () {
-            return $this->getTmdbModel()?->voteAverage;
+            return $this->getTmdbModel()?->vote_average;
         });
     }
 
@@ -92,7 +92,11 @@ class AnimeMap extends Model
         return Attribute::get(function () {
             $model = $this->getTmdbModel();
 
-            return $model ? $model->genres : collect();
+            if (! $model || ! $model->genres) {
+                return null;
+            }
+
+            return $model->genres;
         });
     }
 
@@ -134,19 +138,26 @@ class AnimeMap extends Model
         });
     }
 
-    public function getColorPalette(): array
+    public function getColorPalette()
     {
-        $backdrop = $this->backdrop;
-        if (empty($backdrop)) {
-            $backdrop = $this->poster;
+        $cacheKey = 'anime_map.'.$this->id.'.color_palette';
+        $cacheTTL = seconds_until('first sunday next month at 8 am');
+
+        if (cache()->has($cacheKey)) {
+            return cache()->get($cacheKey);
         }
 
+        $backdrop = $this->backdrop;
+
         if (empty($backdrop)) {
-            $backdrop = 'https://picsum.photos/200/300';
+            return null;
         } else {
             $backdrop = 'https://image.tmdb.org/t/p/original'.$backdrop;
         }
 
-        return ColorPalette::getPalette($backdrop);
+        $colorPalette = ColorPalette::getPalette($backdrop);
+        cache()->put($cacheKey, $colorPalette, $cacheTTL);
+
+        return $colorPalette;
     }
 }

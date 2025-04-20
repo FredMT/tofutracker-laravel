@@ -97,7 +97,7 @@ class TvSeason extends Model
     {
         $seasonCast = $this->data['credits']['cast'] ?? [];
 
-        if (!empty($seasonCast)) {
+        if (! empty($seasonCast)) {
             return collect($seasonCast)
                 ->sortBy('order')
                 ->take(50)
@@ -116,8 +116,9 @@ class TvSeason extends Model
 
         // Fallback to show's cast if season cast is empty
         if ($this->show) {
-             // Access the cast attribute from the TvShow model
+            // Access the cast attribute from the TvShow model
             $showCast = $this->show->cast;
+
             // Ensure it's converted to a plain array if it's a collection
             return is_array($showCast) ? $showCast : $showCast->all();
         }
@@ -213,7 +214,7 @@ class TvSeason extends Model
                 'poster_path' => $data['poster_path'] ?: null,
                 'backdrop_path' => $show->data['backdrop_path'] ?? null,
                 'logo_path' => $show->highestVotedLogoPath,
-                'genres' => $show->genres,
+                'genres' => $show->genres(),
                 'certification' => $show->getUSCertification(),
                 'runtime' => $runtime ?: null,
                 'vote_average' => $data['vote_average'] ?: null,
@@ -243,22 +244,6 @@ class TvSeason extends Model
     public function comments(): MorphMany
     {
         return $this->morphMany(Comment::class, 'commentable');
-    }
-
-    public function getColorPalette(): array
-    {
-        $backdrop = $this->show->backdrop;
-        if (empty($backdrop)) {
-            $backdrop = $this->poster;
-        }
-
-        if (empty($backdrop)) {
-            $backdrop = 'https://picsum.photos/200/300';
-        } else {
-            $backdrop = 'https://image.tmdb.org/t/p/original'.$backdrop;
-        }
-
-        return ColorPalette::getPalette($backdrop);
     }
 
     protected static function booted()

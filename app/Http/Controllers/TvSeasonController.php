@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 use Inertia\Response;
+use Kiritokatklian\LaravelColorPalette\Facades\ColorPalette;
 
 class TvSeasonController extends Controller
 {
@@ -83,7 +84,7 @@ class TvSeasonController extends Controller
                 'hide_anime_character_picture' => false,
             ];
 
-            $navbar_color = TvSeason::find($seasonData['id'])->getColorPalette();
+            $navbar_color = $this->getColorPalette($seasonData['show_id']);
             
             return Inertia::render('TVSeason', [
                 'data' => $seasonData,
@@ -129,4 +130,27 @@ class TvSeasonController extends Controller
                 ->all(),
         ];
     }
+
+    private function getColorPalette(string $id)
+    {        
+        $cacheKey = "tv.{$id}.color_palette";
+        if (cache()->has($cacheKey)) {
+            return cache()->get($cacheKey);
+        }
+
+        $backdropPath = TvShow::selectRaw('data->\'backdrop_path\' as backdrop_path')->where('id', $id)->value('backdrop_path');
+
+        if (! $backdropPath) {
+            return null;
+        }
+
+        $cacheTTL = seconds_until('first sunday next month at 8 am');
+
+        $imageUrl = "https://image.tmdb.org/t/p/original" . ltrim($backdropPath, '"');
+        $colorPalette = ColorPalette::getPalette($imageUrl);
+        cache()->put($cacheKey, $colorPalette, $cacheTTL);
+
+        return $colorPalette;
+    }
 }
+

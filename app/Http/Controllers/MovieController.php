@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 use Inertia\Response;
+use Kiritokatklian\LaravelColorPalette\Facades\ColorPalette;
 
 class MovieController extends Controller
 {
@@ -25,7 +26,7 @@ class MovieController extends Controller
         $userLibraryData = null;
         $userLists = null;
         $existingMovie = Movie::find($id);
-        $color = $existingMovie->getColorPalette();
+        $color = $this->getColorPalette($id);
         $comments = $this->commentController->index($request, 'movie', $id);
 
         $user = null;
@@ -126,5 +127,27 @@ class MovieController extends Controller
             'data' => $movieData,
             'etag' => $etag,
         ]);
+    }
+
+    private function getColorPalette(string $id)
+    {        
+        $cacheKey = "movie.{$id}.color_palette";
+        if (cache()->has($cacheKey)) {
+            return cache()->get($cacheKey);
+        }
+
+        $backdropPath = Movie::selectRaw('data->\'backdrop_path\' as backdrop_path')->where('id', $id)->value('backdrop_path');
+
+        if (! $backdropPath) {
+            return null;
+        }
+
+        $cacheTTL = seconds_until('first sunday next month at 8 am');
+
+        $imageUrl = "https://image.tmdb.org/t/p/original" . ltrim($backdropPath, '"');
+        $colorPalette = ColorPalette::getPalette($imageUrl);
+        cache()->put($cacheKey, $colorPalette, $cacheTTL);
+
+        return $colorPalette;
     }
 }

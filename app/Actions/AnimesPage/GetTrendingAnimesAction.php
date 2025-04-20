@@ -12,9 +12,7 @@ use Illuminate\Support\Collection;
 
 class GetTrendingAnimesAction
 {
-    private TmdbService $tmdbService;
-    private AnidbService $anidbService;
-    public function __construct(TmdbService $tmdbService, AnidbService $anidbService)
+    public function __construct(private TmdbService $tmdbService, private AnidbService $anidbService)
     {
         $this->tmdbService = $tmdbService;
         $this->anidbService = $anidbService;
@@ -22,20 +20,67 @@ class GetTrendingAnimesAction
 
     public function execute(): array
     {
+        $hotAnimeIds = $this->anidbService->getHotAnime();
+        $hotAnime = AnidbAnime::whereIn('id', $hotAnimeIds)->get();
+        $finalResult = $this->processAnimeCollection($hotAnime, true);
+
+        if (count($finalResult) < 20) {
+            $trendingAnime = $this->getTrendingAnime();
+
+            $existingIds = collect($finalResult)->pluck('id')->toArray();
+            $filteredTrending = collect($trendingAnime)
+                ->filter(fn ($item) => ! in_array($item['id'], $existingIds))
+                ->sortByDesc('rating')
+                ->take(20 - count($finalResult))
+                ->values()
+                ->all();
+
+            $finalResult = array_merge($finalResult, $filteredTrending);
+        }
+
+        return $finalResult;
+    }
+
+    private function processAnimeCollection($animeCollection, bool $isHotAnime = false): array
+    {
+        $result = [];
+        $notRequiredFields = ['rating'];
+
+        foreach ($animeCollection as $anime) {
+            $genresArray = $anime->genres()->pluck('name')->toArray();
+            $animeData = $isHotAnime ? [
+                'id' => $anime->id,
+                'title' => $anime->title,
+                'logo' => $anime->logo,
+                'backdrop' => $anime->backdrop,
+                'poster' => $anime->poster,
+                'overview' => $anime->overview,
+                'year' => $anime->yearRange,
+                'genres' => $genresArray,
+                'rating' => number_format($anime->tmdbRating, 1, '.', ''),
+            ] : $anime;
+            $animeData = array_filter($animeData, fn ($value, $key) => ! in_array($key, $notRequiredFields) || ! empty($value), ARRAY_FILTER_USE_BOTH);
+        }
+
+        return $result;
+    }
+
+    private function getTrendingAnime(): array
+    {
         $maxResults = 500;
         $tvResults = $this->fetchTrendingTv($maxResults);
+        $ignoredIds = config('trending.ignored_ids', []);
+        $genreMap = config('genres');
+        $result = [];
+        $processedMapIds = [];
 
         $tmdbIdsOrdered = $tvResults->pluck('id')->toArray();
-        $ignoredIds = config('trending.ignored_ids', []);
-
-        // Query all AnimeMappingExternalId for these tmdb ids
         $mappings = AnimeMappingExternalId::whereIn('themoviedb_id', $tmdbIdsOrdered)
             ->whereNotIn('themoviedb_id', $ignoredIds)
             ->whereNotNull('anidb_id')
             ->get(['themoviedb_id', 'anidb_id'])
             ->keyBy('themoviedb_id');
 
-        // Build the ordered list of anidb_ids and tmdb info
         $anidbIdToTmdb = [];
         foreach ($tvResults as $item) {
             $tmdbId = $item['id'];
@@ -43,54 +88,47 @@ class GetTrendingAnimesAction
                 $anidbIdToTmdb[$mappings[$tmdbId]->anidb_id] = $item;
             }
         }
-        $anidbIds = array_keys($anidbIdToTmdb);
-        $anidbIds = array_unique($anidbIds);
 
-        // Get map_ids for these anidb_ids
+        $anidbIds = array_unique(array_keys($anidbIdToTmdb));
         $anidbAnimes = AnidbAnime::whereIn('id', $anidbIds)->get(['id', 'map_id']);
         $anidbIdToMapId = $anidbAnimes->pluck('map_id', 'id');
-
-        // Get AnimeMap models
         $animeMaps = AnimeMap::whereIn('id', $anidbIdToMapId->values())->get()->keyBy('id');
 
-        // Genre mapping
-        $genreMap = config('genres');
-
-        $result = [];
-        $processedMapIds = []; // Track already processed map IDs to avoid duplicates
-
         foreach ($anidbIds as $anidbId) {
-            if (!isset($anidbIdToMapId[$anidbId])) continue;
-            
+            if (! isset($anidbIdToMapId[$anidbId]) || in_array($anidbIdToMapId[$anidbId], $processedMapIds)) {
+                continue;
+            }
+
             $mapId = $anidbIdToMapId[$anidbId];
-            
-            // Skip if we've already processed this map_id
-            if (in_array($mapId, $processedMapIds)) continue;
-            
             $animeMap = $animeMaps[$mapId] ?? null;
             $tmdb = $anidbIdToTmdb[$anidbId];
-            if (!$animeMap || !$tmdb) continue;
 
-            $isTv = $tmdb['media_type'] === 'tv';
+            if (! $animeMap || ! $tmdb) {
+                continue;
+            }
 
-            $title = $isTv ? ($tmdb['name'] ?? null) : ($tmdb['title'] ?? null);
+            $title = $tmdb['name'] ?? null;
             $backdrop = $tmdb['backdrop_path'] ?? null;
             $poster = $tmdb['poster_path'] ?? null;
             $overview = $tmdb['overview'] ?? null;
             $rating = isset($tmdb['vote_average']) ? number_format($tmdb['vote_average'], 1, '.', '') : null;
+
             $genreIds = $tmdb['genre_ids'] ?? [];
-            $genres = collect($genreIds)->map(function ($id) use ($genreMap) {
-                return isset($genreMap[$id]) ? ['id' => $id, 'name' => $genreMap[$id]] : null;
-            })->filter()->values()->all();
+            $genreNames = collect($genreIds)
+                ->map(fn ($id) => $genreMap[$id] ?? null)
+                ->filter()
+                ->all();
+            $genresArray = $genreNames;
+
             $firstAirDate = $tmdb['first_air_date'] ?? null;
             $lastAirDate = $tmdb['last_air_date'] ?? null;
-            $releaseDate = $tmdb['release_date'] ?? null;
-            $year = $this->calculateYearString($firstAirDate, $lastAirDate, $releaseDate);
+            $year = $this->calculateYearString($firstAirDate, $lastAirDate);
             $logo = $animeMap->getTmdbModel()->highestVotedLogoPath ?? null;
 
-
             if (
-                !$mapId || !$title || !$logo || !$backdrop || !$poster || !$overview || !$year || empty($genres) || $logo === '' || $backdrop === '' || $poster === '' || $overview === '' || $year === '' || $firstAirDate < Carbon::now()->subyears(2)->year
+                ! $mapId || ! $title || ! $logo || ! $backdrop || ! $poster ||
+                ! $overview || ! $year || empty($genresArray) ||
+                $firstAirDate < Carbon::now()->subyears(2)->year
             ) {
                 continue;
             }
@@ -103,53 +141,17 @@ class GetTrendingAnimesAction
                 'poster' => $poster,
                 'overview' => $overview,
                 'year' => $year,
-                'genres' => $genres,
+                'genres' => $genresArray,
                 'rating' => $rating,
             ];
-            
-            // Track this map_id as processed
-            $processedMapIds[] = $mapId;
 
-            if (count($result) >= 20) break;
+            $processedMapIds[] = $mapId;
         }
 
-        // Get hot anime from anidb
-        $hotAnime = $this->anidbService->getHotAnime();
-
-        /* 
-"hotAnime": [
-18935,
-18794,
-18528,
-18931,
-18939,
-18816,
-17110,
-17420,
-18130,
-18793
-]
-        */
-
-        $hotAnime = AnidbAnime::whereIn('id', $hotAnime)->get();
-        $hotAnime = $hotAnime->map(function ($anime) {
-            return [
-                'id' => $anime->id,
-                'title' => $anime->title,
-                'logo' => $anime->logo,
-            ];
-        });
-
-        $result = collect($result)->sortByDesc('rating')->values()->take(20)->all();
-
-        return [
-            'success' => true,
-            'message' => 'Trending anime fetched successfully',
-            'anime' => $result,
-            'hotAnime' => $hotAnime,
-        ];
+        return $result;
     }
 
+    
     private function fetchTrendingTv(int $maxResults): Collection
     {
         $results = collect();
@@ -171,28 +173,20 @@ class GetTrendingAnimesAction
         return $results->take($maxResults);
     }
 
-    private function calculateYearString(?string $firstAirDate, ?string $lastAirDate, ?string $releaseDate): ?string
+    private function calculateYearString(?string $firstAirDate, ?string $lastAirDate): ?string
     {
-        $firstYear = null;
-        $lastYear = null;
-        try {
-            if (!empty($firstAirDate)) {
-                $firstYear = Carbon::parse($firstAirDate)->year;
-            }
-            if (!empty($lastAirDate)) {
-                $lastYear = Carbon::parse($lastAirDate)->year;
-            }
-            if ($firstYear && $lastYear) {
-                return ($firstYear === $lastYear) ? (string) $firstYear : "{$firstYear}-{$lastYear}";
-            } elseif ($firstYear) {
-                return (string) $firstYear;
-            }
-            if (!empty($releaseDate)) {
-                return (string) Carbon::parse($releaseDate)->year;
-            }
-            return null;
-        } catch (\Exception $e) {
+        if (! $firstAirDate) {
             return null;
         }
+
+        $firstYear = Carbon::parse($firstAirDate)->year;
+
+        if (! $lastAirDate) {
+            return (string) $firstYear;
+        }
+
+        $lastYear = Carbon::parse($lastAirDate)->year;
+
+        return $firstYear === $lastYear ? (string) $firstYear : "$firstYear-$lastYear";
     }
-} 
+}

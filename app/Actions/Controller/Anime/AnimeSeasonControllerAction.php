@@ -170,6 +170,7 @@ class AnimeSeasonControllerAction
 
     private function processExternalContent(AnidbAnime $anime, int $seasonId): array
     {
+        logger([$anime->id, $seasonId]);
         $videos = [];
         $externalLinks = $anime->externalLinks->filter(function ($link) use (&$videos) {
             if ($link->type === 'youtube') {

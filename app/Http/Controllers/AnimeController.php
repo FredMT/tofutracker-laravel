@@ -107,6 +107,7 @@ class AnimeController extends Controller
         } catch (\Exception $e) {
             logger()->error('Error processing anime data', [
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
             abort(500, 'Problem on our end finding this anime');
         }

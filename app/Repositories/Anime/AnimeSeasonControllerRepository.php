@@ -22,19 +22,7 @@ class AnimeSeasonControllerRepository
 
     public function verifySeasonRelationship(int $accessId, int $seasonId): bool
     {
-        $hasRelatedEntry = AnimeMap::where('id', $accessId)
-            ->whereHas('relatedEntries', function ($query) use ($seasonId) {
-                $query->where('anime_id', $seasonId);
-            })
-            ->exists();
-
-        $hasChainEntry = AnimeMap::where('id', $accessId)
-            ->whereHas('chains.entries', function ($query) use ($seasonId) {
-                $query->where('anime_id', $seasonId);
-            })
-            ->exists();
-
-        return $hasRelatedEntry || $hasChainEntry;
+        return AnidbAnime::where('id', $seasonId)->where('map_id', $accessId)->exists();
     }
 
     public function getAnimeType(int $seasonId): ?string

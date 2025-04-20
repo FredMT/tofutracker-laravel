@@ -177,6 +177,7 @@ class GetAnidbData
         } catch (\Exception $e) {
             logger()->error('Error processing anime data', [
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
                 'map_id' => $animeMap->id,
             ]);
 

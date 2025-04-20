@@ -16,6 +16,8 @@ use Kiritokatklian\LaravelColorPalette\Facades\ColorPalette;
 
 class TvShow extends Model
 {
+    public $incrementing = false;
+
     protected $table = 'tv_shows';
 
     protected $fillable = [
@@ -27,8 +29,6 @@ class TvShow extends Model
         'vote_average',
         'vote_count',
     ];
-
-    public $incrementing = false;
 
     protected $casts = [
         'data' => 'array',
@@ -73,14 +73,7 @@ class TvShow extends Model
     public function backdrop(): Attribute
     {
         return Attribute::get(function () {
-            return $this->data['backdrop_path'] ?? '';
-        });
-    }
-
-    public function voteAverage(): Attribute
-    {
-        return Attribute::get(function () {
-            return isset($this->data['vote_average']) ? number_format($this->data['vote_average'], 2, '.', '') : null;
+            return $this->data['backdrop_path'] ?? null;
         });
     }
 
@@ -100,18 +93,6 @@ class TvShow extends Model
             return isset($this->data['first_air_date'])
                 ? Carbon::parse($this->data['first_air_date'])->year
                 : null;
-        });
-    }
-
-    public function genres(): Attribute
-    {
-        return Attribute::get(function () {
-            return collect($this->data['genres'] ?? [])->map(function ($genre) {
-                return [
-                    'id' => $genre['id'],
-                    'name' => $genre['name'],
-                ];
-            })->values();
         });
     }
 
@@ -251,75 +232,6 @@ class TvShow extends Model
         });
     }
 
-    public function getUSCertification(): ?string
-    {
-        $contentRatings = $this->data['content_ratings']['results'] ?? [];
-
-        // Find US content rating
-        $usRating = collect($contentRatings)
-            ->firstWhere('iso_3166_1', 'US');
-
-        return $usRating['rating'] ?? null;
-    }
-
-    private function getSimilarShows(): array
-    {
-        $similarShows = $this->data['similar']['results'] ?? [];
-
-        return collect($similarShows)
-            ->filter(function ($show) {
-                return ! empty($show['poster_path']) &&
-                    ! empty($show['vote_average']) &&
-                    ! empty($show['name']) &&
-                    ! empty($show['first_air_date']);
-            })
-            ->map(function ($show) {
-                return [
-                    'id' => $show['id'],
-                    'title' => $show['name'],
-                    'poster_path' => $show['poster_path'],
-                    'vote_average' => $show['vote_average'],
-                    'release_date' => $show['first_air_date'],
-                ];
-            })
-            ->values()
-            ->all();
-    }
-
-    private function getRecommendedShows(): array
-    {
-        $similarShows = $this->data['recommendations']['results'] ?? [];
-
-        return collect($similarShows)
-            ->filter(function ($show) {
-                return ! empty($show['poster_path']) &&
-                    ! empty($show['vote_average']) &&
-                    ! empty($show['name']) &&
-                    ! empty($show['first_air_date']);
-            })
-            ->map(function ($show) {
-                return [
-                    'id' => $show['id'],
-                    'title' => $show['name'],
-                    'poster_path' => $show['poster_path'],
-                    'vote_average' => $show['vote_average'],
-                    'release_date' => $show['first_air_date'],
-                ];
-            })
-            ->values()
-            ->all();
-    }
-
-    private function getNextEpisodeTimestamp(): ?int
-    {
-        $nextEpisode = TmdbScheduleEpisode::where('show_id', $this->id)
-            ->where('episode_date', '>', now())
-            ->orderBy('episode_date', 'asc')
-            ->first();
-
-        return $nextEpisode ? $nextEpisode->episode_date->timestamp : null;
-    }
-
     public function filteredData(): Attribute
     {
         return Attribute::get(function () {
@@ -363,14 +275,13 @@ class TvShow extends Model
                 'tagline' => $data['tagline'],
                 'vote_average' => $data['vote_average'],
                 'vote_count' => $data['vote_count'],
-                'genres' => $this->genres,
+                'genres' => $this->genres(),
                 'details' => $this->getDetails(),
                 'credits' => [
                     'cast' => $this->cast,
                     'crew' => $this->crew,
                 ],
                 'certification' => $this->getUSCertification(),
-                'similar' => $this->getSimilarShows(),
                 'recommended' => $this->getRecommendedShows(),
                 'seasons' => $this->seasons->map(function ($season) {
                     return [
@@ -398,6 +309,19 @@ class TvShow extends Model
                 'countdown' => $this->getNextEpisodeTimestamp(),
             ];
         });
+    }
+
+    public function genres()
+    {
+        return $this->morphToMany(Genre::class, 'content', 'tmdb_content_genres', 'content_id', 'genre_id')
+            ->select('genres.id', 'genres.name')
+            ->get()
+            ->map(function ($genre) {
+                return (object) [
+                    'id' => $genre->id,
+                    'name' => $genre->name,
+                ];
+            });
     }
 
     private function getDetails(): array
@@ -441,6 +365,41 @@ class TvShow extends Model
         return $details;
     }
 
+    public function getUSCertification(): ?string
+    {
+        $contentRatings = $this->data['content_ratings']['results'] ?? [];
+
+        // Find US content rating
+        $usRating = collect($contentRatings)
+            ->firstWhere('iso_3166_1', 'US');
+
+        return $usRating['rating'] ?? null;
+    }
+
+    private function getRecommendedShows(): array
+    {
+        $similarShows = $this->data['recommendations']['results'] ?? [];
+
+        return collect($similarShows)
+            ->filter(function ($show) {
+                return ! empty($show['poster_path']) &&
+                    ! empty($show['vote_average']) &&
+                    ! empty($show['name']) &&
+                    ! empty($show['first_air_date']);
+            })
+            ->map(function ($show) {
+                return [
+                    'id' => $show['id'],
+                    'title' => $show['name'],
+                    'poster_path' => $show['poster_path'],
+                    'vote_average' => $show['vote_average'],
+                    'release_date' => $show['first_air_date'],
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
     private function getNetwork(): ?array
     {
         $network = collect($this->data['networks'] ?? [])->first();
@@ -455,6 +414,16 @@ class TvShow extends Model
             'logo_path' => $network['logo_path'],
             'origin_country' => $network['origin_country'],
         ];
+    }
+
+    private function getNextEpisodeTimestamp(): ?int
+    {
+        $nextEpisode = TmdbScheduleEpisode::where('show_id', $this->id)
+            ->where('episode_date', '>', now())
+            ->orderBy('episode_date', 'asc')
+            ->first();
+
+        return $nextEpisode ? $nextEpisode->episode_date->timestamp : null;
     }
 
     public function watchProviders(): Attribute
@@ -541,11 +510,6 @@ class TvShow extends Model
         return $this->morphMany(TmdbContentGenre::class, 'content');
     }
 
-    public function genreModels()
-    {
-        return $this->morphToMany(Genre::class, 'content', 'tmdb_content_genres', 'content_id', 'genre_id');
-    }
-
     public function trailer(): Attribute
     {
         return Attribute::get(function () {
@@ -582,14 +546,6 @@ class TvShow extends Model
     }
 
     /**
-     * Get all content providers for this TV show.
-     */
-    public function contentProviders(): MorphMany
-    {
-        return $this->morphMany(TmdbContentProvider::class, 'content');
-    }
-
-    /**
      * Get the providers for this TV show.
      */
     public function providers()
@@ -605,6 +561,14 @@ class TvShow extends Model
         return $this->contentProviders()
             ->where('country_code', $countryCode)
             ->get();
+    }
+
+    /**
+     * Get all content providers for this TV show.
+     */
+    public function contentProviders(): MorphMany
+    {
+        return $this->morphMany(TmdbContentProvider::class, 'content');
     }
 
     /**
@@ -705,12 +669,5 @@ class TvShow extends Model
             'content_id' => $this->id,
             'video_id' => $video->id,
         ]);
-    }
-
-    public function getColorPalette(): array
-    {
-        $backdropPath = 'https://image.tmdb.org/t/p/original'.$this->backdrop;
-
-        return ColorPalette::getPalette($backdropPath);
     }
 }

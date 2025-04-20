@@ -9,18 +9,18 @@
 	],
 	"license": "MIT",
 	"require": {
-		"php": "^8.2",
+		"php": "^8.4",
 		"ext-simplexml": "*",
-		"inertiajs/inertia-laravel": "2.0",
+		"inertiajs/inertia-laravel": "2.0.2",
 		"kiritokatklian/laravel-color-palette": "^4.0",
 		"larabug/larabug": "^3.2",
-		"laravel/framework": "^11.31",
+		"laravel/framework": "^12.8",
 		"laravel/horizon": "^5.31",
 		"laravel/reverb": "^1.0",
 		"laravel/sanctum": "^4.0",
 		"laravel/tinker": "^2.9",
 		"league/flysystem-aws-s3-v3": "3.0",
-		"resend/resend-laravel": "^0.15.0",
+		"resend/resend-laravel": "^0.17.0",
 		"staudenmeir/belongs-to-through": "^2.16",
 		"staudenmeir/laravel-adjacency-list": "^1.23",
 		"stevebauman/location": "^7.5",
@@ -72,7 +72,7 @@
 		],
 		"dev": [
 			"Composer\\Config::disableProcessTimeout",
-			"npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --timeout=0\" \"php artisan queue:listen --queue=notifications --timeout=0\" \"npm run dev\" \"php artisan schedule:run\" \"php artisan reverb:start\" \"php artisan horizon\" --names=server,queue,notificationqueue,vite,schedule,reverb,horizon"
+			"npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --timeout=0\" \"php artisan queue:listen --queue=notifications --timeout=0\" \"npm run dev\" \"php artisan reverb:start\" \"php artisan horizon\" --names=server,queue,notificationqueue,vite,reverb,horizon"
 		]
 	},
 	"extra": {

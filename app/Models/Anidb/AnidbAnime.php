@@ -12,12 +12,11 @@ use App\Models\Movie;
 use App\Models\TvShow;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Znck\Eloquent\Relations\BelongsToThrough;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Kiritokatklian\LaravelColorPalette\Facades\ColorPalette;
+use Znck\Eloquent\Relations\BelongsToThrough;
 
 class AnidbAnime extends Model
 {
@@ -68,6 +67,24 @@ class AnidbAnime extends Model
         });
     }
 
+    public function backdrop(): Attribute
+    {
+        return Attribute::get(function () {
+            $map = AnimeMap::find($this->map_id);
+
+            return $map?->backdrop ?? null;
+        });
+    }
+
+    public function overview(): Attribute
+    {
+        return Attribute::get(function () {
+            $map = AnimeMap::find($this->map_id);
+
+            return $map?->overview ?? null;
+        });
+    }
+
     public function runtime(): Attribute
     {
         return Attribute::get(function () {
@@ -89,6 +106,16 @@ class AnidbAnime extends Model
         });
     }
 
+    public function yearRange(): Attribute
+    {
+        return Attribute::get(function () {
+            $map = AnimeMap::find($this->map_id);
+            $tmdbModel = $map?->getTmdbModel();
+
+            return $tmdbModel?->yearRange ?? null;
+        });
+    }
+
     public function rating(): Attribute
     {
         return Attribute::get(function () {
@@ -103,22 +130,22 @@ class AnidbAnime extends Model
         });
     }
 
-    public function genres(): Attribute
+    public function tmdbRating(): Attribute
     {
         return Attribute::get(function () {
-            try {
-                $mapId = $this->map_id;
-                if ($mapId) {
-                    $map = AnimeMap::find($mapId);
+            $map = AnimeMap::find($this->map_id);
+            $tmdbModel = $map?->getTmdbModel();
 
-                    return $map ? $map->genres : collect();
-                }
-            } catch (\Exception $e) {
-                return collect();
-            }
-
-            return collect();
+            return $tmdbModel?->vote_average ?? null;
         });
+    }
+
+    public function genres()
+    {
+        $map = AnimeMap::find($this->map_id);
+        $tmdbModel = $map?->getTmdbModel();
+
+        return $tmdbModel?->genres() ?? collect();
     }
 
     public function episodes(): HasMany
@@ -200,7 +227,6 @@ class AnidbAnime extends Model
         );
     }
 
-
     public function comments(): MorphMany
     {
         return $this->morphMany(Comment::class, 'commentable');
@@ -246,40 +272,34 @@ class AnidbAnime extends Model
         }
     }
 
-    public function getColorPalette(): array
+    public function getColorPalette()
     {
-        $backdrop = 'https://picsum.photos/200/300';
+        $cacheKey = "anime_map.{$this->map}.color_palette";
+        $cacheTTL = seconds_until('first sunday next month at 8 am');
 
-        $externalIds = AnimeMappingExternalId::where('anidb_id', $this->id)->first();
-        if ($externalIds && $externalIds->themoviedb_id) {
-            $type = $this->type === 'Movie' ? 'movie' : 'tv';
-            
-            if ($type === 'Movie') {
-                $movie = Movie::find($externalIds->themoviedb_id);
-                if ($movie) {
-                    $backdrop = $movie->backdrop;
-                    logger()->info("Movie $backdrop");
-                }
-            } else {
-                $tvShow = TvShow::find($externalIds->themoviedb_id);
-                if ($tvShow) {
-                    $backdrop = $tvShow->backdrop;
-                    logger()->info("Tv $backdrop");
-                }
-            }
-
-            if (!empty($backdrop)) {
-                $backdrop = 'https://image.tmdb.org/t/p/original'.$backdrop;
-            }
+        if (cache()->has($cacheKey)) {
+            return cache()->get($cacheKey);
         }
 
-        return ColorPalette::getPalette($backdrop);
+        $backdrop = AnimeMap::find($this->map_id)->backdrop;
+
+        if (empty($backdrop)) {
+            return null;
+        } else {
+            $backdrop = 'https://image.tmdb.org/t/p/original'.$backdrop;
+        }
+
+        $colorPalette = ColorPalette::getPalette($backdrop);
+        cache()->put($cacheKey, $colorPalette, $cacheTTL);
+
+        return $colorPalette;
     }
 
     public function logo(): Attribute
     {
         return Attribute::get(function () {
             $map = AnimeMap::find($this->map_id);
+
             return $map->getTmdbModel()->highestVotedLogoPath ?? null;
         });
     }
