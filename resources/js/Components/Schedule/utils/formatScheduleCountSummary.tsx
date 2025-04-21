@@ -1,5 +1,11 @@
-import { TypeCounts } from "@/types/schedule";
 import { Text } from "@mantine/core";
+
+export interface TypeCounts {
+    tv: number;
+    anime: number;
+    formatted_start_date?: string;
+    formatted_end_date?: string;
+}
 
 export function formatScheduleCountSummary(counts: TypeCounts): JSX.Element {
     const parts: JSX.Element[] = [];
@@ -8,7 +14,7 @@ export function formatScheduleCountSummary(counts: TypeCounts): JSX.Element {
         parts.push(
             <Text key="tv" span fw={700}>
                 {`${counts.tv} shows`}
-            </Text>
+            </Text>,
         );
     }
 
@@ -17,13 +23,13 @@ export function formatScheduleCountSummary(counts: TypeCounts): JSX.Element {
             parts.push(
                 <Text key="and1" span>
                     {" and "}
-                </Text>
+                </Text>,
             );
         }
         parts.push(
             <Text key="anime" span fw={700}>
                 {`${counts.anime} anime`}
-            </Text>
+            </Text>,
         );
     }
 

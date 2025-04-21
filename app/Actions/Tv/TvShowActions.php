@@ -22,9 +22,15 @@ class TvShowActions
 
     public function fetchTvShow(string $id): array
     {
-        return Cache::remember("tv.{$id}", now()->addDay(), function () use ($id) {
+        $cacheTTL = seconds_until('tomorrow at 8 am');
+        return Cache::remember("tv.{$id}", $cacheTTL, function () use ($id) {
 
-            $tvShow = $this->getShowAndQueueUpdateIfNeeded($id);
+            $tvShow = TvShow::find($id);
+
+            if (! $tvShow) {
+                $showData = $this->tmdbService->getTv($id);
+                $tvShow = $this->createTvShow($showData);
+            }
 
             return $tvShow->filteredData;
         });
@@ -44,10 +50,6 @@ class TvShowActions
         }
 
         $showData = $this->tmdbService->getTv($tvId, $tvShow->etag);
-
-        if ($showData !== null) {
-            UpdateTvShow::dispatch($tvShow, $showData, false);
-        }
 
         return $tvShow;
     }
