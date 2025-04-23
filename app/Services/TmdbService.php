@@ -639,4 +639,35 @@ class TmdbService
             }
         });
     }
+
+    public function getMoviesByGenre(int $genreId, int $page = 1): array
+    {
+        $CACHE_KEY = "genre_movies_{$genreId}_page_{$page}";
+        $CACHE_TTL = seconds_until('next sunday at 8 am');
+
+        return cache()->remember($CACHE_KEY, $CACHE_TTL, function () use ($genreId, $page) {
+            try {
+                $response = $this->client->get('/discover/movie', [
+                    'include_adult' => false,
+                    'include_video' => false,
+                    'language' => 'en-US',
+                    'page' => $page,
+                    'sort_by' => 'popularity.desc',
+                    'with_genres' => $genreId,
+                ]);
+
+                if (! $response->successful()) {
+                    throw new \Exception('TMDB movies by genre request failed');
+                }
+
+                return $response->json();
+            } catch (\Exception $e) {
+                logger()->error('TMDB Movies by Genre API error: '.$e->getMessage(), [
+                    'genre_id' => $genreId,
+                    'page' => $page,
+                ]);
+                throw $e;
+            }
+        });
+    }
 }

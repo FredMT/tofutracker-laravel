@@ -1,6 +1,7 @@
 import MediaBanner from '@/Components/Common/MediaBanner';
-import PopularMoviesCarousel from '@/Components/Movies/PopularMoviesCarousel';
+import { GenresSection } from '@/Components/Movies/GenresSection';
 import NowPlayingMoviesCarousel from '@/Components/Movies/NowPlayingMoviesCarousel';
+import PopularMoviesCarousel from '@/Components/Movies/PopularMoviesCarousel';
 import TopRatedMoviesCarousel from '@/Components/Movies/TopRatedMoviesCarousel';
 import UpcomingMoviesCarousel from '@/Components/Movies/UpcomingMoviesCarousel';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout/AuthenticatedLayout';
@@ -23,6 +24,8 @@ function Movies() {
 			<PopularMoviesCarousel />
 			<Space h={48} />
 			<NowPlayingMoviesCarousel />
+			<Space h={48} />
+			<GenresSection />
 			<Space h={48} />
 			<TopRatedMoviesCarousel />
 			<Space h={48} />

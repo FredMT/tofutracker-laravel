@@ -1,14 +1,14 @@
-import AnimeCard from '@/Components/Animes/AnimeCard';
-import { getAnimeGenreConfig } from '@/Components/Animes/animeGenresConfig';
+import { getMovieGenreConfig } from '@/Components/Movies/movieGenresConfig';
 import carouselClasses from '@/Components/Animes/Carousel.module.css';
 import ImageMosaic from '@/Components/Animes/ImageMosaic';
+import MediaCard from '@/Components/Common/MediaCard';
 import { Carousel } from '@mantine/carousel';
 import { Container, Space, Title } from '@mantine/core';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
-interface Show {
+interface Movie {
 	id: number;
 	title: string;
 	poster: string;
@@ -20,10 +20,10 @@ interface Show {
 interface Genre {
 	id: number;
 	name: string;
-	shows: Show[];
+	movies: Movie[];
 }
 
-export interface AnimeGenresCarouselsProps {
+export interface MovieGenresCarouselsProps {
 	genresProp: Genre[] | null;
 }
 
@@ -35,9 +35,9 @@ interface MergedGenre extends Genre {
 	description: string;
 }
 
-export function AnimeGenresCarousels({
+export function MovieGenresCarousels({
 	genresProp,
-}: AnimeGenresCarouselsProps) {
+}: MovieGenresCarouselsProps) {
 	const backendGenres = useMemo(() => {
 		if (Array.isArray(genresProp)) {
 			return genresProp;
@@ -49,13 +49,13 @@ export function AnimeGenresCarousels({
 		if (!backendGenres.length) return [];
 
 		return backendGenres.map((genre): MergedGenre => {
-			const config = getAnimeGenreConfig(genre.name);
+			const config = getMovieGenreConfig(genre.name);
 
 			return {
 				...genre,
 				...config,
 				IconComponent: config.IconComponent,
-				shows: genre.shows,
+				movies: genre.movies,
 			};
 		});
 	}, [backendGenres]);
@@ -76,25 +76,25 @@ export function AnimeGenresCarousels({
 		return mergedGenres.find((genre) => genre.id === selectedGenreId) || null;
 	}, [selectedGenreId, mergedGenres]);
 
-	const getRandomBackdrops = (shows: Show[]): string[] => {
-		// Filter shows with valid backdrops
-		const validShows = shows.filter((show) => show.backdrop);
+	const getRandomBackdrops = (movies: Movie[]): string[] => {
+		const validMovies = movies.filter((movie) => movie.backdrop);
 
-		// If we don't have enough valid backdrops, return what we have
-		if (validShows.length <= 3) {
-			return validShows.map((show) => show.backdrop as string);
+		if (validMovies.length <= 3) {
+			return validMovies.map((movie) => movie.backdrop as string);
 		}
 
-		// Get 3 random unique backdrops
 		const randomBackdrops: string[] = [];
 		const usedIndices = new Set<number>();
 
-		while (randomBackdrops.length < 3 && usedIndices.size < validShows.length) {
-			const randomIndex = Math.floor(Math.random() * validShows.length);
+		while (
+			randomBackdrops.length < 3 &&
+			usedIndices.size < validMovies.length
+		) {
+			const randomIndex = Math.floor(Math.random() * validMovies.length);
 
 			if (!usedIndices.has(randomIndex)) {
 				usedIndices.add(randomIndex);
-				const backdrop = validShows[randomIndex].backdrop;
+				const backdrop = validMovies[randomIndex].backdrop;
 				if (backdrop) {
 					randomBackdrops.push(backdrop);
 				}
@@ -118,7 +118,7 @@ export function AnimeGenresCarousels({
 
 	return (
 		<>
-			<Title>Genre Explorer</Title>
+			<Title pl={60}>Genre Explorer</Title>
 
 			<AnimatePresence>
 				<motion.div
@@ -128,8 +128,8 @@ export function AnimeGenresCarousels({
 					transition={{ duration: 0.3 }}
 					className='overflow-hidden'
 				>
-					<div className='overflow-x-auto pb-2 hide-scrollbar'>
-						<div className='flex gap-2 min-w-max'>
+					<div className='overflow-x-auto pb-2 hide-scrollbar pl-[60px]'>
+						<div className='flex gap-2 min-w-max '>
 							{mergedGenres.map((genre) => {
 								const isSelected = selectedGenreId === genre.id;
 								const buttonStyle: React.CSSProperties = isSelected
@@ -181,7 +181,7 @@ export function AnimeGenresCarousels({
 								transition={{ duration: 1.5 }}
 							>
 								<ImageMosaic
-									images={getRandomBackdrops(currentGenre.shows)}
+									images={getRandomBackdrops(currentGenre.movies)}
 									maxHeight='550px'
 									className='px-0 py-0'
 								/>
@@ -231,7 +231,7 @@ export function AnimeGenresCarousels({
 											align='start'
 											loop={false}
 											slidesToScroll='auto'
-											withControls={currentGenre.shows.length > 5}
+											withControls={currentGenre.movies.length > 5}
 											controlsOffset={0}
 											classNames={{
 												control: carouselClasses.carouselControl,
@@ -241,8 +241,8 @@ export function AnimeGenresCarousels({
 											nextControlIcon={<ChevronRight size={40} />}
 											className='w-full'
 										>
-											{currentGenre.shows.map((anime, index) => (
-												<Carousel.Slide key={anime.id}>
+											{currentGenre.movies.map((movie, index) => (
+												<Carousel.Slide key={movie.id}>
 													<motion.div
 														initial='hidden'
 														whileInView='visible'
@@ -253,13 +253,14 @@ export function AnimeGenresCarousels({
 															hidden: { opacity: 0, y: 30 },
 														}}
 													>
-														<AnimeCard
-															anime={{
-																id: String(anime.id),
-																title: anime.title,
-																poster: anime.poster,
-																rating: String(anime.rating),
-																year: String(anime.year),
+														<MediaCard
+															media={{
+																id: movie.id,
+																title: movie.title,
+																poster: movie.poster,
+																rating: String(movie.rating),
+																year: String(movie.year),
+																mediaType: 'movie',
 															}}
 														/>
 													</motion.div>

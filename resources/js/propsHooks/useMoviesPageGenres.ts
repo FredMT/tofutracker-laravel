@@ -1,6 +1,6 @@
 import { useTypedPageProps } from './useTypedPageProps';
 
-type Anime = {
+type Movie = {
 	id: number;
 	title: string;
 	poster: string;
@@ -12,10 +12,10 @@ type Anime = {
 type Genre = {
 	id: number;
 	name: string;
-	shows: Anime[];
+	movies: Movie[];
 };
 
-export function useAnimesPageGenres() {
+export function useMoviesPageGenres() {
 	const props = useTypedPageProps();
 	return (props.genres as unknown as Genre[] | null) ?? [];
 }
