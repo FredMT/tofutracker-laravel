@@ -38,6 +38,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Vite::prefetch(concurrency: 3);
         Model::preventLazyLoading();
+        Model::automaticallyEagerLoadRelationships();
 
         Gate::define('rate-movie', function (User $user, ?UserMovie $userMovie = null) {
             if (! $userMovie) {
