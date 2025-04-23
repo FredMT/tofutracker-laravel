@@ -1,6 +1,8 @@
 import AiringAnimeCarousel from '@/Components/Animes/AiringAnimeCarousel';
+import AiringAnimeScheduleCarousel from '@/Components/Animes/AiringAnimeScheduleCarousel';
 import AnimesBanner from '@/Components/Animes/AnimesBanner';
 import { GenresSection } from '@/Components/Animes/GenresSection';
+import TrailerSection from '@/Components/Animes/TrailerSection';
 import ResponsiveContainer from '@/Components/ResponsiveContainer';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
@@ -12,17 +14,15 @@ function Animes() {
 			<Head title='Animes' />
 			<Space h={64} />
 			<AnimesBanner />
-			<Space h={64} />
+			<Space h={24} />
 			<ResponsiveContainer>
 				<AiringAnimeCarousel />
 				<Space h={24} />
-				<GenresSection />
-				{/* <TrailerSection />
+				<AiringAnimeScheduleCarousel />
 				<Space h={24} />
-				<Space h={48} />
-				<AiringShowsCarousel />
-				<Space h={48} />
-				<StreamingSection /> */}
+				<GenresSection />
+				<Space h={24} />
+				<TrailerSection />
 			</ResponsiveContainer>
 			<Space h='xl' />
 		</>

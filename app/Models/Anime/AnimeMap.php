@@ -34,6 +34,13 @@ class AnimeMap extends Model
         });
     }
 
+    public function logo(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->getTmdbModel()?->highestVotedLogoPath;
+        });
+    }
+
     public function rating(): Attribute
     {
         return Attribute::get(function () {

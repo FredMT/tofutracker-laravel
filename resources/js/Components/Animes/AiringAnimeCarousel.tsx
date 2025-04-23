@@ -23,7 +23,7 @@ const AiringAnimeCarousel = ({}: AiringAnimeCarouselProps) => {
 				<div className={classes.sectionHeaderTextWrapper}>
 					<h2 className={classes.topText}>TOP 20</h2>
 					<div style={{ marginBottom: '4px' }}>
-						<p className={classes.contentText}>ANIMES</p>
+						<p className={classes.contentText}>ANIME</p>
 						<p className={classes.contentText}>CURRENTLY AIRING</p>
 					</div>
 				</div>
