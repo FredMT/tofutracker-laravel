@@ -20,9 +20,11 @@ class FetchTraktEpisodesJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $tries = 3;
+
     public $timeout = 300; // 5 minutes
 
     private int $timeframeInDays = 30;
+
     private string $cacheKey = 'trakt_episodes_calendar';
 
     public function __construct(int $timeframeInDays = 30)
@@ -54,7 +56,7 @@ class FetchTraktEpisodesJob implements ShouldQueue
         } catch (\Exception $e) {
             Log::error('An error occurred while fetching Trakt TV episodes', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             throw $e; // Re-throw to trigger job failure
@@ -68,6 +70,7 @@ class FetchTraktEpisodesJob implements ShouldQueue
 
         if (empty($episodes)) {
             Log::warning('No episodes found in cache.');
+
             return;
         }
 
@@ -76,7 +79,7 @@ class FetchTraktEpisodesJob implements ShouldQueue
             ->pluck('tmdb_id')
             ->toArray();
 
-        Log::info('Found ' . count($tmdbShowIds) . ' TMDB show IDs in the schedule.');
+        Log::info('Found '.count($tmdbShowIds).' TMDB show IDs in the schedule.');
 
         // Filter episodes to only include those with TMDB IDs in our database
         $episodesToInsert = [];
@@ -109,10 +112,11 @@ class FetchTraktEpisodesJob implements ShouldQueue
 
         if (empty($episodesToInsert)) {
             Log::warning('No episodes to insert after filtering.');
+
             return;
         }
 
-        Log::info('Preparing to insert ' . count($episodesToInsert) . ' episodes.');
+        Log::info('Preparing to insert '.count($episodesToInsert).' episodes.');
 
         // Clear existing episodes
         TmdbScheduleEpisode::truncate();
@@ -122,6 +126,6 @@ class FetchTraktEpisodesJob implements ShouldQueue
             DB::table('tmdb_schedule_episodes')->insert($chunk);
         }
 
-        Log::info('Successfully inserted ' . count($episodesToInsert) . ' episodes.');
+        Log::info('Successfully inserted '.count($episodesToInsert).' episodes.');
     }
 }

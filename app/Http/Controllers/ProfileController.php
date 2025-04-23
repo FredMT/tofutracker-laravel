@@ -210,7 +210,7 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
 
-        abort_if(!$user, 403, 'Unauthorized');
+        abort_if(! $user, 403, 'Unauthorized');
 
         if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail) {
             to_route('verification.notice');
@@ -231,7 +231,7 @@ class ProfileController extends Controller
                     'hide_anime_character_picture' => $validated['hide_anime_character_picture'],
                 ]
             );
-    
+
             return back()->with([
                 'success' => true,
                 'message' => 'User configuration updated successfully',
@@ -239,6 +239,7 @@ class ProfileController extends Controller
         } catch (\Exception $e) {
             logger($e->getMessage());
             logger($e->getTraceAsString());
+
             return response()->json(['success' => false, 'message' => 'Failed to update user configuration.'], 500);
         }
     }

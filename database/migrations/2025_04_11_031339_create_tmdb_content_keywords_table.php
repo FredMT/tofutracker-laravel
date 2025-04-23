@@ -13,17 +13,17 @@ return new class extends Migration
     {
         Schema::create('tmdb_content_keywords', function (Blueprint $table) {
             $table->id();
-            $table->morphs('content'); 
+            $table->morphs('content');
             $table->unsignedBigInteger('keyword_id');
 
             $table->index('keyword_id');
-            
+
             $table->unique(['content_type', 'content_id', 'keyword_id'], 'tmdb_content_keywords_unique');
 
             $table->foreign('keyword_id')
-                  ->references('id')
-                  ->on('tmdb_keywords')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('tmdb_keywords')
+                ->onDelete('cascade');
         });
     }
 

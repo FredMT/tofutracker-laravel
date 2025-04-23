@@ -34,7 +34,7 @@ class ShowsController extends Controller
     }
 
     public function index(Request $request)
-    {   
+    {
         $validCountryCodes = array_keys(Config::get('countries.countries', []));
 
         $validated = $request->validate([
@@ -90,9 +90,10 @@ class ShowsController extends Controller
             }
 
             $apiShowIds = collect($showsFromApi)->pluck('id')->filter()->all();
-            
+
             if (empty($apiShowIds)) {
                 $page++;
+
                 continue;
             }
 
@@ -101,7 +102,7 @@ class ShowsController extends Controller
                 ->whereIn('most_common_tmdb_id', $apiShowIds)
                 ->pluck('most_common_tmdb_id')
                 ->all();
-            
+
             $filteredBatch = collect($showsFromApi)->filter(function ($show) use ($processedShowIds, $ignoredIds, $animeShowIds) {
                 return isset($show['id'])
                     && ! in_array($show['id'], $processedShowIds)
@@ -113,6 +114,7 @@ class ShowsController extends Controller
 
             if (empty($batchIds)) {
                 $page++;
+
                 continue;
             }
 

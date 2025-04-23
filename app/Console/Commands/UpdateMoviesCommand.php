@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Jobs\UpdateOrCreateMovieData;
 use App\Models\Movie;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 class UpdateMoviesCommand extends Command
 {
@@ -17,12 +16,13 @@ class UpdateMoviesCommand extends Command
     {
         $movieId = $this->argument('id');
 
-        if (!$movieId) {
+        if (! $movieId) {
             $this->error('Please provide a movie ID');
+
             return 1;
         }
 
-            $this->updateSingleMovie($movieId);
+        $this->updateSingleMovie($movieId);
 
         return 0;
     }
@@ -30,14 +30,14 @@ class UpdateMoviesCommand extends Command
     private function updateSingleMovie(string $movieId): void
     {
         $this->info("Updating movie {$movieId}...");
-        
+
         $movie = Movie::find($movieId);
-        if (!$movie) {
+        if (! $movie) {
             $this->warn("Movie with ID {$movieId} not found. Will attempt to fetch it.");
         }
-        
+
         UpdateOrCreateMovieData::dispatch($movieId, false);
-        
+
         $this->info("Update job dispatched for movie {$movieId}");
     }
 }

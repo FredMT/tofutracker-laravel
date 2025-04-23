@@ -14,19 +14,18 @@ class FetchAnimeGenresJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $timeout = 300;
+
     public $tries = 0;
 
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     public function handle(GetAnimeGenresAction $action)
     {
         try {
             $action->fetchAndStore();
         } catch (\Throwable $th) {
-            logger()->error('Error fetching anime genres: ' . $th->getMessage());
+            logger()->error('Error fetching anime genres: '.$th->getMessage());
             logger()->error($th->getTraceAsString());
         }
     }
-} 
+}

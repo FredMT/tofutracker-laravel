@@ -8,7 +8,6 @@ use App\Models\Comment;
 use App\Models\Movie;
 use App\Models\TvSeason;
 use App\Models\TvShow;
-use App\Models\User;
 use App\Models\UserActivity;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;

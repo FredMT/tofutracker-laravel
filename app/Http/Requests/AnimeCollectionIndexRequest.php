@@ -9,8 +9,6 @@ class AnimeCollectionIndexRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -32,7 +30,7 @@ class AnimeCollectionIndexRequest extends FormRequest
             'sort' => [
                 'sometimes',
                 'string',
-                Rule::in(['id', 'created_at', 'updated_at'])
+                Rule::in(['id', 'created_at', 'updated_at']),
             ],
             'direction' => ['sometimes', 'string', Rule::in(['asc', 'desc'])],
         ];
@@ -40,8 +38,6 @@ class AnimeCollectionIndexRequest extends FormRequest
 
     /**
      * Get the validated data from the request with default values.
-     *
-     * @return array
      */
     public function validatedWithDefaults(): array
     {

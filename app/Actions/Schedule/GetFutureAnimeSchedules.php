@@ -2,8 +2,8 @@
 
 namespace App\Actions\Schedule;
 
-use App\Models\Anime\AnimeMap;
 use App\Models\Anidb\AnidbAnime;
+use App\Models\Anime\AnimeMap;
 use App\Models\AnimeSchedule;
 use App\Models\Movie;
 use App\Models\TvShow;
@@ -23,7 +23,7 @@ class GetFutureAnimeSchedules
 
         $anidbToTmdbMap = $this->createAnidbToTmdbMap($anidbAnimes, $animeMaps);
 
-        list($tvShows, $movies) = $this->getTmdbModels($anidbToTmdbMap);
+        [$tvShows, $movies] = $this->getTmdbModels($anidbToTmdbMap);
 
         return $this->transformScheduleData($schedules, $anidbToTmdbMap, $animeMaps, $tvShows, $movies, $anidbAnimes);
     }
@@ -69,7 +69,7 @@ class GetFutureAnimeSchedules
                     $anidbToTmdbMap->put($anidbId, [
                         'tmdb_id' => $tmdbId,
                         'tmdb_type' => $tmdbType,
-                        'map_id' => $mapId
+                        'map_id' => $mapId,
                     ]);
                 }
             }
@@ -118,12 +118,12 @@ class GetFutureAnimeSchedules
             $mediaAssets = [
                 'backdrop' => null,
                 'logo' => null,
-                'poster' => null
+                'poster' => null,
             ];
 
             if ($anidbId && $anidbToTmdbMap->has($anidbId)) {
                 $mapping = $anidbToTmdbMap->get($anidbId);
-                list($title, $animeMapData, $mediaAssets) = $this->processAnimeData(
+                [$title, $animeMapData, $mediaAssets] = $this->processAnimeData(
                     $schedule,
                     $mapping,
                     $animeMaps,
@@ -145,7 +145,7 @@ class GetFutureAnimeSchedules
                 'backdrop' => $mediaAssets['backdrop'],
                 'logo' => $mediaAssets['logo'],
                 'poster' => $mediaAssets['poster'],
-                'link' => $animeMapData && isset($animeMapData['id']) ? '/anime/' . $animeMapData['id'] . '/season/' . $anidbId : null
+                'link' => $animeMapData && isset($animeMapData['id']) ? '/anime/'.$animeMapData['id'].'/season/'.$anidbId : null,
             ];
         });
     }
@@ -170,7 +170,7 @@ class GetFutureAnimeSchedules
         $mediaAssets = [
             'backdrop' => null,
             'logo' => null,
-            'poster' => null
+            'poster' => null,
         ];
 
         $animeMapData = null;
@@ -199,7 +199,7 @@ class GetFutureAnimeSchedules
                 $mediaAssets = [
                     'backdrop' => $tmdbModel->backdrop,
                     'logo' => $tmdbModel->highestVotedLogoPath,
-                    'poster' => $tmdbModel->poster
+                    'poster' => $tmdbModel->poster,
                 ];
             }
 

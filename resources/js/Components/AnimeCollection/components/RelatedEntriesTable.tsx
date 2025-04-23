@@ -1,7 +1,7 @@
-import { Box, Table, Text } from "@mantine/core";
-import { AnimeRelatedEntry } from "../types/animeCollections";
-import { RelatedEntryRow } from "./RelatedEntryRow";
-import React from "react";
+import { Box, Table, Text } from '@mantine/core';
+import { AnimeRelatedEntry } from '../types/animeCollections';
+import { RelatedEntryRow } from './RelatedEntryRow';
+import React from 'react';
 
 interface TableColumn {
 	accessor: string;
@@ -16,16 +16,19 @@ interface RelatedEntriesTableProps {
 }
 
 export function RelatedEntriesTable({
-																			entries,
-																			hasChains,
-																		}: RelatedEntriesTableProps) {
+	entries,
+	hasChains,
+}: RelatedEntriesTableProps) {
 	if (entries.length === 0) return null;
 
 	const { columns } = RelatedEntryRow();
 
 	return (
-		<Box mt={hasChains ? "md" : 0}>
-			<Text fw={700} mb="xs">
+		<Box mt={hasChains ? 'md' : 0}>
+			<Text
+				fw={700}
+				mb='xs'
+			>
 				Related Entries
 			</Text>
 			<Table
@@ -42,7 +45,7 @@ export function RelatedEntriesTable({
 								style={{
 									width: (column as TableColumn).width
 										? `${(column as TableColumn).width}px`
-										: "auto",
+										: 'auto',
 								}}
 							>
 								{column.title}
@@ -54,12 +57,8 @@ export function RelatedEntriesTable({
 					{entries.map((entry) => (
 						<Table.Tr key={entry.related_entry_id}>
 							{columns.map((column) => (
-								<Table.Td
-									key={`${entry.related_entry_id}-${column.accessor}`}
-								>
-									{column.render
-										? column.render(entry)
-										: null}
+								<Table.Td key={`${entry.related_entry_id}-${column.accessor}`}>
+									{column.render ? column.render(entry) : null}
 								</Table.Td>
 							))}
 						</Table.Tr>

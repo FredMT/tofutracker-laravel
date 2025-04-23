@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Anidb\AnidbAnime;
+use App\Models\Anime\AnimeMap;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use SimpleXMLElement;
-use App\Models\Anidb\AnidbAnime;
-use App\Models\Anime\AnimeMap;
-use Illuminate\Support\Facades\DB;
 
 class AnimeGenresController extends Controller
 {
@@ -20,8 +20,8 @@ class AnimeGenresController extends Controller
                 $xmlUrl = 'https://raw.githubusercontent.com/Anime-Lists/anime-lists/refs/heads/master/anime-list-full.xml';
                 $response = Http::get($xmlUrl);
 
-                if (!$response->successful()) {
-                    throw new Exception('Failed to retrieve anime list XML. Status code: ' . $response->status());
+                if (! $response->successful()) {
+                    throw new Exception('Failed to retrieve anime list XML. Status code: '.$response->status());
                 }
 
                 $xml = new SimpleXMLElement($response->body());
@@ -29,10 +29,10 @@ class AnimeGenresController extends Controller
 
                 foreach ($xml->anime as $anime) {
                     $attributes = $anime->attributes();
-                    $tvdbId = (string)$attributes->tvdbid;
-                    
+                    $tvdbId = (string) $attributes->tvdbid;
+
                     if ($tvdbId !== 'hentai') {
-                        $validIds[] = (int)$attributes->anidbid;
+                        $validIds[] = (int) $attributes->anidbid;
                     }
                 }
 
@@ -42,13 +42,13 @@ class AnimeGenresController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Valid AniDB IDs retrieved successfully',
-                'data' => $validAnidbIds
+                'data' => $validAnidbIds,
             ]);
 
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -57,21 +57,21 @@ class AnimeGenresController extends Controller
     {
         try {
             $validAnidbIds = Cache::get('valid_anidb_ids', []);
-            
+
             // Constants for Bayesian average
             $C = 7.0; // Prior count (weight)
             $m = 7.0; // Prior mean (default rating)
-            
+
             $tagIds = [2853, 2858, 2869, 2043];
             $excludeTagIds = [2841, 2750];
             $startDate = '2015-01-01';
 
             $topAnime = AnidbAnime::query()
                 ->whereIn('id', $validAnidbIds)
-                ->whereHas('tags', function($query) use ($tagIds) {
+                ->whereHas('tags', function ($query) use ($tagIds) {
                     $query->whereIn('anidb_tags.id', $tagIds);
                 }, '=', count($tagIds))
-                ->whereDoesntHave('tags', function($query) use ($excludeTagIds) {
+                ->whereDoesntHave('tags', function ($query) use ($excludeTagIds) {
                     $query->whereIn('anidb_tags.id', $excludeTagIds);
                 })
                 ->whereNotNull('rating')
@@ -81,7 +81,7 @@ class AnimeGenresController extends Controller
                 ->where('startdate', '>=', $startDate)
                 ->select([
                     'anidb_anime.*',
-                    DB::raw("((rating_count * rating) + ($C * $m)) / (rating_count + $C) as bayesian_average")
+                    DB::raw("((rating_count * rating) + ($C * $m)) / (rating_count + $C) as bayesian_average"),
                 ])
                 ->orderByDesc('bayesian_average')
                 ->limit(1000)
@@ -110,13 +110,13 @@ class AnimeGenresController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Top rated anime TMDB data retrieved successfully',
-                'data' => $tmdbData
+                'data' => $tmdbData,
             ]);
 
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }

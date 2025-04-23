@@ -1,10 +1,10 @@
-import React from "react";
-import { Table } from "@mantine/core";
-import { AnimeCollection } from "./types/animeCollections";
-import { EmptyState } from "./components/EmptyState";
-import { CollectionRow } from "./components/CollectionRow";
-import { CollectionContent } from "./components/CollectionContent";
-import { useExpanded } from "./hooks/useExpanded";
+import React from 'react';
+import { Table } from '@mantine/core';
+import { AnimeCollection } from './types/animeCollections';
+import { EmptyState } from './components/EmptyState';
+import { CollectionRow } from './components/CollectionRow';
+import { CollectionContent } from './components/CollectionContent';
+import { useExpanded } from './hooks/useExpanded';
 
 interface TableColumn {
 	accessor: string;
@@ -18,8 +18,8 @@ interface AnimeCollectionTableProps {
 }
 
 export function AnimeCollectionTable({
-																			 collections,
-																		 }: AnimeCollectionTableProps) {
+	collections,
+}: AnimeCollectionTableProps) {
 	const {
 		expandedCollectionIds,
 		setExpandedCollectionIds,
@@ -38,13 +38,17 @@ export function AnimeCollectionTable({
 		setExpandedCollectionIds((current) =>
 			current.includes(id)
 				? current.filter((collectionId) => collectionId !== id)
-				: [...current, id],
+				: [...current, id]
 		);
 	};
 
 	return (
 		<Table.ScrollContainer minWidth={800}>
-			<Table withTableBorder withColumnBorders tabularNums>
+			<Table
+				withTableBorder
+				withColumnBorders
+				tabularNums
+			>
 				<Table.Thead>
 					<Table.Tr>
 						{columns.map((column) => (
@@ -53,7 +57,7 @@ export function AnimeCollectionTable({
 								style={{
 									width: (column as TableColumn).width
 										? `${(column as TableColumn).width}px`
-										: "auto",
+										: 'auto',
 								}}
 							>
 								{column.title}
@@ -66,30 +70,25 @@ export function AnimeCollectionTable({
 						<React.Fragment key={`fragment-${collection.id}`}>
 							<Table.Tr
 								key={collection.id}
-								onClick={() =>
-									toggleRowExpansion(collection.id)
-								}
-								style={{ cursor: "pointer" }}
+								onClick={() => toggleRowExpansion(collection.id)}
+								style={{ cursor: 'pointer' }}
 							>
 								{columns.map((column) => (
-									<Table.Td
-										key={`${collection.id}-${column.accessor}`}
-									>
-										{column.render
-											? column.render(collection)
-											: null}
+									<Table.Td key={`${collection.id}-${column.accessor}`}>
+										{column.render ? column.render(collection) : null}
 									</Table.Td>
 								))}
 							</Table.Tr>
 							{isCollectionExpanded(collection.id) && (
 								<Table.Tr key={`expanded-${collection.id}`}>
-									<Table.Td colSpan={columns.length} p={0}>
+									<Table.Td
+										colSpan={columns.length}
+										p={0}
+									>
 										<CollectionContent
 											collection={collection}
 											expandedChainIds={expandedChainIds}
-											setExpandedChainIds={
-												setExpandedChainIds
-											}
+											setExpandedChainIds={setExpandedChainIds}
 										/>
 									</Table.Td>
 								</Table.Tr>

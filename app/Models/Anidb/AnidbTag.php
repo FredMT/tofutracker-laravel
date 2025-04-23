@@ -13,7 +13,8 @@ class AnidbTag extends Model
     protected $table = 'anidb_tags';
 
     public $incrementing = false;
-    protected $keyType = 'integer'; 
+
+    protected $keyType = 'integer';
 
     public $timestamps = false;
 
@@ -22,7 +23,7 @@ class AnidbTag extends Model
         'name',
         'description',
     ];
-    
+
     public function anime(): BelongsToMany
     {
         return $this->belongsToMany(AnidbAnime::class, 'anidb_anime_tags', 'tag_id', 'anidb_id');

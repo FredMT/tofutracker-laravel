@@ -8,9 +8,9 @@ use App\Models\Comment;
 use App\Models\Vote;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
-use Illuminate\Http\Response;
 
 class VoteController extends Controller
 {
@@ -41,7 +41,7 @@ class VoteController extends Controller
 
     public function destroy(Comment $comment): Response|JsonResponse
     {
-        abort_if(!Auth::id(), 401, 'Unauthorized');
+        abort_if(! Auth::id(), 401, 'Unauthorized');
 
         try {
 

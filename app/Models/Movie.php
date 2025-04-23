@@ -12,7 +12,6 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Kiritokatklian\LaravelColorPalette\Facades\ColorPalette;
 
 class Movie extends Model
 {

@@ -31,7 +31,7 @@ class MoviesController extends Controller
             $upcoming = $this->processMoviesList($this->tmdbService->getUpcomingMovies($region));
             $top_rated = $this->processMoviesList($this->tmdbService->getTopRatedMovies($region));
             $navbar_color = $this->getNavbarColor($popular_movies);
-            
+
             return [
                 'popular' => $popular_movies,
                 'now_playing' => $now_playing,
@@ -115,7 +115,7 @@ class MoviesController extends Controller
 
     private function getGenresWithMovies(): array
     {
-        $cache_key = "movie_genres";
+        $cache_key = 'movie_genres';
         $cache_ttl = seconds_until('next sunday at 8 am');
 
         return Cache::remember($cache_key, $cache_ttl, function () {
@@ -140,7 +140,7 @@ class MoviesController extends Controller
                         'movies' => $movies,
                     ];
                 } catch (\Exception $e) {
-                    logger()->error("Error fetching movies for genre {$genre_name} (ID: {$genre_id}): " . $e->getMessage());
+                    logger()->error("Error fetching movies for genre {$genre_name} (ID: {$genre_id}): ".$e->getMessage());
                 }
             }
 

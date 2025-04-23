@@ -94,7 +94,7 @@ class CreateCommentAction
                 'isDeleted' => false,
                 'created_at' => now()->timestamp,
                 'updated_at' => now()->timestamp,
-                'deleted_at' => null
+                'deleted_at' => null,
             ],
         ];
     }

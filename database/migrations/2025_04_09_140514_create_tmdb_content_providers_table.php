@@ -28,9 +28,9 @@ return new class extends Migration
 
             // Set up foreign key to tmdb_providers table
             $table->foreign('provider_id')
-                  ->references('id')
-                  ->on('tmdb_providers')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('tmdb_providers')
+                ->onDelete('cascade');
         });
     }
 

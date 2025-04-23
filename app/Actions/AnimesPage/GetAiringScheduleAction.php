@@ -2,10 +2,10 @@
 
 namespace App\Actions\AnimesPage;
 
-use App\Models\AnimeSchedule;
-use App\Models\AnimeScheduleMap;
 use App\Models\Anidb\AnidbAnime;
 use App\Models\Anime\AnimeMap;
+use App\Models\AnimeSchedule;
+use App\Models\AnimeScheduleMap;
 
 class GetAiringScheduleAction
 {
@@ -25,19 +25,19 @@ class GetAiringScheduleAction
         foreach ($episodes as $episode) {
             $scheduleMap = AnimeScheduleMap::where('animeschedule_id', $episode->animeschedule_id)->first();
 
-            if (!$scheduleMap) {
+            if (! $scheduleMap) {
                 continue;
             }
 
             $anidbAnime = AnidbAnime::find($scheduleMap->anidb_id);
 
-            if (!$anidbAnime) {
+            if (! $anidbAnime) {
                 continue;
             }
 
             $animeMap = AnimeMap::find($anidbAnime->map_id);
-            
-            if (!$animeMap) {
+
+            if (! $animeMap) {
                 continue;
             }
 
@@ -53,6 +53,7 @@ class GetAiringScheduleAction
                 'type' => 'anime',
             ];
         }
+
         return $result;
     }
-} 
+}

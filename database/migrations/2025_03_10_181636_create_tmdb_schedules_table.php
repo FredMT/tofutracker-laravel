@@ -29,9 +29,9 @@ return new class extends Migration
             $table->index('air_date');
 
             $table->foreign('episode_id')
-                  ->references('id')
-                  ->on('tv_episodes')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('tv_episodes')
+                ->onDelete('cascade');
         });
     }
 

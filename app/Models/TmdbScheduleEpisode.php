@@ -24,36 +24,36 @@ class TmdbScheduleEpisode extends Model
 
     public $timestamps = false;
 
-     // Get the TV show associated with this episode schedule.
+    // Get the TV show associated with this episode schedule.
     public function tvShow(): BelongsTo
     {
         return $this->belongsTo(TvShow::class, 'show_id', 'id');
     }
 
-     // Get the TV episode associated with this schedule.
+    // Get the TV episode associated with this schedule.
     public function episode(): BelongsTo
     {
         return $this->belongsTo(TvEpisode::class, 'episode_id', 'id');
     }
 
-     // Scope a query to only include episodes airing in a specific date range.
+    // Scope a query to only include episodes airing in a specific date range.
     public function scopeInDateRange($query, $startDate, $endDate)
     {
         return $query->whereBetween('episode_date', [$startDate, $endDate]);
     }
 
-     // Scope a query to only include episodes airing today.
+    // Scope a query to only include episodes airing today.
     public function scopeToday($query)
     {
         return $query->whereDate('episode_date', today());
     }
 
-     // Scope a query to only include episodes airing in the next week.
+    // Scope a query to only include episodes airing in the next week.
     public function scopeNextWeek($query)
     {
         return $query->whereBetween('episode_date', [
             today(),
-            today()->addDays(7)
+            today()->addDays(7),
         ]);
     }
 }

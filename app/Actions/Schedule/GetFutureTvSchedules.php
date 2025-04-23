@@ -71,7 +71,7 @@ class GetFutureTvSchedules
                 'backdrop' => $mediaAssets['backdrop'],
                 'logo' => $mediaAssets['logo'],
                 'poster' => $mediaAssets['poster'],
-                'link' => $tvShow ? '/tv/' . $showId . '/season/' . $schedule->season_number : null
+                'link' => $tvShow ? '/tv/'.$showId.'/season/'.$schedule->season_number : null,
             ];
         });
     }
@@ -81,18 +81,18 @@ class GetFutureTvSchedules
      */
     private function getMediaAssets(?TvShow $tvShow): array
     {
-        if (!$tvShow) {
+        if (! $tvShow) {
             return [
                 'backdrop' => null,
                 'logo' => null,
-                'poster' => null
+                'poster' => null,
             ];
         }
 
         return [
             'backdrop' => $tvShow->backdrop,
             'logo' => $tvShow->highestVotedLogoPath,
-            'poster' => $tvShow->poster
+            'poster' => $tvShow->poster,
         ];
     }
 }

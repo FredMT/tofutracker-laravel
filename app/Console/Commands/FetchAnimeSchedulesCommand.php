@@ -80,15 +80,15 @@ class FetchAnimeSchedulesCommand extends Command
         try {
             // Clear cache using the ProcessScheduleWithTimestamps action
             $processScheduleWithTimestamps->clearCache();
-            
+
             // Also clear the GetCombinedSchedules cache
             Cache::forget('combined_schedules');
 
             Log::info('Schedule cache cleared after fetching new anime schedules.');
             $this->info('Schedule cache cleared.');
         } catch (\Throwable $e) {
-            Log::error('Failed to clear schedule cache: ' . $e->getMessage());
-            $this->error('Failed to clear schedule cache: ' . $e->getMessage());
+            Log::error('Failed to clear schedule cache: '.$e->getMessage());
+            $this->error('Failed to clear schedule cache: '.$e->getMessage());
         }
     }
 }

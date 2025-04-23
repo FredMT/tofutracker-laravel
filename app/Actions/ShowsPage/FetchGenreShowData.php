@@ -26,42 +26,45 @@ class FetchGenreShowData
 
     public function execute()
     {
-        return Cache::remember('shows_page_genre_data', now()->addSecond(), function () {
+        $cache_key = 'shows_page_genre_data';
+        $cache_ttl = seconds_until('next sunday at 8 am');
+
+        return Cache::remember($cache_key, $cache_ttl, function () {
             $topRatedShows = $this->getTopRatedShows();
-            
+
             $topShowIds = $topRatedShows->pluck('id')->all();
-            
+
             $topRatedShows = $this->filterOutAnimeAndIgnored($topRatedShows, $topShowIds);
-            
+
             if ($topRatedShows->isEmpty()) {
                 return [];
             }
-            
+
             $topShowIds = $topRatedShows->pluck('id')->all();
             $pivotEntries = $this->getGenrePivotEntries($topShowIds);
-            
+
             if ($pivotEntries->isEmpty()) {
                 return [];
             }
-            
+
             $genresMap = Genre::pluck('name', 'id');
             $genreNameToId = $genresMap->flip();
             $preferredGenreIds = $this->getPreferredGenreIds($genreNameToId);
-            
+
             $showGenreMap = $pivotEntries->groupBy('content_id');
             $assignedShowIds = [];
             $genreData = [];
-            
+
             $fantasyDrama = $this->getFantasyDramaShows($topRatedShows, $showGenreMap, $assignedShowIds);
             if ($fantasyDrama->isNotEmpty()) {
                 $genreData[] = $this->formatGenreData('Fantasy Drama', $fantasyDrama);
             }
-            
+
             $cyberpunk = $this->getCyberpunkShows($assignedShowIds);
             if ($cyberpunk->isNotEmpty()) {
                 $genreData[] = $this->formatGenreData('Cyberpunk', $cyberpunk);
             }
-            
+
             foreach ($preferredGenreIds as $genreName => $genreId) {
                 if (in_array($genreId, $this->excludedGenreIds)) {
                     continue;
@@ -71,7 +74,7 @@ class FetchGenreShowData
                     $genreData[] = $this->formatGenreData($genreName, $shows);
                 }
             }
-            
+
             return $genreData;
         });
     }

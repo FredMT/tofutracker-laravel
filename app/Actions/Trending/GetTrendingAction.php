@@ -35,7 +35,10 @@ class GetTrendingAction
 
     public function execute(): array
     {
-        return Cache::remember('trending_all_categorized', now()->addMinutes(config('trending.cache_duration')), function () {
+        $cache_key = 'trending_all_categorized';
+        $cache_ttl = seconds_until('next sunday at 8 am');
+
+        return Cache::remember($cache_key, $cache_ttl, function () {
             $page = 1;
             $animeMapIds = AnimeMap::whereNotNull('most_common_tmdb_id')
                 ->pluck('id', 'most_common_tmdb_id')

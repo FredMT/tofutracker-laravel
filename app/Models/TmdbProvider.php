@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class TmdbProvider extends Model
 {
     public $incrementing = false;
+
     public $timestamps = false;
 
     protected $fillable = [
-        'id', 'name', 'logo_path'
+        'id', 'name', 'logo_path',
     ];
 
     /**
@@ -41,15 +42,15 @@ class TmdbProvider extends Model
     /**
      * Attach this provider to a content (Movie or TvShow) with provider type and country code.
      *
-     * @param Movie|TvShow $content The content to attach the provider to
-     * @param string $providerType One of: 'ads', 'buy', 'rent', 'flatrate', 'free'
-     * @param string $countryCode Two-letter country code
+     * @param  Movie|TvShow  $content  The content to attach the provider to
+     * @param  string  $providerType  One of: 'ads', 'buy', 'rent', 'flatrate', 'free'
+     * @param  string  $countryCode  Two-letter country code
      * @return TmdbContentProvider
      */
     public function attachToContent($content, string $providerType, string $countryCode)
     {
         // Validate provider type
-        if (!in_array($providerType, TmdbContentProvider::$providerTypes)) {
+        if (! in_array($providerType, TmdbContentProvider::$providerTypes)) {
             throw new \InvalidArgumentException("Invalid provider type: {$providerType}");
         }
 

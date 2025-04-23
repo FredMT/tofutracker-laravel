@@ -30,10 +30,10 @@ class LoginRequest extends FormRequest
     {
         return [
             'email' => ['required_without:username', 'string', 'email', 'exists:users,email'],
-            'username' => ['required_without:email', 'string', 'exists:users,username','not_regex:/\badmin\b/i'],
+            'username' => ['required_without:email', 'string', 'exists:users,username', 'not_regex:/\badmin\b/i'],
             'password' => ['required', 'string'],
-            'remember' => ['required', 'boolean']
-            
+            'remember' => ['required', 'boolean'],
+
         ];
     }
 

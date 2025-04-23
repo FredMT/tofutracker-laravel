@@ -5,9 +5,9 @@ namespace App\Jobs;
 use App\Models\Movie;
 use App\Models\Tmdb\Genre;
 use App\Models\Tmdb\TmdbKeyword;
+use App\Models\Tmdb\TmdbVideo;
 use App\Models\TmdbProvider;
 use App\Services\TmdbService;
-use App\Models\Tmdb\TmdbVideo;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -74,7 +74,7 @@ class UpdateOrCreateMovieData implements ShouldQueue
     private function processWatchProviders(Movie $movie): void
     {
         $watchProviders = $movie->data['watch/providers']['results'] ?? [];
-        
+
         if (empty($watchProviders)) {
             return;
         }
@@ -83,23 +83,23 @@ class UpdateOrCreateMovieData implements ShouldQueue
         foreach ($watchProviders as $countryCode => $countryData) {
             // Process each provider type (flatrate, buy, rent, ads, free)
             foreach (['flatrate', 'buy', 'rent', 'ads', 'free'] as $providerType) {
-                if (!isset($countryData[$providerType])) {
+                if (! isset($countryData[$providerType])) {
                     continue;
                 }
 
                 // Process providers of this type
                 foreach ($countryData[$providerType] as $providerData) {
                     $providerId = $providerData['provider_id'];
-                    
+
                     // Ensure the provider exists in our database
                     $provider = TmdbProvider::updateOrCreate(
                         ['id' => $providerId],
                         [
                             'name' => $providerData['provider_name'],
-                            'logo_path' => $providerData['logo_path']
+                            'logo_path' => $providerData['logo_path'],
                         ]
                     );
-                    
+
                     // Attach provider to the movie
                     $movie->attachProvider($provider, $providerType, $countryCode);
                 }
@@ -113,25 +113,25 @@ class UpdateOrCreateMovieData implements ShouldQueue
     private function processGenres(Movie $movie): void
     {
         $genres = $movie->data['genres'] ?? [];
-        
+
         if (empty($genres)) {
             return;
         }
 
         // Remove existing genre associations to prevent duplicates
         $movie->genreRelations()->delete();
-        
+
         foreach ($genres as $genreData) {
-            if (!isset($genreData['id']) || !isset($genreData['name'])) {
+            if (! isset($genreData['id']) || ! isset($genreData['name'])) {
                 continue;
             }
-            
+
             // Ensure the genre exists in our database
             $genre = Genre::updateOrCreate(
                 ['id' => $genreData['id']],
                 ['name' => $genreData['name']]
             );
-            
+
             // Attach genre to the movie
             $movie->attachGenre($genre);
         }
@@ -144,25 +144,25 @@ class UpdateOrCreateMovieData implements ShouldQueue
     {
         // Keywords in movies are under 'keywords.keywords'
         $keywords = $movie->data['keywords']['keywords'] ?? [];
-        
+
         if (empty($keywords)) {
             return;
         }
 
         // Remove existing keyword associations to prevent duplicates
         $movie->keywordRelations()->delete();
-        
+
         foreach ($keywords as $keywordData) {
-            if (!isset($keywordData['id']) || !isset($keywordData['name'])) {
+            if (! isset($keywordData['id']) || ! isset($keywordData['name'])) {
                 continue;
             }
-            
+
             // Ensure the keyword exists in our database
             $keyword = TmdbKeyword::updateOrCreate(
                 ['id' => $keywordData['id']],
                 ['name' => $keywordData['name']]
             );
-            
+
             // Attach keyword to the movie
             $movie->attachKeyword($keyword);
         }
@@ -175,19 +175,19 @@ class UpdateOrCreateMovieData implements ShouldQueue
     {
         // Videos in movies are under 'videos.results'
         $videos = $movie->data['videos']['results'] ?? [];
-        
+
         if (empty($videos)) {
             return;
         }
 
         // Remove existing video associations to prevent duplicates
         $movie->videoRelations()->delete();
-        
+
         foreach ($videos as $videoData) {
-            if (!isset($videoData['id'])) {
+            if (! isset($videoData['id'])) {
                 continue;
             }
-            
+
             // Ensure the video exists in our database
             $video = TmdbVideo::updateOrCreate(
                 ['id' => $videoData['id']],
@@ -203,7 +203,7 @@ class UpdateOrCreateMovieData implements ShouldQueue
                     'published_at' => isset($videoData['published_at']) ? \Carbon\Carbon::parse($videoData['published_at']) : null,
                 ]
             );
-            
+
             // Attach video to the movie
             $movie->attachVideo($video);
         }

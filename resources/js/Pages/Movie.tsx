@@ -80,9 +80,7 @@ function Movie() {
 								</Stack>
 								<Space h={24} />
 								<RegularContentCredits containerWidth={width * 0.95} />
-								<Divider my={16} />
 								<RecommendedContent containerWidth={width * 0.95} />
-								<Divider my={16} />
 								<Comments />
 							</Box>
 						</Stack>

@@ -2,10 +2,10 @@
 
 namespace App\Actions\AnimesPage;
 
-use App\Models\AnimeSchedule;
-use App\Models\AnimeScheduleMap;
 use App\Models\Anidb\AnidbAnime;
 use App\Models\Anime\AnimeMap;
+use App\Models\AnimeSchedule;
+use App\Models\AnimeScheduleMap;
 
 class GetAiringNowAnimeAction
 {
@@ -38,8 +38,8 @@ class GetAiringNowAnimeAction
         $result = [];
         foreach ($animeMaps as $animeMap) {
             $tmdbModel = $animeMap->getTmdbModel();
-            
-            if (!$tmdbModel) {
+
+            if (! $tmdbModel) {
                 continue;
             }
 
@@ -48,7 +48,7 @@ class GetAiringNowAnimeAction
                 'title' => $animeMap->title,
                 'poster' => $tmdbModel->poster,
                 'year' => $tmdbModel->yearRange,
-                'rating' => number_format($tmdbModel->vote_average, 1, '.', '')
+                'rating' => number_format($tmdbModel->vote_average, 1, '.', ''),
             ];
         }
 

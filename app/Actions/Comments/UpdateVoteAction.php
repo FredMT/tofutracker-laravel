@@ -56,7 +56,7 @@ class UpdateVoteAction
         );
 
         // Only dispatch job if this is a new vote (not an update) and comment type is not UserActivity
-        if (!$existingVote && $comment->commentable_type !== UserActivity::class) {
+        if (! $existingVote && $comment->commentable_type !== UserActivity::class) {
             ProcessCommentVoteMilestoneJob::dispatch($comment)
                 ->onQueue('notifications')
                 ->afterCommit();

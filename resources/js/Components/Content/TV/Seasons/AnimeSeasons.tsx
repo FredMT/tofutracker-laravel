@@ -1,10 +1,10 @@
-import AnimeSeasonCard from "@/Components/Content/TV/Seasons/AnimeSeasonCard";
-import { RelatedAnimeData } from "@/types/anime";
-import { Link } from "@inertiajs/react";
-import { Carousel } from "@mantine/carousel";
-import { Stack, Title } from "@mantine/core";
-import { CustomCarousel } from "@/Components/Shared/CustomCarousel";
-import { useAnimeContent } from "@/propsHooks/useAnimeContent";
+import AnimeSeasonCard from '@/Components/Content/TV/Seasons/AnimeSeasonCard';
+import { RelatedAnimeData } from '@/types/anime';
+import { Link } from '@inertiajs/react';
+import { Carousel } from '@mantine/carousel';
+import { Stack, Title } from '@mantine/core';
+import { CustomCarousel } from '@/Components/Shared/CustomCarousel';
+import { useAnimeContent } from '@/propsHooks/useAnimeContent';
 
 interface AnimeSeasonsProps {
 	containerWidth: number;
@@ -12,9 +12,9 @@ interface AnimeSeasonsProps {
 }
 
 export default function AnimeSeasons({
-																			 containerWidth,
-																			 slideSize = "0%",
-																		 }: AnimeSeasonsProps) {
+	containerWidth,
+	slideSize = '0%',
+}: AnimeSeasonsProps) {
 	const data = useAnimeContent();
 
 	const renderCarousel = (items: RelatedAnimeData[], title: string) => (
@@ -28,12 +28,11 @@ export default function AnimeSeasons({
 			>
 				{items.map((season) => (
 					<Carousel.Slide key={season.id}>
-						{season.type === "Music Video" ||
-						season.type === "unknown" ? (
+						{season.type === 'Music Video' || season.type === 'unknown' ? (
 							<AnimeSeasonCard season={season} />
 						) : (
 							<Link
-								href={route("anime.season.show", {
+								href={route('anime.season.show', {
 									id: season.map_id,
 									seasonId: season.id,
 								})}
@@ -52,14 +51,16 @@ export default function AnimeSeasons({
 		<Stack gap={8}>
 			<Title order={2}>Seasons</Title>
 
-			{Object.keys(data.anidbData.prequel_sequel_chains).length >
-				0 &&
+			{Object.keys(data.anidbData.prequel_sequel_chains).length > 0 &&
 				Object.entries(data.anidbData.prequel_sequel_chains).map(
-					([chainName, seasons]) => renderCarousel(seasons, chainName),
+					([chainName, seasons]) => renderCarousel(seasons, chainName)
 				)}
 
 			{data.anidbData.other_related_ids.length > 0 &&
-				renderCarousel(data.anidbData.other_related_ids, "Other Related Content")}
+				renderCarousel(
+					data.anidbData.other_related_ids,
+					'Other Related Content'
+				)}
 		</Stack>
 	);
 }

@@ -70,7 +70,7 @@ export default function NotificationBellMenu() {
 			<Menu.Target>
 				<ActionIcon
 					variant='subtle'
-					size='md'
+					size='sm'
 					color='red'
 					onClick={handleBellClick}
 				>

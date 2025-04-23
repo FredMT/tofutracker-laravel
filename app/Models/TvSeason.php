@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Kiritokatklian\LaravelColorPalette\Facades\ColorPalette;
 
 class TvSeason extends Model
 {

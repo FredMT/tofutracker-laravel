@@ -1,11 +1,12 @@
 <?php
 
-if (!function_exists('seconds_until')) {
+if (! function_exists('seconds_until')) {
     /**
      * Calculate the number of seconds until a specified date/time.
      *
-     * @param string $until A parsable date/time string (e.g., 'tomorrow 8 am')
+     * @param  string  $until  A parsable date/time string (e.g., 'tomorrow 8 am')
      * @return int
+     *
      * @throws \InvalidArgumentException
      */
     function seconds_until($until)

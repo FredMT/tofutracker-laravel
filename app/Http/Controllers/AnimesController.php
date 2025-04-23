@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Actions\AnimesPage\GetAiringNowAnimeAction;
 use App\Actions\AnimesPage\GetAiringScheduleAction;
 use App\Actions\AnimesPage\GetAnimeGenresAction;
-use App\Actions\AnimesPage\GetTrendingAnimesAction;
 use App\Actions\AnimesPage\GetLatestAnimeTrailersAction;
+use App\Actions\AnimesPage\GetTrendingAnimesAction;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 
@@ -79,6 +79,7 @@ class AnimesController extends Controller
     {
         return Inertia::defer(function () {
             $cacheTTL = seconds_until('next sunday at 9 am');
+
             return Cache::remember('animes_page_trailers', $cacheTTL, function () {
                 return $this->getLatestAnimeTrailersAction->execute();
             });

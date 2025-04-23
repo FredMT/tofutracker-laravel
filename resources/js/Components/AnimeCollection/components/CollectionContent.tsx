@@ -1,8 +1,8 @@
-import { Box } from "@mantine/core";
-import { AnimeCollection } from "../types/animeCollections";
-import { ChainTable } from "./ChainTable";
-import { RelatedEntriesTable } from "./RelatedEntriesTable";
-import { Dispatch, SetStateAction } from "react";
+import { Box } from '@mantine/core';
+import { AnimeCollection } from '../types/animeCollections';
+import { ChainTable } from './ChainTable';
+import { RelatedEntriesTable } from './RelatedEntriesTable';
+import { Dispatch, SetStateAction } from 'react';
 
 interface CollectionContentProps {
 	collection: AnimeCollection;
@@ -11,12 +11,12 @@ interface CollectionContentProps {
 }
 
 export function CollectionContent({
-																		collection,
-																		expandedChainIds,
-																		setExpandedChainIds,
-																	}: CollectionContentProps) {
+	collection,
+	expandedChainIds,
+	setExpandedChainIds,
+}: CollectionContentProps) {
 	return (
-		<Box p="xs">
+		<Box p='xs'>
 			<ChainTable
 				chains={collection.chains}
 				expandedChainIds={expandedChainIds}

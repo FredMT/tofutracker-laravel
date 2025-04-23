@@ -1,6 +1,6 @@
-import { Flex, Group, Loader, Pagination, Text } from "@mantine/core";
-import { PaginationMeta } from "../types/animeCollections";
-import { useCallback } from "react";
+import { Flex, Group, Loader, Pagination, Text } from '@mantine/core';
+import { PaginationMeta } from '../types/animeCollections';
+import { useCallback } from 'react';
 
 interface CollectionPaginationProps {
 	meta: PaginationMeta;
@@ -9,30 +9,44 @@ interface CollectionPaginationProps {
 }
 
 export function CollectionPagination({
-																			 meta,
-																			 onPageChange,
-																			 isLoading = false,
-																		 }: CollectionPaginationProps) {
+	meta,
+	onPageChange,
+	isLoading = false,
+}: CollectionPaginationProps) {
 	const handlePageChange = useCallback(
 		(page: number) => {
 			onPageChange(page);
 		},
-		[onPageChange],
+		[onPageChange]
 	);
 
 	const message = `Showing ${meta.from} – ${meta.to} of ${meta.total}`;
 
 	return (
-		<Group justify="space-between" align="center" mt="md">
+		<Group
+			justify='space-between'
+			align='center'
+			mt='md'
+		>
 			{isLoading ? (
-				<Flex gap="xs" align="center">
-					<Loader size="xs" />
-					<Text size="sm" c="dimmed" span>
+				<Flex
+					gap='xs'
+					align='center'
+				>
+					<Loader size='xs' />
+					<Text
+						size='sm'
+						c='dimmed'
+						span
+					>
 						Loading...
 					</Text>
 				</Flex>
 			) : (
-				<Text size="sm" c="dimmed">
+				<Text
+					size='sm'
+					c='dimmed'
+				>
 					{message}
 				</Text>
 			)}

@@ -8,6 +8,7 @@ use Illuminate\Console\Command;
 class FetchAnimeGenresCommand extends Command
 {
     protected $signature = 'anime:fetch-genres';
+
     protected $description = 'Fetch anime genres data and store in cache';
 
     public function handle()
@@ -18,4 +19,4 @@ class FetchAnimeGenresCommand extends Command
 
         return Command::SUCCESS;
     }
-} 
+}

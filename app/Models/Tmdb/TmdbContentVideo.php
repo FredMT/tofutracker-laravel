@@ -2,8 +2,8 @@
 
 namespace App\Models\Tmdb;
 
-use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class TmdbContentVideo extends Pivot
 {
@@ -32,4 +32,4 @@ class TmdbContentVideo extends Pivot
     {
         return $this->belongsTo(TmdbVideo::class, 'video_id');
     }
-} 
+}

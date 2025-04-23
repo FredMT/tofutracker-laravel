@@ -52,7 +52,7 @@ class CommentReplyNotification extends Notification implements ShouldQueue
     private function generateLink(): string
     {
         $type = strtolower(class_basename($this->reply->commentable_type));
-        
+
         if ($type === 'useractivity') {
             $userActivity = UserActivity::find($this->reply->commentable_id);
             $user = $userActivity->user;

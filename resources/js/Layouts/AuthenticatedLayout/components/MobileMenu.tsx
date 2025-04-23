@@ -1,35 +1,45 @@
-import { Link, usePage } from "@inertiajs/react";
-import { Button, Stack } from "@mantine/core";
-import { useAuth } from "@/propsHooks/useAuth";
+import { Link, usePage } from '@inertiajs/react';
+import { Button, Stack } from '@mantine/core';
+import { useAuth } from '@/propsHooks/useAuth';
 
 interface MobileMenuProps {
 	showingNavigationDropdown: boolean;
 }
 
 export default function MobileMenu({
-																		 showingNavigationDropdown,
-																	 }: MobileMenuProps) {
+	showingNavigationDropdown,
+}: MobileMenuProps) {
 	const auth = useAuth();
 	const url = usePage().url;
 
 	return (
 		<div
 			className={
-				(showingNavigationDropdown ? "block" : "hidden") + " sm:hidden"
+				(showingNavigationDropdown ? 'block' : 'hidden') + ' sm:hidden'
 			}
 		>
 			{!auth.user && (
 				<Stack p={20}>
-					<Button size="md" component={Link} href={route("search")}>
+					<Button
+						size='md'
+						component={Link}
+						href={route('search')}
+					>
 						Search
 					</Button>
-					{url.split("/").pop() !== "login" && (
-						<Button href={route("login")} component={Link}>
+					{url.split('/').pop() !== 'login' && (
+						<Button
+							href={route('login')}
+							component={Link}
+						>
 							Login
 						</Button>
 					)}
-					{url.split("/").pop() !== "register" && (
-						<Button href={route("register")} component={Link}>
+					{url.split('/').pop() !== 'register' && (
+						<Button
+							href={route('register')}
+							component={Link}
+						>
 							Register
 						</Button>
 					)}
@@ -37,24 +47,32 @@ export default function MobileMenu({
 			)}
 			{auth.user && (
 				<Stack p={20}>
-					<Button size="md" component={Link} href={route("search")}>
+					<Button
+						size='md'
+						component={Link}
+						href={route('search')}
+					>
 						Search
 					</Button>
-					<Button size="md" component={Link} href={route("me")}>
+					<Button
+						size='md'
+						component={Link}
+						href={route('me')}
+					>
 						Profile
 					</Button>
 					<Button
-						size="md"
+						size='md'
 						component={Link}
-						href={route("profile.edit")}
+						href={route('profile.edit')}
 					>
 						Settings
 					</Button>
 					<Button
-						size="md"
+						size='md'
 						component={Link}
-						method="post"
-						href={route("logout")}
+						method='post'
+						href={route('logout')}
 					>
 						Log Out
 					</Button>

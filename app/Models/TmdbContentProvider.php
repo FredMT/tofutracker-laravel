@@ -24,7 +24,7 @@ class TmdbContentProvider extends Model
         'buy',
         'rent',
         'flatrate',
-        'free'
+        'free',
     ];
 
     public $timestamps = false;
@@ -44,4 +44,4 @@ class TmdbContentProvider extends Model
     {
         return $this->morphTo();
     }
-} 
+}

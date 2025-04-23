@@ -10,7 +10,9 @@ class TmdbVideo extends Model
     protected $table = 'tmdb_videos';
 
     public $timestamps = false; // Disable default timestamps
+
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     protected $fillable = [
@@ -40,8 +42,8 @@ class TmdbVideo extends Model
         // Determine possible content types dynamically or list them explicitly
         // For now, assuming Movie and TvShow are the only types
         return $this->morphedByMany(\App\Models\Movie::class, 'content', 'tmdb_content_videos', 'video_id', 'content_id')
-                    ->withPivot('content_type')
-                    ->union($this->morphedByMany(\App\Models\TvShow::class, 'content', 'tmdb_content_videos', 'video_id', 'content_id')
-                    ->withPivot('content_type'));
+            ->withPivot('content_type')
+            ->union($this->morphedByMany(\App\Models\TvShow::class, 'content', 'tmdb_content_videos', 'video_id', 'content_id')
+                ->withPivot('content_type'));
     }
-} 
+}

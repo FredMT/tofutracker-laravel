@@ -286,7 +286,7 @@ class AnidbXmlService
         foreach ($tags as $tag) {
             if (((string) ($tag['verified'] ?? '')) !== 'true') {
                 continue;
-            }            
+            }
 
             $parsedTags[] = [
                 'tag_id' => (string) ($tag['id'] ?? ''),

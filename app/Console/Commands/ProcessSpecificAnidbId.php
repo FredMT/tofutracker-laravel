@@ -35,6 +35,7 @@ class ProcessSpecificAnidbId extends Command
             $this->info("Job dispatched successfully for anime ID: {$animeId}");
         } catch (\Exception $e) {
             $this->error("Failed to dispatch job: {$e->getMessage()}");
+
             return Command::FAILURE;
         }
 

@@ -3,7 +3,6 @@
 namespace App\Actions\Tv;
 
 use App\Jobs\UpdateTvSeason;
-use App\Jobs\UpdateTvShow;
 use App\Models\Tmdb\Genre;
 use App\Models\Tmdb\TmdbKeyword;
 use App\Models\Tmdb\TmdbVideo;
@@ -23,6 +22,7 @@ class TvShowActions
     public function fetchTvShow(string $id): array
     {
         $cacheTTL = seconds_until('tomorrow at 8 am');
+
         return Cache::remember("tv.{$id}", $cacheTTL, function () use ($id) {
 
             $tvShow = TvShow::find($id);

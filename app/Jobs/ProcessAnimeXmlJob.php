@@ -9,9 +9,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Redis;
-use JsonException;
 
 class ProcessAnimeXmlJob implements ShouldQueue
 {
@@ -28,7 +26,8 @@ class ProcessAnimeXmlJob implements ShouldQueue
     public function middleware()
     {
         return [
-            new class {
+            new class
+            {
                 public function handle($job, $next)
                 {
                     Redis::throttle('anidb_api_rate_limit')
@@ -42,7 +41,7 @@ class ProcessAnimeXmlJob implements ShouldQueue
                             $job->release(2); // Release back after 2 seconds
                         });
                 }
-            }
+            },
         ];
     }
 

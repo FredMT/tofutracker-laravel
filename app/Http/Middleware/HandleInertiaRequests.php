@@ -40,13 +40,13 @@ class HandleInertiaRequests extends Middleware
             'permissions' => [
                 'is_superuser' => Gate::check('superuser', Auth::user()),
             ],
-            'ziggy' => fn() => [
+            'ziggy' => fn () => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
             'flash' => [
-                'success' => fn() => $request->session()->get('success'),
-                'message' => fn() => $request->session()->get('message'),
+                'success' => fn () => $request->session()->get('success'),
+                'message' => fn () => $request->session()->get('message'),
             ],
             'notifications' => Auth::user()?->notifications->take(5)->map(function ($notification) {
                 return array_merge([

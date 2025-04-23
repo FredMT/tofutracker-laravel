@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -22,7 +21,7 @@ class Comment extends Model
     protected $casts = [
         'deleted_at' => 'datetime',
         'created_at' => 'datetime',
-        'updated_at' => 'datetime'
+        'updated_at' => 'datetime',
     ];
 
     public function user(): BelongsTo

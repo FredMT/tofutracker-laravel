@@ -22,8 +22,8 @@ class FetchAiringTvShowsCommand extends Command
 
         try {
             Bus::chain([
-                new FetchAiringTvShowsJob(),
-                new FetchTraktEpisodesJob()
+                new FetchAiringTvShowsJob,
+                new FetchTraktEpisodesJob,
             ])->dispatch();
 
             $this->info('Jobs dispatched successfully.');
@@ -32,10 +32,10 @@ class FetchAiringTvShowsCommand extends Command
             Cache::forget('trakt_episodes_calendar');
             $this->clearScheduleCache($processScheduleWithTimestamps);
         } catch (\Exception $e) {
-            $this->error('Failed to dispatch jobs: ' . $e->getMessage());
+            $this->error('Failed to dispatch jobs: '.$e->getMessage());
             Log::error('Failed to dispatch TMDB airing TV shows and Trakt episodes fetch jobs', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
         }
     }
@@ -44,14 +44,14 @@ class FetchAiringTvShowsCommand extends Command
     {
         try {
             $processScheduleWithTimestamps->clearCache();
-            
+
             Cache::forget('combined_schedules');
 
             Log::info('Schedule cache cleared after fetching new TV schedules.');
             $this->info('Schedule cache cleared.');
         } catch (\Throwable $e) {
-            Log::error('Failed to clear schedule cache: ' . $e->getMessage());
-            $this->error('Failed to clear schedule cache: ' . $e->getMessage());
+            Log::error('Failed to clear schedule cache: '.$e->getMessage());
+            $this->error('Failed to clear schedule cache: '.$e->getMessage());
         }
     }
 }

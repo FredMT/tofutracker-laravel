@@ -5,8 +5,8 @@ namespace App\Jobs;
 use App\Models\Anime\AnimeMap;
 use App\Models\TmdbSchedule;
 use App\Models\TvShow;
-use App\Models\TvEpisode;
 use App\Services\TmdbService;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -14,7 +14,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
 
 class FetchAiringTvShowsJob implements ShouldQueue
 {
@@ -60,17 +59,18 @@ class FetchAiringTvShowsJob implements ShouldQueue
                 // Skip if this show is mapped as anime
                 if (in_array($showId, $animeMappedIds)) {
                     Log::info("Skipping TV show ID: {$showId} as it is mapped as anime in AnimeMap");
+
                     continue;
                 }
 
                 // Only process shows with vote_count greater than 10
-                if ($show['vote_count'] > 10 && !in_array($showId, $processedIds)) {
+                if ($show['vote_count'] > 10 && ! in_array($showId, $processedIds)) {
                     $processedIds[] = $showId;
 
                     // Find or create the TV show model
                     $tvShow = TvShow::firstOrCreate(['id' => $showId], [
                         'data' => ['name' => $show['name']],
-                        'etag' => "a"
+                        'etag' => 'a',
                     ]);
 
                     // Add to schedule data for batch insert
@@ -86,7 +86,7 @@ class FetchAiringTvShowsJob implements ShouldQueue
             }
 
             // STEP 2: Perform batch insert of all schedule data
-            if (!empty($scheduleData)) {
+            if (! empty($scheduleData)) {
                 // First, clear existing schedules days in the past
                 TmdbSchedule::where('tmdb_type', 'tv')
                     ->where('air_date', '<', today()->startOfDay())
@@ -106,7 +106,7 @@ class FetchAiringTvShowsJob implements ShouldQueue
         } catch (\Exception $e) {
             Log::error('An error occurred while fetching TMDB airing TV shows', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             throw $e; // Re-throw to trigger job failure

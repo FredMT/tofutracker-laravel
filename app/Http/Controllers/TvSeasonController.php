@@ -85,7 +85,7 @@ class TvSeasonController extends Controller
             ];
 
             $navbar_color = $this->getColorPalette($seasonData['show_id']);
-            
+
             return Inertia::render('TVSeason', [
                 'data' => $seasonData,
                 'user_library' => $userLibrary,
@@ -97,7 +97,7 @@ class TvSeasonController extends Controller
                 'navbar_color' => $navbar_color,
             ]);
         } catch (\Exception $e) {
-            logger()->error('Failed to retrieve TV season: ' . $e->getMessage());
+            logger()->error('Failed to retrieve TV season: '.$e->getMessage());
             logger()->error($e->getTraceAsString());
 
             return $this->tvShowActions->errorResponse($e);
@@ -132,7 +132,7 @@ class TvSeasonController extends Controller
     }
 
     private function getColorPalette(string $id)
-    {        
+    {
         $cacheKey = "tv.{$id}.color_palette";
         if (cache()->has($cacheKey)) {
             return cache()->get($cacheKey);
@@ -146,11 +146,10 @@ class TvSeasonController extends Controller
 
         $cacheTTL = seconds_until('first sunday next month at 8 am');
 
-        $imageUrl = "https://image.tmdb.org/t/p/original" . ltrim($backdropPath, '"');
+        $imageUrl = 'https://image.tmdb.org/t/p/original'.ltrim($backdropPath, '"');
         $colorPalette = ColorPalette::getPalette($imageUrl);
         cache()->put($cacheKey, $colorPalette, $cacheTTL);
 
         return $colorPalette;
     }
 }
-

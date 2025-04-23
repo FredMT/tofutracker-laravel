@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CheckSuperuserEmail
 {
-   /**
+    /**
      * Handle an incoming request.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
@@ -17,10 +17,10 @@ class CheckSuperuserEmail
     {
         $user = $request->user();
 
-        if (!$user || $user->email !== env('SUPERUSER_EMAIL')) {
+        if (! $user || $user->email !== env('SUPERUSER_EMAIL')) {
             abort(403, 'Access denied.');
         }
-        
+
         return $next($request);
     }
 }

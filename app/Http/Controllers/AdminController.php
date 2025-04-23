@@ -117,13 +117,15 @@ class AdminController extends Controller
         return response()->json(['message' => 'Anime map data retrieved', 'animeMap' => $animeMap]);
     }
 
-    public function findMapByAnimeId(AnidbAnime $anime) {
+    public function findMapByAnimeId(AnidbAnime $anime)
+    {
 
-        if (!$anime->map_id) {
+        if (! $anime->map_id) {
             return response()->json(['message' => "Anime map doesnt exist for {$anime->id}", 'redirect' => false], 404);
         }
+
         return response()->json(['message' => 'Found', 'redirect' => true, 'redirectTo' => route('admin.showAdminAnimeCollectionPage', [
-            'animeMap' => $anime->map_id
+            'animeMap' => $anime->map_id,
         ])], 200);
     }
 
@@ -849,20 +851,21 @@ class AdminController extends Controller
         }
     }
 
-    public function handleUpdateTmdbIdForMap(AnimeMap $animeMap, Request $request) {
+    public function handleUpdateTmdbIdForMap(AnimeMap $animeMap, Request $request)
+    {
         $validated = $request->validate([
-            'tmdb_id' => ['required', 'integer']
+            'tmdb_id' => ['required', 'integer'],
         ]);
 
         AnimeMap::where('id', $animeMap->id)->update(['most_common_tmdb_id' => $validated['tmdb_id']]);
 
-
         return response()->json(['message' => 'TMDB ID updated successfully', 'refresh' => true], 200);
     }
 
-    public function handleUpdateTmdbTypeForMap(AnimeMap $animeMap, Request $request) {
+    public function handleUpdateTmdbTypeForMap(AnimeMap $animeMap, Request $request)
+    {
         $validated = $request->validate([
-            'tmdb_type' => ['required', 'string', 'in:tv,movie']
+            'tmdb_type' => ['required', 'string', 'in:tv,movie'],
         ]);
 
         AnimeMap::where('id', $animeMap->id)->update(['tmdb_type' => $validated['tmdb_type']]);
@@ -870,10 +873,11 @@ class AdminController extends Controller
         return response()->json(['message' => 'TMDB Type updated successfully', 'refresh' => true], 200);
     }
 
-    public function updateChainName(AnimePrequelSequelChain $chain, Request $request) {
-        
+    public function updateChainName(AnimePrequelSequelChain $chain, Request $request)
+    {
+
         $validated = $request->validate([
-            'chain_name' => ['required', 'string', 'min:1']
+            'chain_name' => ['required', 'string', 'min:1'],
         ]);
 
         $chain->update(['name' => $validated['chain_name']]);
@@ -888,7 +892,7 @@ class AdminController extends Controller
             'data.*.chainId' => 'required|integer|exists:anime_prequel_sequel_chains,id',
             'data.*.numOrder' => 'required|integer|min:1',
         ]);
-    
+
         foreach ($validated['data'] as $item) {
             AnimePrequelSequelChain::where('id', $item['chainId'])
                 ->update(['importance_order' => $item['numOrder']]);

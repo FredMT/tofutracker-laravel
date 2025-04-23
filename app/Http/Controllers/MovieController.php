@@ -130,7 +130,7 @@ class MovieController extends Controller
     }
 
     private function getColorPalette(string $id)
-    {        
+    {
         $cacheKey = "movie.{$id}.color_palette";
         if (cache()->has($cacheKey)) {
             return cache()->get($cacheKey);
@@ -144,7 +144,7 @@ class MovieController extends Controller
 
         $cacheTTL = seconds_until('first sunday next month at 8 am');
 
-        $imageUrl = "https://image.tmdb.org/t/p/original" . ltrim($backdropPath, '"');
+        $imageUrl = 'https://image.tmdb.org/t/p/original'.ltrim($backdropPath, '"');
         $colorPalette = ColorPalette::getPalette($imageUrl);
         cache()->put($cacheKey, $colorPalette, $cacheTTL);
 

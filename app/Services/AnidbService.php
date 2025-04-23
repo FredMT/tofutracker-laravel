@@ -452,12 +452,13 @@ class AnidbService
         return cache()->remember($cacheKey, $cacheDuration, function () use ($clientName) {
             $url = "http://api.anidb.net:9001/httpapi?client={$clientName}&clientver=1&protover=1&request=hotanime";
 
-        $response = Http::get($url);
-        $xml = simplexml_load_string($response->body());
-        $animeIds = [];
-        foreach ($xml->anime as $anime) {
+            $response = Http::get($url);
+            $xml = simplexml_load_string($response->body());
+            $animeIds = [];
+            foreach ($xml->anime as $anime) {
                 $animeIds[] = (int) $anime['id'];
             }
+
             return $animeIds;
         });
     }

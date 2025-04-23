@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
-use Inertia\Response;
 
 class SearchController extends Controller
 {

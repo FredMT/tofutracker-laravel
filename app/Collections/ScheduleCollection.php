@@ -7,11 +7,11 @@ use Illuminate\Support\Collection;
 
 class ScheduleCollection extends Collection
 {
-
     public function filterByDateRange(Carbon $startDate, Carbon $endDate): self
     {
         return $this->filter(function ($schedule) use ($startDate, $endDate) {
             $scheduleDate = Carbon::parse($schedule['date']);
+
             return $scheduleDate->greaterThanOrEqualTo($startDate) &&
                    $scheduleDate->lessThanOrEqualTo($endDate);
         })->values();
@@ -41,6 +41,7 @@ class ScheduleCollection extends Collection
                         ->forget(['poster', 'show_id', 'week', 'year'])
                         ->toArray();
                 }
+
                 return $schedule;
             })->values();
 
@@ -50,7 +51,7 @@ class ScheduleCollection extends Collection
 
     public function filterByType(?string $type): self
     {
-        if (!$type) {
+        if (! $type) {
             return $this;
         }
 

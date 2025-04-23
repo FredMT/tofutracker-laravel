@@ -3,14 +3,11 @@ import ThemeButton from '@/Components/ThemeButton';
 import AuthButtons from '@/Layouts/AuthenticatedLayout/components/UserMenu/AuthButtons';
 import UserDropdown from '@/Layouts/AuthenticatedLayout/components/UserMenu/UserDropdown';
 import { useAuth } from '@/propsHooks/useAuth';
-import { usePermissions } from '@/propsHooks/usePermissions';
-import { Link, usePage } from '@inertiajs/react';
-import { ActionIcon, Group, Text } from '@mantine/core';
-import { UserRoundCog } from 'lucide-react';
+import { Link } from '@inertiajs/react';
+import { Group, Text } from '@mantine/core';
 
 export default function NavbarRight() {
 	const auth = useAuth();
-	const permissions = usePermissions();
 
 	const path = window.location.pathname;
 
@@ -71,21 +68,14 @@ export default function NavbarRight() {
 					</Text>
 				)}
 
-				{auth.user ? <UserDropdown /> : <AuthButtons />}
-				{auth.user && <NotificationBellMenu />}
+				<Group
+					gap={0}
+					pl={20}
+				>
+					{auth.user && <NotificationBellMenu />}
+					{auth.user ? <UserDropdown /> : <AuthButtons />}
+				</Group>
 				<ThemeButton />
-				{permissions.is_superuser && !path.startsWith('/admin') && (
-					<ActionIcon
-						variant='light'
-						size='lg'
-						color='red'
-						component='a'
-						href={route('admin.show')}
-						target='_blank'
-					>
-						<UserRoundCog />
-					</ActionIcon>
-				)}
 			</Group>
 		</div>
 	);

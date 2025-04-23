@@ -19,13 +19,13 @@ class TmdbSchedule extends Model
 
     public $timestamps = false;
 
-     // Get the TV episode associated with this schedule (for TV shows only).
+    // Get the TV episode associated with this schedule (for TV shows only).
     public function episode(): BelongsTo
     {
         return $this->belongsTo(TvEpisode::class, 'episode_id');
     }
 
-     // Get the movie associated with this schedule (for movies only).
+    // Get the movie associated with this schedule (for movies only).
     public function movie()
     {
         if ($this->tmdb_type !== 'movie') {
@@ -35,7 +35,7 @@ class TmdbSchedule extends Model
         return Movie::find($this->tmdb_id);
     }
 
-     // Get the TV show associated with this schedule (for TV shows only).
+    // Get the TV show associated with this schedule (for TV shows only).
     public function tvShow()
     {
         if ($this->tmdb_type !== 'tv') {
@@ -45,19 +45,19 @@ class TmdbSchedule extends Model
         return TvShow::find($this->tmdb_id);
     }
 
-     // Scope a query to only include schedules for a specific date range.
+    // Scope a query to only include schedules for a specific date range.
     public function scopeInDateRange($query, $startDate, $endDate)
     {
         return $query->whereBetween('air_date', [$startDate, $endDate]);
     }
 
-     // Scope a query to only include schedules for today.
+    // Scope a query to only include schedules for today.
     public function scopeToday($query)
     {
         return $query->whereDate('air_date', now()->toDateString());
     }
 
-     // Scope a query to only include schedules for the next 7 days.
+    // Scope a query to only include schedules for the next 7 days.
     public function scopeNextWeek($query)
     {
         return $query->whereBetween('air_date', [
@@ -66,13 +66,13 @@ class TmdbSchedule extends Model
         ]);
     }
 
-     // Scope a query to only include TV shows.
+    // Scope a query to only include TV shows.
     public function scopeTvShows($query)
     {
         return $query->where('tmdb_type', 'tv');
     }
 
-     // Scope a query to only include movies.
+    // Scope a query to only include movies.
     public function scopeMovies($query)
     {
         return $query->where('tmdb_type', 'movie');

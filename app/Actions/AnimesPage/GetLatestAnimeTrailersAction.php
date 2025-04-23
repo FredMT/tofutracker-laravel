@@ -40,7 +40,7 @@ class GetLatestAnimeTrailersAction
                 continue;
             }
             $animeMap = AnimeMap::find($row->anime_map_id);
-            if (!$animeMap) {
+            if (! $animeMap) {
                 continue;
             }
             $result[] = [
@@ -54,6 +54,7 @@ class GetLatestAnimeTrailersAction
                 break;
             }
         }
+
         return $result;
     }
 }

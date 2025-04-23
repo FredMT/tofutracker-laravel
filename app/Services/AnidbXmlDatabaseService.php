@@ -321,7 +321,7 @@ class AnidbXmlDatabaseService
         foreach ($tags as $tagInfo) {
             try {
                 if (empty($tagInfo['tag_id']) || empty($tagInfo['name'])) {
-                    continue; 
+                    continue;
                 }
 
                 AnidbTag::updateOrCreate(
@@ -331,10 +331,10 @@ class AnidbXmlDatabaseService
                         'description' => $tagInfo['description'],
                     ]
                 );
-    
+
                 // Store tag ID and weight for syncing - use the weight value from XML
                 $tagData[(int) $tagInfo['tag_id']] = [
-                    'weight' => (int) $tagInfo['weight']
+                    'weight' => (int) $tagInfo['weight'],
                 ];
             } catch (\Exception $e) {
                 logger()->channel('anidbupdate')->error('Error processing or saving tag definition', [

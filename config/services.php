@@ -50,5 +50,5 @@ return [
     'trakt' => [
         'trakt_api_key' => env('TRAKT_API_KEY'),
         'trakt_api_version' => env('TRAKT_API_VERSION'),
-    ]
+    ],
 ];

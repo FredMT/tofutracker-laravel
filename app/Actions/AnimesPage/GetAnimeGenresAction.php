@@ -3,20 +3,21 @@
 namespace App\Actions\AnimesPage;
 
 use App\Models\Anidb\AnidbAnime;
-use App\Models\Anime\AnimeMappingExternalId;
 use App\Models\Anime\AnimeMap;
+use App\Models\Anime\AnimeMappingExternalId;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\RateLimiter;
 
 class GetAnimeGenresAction
 {
     private array $targetGenreIds = [1, 2, 46, 4, 8, 14, 22, 36, 24, 30, 52, 62, 66, 18, 40, 72, 11, 76, 82];
+
     private int $randomGenresCount = 15;
+
     private string $cacheKey = 'anime_genre_data';
-    
+
     public function execute(): array
     {
         try {
@@ -30,11 +31,12 @@ class GetAnimeGenresAction
 
             return $randomGenres->values()->all();
         } catch (\Exception $e) {
-            Log::error('Error fetching anime genres from cache: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            Log::error('Error fetching anime genres from cache: '.$e->getMessage(), ['trace' => $e->getTraceAsString()]);
+
             return [];
         }
     }
-    
+
     public function fetchAndStore(): void
     {
         try {
@@ -44,12 +46,13 @@ class GetAnimeGenresAction
 
             if (empty($allGenres)) {
                 Cache::put($this->cacheKey, ['genres' => []], $cacheTTL);
+
                 return;
             }
 
             Cache::put($this->cacheKey, ['genres' => $allGenres], $cacheTTL);
         } catch (\Exception $e) {
-            Log::error('Error in fetchAndStore for anime genres: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            Log::error('Error in fetchAndStore for anime genres: '.$e->getMessage(), ['trace' => $e->getTraceAsString()]);
         }
     }
 
@@ -62,7 +65,7 @@ class GetAnimeGenresAction
                 try {
                     $genreName = config("jikan.{$genreId}");
 
-                    if (!$genreName) {
+                    if (! $genreName) {
                         continue;
                     }
 
@@ -76,14 +79,16 @@ class GetAnimeGenresAction
                         ];
                     }
                 } catch (\Exception $e) {
-                    Log::error("Error fetching genre {$genreId}: " . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+                    Log::error("Error fetching genre {$genreId}: ".$e->getMessage(), ['trace' => $e->getTraceAsString()]);
+
                     continue;
                 }
             }
 
             return $genres;
         } catch (\Exception $e) {
-            Log::error('Error in fetching genres from jikan api: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            Log::error('Error in fetching genres from jikan api: '.$e->getMessage(), ['trace' => $e->getTraceAsString()]);
+
             return [];
         }
     }
@@ -91,15 +96,16 @@ class GetAnimeGenresAction
     private function fetchAnimeForGenre(int $genreId): Collection
     {
         try {
-            $apiUrl = "https://api.jikan.moe/v4/anime";
+            $apiUrl = 'https://api.jikan.moe/v4/anime';
             $response = Http::get($apiUrl, [
                 'genres' => $genreId,
                 'order_by' => 'popularity',
                 'sort' => 'asc',
             ]);
 
-            if (!$response->successful()) {
-                Log::warning("Jikan API request failed for genre {$genreId}: " . $response->status());
+            if (! $response->successful()) {
+                Log::warning("Jikan API request failed for genre {$genreId}: ".$response->status());
+
                 return collect();
             }
 
@@ -108,6 +114,7 @@ class GetAnimeGenresAction
 
             if (empty($malIds)) {
                 Log::info("No anime found for genre {$genreId}");
+
                 return collect();
             }
 
@@ -119,6 +126,7 @@ class GetAnimeGenresAction
 
             if (empty($anidbIds)) {
                 Log::info("No mappings found for MAL IDs in genre {$genreId}");
+
                 return collect();
             }
 
@@ -130,6 +138,7 @@ class GetAnimeGenresAction
 
             if (empty($mapIds)) {
                 Log::info("No anime maps found for AniDB IDs in genre {$genreId}");
+
                 return collect();
             }
 
@@ -142,7 +151,7 @@ class GetAnimeGenresAction
                 try {
                     $tmdbModel = $animeMap->getTmdbModel();
 
-                    if (!$tmdbModel) {
+                    if (! $tmdbModel) {
                         continue;
                     }
 
@@ -159,15 +168,17 @@ class GetAnimeGenresAction
                         break;
                     }
                 } catch (\Exception $e) {
-                    Log::error("Error processing anime map {$animeMap->id}: " . $e->getMessage());
+                    Log::error("Error processing anime map {$animeMap->id}: ".$e->getMessage());
+
                     continue;
                 }
             }
 
             return $shows;
         } catch (\Exception $e) {
-            Log::error('Error in fetchAnimeForGenre: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            Log::error('Error in fetchAnimeForGenre: '.$e->getMessage(), ['trace' => $e->getTraceAsString()]);
+
             return collect();
         }
     }
-} 
+}

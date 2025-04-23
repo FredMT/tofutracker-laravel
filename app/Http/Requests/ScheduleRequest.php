@@ -14,7 +14,7 @@ class ScheduleRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        if (!$this->has('date')) {
+        if (! $this->has('date')) {
             $this->merge([
                 'date' => Carbon::today()->format('Y-m-d'),
             ]);
@@ -25,7 +25,7 @@ class ScheduleRequest extends FormRequest
     {
         return [
             'date' => ['required', 'date', 'after_or_equal:today'],
-            'type' => ['sometimes', 'string', 'in:anime,tv']
+            'type' => ['sometimes', 'string', 'in:anime,tv'],
         ];
     }
 

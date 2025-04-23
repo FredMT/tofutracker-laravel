@@ -4,14 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Actions\Controller\Anime\AnimeSeasonControllerAction;
 use App\Http\Controllers\Comment\CommentController;
+use App\Models\AnimeSchedule;
+use App\Models\AnimeScheduleMap;
 use App\Repositories\Anime\AnimeSeasonControllerRepository;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
-use App\Models\AnimeScheduleMap;
-use App\Models\AnimeSchedule;
 
 class AnimeSeasonController extends Controller
 {
@@ -25,12 +25,12 @@ class AnimeSeasonController extends Controller
         $this->commentController = $commentController;
     }
 
-    private function getCountdown($seasonId): ?int 
+    private function getCountdown($seasonId): ?int
     {
         $scheduleId = AnimeScheduleMap::where('anidb_id', $seasonId)
             ->value('animeschedule_id');
 
-        if (!$scheduleId) {
+        if (! $scheduleId) {
             return null;
         }
 

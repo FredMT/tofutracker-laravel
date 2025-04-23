@@ -151,7 +151,6 @@ class GetTrendingAnimesAction
         return $result;
     }
 
-    
     private function fetchTrendingTv(int $maxResults): Collection
     {
         $results = collect();

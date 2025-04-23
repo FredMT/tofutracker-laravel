@@ -31,16 +31,16 @@ class ScheduleController extends Controller
     {
         try {
             $this->processScheduleWithTimestamps->clearCache();
-            
+
             $this->processScheduleWithTimestamps->execute([]);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Schedule cache refreshed successfully',
             ]);
         } catch (\Throwable $e) {
-            Log::error('Error refreshing schedule cache: ' . $e->getMessage());
-            
+            Log::error('Error refreshing schedule cache: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to refresh schedule cache',

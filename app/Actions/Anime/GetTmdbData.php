@@ -30,7 +30,7 @@ class GetTmdbData
 
                 if ($type === 'movie') {
                     $movie = Movie::find($tmdbId);
-                    if (!$movie) {
+                    if (! $movie) {
                         return response()->json(['error' => 'Movie not found']);
                     }
 
@@ -40,7 +40,7 @@ class GetTmdbData
                     return response()->json(['data' => $data]);
                 } elseif ($type === 'tv') {
                     $tvShow = TvShow::find($tmdbId);
-                    if (!$tvShow) {
+                    if (! $tvShow) {
                         return response()->json(['error' => 'TV Show not found']);
                     }
 

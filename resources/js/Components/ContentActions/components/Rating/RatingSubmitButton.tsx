@@ -1,6 +1,6 @@
-import { AllContentTypes, AnimeUserLibrary, BaseUserLibrary } from "@/types";
-import { usePage } from "@inertiajs/react";
-import { Button } from "@mantine/core";
+import { AllContentTypes, AnimeUserLibrary, BaseUserLibrary } from '@/types';
+import { usePage } from '@inertiajs/react';
+import { Button } from '@mantine/core';
 
 interface RatingSubmitButtonProps {
 	rating: number;
@@ -8,9 +8,9 @@ interface RatingSubmitButtonProps {
 }
 
 export function RatingSubmitButton({
-																		 rating,
-																		 processing,
-																	 }: RatingSubmitButtonProps) {
+	rating,
+	processing,
+}: RatingSubmitButtonProps) {
 	const { user_library, type } = usePage<{
 		user_library: BaseUserLibrary | AnimeUserLibrary;
 		type: AllContentTypes;
@@ -19,11 +19,11 @@ export function RatingSubmitButton({
 	const getCurrentRating = () => {
 		if (!user_library) return null;
 
-		if (["movie", "tv", "tvseason", "animeseason"].includes(type)) {
+		if (['movie', 'tv', 'tvseason', 'animeseason'].includes(type)) {
 			return (user_library as BaseUserLibrary).rating;
 		}
 
-		if (["animemovie", "animetv"].includes(type)) {
+		if (['animemovie', 'animetv'].includes(type)) {
 			return (user_library as AnimeUserLibrary).collection.rating;
 		}
 
@@ -37,13 +37,13 @@ export function RatingSubmitButton({
 			return `You have already rated this as ${rating}`;
 		}
 
-		return currentRating ? "Update" : "Rate";
+		return currentRating ? 'Update' : 'Rate';
 	};
 
 	return (
 		<Button
 			w={350}
-			type="submit"
+			type='submit'
 			disabled={processing || !rating || rating === currentRating}
 		>
 			{getButtonText()}

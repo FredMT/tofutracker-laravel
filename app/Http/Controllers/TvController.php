@@ -7,7 +7,6 @@ use App\Http\Controllers\Comment\CommentController;
 use App\Models\TvShow;
 use App\Services\TmdbService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 use Kiritokatklian\LaravelColorPalette\Facades\ColorPalette;
@@ -93,7 +92,7 @@ class TvController extends Controller
     }
 
     private function getColorPalette(string $id)
-    {        
+    {
         $cacheKey = "tv.{$id}.color_palette";
         if (cache()->has($cacheKey)) {
             return cache()->get($cacheKey);
@@ -107,7 +106,7 @@ class TvController extends Controller
 
         $cacheTTL = seconds_until('first sunday next month at 8 am');
 
-        $imageUrl = "https://image.tmdb.org/t/p/original" . ltrim($backdropPath, '"');
+        $imageUrl = 'https://image.tmdb.org/t/p/original'.ltrim($backdropPath, '"');
         $colorPalette = ColorPalette::getPalette($imageUrl);
         cache()->put($cacheKey, $colorPalette, $cacheTTL);
 

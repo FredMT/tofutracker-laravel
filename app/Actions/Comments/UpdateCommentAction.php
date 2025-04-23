@@ -3,7 +3,6 @@
 namespace App\Actions\Comments;
 
 use App\Models\Comment;
-use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\DB;
 
 class UpdateCommentAction
@@ -34,7 +33,7 @@ class UpdateCommentAction
             'isDeleted' => false,
             'created_at' => $comment->created_at->timestamp,
             'updated_at' => now()->timestamp,
-            'deleted_at' => null
+            'deleted_at' => null,
         ];
     }
 }

@@ -107,28 +107,30 @@ const MediaBanner = ({ items, maxItems = 9, type }: MediaBannerProps) => {
 											{item.year}
 										</Badge>
 									</motion.div>
-									{item.logo && (
-										<motion.img
-											key={`${item.id}-logo-${currentIndex}`}
-											src={`https://image.tmdb.org/t/p/original${item.logo}`}
-											alt={`${item.title} logo`}
-											className='h-16 md:h-20 object-contain mb-4'
-											initial={{ opacity: 0, y: 20 }}
-											animate={{ opacity: 1, y: 0 }}
-											transition={{ delay: 0.4, duration: 0.5 }}
-										/>
-									)}
-									{!item.logo && (
-										<motion.h2
-											key={`${item.id}-title-${currentIndex}`}
-											className='text-2xl md:text-4xl font-bold text-white mb-4'
-											initial={{ opacity: 0, y: 20 }}
-											animate={{ opacity: 1, y: 0 }}
-											transition={{ delay: 0.4, duration: 0.5 }}
-										>
-											{item.title}
-										</motion.h2>
-									)}
+									<Link href={`/${type}/${item.id}`}>
+										{item.logo && (
+											<motion.img
+												key={`${item.id}-logo-${currentIndex}`}
+												src={`https://image.tmdb.org/t/p/original${item.logo}`}
+												alt={`${item.title} logo`}
+												className='h-16 md:h-20 object-contain mb-4'
+												initial={{ opacity: 0, y: 20 }}
+												animate={{ opacity: 1, y: 0 }}
+												transition={{ delay: 0.4, duration: 0.5 }}
+											/>
+										)}
+										{!item.logo && (
+											<motion.h2
+												key={`${item.id}-title-${currentIndex}`}
+												className='text-2xl md:text-4xl font-bold text-white mb-4'
+												initial={{ opacity: 0, y: 20 }}
+												animate={{ opacity: 1, y: 0 }}
+												transition={{ delay: 0.4, duration: 0.5 }}
+											>
+												{item.title}
+											</motion.h2>
+										)}
+									</Link>
 									<motion.div
 										key={`${item.id}-genres-${currentIndex}`}
 										initial={{ opacity: 0, y: 20 }}

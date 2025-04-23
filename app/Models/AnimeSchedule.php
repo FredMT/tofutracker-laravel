@@ -17,7 +17,7 @@ class AnimeSchedule extends Model
         'episode_date',
         'year',
         'week',
-        'episode_number'
+        'episode_number',
     ];
 
     protected $casts = [

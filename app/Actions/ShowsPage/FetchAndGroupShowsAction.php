@@ -43,6 +43,7 @@ class FetchAndGroupShowsAction
             $providerDataRaw = $this->fetchProviderData($countryCode, $showsById);
             if ($providerDataRaw->isEmpty()) {
                 Log::info('No providers found for filtered shows.', ['country' => $countryCode, 'action' => __CLASS__]);
+
                 return [];
             }
 
@@ -54,12 +55,15 @@ class FetchAndGroupShowsAction
                 $mergeConfig['mainProviderIdsFromConfig'],
                 $mergeConfig['orderedMainProviderIds']
             );
+
             return $finalProvidersList;
         } catch (\Illuminate\Database\QueryException $ex) {
             Log::error('DB Error in FetchAndGroupShowsAction: '.$ex->getMessage(), ['exception' => $ex, 'sql' => $ex->getSql() ?? 'N/A', 'bindings' => $ex->getBindings() ?? []]);
+
             return [];
         } catch (\Throwable $ex) {
             Log::error('General Error in FetchAndGroupShowsAction: '.$ex->getMessage(), ['exception' => $ex]);
+
             return [];
         }
     }
@@ -96,21 +100,24 @@ class FetchAndGroupShowsAction
             $this->minVoteCount,
             $this->initialLimit,
             $this->animeMapType,
-            $this->contentType
+            $this->contentType,
         ], $this->excludedGenreIds);
 
         $showsResult = DB::select($sqlShows, $bindingsShows);
         if (empty($showsResult)) {
             Log::info('No initial shows found from DB.', ['action' => __CLASS__]);
+
             return [];
         }
 
         $showsById = $this->processShowResultsWithDirectData($showsResult);
         if (empty($showsById)) {
             Log::info('No shows remaining after poster filtering.', ['action' => __CLASS__]);
+
             return [];
         }
         Log::info('Shows processed/filtered.', ['count' => count($showsById), 'action' => __CLASS__]);
+
         return $showsById;
     }
 
@@ -132,6 +139,7 @@ class FetchAndGroupShowsAction
                 'popularity' => $show->popularity,
             ];
         }
+
         return $showsById;
     }
 
@@ -147,6 +155,7 @@ class FetchAndGroupShowsAction
             ->select('tcp.content_id', 'tcp.provider_id', 'tp.name as provider_name', 'tp.logo_path as provider_logo_path')
             ->get();
         Log::info('Provider data fetched.', ['count' => $providerDataRaw->count(), 'country' => $countryCode, 'action' => __CLASS__]);
+
         return $providerDataRaw;
     }
 
@@ -174,6 +183,7 @@ class FetchAndGroupShowsAction
             }
         }
         Log::info('Initial provider grouping complete.', ['count' => count($providersWithShowsRaw), 'action' => __CLASS__]);
+
         return $providersWithShowsRaw;
     }
 
@@ -193,10 +203,12 @@ class FetchAndGroupShowsAction
                 $mainId = $value;
             } else {
                 Log::warning('Skipping invalid config entry.', ['key' => $key, 'value' => $value]);
+
                 continue;
             }
             if (! is_int($mainId) || $mainId <= 0) {
                 Log::warning('Invalid main ID in config.', ['id' => $mainId]);
+
                 continue;
             }
             $processedMergeMap[$mainId] = $relatedIds;
@@ -204,6 +216,7 @@ class FetchAndGroupShowsAction
             $orderedMainProviderIds[] = $mainId;
         }
         Log::debug('Provider config map processed.', ['main_ids_count' => count($mainProviderIdsFromConfig), 'action' => __CLASS__]);
+
         return [
             'processedMergeMap' => $processedMergeMap,
             'mainProviderIdsFromConfig' => $mainProviderIdsFromConfig,
@@ -234,6 +247,7 @@ class FetchAndGroupShowsAction
             }
         }
         Log::info('Provider merging complete.', ['count_after_merge' => count($providersWithShowsRaw), 'action' => __CLASS__]);
+
         return $providersWithShowsRaw;
     }
 
@@ -257,6 +271,7 @@ class FetchAndGroupShowsAction
             }
         }
         Log::info('Final provider list created and ordered.', ['final_count' => count($finalProvidersList), 'action' => __CLASS__]);
+
         return $finalProvidersList;
     }
 
@@ -284,6 +299,7 @@ class FetchAndGroupShowsAction
         foreach ($providerData['shows'] as $index => $show) {
             unset($providerData['shows'][$index]['popularity']);
         }
+
         return $providerData['shows'];
     }
 
@@ -363,12 +379,15 @@ class FetchAndGroupShowsAction
                     'year' => $yearString,
                 ];
             }
+
             return $processedFillShows;
         } catch (\Illuminate\Database\QueryException $ex) {
             Log::error('DB Error fetching fill shows: '.$ex->getMessage(), ['provider_id' => $providerId, 'sql' => $sqlFill, 'bindings' => $bindings, 'exception' => $ex]);
+
             return [];
         } catch (\Throwable $ex) {
             Log::error('General error fetching fill shows: '.$ex->getMessage(), ['provider_id' => $providerId, 'exception' => $ex]);
+
             return [];
         }
     }

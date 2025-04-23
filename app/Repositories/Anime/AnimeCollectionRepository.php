@@ -19,7 +19,9 @@ class AnimeCollectionRepository
     protected TmdbService $tmdbService;
 
     private const CACHE_KEY = 'tmdb_categorizations';
+
     private const MAX_PAGES = 5;
+
     private const ALLOWED_FIELDS = [
         'id',
         'overview',
@@ -39,9 +41,6 @@ class AnimeCollectionRepository
 
     /**
      * Get paginated anime collections with optional filtering and sorting.
-     *
-     * @param array $params
-     * @return LengthAwarePaginator
      */
     public function getPaginatedCollections(array $params): LengthAwarePaginator
     {
@@ -52,7 +51,7 @@ class AnimeCollectionRepository
         $page = $params['page'] ?? 1;
 
         // If there's a search query, use TMDB search with SearchController approach
-        if ($search && !empty(trim($search))) {
+        if ($search && ! empty(trim($search))) {
             return $this->searchAnimeCollections($search, $page, $perPage);
         }
 
@@ -74,11 +73,6 @@ class AnimeCollectionRepository
 
     /**
      * Search anime collections using the approach from SearchController, focusing only on anime results.
-     *
-     * @param string $query
-     * @param int $page
-     * @param int $perPage
-     * @return LengthAwarePaginator
      */
     protected function searchAnimeCollections(string $query, int $page, int $perPage): LengthAwarePaginator
     {
@@ -136,9 +130,6 @@ class AnimeCollectionRepository
 
     /**
      * Fetch all anime results similar to SearchController's fetchAllResults, but only focusing on anime.
-     *
-     * @param string $query
-     * @return array
      */
     private function fetchAllAnimeResults(string $query): array
     {
@@ -156,7 +147,7 @@ class AnimeCollectionRepository
 
             // Only collect anime results, ensuring uniqueness by map_id
             foreach ($categorizedResults['anime'] as $animeResult) {
-                if (!isset($seenMapIds[$animeResult['map_id']])) {
+                if (! isset($seenMapIds[$animeResult['map_id']])) {
                     $seenMapIds[$animeResult['map_id']] = true;
                     $allAnimeResults[] = $this->transformResult($animeResult);
                 }
@@ -172,9 +163,6 @@ class AnimeCollectionRepository
 
     /**
      * Transform a result similar to SearchController's transformResult method.
-     *
-     * @param array $result
-     * @return array
      */
     private function transformResult(array $result): array
     {
@@ -182,7 +170,7 @@ class AnimeCollectionRepository
         if (isset($result['genre_ids'])) {
             $genreMap = Config::get('genres');
             $result['genres'] = array_map(
-                fn($id) => [
+                fn ($id) => [
                     'id' => $id,
                     'name' => $genreMap[$id] ?? 'Unknown',
                 ],
@@ -192,7 +180,7 @@ class AnimeCollectionRepository
         }
 
         // Normalize title field
-        if (isset($result['name']) && !isset($result['title'])) {
+        if (isset($result['name']) && ! isset($result['title'])) {
             $result['title'] = $result['name'];
             unset($result['name']);
         }
@@ -209,9 +197,6 @@ class AnimeCollectionRepository
 
     /**
      * Categorize search results similar to SearchController's categorizeResults method.
-     *
-     * @param array $searchResults
-     * @return array
      */
     private function categorizeResults(array $searchResults): array
     {
@@ -224,15 +209,15 @@ class AnimeCollectionRepository
         }
 
         $results = collect($searchResults['results'])
-            ->filter(fn($item) => $item['media_type'] !== 'person');
+            ->filter(fn ($item) => $item['media_type'] !== 'person');
 
         $tmdbIds = $results->pluck('id')->all();
 
         $categorizations = Cache::get(self::CACHE_KEY, []);
 
-        $uncachedIds = array_values(array_filter($tmdbIds, fn($id) => !isset($categorizations[$id])));
+        $uncachedIds = array_values(array_filter($tmdbIds, fn ($id) => ! isset($categorizations[$id])));
 
-        if (!empty($uncachedIds)) {
+        if (! empty($uncachedIds)) {
             $animeMappings = AnimeMappingExternalId::whereIn('themoviedb_id', $uncachedIds)
                 ->whereNotNull('anidb_id')
                 ->get()
@@ -259,7 +244,7 @@ class AnimeCollectionRepository
             }
 
             foreach ($uncachedIds as $tmdbId) {
-                if (!isset($categorizations[$tmdbId])) {
+                if (! isset($categorizations[$tmdbId])) {
                     $categorizations[$tmdbId] = ['type' => 'other'];
                 }
             }
@@ -292,9 +277,6 @@ class AnimeCollectionRepository
 
     /**
      * Get a specific anime collection by ID with its related data.
-     *
-     * @param int $id
-     * @return Model|AnimeMap
      */
     public function getCollectionById(int $id): Model|AnimeMap
     {

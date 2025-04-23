@@ -10,9 +10,6 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class AnimeCollectionAction
 {
-    /**
-     * @param AnimeCollectionRepository $repository
-     */
     public function __construct(
         private AnimeCollectionRepository $repository
     ) {}
@@ -20,8 +17,7 @@ class AnimeCollectionAction
     /**
      * Get paginated anime collections with optional filtering and sorting.
      *
-     * @param array $params Validated params from the request
-     * @return LengthAwarePaginator
+     * @param  array  $params  Validated params from the request
      */
     public function getPaginatedCollections(array $params): LengthAwarePaginator
     {
@@ -30,9 +26,6 @@ class AnimeCollectionAction
 
     /**
      * Format the paginated collections response using the resource.
-     *
-     * @param LengthAwarePaginator $collections
-     * @return AnonymousResourceCollection
      */
     public function formatPaginatedResponse(LengthAwarePaginator $collections): AnonymousResourceCollection
     {
