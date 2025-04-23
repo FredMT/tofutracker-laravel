@@ -539,4 +539,104 @@ class TmdbService
             throw $e;
         }
     }
+
+    public function getPopularMovies(string $region = 'US', int $page = 1): array
+    {
+        $CACHE_KEY = "popular_movies_{$region}_page_{$page}";
+        $CACHE_TTL = seconds_until('tomorrow 8 am');
+
+        return cache()->remember($CACHE_KEY, $CACHE_TTL, function () use ($region, $page) {
+            try {
+                $response = $this->client->get('/movie/popular', [
+                    'language' => 'en-US',
+                    'page' => $page,
+                    'region' => $region,
+                ]);
+
+                if (! $response->successful()) {
+                    throw new \Exception('TMDB popular movies request failed');
+                }
+
+                return $response->json();
+            } catch (\Exception $e) {
+                logger()->error('TMDB Popular Movies API error: '.$e->getMessage());
+                throw $e;
+            }
+        });
+    }
+
+    public function getNowPlayingMovies(string $region = 'US', int $page = 1): array
+    {
+        $CACHE_KEY = "now_playing_movies_{$region}_page_{$page}";
+        $CACHE_TTL = seconds_until('tomorrow 8 am');
+
+        return cache()->remember($CACHE_KEY, $CACHE_TTL, function () use ($region, $page) {
+            try {
+                $response = $this->client->get('/movie/now_playing', [
+                    'language' => 'en-US',
+                    'page' => $page,
+                    'region' => $region,
+                ]);
+
+                if (! $response->successful()) {
+                    throw new \Exception('TMDB now playing movies request failed');
+                }
+
+                return $response->json();
+            } catch (\Exception $e) {
+                logger()->error('TMDB Now Playing Movies API error: '.$e->getMessage());
+                throw $e;
+            }
+        });
+    }
+
+    public function getUpcomingMovies(string $region = 'US', int $page = 1): array
+    {
+        $CACHE_KEY = "upcoming_movies_{$region}_page_{$page}";
+        $CACHE_TTL = seconds_until('tomorrow 8 am');
+
+        return cache()->remember($CACHE_KEY, $CACHE_TTL, function () use ($region, $page) {
+            try {
+                $response = $this->client->get('/movie/upcoming', [
+                    'language' => 'en-US',
+                    'page' => $page,
+                    'region' => $region,
+                ]);
+
+                if (! $response->successful()) {
+                    throw new \Exception('TMDB upcoming movies request failed');
+                }
+
+                return $response->json();
+            } catch (\Exception $e) {
+                logger()->error('TMDB Upcoming Movies API error: '.$e->getMessage());
+                throw $e;
+            }
+        });
+    }
+
+    public function getTopRatedMovies(string $region = 'US', int $page = 1): array
+    {
+        $CACHE_KEY = "top_rated_movies_{$region}_page_{$page}";
+        $CACHE_TTL = seconds_until('tomorrow 8 am');
+
+        return cache()->remember($CACHE_KEY, $CACHE_TTL, function () use ($region, $page) {
+            try {
+                $response = $this->client->get('/movie/top_rated', [
+                    'language' => 'en-US',
+                    'page' => $page,
+                    'region' => $region,
+                ]);
+
+                if (! $response->successful()) {
+                    throw new \Exception('TMDB top rated movies request failed');
+                }
+
+                return $response->json();
+            } catch (\Exception $e) {
+                logger()->error('TMDB Top Rated Movies API error: '.$e->getMessage());
+                throw $e;
+            }
+        });
+    }
 }

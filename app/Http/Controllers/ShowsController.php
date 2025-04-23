@@ -24,10 +24,13 @@ class ShowsController extends Controller
 
     protected FetchAndGroupShowsAction $fetchAndGroupShowsAction;
 
-    public function __construct(TmdbService $tmdbService, FetchAndGroupShowsAction $fetchAndGroupShowsAction)
+    protected FetchGenreShowData $fetchGenreShowData;
+
+    public function __construct(TmdbService $tmdbService, FetchAndGroupShowsAction $fetchAndGroupShowsAction, FetchGenreShowData $fetchGenreShowData)
     {
         $this->tmdbService = $tmdbService;
         $this->fetchAndGroupShowsAction = $fetchAndGroupShowsAction;
+        $this->fetchGenreShowData = $fetchGenreShowData;
     }
 
     public function index(Request $request)
@@ -60,7 +63,7 @@ class ShowsController extends Controller
         return Inertia::render('Shows', [
             'shows' => $showsData,
             'trailers' => $this->getDeferredTrailerData(),
-            'genres' => app(FetchGenreShowData::class)->execute(),
+            'genres' => $this->fetchGenreShowData->execute(),
             'airingShows' => $this->getDeferredScheduleData(),
             'providers' => $this->getDeferredStreamingData($countryCode),
             'user_region' => Location::get()?->countryCode ?? 'US',

@@ -1,23 +1,33 @@
+import MediaBanner from '@/Components/Common/MediaBanner';
+import MediaCarousel from '@/Components/Common/MediaCarousel';
 import ResponsiveContainer from '@/Components/ResponsiveContainer';
 import AiringShowsCarousel from '@/Components/Shows/AiringShowsCarousel';
-import ShowsBanner from '@/Components/Shows/ShowsBanner';
-import TrendingShowsCarousel from '@/Components/Shows/TrendingShowsCarousel';
+import { GenresSection } from '@/Components/Shows/GenresSection';
+import StreamingSection from '@/Components/Shows/StreamingSection';
 import TrailerSection from '@/Components/Shows/TrailerSection';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout/AuthenticatedLayout';
-import { Space } from '@mantine/core';
-import StreamingSection from '@/Components/Shows/StreamingSection';
-import { GenresSection } from '@/Components/Shows/GenresSection';
+import { useShowsPageTrendingData } from '@/propsHooks/useShowsPageTrending';
 import { Head } from '@inertiajs/react';
+import { Space } from '@mantine/core';
 
 function Shows() {
+	const shows = useShowsPageTrendingData();
 	return (
 		<>
 			<Head title='Shows' />
 			<Space h={64} />
-			<ShowsBanner />
+			<MediaBanner
+				items={shows}
+				type='show'
+			/>
 			<Space h={64} />
 			<ResponsiveContainer>
-				<TrendingShowsCarousel />
+				<MediaCarousel
+					items={shows}
+					mediaType='tv'
+					title='TOP 20'
+					subtitle={['SHOWS', 'THIS WEEK']}
+				/>
 				<Space h={24} />
 				<TrailerSection />
 				<Space h={24} />

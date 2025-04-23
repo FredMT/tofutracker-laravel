@@ -1,5 +1,4 @@
-import { useAnimesPageTrending } from '@/propsHooks/useAnimesPageTrending';
-import { useShowsPageTrendingData } from '@/propsHooks/useShowsPageTrending';
+import { Link } from '@inertiajs/react';
 import { Carousel } from '@mantine/carousel';
 import { Badge, Button, Image, Text } from '@mantine/core';
 import Autoplay from 'embla-carousel-autoplay';
@@ -10,8 +9,26 @@ import { useEffect, useRef, useState } from 'react';
 
 const AUTOPLAY_INTERVAL = 5500;
 
-const AnimesBanner = () => {
-	const featuredAnimes = useAnimesPageTrending().slice(0, 9);
+export interface MediaItem {
+	id: number;
+	title: string;
+	logo: string | null;
+	backdrop: string | null;
+	overview: string;
+	poster: string;
+	year: string;
+	genres: string[];
+	rating: string;
+}
+
+interface MediaBannerProps {
+	items: MediaItem[];
+	maxItems?: number;
+	type: 'movie' | 'show' | 'anime';
+}
+
+const MediaBanner = ({ items, maxItems = 9, type }: MediaBannerProps) => {
+	const featuredItems = items.slice(0, maxItems);
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const autoplay = useRef(Autoplay({ delay: AUTOPLAY_INTERVAL }));
 	const [emblaApi, setEmblaApi] = useState<EmblaCarouselType | null>(null);
@@ -31,6 +48,10 @@ const AnimesBanner = () => {
 		};
 	}, [emblaApi]);
 
+	if (items.length === 0) {
+		return null;
+	}
+
 	return (
 		<div className='relative w-full h-[80vh] min-h-[80vh] overflow-hidden'>
 			<Carousel
@@ -47,21 +68,23 @@ const AnimesBanner = () => {
 					container: { height: '100%' },
 				}}
 			>
-				{featuredAnimes.map((anime) => (
-					<Carousel.Slide key={anime.id}>
+				{featuredItems.map((item) => (
+					<Carousel.Slide key={item.id}>
 						<div className='relative w-full h-full'>
-							<Image
-								src={`https://image.tmdb.org/t/p/original${anime.backdrop}`}
-								alt={anime.title}
-								className='w-full h-full object-cover'
-							/>
+							{item.backdrop && (
+								<Image
+									src={`https://image.tmdb.org/t/p/original${item.backdrop}`}
+									alt={item.title}
+									className='w-full h-full object-cover'
+								/>
+							)}
 							<div className='absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent' />
 							<div className='absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent' />
 
 							<div className='absolute bottom-0 left-0 right-0 px-8 md:px-16 py-20 flex flex-col md:flex-row items-end md:items-center justify-between'>
 								<div className='w-full md:w-1/2 mb-8 md:mb-0'>
 									<motion.div
-										key={`${anime.id}-rating-year-${currentIndex}`}
+										key={`${item.id}-rating-year-${currentIndex}`}
 										initial={{ opacity: 0, y: 20 }}
 										animate={{ opacity: 1, y: 0 }}
 										transition={{ delay: 0.3, duration: 0.5 }}
@@ -73,7 +96,7 @@ const AnimesBanner = () => {
 											size='lg'
 											leftSection={<Star size={12} />}
 										>
-											{anime.rating}
+											{item.rating}
 										</Badge>
 										<Badge
 											color='black'
@@ -81,26 +104,39 @@ const AnimesBanner = () => {
 											size='lg'
 											leftSection={<Calendar size={12} />}
 										>
-											{anime.year}
+											{item.year}
 										</Badge>
 									</motion.div>
-									<motion.img
-										key={`${anime.id}-logo-${currentIndex}`}
-										src={`https://image.tmdb.org/t/p/original${anime.logo}`}
-										alt={`${anime.title} logo`}
-										className='h-16 md:h-20 object-contain mb-4'
-										initial={{ opacity: 0, y: 20 }}
-										animate={{ opacity: 1, y: 0 }}
-										transition={{ delay: 0.4, duration: 0.5 }}
-									/>
+									{item.logo && (
+										<motion.img
+											key={`${item.id}-logo-${currentIndex}`}
+											src={`https://image.tmdb.org/t/p/original${item.logo}`}
+											alt={`${item.title} logo`}
+											className='h-16 md:h-20 object-contain mb-4'
+											initial={{ opacity: 0, y: 20 }}
+											animate={{ opacity: 1, y: 0 }}
+											transition={{ delay: 0.4, duration: 0.5 }}
+										/>
+									)}
+									{!item.logo && (
+										<motion.h2
+											key={`${item.id}-title-${currentIndex}`}
+											className='text-2xl md:text-4xl font-bold text-white mb-4'
+											initial={{ opacity: 0, y: 20 }}
+											animate={{ opacity: 1, y: 0 }}
+											transition={{ delay: 0.4, duration: 0.5 }}
+										>
+											{item.title}
+										</motion.h2>
+									)}
 									<motion.div
-										key={`${anime.id}-genres-${currentIndex}`}
+										key={`${item.id}-genres-${currentIndex}`}
 										initial={{ opacity: 0, y: 20 }}
 										animate={{ opacity: 1, y: 0 }}
 										transition={{ delay: 0.5, duration: 0.5 }}
 										className='flex flex-wrap gap-2 mb-4'
 									>
-										{anime.genres.map((genre) => (
+										{item.genres.map((genre) => (
 											<span
 												key={genre}
 												className='text-xs text-white/80 bg-white/10 px-3 py-1 rounded-full'
@@ -113,34 +149,36 @@ const AnimesBanner = () => {
 										component={motion.p}
 										lineClamp={3}
 										c='white'
-										key={`${anime.id}-overview-${currentIndex}`}
+										key={`${item.id}-overview-${currentIndex}`}
 										className='text-white/90 mb-6 text-sm md:text-base max-w-lg'
 										initial={{ opacity: 0, y: 20 }}
 										animate={{ opacity: 1, y: 0 }}
 										transition={{ delay: 0.6, duration: 0.5 }}
 										mb='md'
 									>
-										{anime.overview}
+										{item.overview}
 									</Text>
-									<motion.div
-										key={`${anime.id}-buttons-${currentIndex}`}
-										initial={{ opacity: 0, y: 20 }}
-										animate={{ opacity: 1, y: 0 }}
-										transition={{ delay: 0.7, duration: 0.5 }}
-										className='flex space-x-4'
-									>
-										<Button
-											variant='outline'
-											className='border-white/20 text-white hover:bg-white/10'
-											rightSection={<ArrowRight />}
+									<Link href={`/${type}/${item.id}`}>
+										<motion.div
+											key={`${item.id}-buttons-${currentIndex}`}
+											initial={{ opacity: 0, y: 20 }}
+											animate={{ opacity: 1, y: 0 }}
+											transition={{ delay: 0.7, duration: 0.5 }}
+											className='flex space-x-4'
 										>
-											View details
-										</Button>
-									</motion.div>
+											<Button
+												variant='outline'
+												className='border-white/20 text-white hover:bg-white/10'
+												rightSection={<ArrowRight />}
+											>
+												View details
+											</Button>
+										</motion.div>
+									</Link>
 								</div>
 
 								<div className='absolute top-[90%] left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:top-[75%] md:right-[10%] flex space-x-3'>
-									{featuredAnimes.map((_, idx) => (
+									{featuredItems.map((_, idx) => (
 										<button
 											key={idx}
 											className={`w-2 h-8 rounded-full transition-all duration-300 ${
@@ -159,4 +197,4 @@ const AnimesBanner = () => {
 	);
 };
 
-export default AnimesBanner;
+export default MediaBanner;

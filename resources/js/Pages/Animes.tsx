@@ -1,22 +1,34 @@
-import AiringAnimeCarousel from '@/Components/Animes/AiringAnimeCarousel';
 import AiringAnimeScheduleCarousel from '@/Components/Animes/AiringAnimeScheduleCarousel';
-import AnimesBanner from '@/Components/Animes/AnimesBanner';
 import { GenresSection } from '@/Components/Animes/GenresSection';
 import TrailerSection from '@/Components/Animes/TrailerSection';
+import MediaBanner from '@/Components/Common/MediaBanner';
+import MediaCarousel from '@/Components/Common/MediaCarousel';
 import ResponsiveContainer from '@/Components/ResponsiveContainer';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout/AuthenticatedLayout';
+import { useAnimesPageAiring } from '@/propsHooks/useAnimesPageAiring';
+import { useAnimesPageTrending } from '@/propsHooks/useAnimesPageTrending';
 import { Head } from '@inertiajs/react';
 import { Space } from '@mantine/core';
 
 function Animes() {
+	const animes = useAnimesPageTrending();
+
 	return (
 		<>
 			<Head title='Animes' />
 			<Space h={64} />
-			<AnimesBanner />
+			<MediaBanner
+				items={animes}
+				type='anime'
+			/>
 			<Space h={24} />
 			<ResponsiveContainer>
-				<AiringAnimeCarousel />
+				<MediaCarousel
+					items={animes}
+					mediaType='anime'
+					title='TOP 20'
+					subtitle={['ANIME', 'CURRENTLY AIRING']}
+				/>
 				<Space h={24} />
 				<AiringAnimeScheduleCarousel />
 				<Space h={24} />

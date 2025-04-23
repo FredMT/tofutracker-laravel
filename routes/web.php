@@ -18,6 +18,7 @@ use App\Http\Controllers\List\ListController;
 use App\Http\Controllers\List\ListRemoveItemsController;
 use App\Http\Controllers\List\ListUpdateOrderController;
 use App\Http\Controllers\MovieController;
+use App\Http\Controllers\MoviesController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ScheduleController;
@@ -257,9 +258,10 @@ Route::prefix('shows')->name('shows.')->controller(ShowsController::class)->grou
 
 Route::prefix('animes')->name('animes.')->controller(AnimesController::class)->group(function () {
     Route::get('/', 'index')->name('index');
-    Route::get('/school-romcom', 'schoolRomcom')->name('school-romcom');
-    // mecha route
-    Route::get('/mecha', 'mecha')->name('mecha');
+});
+
+Route::prefix('movies')->name('movies.')->controller(MoviesController::class)->group(function () {
+    Route::get('/', 'index')->name('index');
 });
 
 require __DIR__.'/auth.php';

@@ -1,32 +1,46 @@
-import { useAnimesPageAiring } from '@/propsHooks/useAnimesPageAiring';
 import { Carousel } from '@mantine/carousel';
 import '@mantine/carousel/styles.css';
 import { Box, Container } from '@mantine/core';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import AnimeCard from './AnimeCard';
-import carouselClasses from './Carousel.module.css';
-import classes from './AiringAnimeCarousel.module.css';
+import MediaCard, { MediaItemProps } from './MediaCard';
+import classes from './Carousel.module.css';
 
-interface AiringAnimeCarouselProps {}
+interface MediaCarouselProps {
+	items: Omit<MediaItemProps, 'mediaType'>[];
+	mediaType: 'anime' | 'tv' | 'movie';
+	title?: string;
+	subtitle?: string[];
+}
 
-const AiringAnimeCarousel = ({}: AiringAnimeCarouselProps) => {
-	const animes = useAnimesPageAiring();
-
+const MediaCarousel = ({
+	items,
+	mediaType,
+	title,
+	subtitle,
+}: MediaCarouselProps) => {
 	return (
-		<Box h={386}>
+		<Box h={title ? 386 : 320}>
 			<Container
 				size='100%'
 				px={60}
 				mx={0}
 			>
-				<div className={classes.sectionHeaderTextWrapper}>
-					<h2 className={classes.topText}>TOP 20</h2>
-					<div style={{ marginBottom: '4px' }}>
-						<p className={classes.contentText}>ANIME</p>
-						<p className={classes.contentText}>CURRENTLY AIRING</p>
+				{title && subtitle && (
+					<div className={classes.sectionHeaderTextWrapper}>
+						<h2 className={classes.topText}>{title}</h2>
+						<div style={{ marginBottom: '4px' }}>
+							{subtitle.map((text, index) => (
+								<p
+									key={index}
+									className={classes.contentText}
+								>
+									{text}
+								</p>
+							))}
+						</div>
 					</div>
-				</div>
+				)}
 				<div>
 					<Carousel
 						height={300}
@@ -38,15 +52,15 @@ const AiringAnimeCarousel = ({}: AiringAnimeCarouselProps) => {
 						inViewThreshold={0.9}
 						controlsOffset={0}
 						classNames={{
-							control: carouselClasses.carouselControl,
-							controls: carouselClasses.carouselControls,
+							control: classes.carouselControl,
+							controls: classes.carouselControls,
 						}}
 						previousControlIcon={<ChevronLeft size={40} />}
 						nextControlIcon={<ChevronRight size={40} />}
 						className='w-full'
 					>
-						{animes.map((anime, index) => (
-							<Carousel.Slide key={anime.id}>
+						{items.map((item, index) => (
+							<Carousel.Slide key={item.id}>
 								<motion.div
 									initial='hidden'
 									whileInView='visible'
@@ -57,13 +71,10 @@ const AiringAnimeCarousel = ({}: AiringAnimeCarouselProps) => {
 										hidden: { opacity: 0, y: 30 },
 									}}
 								>
-									<AnimeCard
-										anime={{
-											id: String(anime.id),
-											title: anime.title,
-											poster: anime.poster,
-											rating: anime.rating,
-											year: anime.year,
+									<MediaCard
+										media={{
+											...item,
+											mediaType,
 										}}
 									/>
 								</motion.div>
@@ -76,4 +87,4 @@ const AiringAnimeCarousel = ({}: AiringAnimeCarouselProps) => {
 	);
 };
 
-export default AiringAnimeCarousel;
+export default MediaCarousel;
