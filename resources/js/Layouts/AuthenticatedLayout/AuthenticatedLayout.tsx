@@ -3,7 +3,7 @@ import styles from './AuthenticatedLayout.module.css';
 import Logo from '@/Layouts/AuthenticatedLayout/components/Logo';
 import MobileMenuButton from '@/Layouts/AuthenticatedLayout/components/MobileMenuButton';
 import MobileMenu from '@/Layouts/AuthenticatedLayout/components/MobileMenu';
-import { Box, Group } from '@mantine/core';
+import { Box, Group, Text } from '@mantine/core';
 import SearchBar from '@/Layouts/AuthenticatedLayout/components/UserMenu/SearchBar/SearchBar';
 import NavbarRight from '@/Layouts/AuthenticatedLayout/components/UserMenu/NavbarRight';
 import { useNavbarColor } from '@/propsHooks/useNavbarColor';

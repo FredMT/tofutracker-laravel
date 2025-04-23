@@ -118,7 +118,7 @@ export default function SearchBar() {
 						}
 					}}
 					size='sm'
-					w={400}
+					w={300}
 					classNames={{
 						input: styles.searchInput,
 					}}

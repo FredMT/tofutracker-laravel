@@ -1,7 +1,6 @@
 import ThemeButton from '@/Components/ThemeButton';
 import NotificationBellMenu from '@/Components/Notifications/components/NotificationBellMenu';
 import { useAuth } from '@/propsHooks/useAuth';
-import ScheduleLinkActionIcon from './UserMenu/ScheduleLinkActionIcon';
 import { usePage } from '@inertiajs/react';
 
 interface MobileMenuButtonProps {
@@ -17,7 +16,6 @@ export default function MobileMenuButton({
 	const component = usePage().component;
 	return (
 		<div className='-me-2 flex items-center gap-2 sm:hidden'>
-			{component !== 'Schedule' && <ScheduleLinkActionIcon />}
 			{auth.user && <NotificationBellMenu />}
 			<ThemeButton />
 			<button

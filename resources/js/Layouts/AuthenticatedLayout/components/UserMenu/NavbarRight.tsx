@@ -2,23 +2,78 @@ import NotificationBellMenu from '@/Components/Notifications/components/Notifica
 import ThemeButton from '@/Components/ThemeButton';
 import AuthButtons from '@/Layouts/AuthenticatedLayout/components/UserMenu/AuthButtons';
 import UserDropdown from '@/Layouts/AuthenticatedLayout/components/UserMenu/UserDropdown';
-import { usePage } from '@inertiajs/react';
-import { ActionIcon, Group } from '@mantine/core';
-import ScheduleLinkActionIcon from './ScheduleLinkActionIcon';
-import { UserRoundCog } from 'lucide-react';
 import { useAuth } from '@/propsHooks/useAuth';
 import { usePermissions } from '@/propsHooks/usePermissions';
+import { Link, usePage } from '@inertiajs/react';
+import { ActionIcon, Group, Text } from '@mantine/core';
+import { UserRoundCog } from 'lucide-react';
 
 export default function NavbarRight() {
 	const auth = useAuth();
-	const component = usePage().component;
 	const permissions = usePermissions();
 
 	const path = window.location.pathname;
 
+	const isCurrentPath = (linkPath: string) =>
+		path === linkPath || path.startsWith(linkPath);
+
 	return (
 		<div className='hidden sm:ms-6 sm:flex sm:items-center'>
 			<Group gap={16}>
+				{isCurrentPath('/movies') ? (
+					<Text fw={500}>Movies</Text>
+				) : (
+					<Text
+						component={Link}
+						href='/movies'
+						fw={500}
+						prefetch
+					>
+						Movies
+					</Text>
+				)}
+
+				{isCurrentPath('/shows') ? (
+					<Text fw={500}>Shows</Text>
+				) : (
+					<Text
+						component={Link}
+						href='/shows'
+						fw={500}
+						prefetch
+					>
+						Shows
+					</Text>
+				)}
+
+				{isCurrentPath('/anime') ? (
+					<Text fw={500}>Anime</Text>
+				) : (
+					<Text
+						component={Link}
+						href='/anime'
+						fw={500}
+						prefetch
+					>
+						Anime
+					</Text>
+				)}
+
+				{isCurrentPath('/schedule') ? (
+					<Text fw={500}>Schedule</Text>
+				) : (
+					<Text
+						fw={500}
+						component={Link}
+						href='/schedule'
+					>
+						Schedule
+					</Text>
+				)}
+
+				{auth.user ? <UserDropdown /> : <AuthButtons />}
+				{auth.user && <NotificationBellMenu />}
+				<ThemeButton />
 				{permissions.is_superuser && !path.startsWith('/admin') && (
 					<ActionIcon
 						variant='light'
@@ -31,10 +86,6 @@ export default function NavbarRight() {
 						<UserRoundCog />
 					</ActionIcon>
 				)}
-				{component !== 'Schedule' && <ScheduleLinkActionIcon />}
-				<ThemeButton />
-				{auth.user && <NotificationBellMenu />}
-				{auth.user ? <UserDropdown /> : <AuthButtons />}
 			</Group>
 		</div>
 	);

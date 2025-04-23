@@ -256,7 +256,7 @@ Route::prefix('shows')->name('shows.')->controller(ShowsController::class)->grou
     Route::get('/', 'index')->name('index');
 });
 
-Route::prefix('animes')->name('animes.')->controller(AnimesController::class)->group(function () {
+Route::prefix('anime')->name('anime.')->controller(AnimesController::class)->group(function () {
     Route::get('/', 'index')->name('index');
 });
 

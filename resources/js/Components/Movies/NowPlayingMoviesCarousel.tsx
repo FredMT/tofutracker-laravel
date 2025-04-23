@@ -12,7 +12,7 @@ const NowPlayingMoviesCarousel = () => {
 			mx={0}
 		>
 			<Stack>
-				<Title pl={60}>NOW PLAYING</Title>
+				<Title pl={60}>Now Playing</Title>
 				<MediaCarousel
 					items={nowPlayingMovies}
 					mediaType='movie'

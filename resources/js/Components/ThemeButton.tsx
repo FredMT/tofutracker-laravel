@@ -1,5 +1,5 @@
 import {
-	ActionIcon,
+	Switch,
 	useComputedColorScheme,
 	useMantineColorScheme,
 } from '@mantine/core';
@@ -13,24 +13,27 @@ export default function ThemeButton() {
 		getInitialValueInEffect: true,
 	});
 
+	const isDark = computedColorScheme === 'dark';
+
 	return (
-		<div>
-			<ActionIcon
-				onClick={() =>
-					setColorScheme(computedColorScheme === 'light' ? 'dark' : 'light')
-				}
-				variant='light'
-				size='lg'
-				color='red'
-				aria-label='Toggle color scheme'
-			>
-				{computedColorScheme === 'dark' && (
-					<Sun className={cx(classes.icon, classes.light)} />
-				)}
-				{computedColorScheme === 'light' && (
-					<Moon className={cx(classes.icon, classes.dark)} />
-				)}
-			</ActionIcon>
-		</div>
+		<Switch
+			checked={isDark}
+			onChange={() => setColorScheme(isDark ? 'light' : 'dark')}
+			size='md'
+			color='dark.4'
+			onLabel={
+				<Sun
+					size={16}
+					className='text-yellow-400'
+				/>
+			}
+			offLabel={
+				<Moon
+					size={16}
+					className='text-blue-600'
+				/>
+			}
+			aria-label='Toggle color scheme'
+		/>
 	);
 }
