@@ -24,7 +24,7 @@ export interface MediaItem {
 interface MediaBannerProps {
 	items: MediaItem[];
 	maxItems?: number;
-	type: 'movie' | 'show' | 'anime';
+	type: 'movie' | 'tv' | 'anime';
 }
 
 const MediaBanner = ({ items, maxItems = 9, type }: MediaBannerProps) => {

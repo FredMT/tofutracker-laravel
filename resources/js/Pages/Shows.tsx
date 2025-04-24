@@ -18,7 +18,7 @@ function Shows() {
 			<Space h={64} />
 			<MediaBanner
 				items={shows}
-				type='show'
+				type='tv'
 			/>
 			<Space h={64} />
 			<ResponsiveContainer>

@@ -9,6 +9,7 @@ use App\Actions\AnimesPage\GetLatestAnimeTrailersAction;
 use App\Actions\AnimesPage\GetTrendingAnimesAction;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
+use Kiritokatklian\LaravelColorPalette\Facades\ColorPalette;
 
 class AnimesController extends Controller
 {
@@ -40,6 +41,7 @@ class AnimesController extends Controller
     {
         $trending = $this->getCachedTrendingAnimes();
         $airingNow = $this->getCachedAiringNowAnime();
+        $navbar_color = $this->getNavbarColor($trending);
 
         return Inertia::render('Animes', [
             'trending' => $trending,
@@ -47,6 +49,7 @@ class AnimesController extends Controller
             'genres' => $this->getDeferredAnimeGenres(),
             'trailers' => $this->getCachedDeferredTrailers(),
             'airingSchedule' => $this->getDeferredAiringSchedule(),
+            'navbar_color' => $navbar_color,
         ]);
     }
 
@@ -90,6 +93,23 @@ class AnimesController extends Controller
     {
         return Inertia::defer(function () {
             return $this->getAiringScheduleAction->execute();
+        });
+    }
+
+    private function getNavbarColor(array $trending)
+    {
+        if (empty($trending) || ! isset($trending[0]['backdrop'])) {
+            return null;
+        }
+
+        $backdropPath = $trending[0]['backdrop'];
+        $fullImageUrl = 'https://image.tmdb.org/t/p/original'.$backdropPath;
+
+        $cache_key = 'navbar_color_'.md5($backdropPath);
+        $cache_ttl = seconds_until('next sunday at 8 am');
+
+        return Cache::remember($cache_key, $cache_ttl, function () use ($fullImageUrl) {
+            return ColorPalette::getPalette($fullImageUrl);
         });
     }
 }

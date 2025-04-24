@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+use Kiritokatklian\LaravelColorPalette\Facades\ColorPalette;
 use Stevebauman\Location\Facades\Location;
 
 class ShowsController extends Controller
@@ -54,7 +55,8 @@ class ShowsController extends Controller
         }
 
         try {
-            $showsData = $this->getTrendingShowsData();
+            $showsData = $this->getCachedTrendingShowsData();
+            $navbar_color = $this->getNavbarColor($showsData);
         } catch (\Exception $e) {
             Log::error('Failed to get trending shows for index page: '.$e->getMessage(), ['exception' => $e]);
             $showsData = [];
@@ -67,7 +69,18 @@ class ShowsController extends Controller
             'airingShows' => $this->getDeferredScheduleData(),
             'providers' => $this->getDeferredStreamingData($countryCode),
             'user_region' => Location::get()?->countryCode ?? 'US',
+            'navbar_color' => $navbar_color,
         ]);
+    }
+
+    private function getCachedTrendingShowsData(): array
+    {
+        $cache_key = 'trending_shows';
+        $cache_ttl = seconds_until('next sunday at 8 am');
+
+        return Cache::remember($cache_key, $cache_ttl, function () {
+            return $this->getTrendingShowsData();
+        });
     }
 
     private function getTrendingShowsData(): array
@@ -288,6 +301,23 @@ class ShowsController extends Controller
                     'type' => 'tv',
                 ];
             })->all();
+        });
+    }
+
+    private function getNavbarColor(array $showsData)
+    {
+        if (empty($showsData) || ! isset($showsData[0]['backdrop'])) {
+            return null;
+        }
+
+        $backdropPath = $showsData[0]['backdrop'];
+        $fullImageUrl = 'https://image.tmdb.org/t/p/original'.$backdropPath;
+
+        $cache_key = 'navbar_color_'.md5($backdropPath);
+        $cache_ttl = seconds_until('next sunday at 8 am');
+
+        return Cache::remember($cache_key, $cache_ttl, function () use ($fullImageUrl) {
+            return ColorPalette::getPalette($fullImageUrl);
         });
     }
 

@@ -226,7 +226,7 @@ class FetchGenreShowData
             'id' => $show->id,
             'title' => $show->title,
             'poster' => $show->poster,
-            'rating' => number_format($show->voteAverage, 1, '.', ''),
+            'rating' => number_format($show->vote_average, 1, '.', ''),
             'year' => $show->year,
         ];
     }
