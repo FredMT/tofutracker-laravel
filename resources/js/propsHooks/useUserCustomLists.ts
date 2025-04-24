@@ -1,5 +1,5 @@
-import { useTypedPageProps } from "@/propsHooks/useTypedPageProps";
-import { UserCustomLists } from "@/types/userCustomLists";
+import { useTypedPageProps } from '@/propsHooks/useTypedPageProps';
+import { UserCustomLists } from '@/types/userCustomLists';
 
 export function useUserCustomLists() {
 	const props = useTypedPageProps();

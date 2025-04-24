@@ -1,40 +1,40 @@
 .bannerContainer {
-    position: relative;
-    width: 100%;
+	position: relative;
+	width: 100%;
 }
 
 .avatarOverlay {
-    position: absolute;
-    bottom: -30px;
-    left: 0;
-    right: 0;
-    z-index: 1;
+	position: absolute;
+	bottom: -30px;
+	left: 0;
+	right: 0;
+	z-index: 1;
 }
 
 .avatarWrapper {
-    display: flex;
-    z-index: -1;
-    position: relative;
+	display: flex;
+	z-index: -1;
+	position: relative;
 }
 
 .usernameTitle {
-    margin-left: 0;
-    text-align: center;
+	margin-left: 0;
+	text-align: center;
 }
 
 @media (max-width: 860px) {
-    .avatarWrapper {
-        justify-content: center;
-    }
+	.avatarWrapper {
+		justify-content: center;
+	}
 }
 
 @media (min-width: 860px) {
-    .avatarWrapper {
-        justify-content: flex-start;
-    }
+	.avatarWrapper {
+		justify-content: flex-start;
+	}
 
-    .usernameTitle {
-        margin-left: 150px;
-        text-align: start;
-    }
+	.usernameTitle {
+		margin-left: 150px;
+		text-align: start;
+	}
 }

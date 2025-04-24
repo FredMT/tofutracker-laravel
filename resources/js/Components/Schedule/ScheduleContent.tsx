@@ -9,23 +9,34 @@ interface ScheduleContentProps {
 }
 
 export default function ScheduleContent({ schedules }: ScheduleContentProps) {
-	const schedulesByDay = schedules.reduce((acc, schedule) => {
-		const day = dayjs.unix(schedule.episode_date).format('YYYY-MM-DD');
+	const schedulesByDay = schedules.reduce(
+		(acc, schedule) => {
+			const day = dayjs.unix(schedule.episode_date).format('YYYY-MM-DD');
 
-		if (!acc[day]) {
-			acc[day] = {
-				date: day,
-				formatted_date: dayjs
-					.unix(schedule.episode_date)
-					.format('MMMM D, YYYY'),
-				day_of_week: dayjs.unix(schedule.episode_date).format('dddd'),
-				schedules: [],
-			};
-		}
+			if (!acc[day]) {
+				acc[day] = {
+					date: day,
+					formatted_date: dayjs
+						.unix(schedule.episode_date)
+						.format('MMMM D, YYYY'),
+					day_of_week: dayjs.unix(schedule.episode_date).format('dddd'),
+					schedules: [],
+				};
+			}
 
-		acc[day].schedules.push(schedule);
-		return acc;
-	}, {} as Record<string, { date: string; formatted_date: string; day_of_week: string; schedules: ScheduleItem[] }>);
+			acc[day].schedules.push(schedule);
+			return acc;
+		},
+		{} as Record<
+			string,
+			{
+				date: string;
+				formatted_date: string;
+				day_of_week: string;
+				schedules: ScheduleItem[];
+			}
+		>
+	);
 
 	// Convert to array and sort by date
 	const groupedSchedules = Object.values(schedulesByDay).sort((a, b) =>

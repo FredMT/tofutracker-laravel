@@ -1,10 +1,15 @@
-import { ActionIcon } from "@mantine/core";
-import { Plus } from "lucide-react";
-import React from "react";
-import { UserList } from "../../types";
-import { AllContentTypes, AnimeContentDataType, FlashMessage, RegularContentDataType } from "@/types";
-import { useForm, usePage } from "@inertiajs/react";
-import { notifications } from "@mantine/notifications";
+import { ActionIcon } from '@mantine/core';
+import { Plus } from 'lucide-react';
+import React from 'react';
+import { UserList } from '../../types';
+import {
+	AllContentTypes,
+	AnimeContentDataType,
+	FlashMessage,
+	RegularContentDataType,
+} from '@/types';
+import { useForm, usePage } from '@inertiajs/react';
+import { notifications } from '@mantine/notifications';
 
 type AddToListProps = {
 	list: UserList;
@@ -17,7 +22,7 @@ function AddToList({ list }: AddToListProps) {
 		flash: FlashMessage;
 	}>().props;
 
-	const itemId = ["animemovie", "animetv"].includes(type)
+	const itemId = ['animemovie', 'animetv'].includes(type)
 		? data.map_id
 		: data.id;
 
@@ -29,27 +34,27 @@ function AddToList({ list }: AddToListProps) {
 
 	const submit = (e: React.FormEvent) => {
 		e.preventDefault();
-		post(route("user.lists.items.store"), {
+		post(route('user.lists.items.store'), {
 			preserveScroll: true,
 			onSuccess: (res: any) => {
 				if (res.props.flash && res.props.flash.message) {
 					if (res.props.flash.success) {
 						notifications.show({
 							message: res.props.flash.message,
-							color: "green",
+							color: 'green',
 						});
 					} else {
 						notifications.show({
 							message: res.props.flash.message,
-							color: "red",
+							color: 'red',
 						});
 					}
 				}
 			},
 			onError: () => {
 				notifications.show({
-					message: "An error occurred while adding item to list",
-					color: "red",
+					message: 'An error occurred while adding item to list',
+					color: 'red',
 				});
 			},
 		});
@@ -58,9 +63,9 @@ function AddToList({ list }: AddToListProps) {
 	return (
 		<form onSubmit={submit}>
 			<ActionIcon
-				variant="subtle"
-				color="violet"
-				type="submit"
+				variant='subtle'
+				color='violet'
+				type='submit'
 				disabled={processing}
 			>
 				<Plus size={16} />

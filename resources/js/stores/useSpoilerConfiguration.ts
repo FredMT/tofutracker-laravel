@@ -1,6 +1,9 @@
-import { create } from "zustand";
-import { useEffect, useMemo } from "react";
-import { UserConfiguration, useUserConfiguration } from "@/propsHooks/useUserConfiguration";
+import { create } from 'zustand';
+import { useEffect, useMemo } from 'react';
+import {
+	UserConfiguration,
+	useUserConfiguration,
+} from '@/propsHooks/useUserConfiguration';
 
 interface SpoilerState {
 	initialConfiguration: UserConfiguration | null;
@@ -41,10 +44,7 @@ export function useSpoilerConfiguration(): SpoilerConfigurationHookReturn {
 	} = useSpoilerStore();
 
 	useEffect(() => {
-		if (
-			serverConfiguration &&
-			serverConfiguration !== initialConfiguration
-		) {
+		if (serverConfiguration && serverConfiguration !== initialConfiguration) {
 			setInitialConfiguration(serverConfiguration);
 		}
 	}, [serverConfiguration, initialConfiguration, setInitialConfiguration]);

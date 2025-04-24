@@ -1,9 +1,9 @@
-import MovieCard from "@/Components/Shared/MovieCard";
-import { useFilterStore } from "@/stores/filterStore";
-import { router } from "@inertiajs/react";
-import { Flex, Group, Pagination, Text } from "@mantine/core";
-import { useUserData } from "@/propsHooks/useUserData";
-import { useUserMovies } from "@/propsHooks/useUserMovies";
+import MovieCard from '@/Components/Shared/MovieCard';
+import { useFilterStore } from '@/stores/filterStore';
+import { router } from '@inertiajs/react';
+import { Flex, Group, Pagination, Text } from '@mantine/core';
+import { useUserData } from '@/propsHooks/useUserData';
+import { useUserMovies } from '@/propsHooks/useUserMovies';
 
 export function UserMovieSection() {
 	const userData = useUserData();
@@ -12,11 +12,11 @@ export function UserMovieSection() {
 	const hasFilters = useFilterStore((state) =>
 		Boolean(
 			state.status ||
-			state.title ||
-			state.fromDate ||
-			state.toDate ||
-			state.genres.length > 0,
-		),
+				state.title ||
+				state.fromDate ||
+				state.toDate ||
+				state.genres.length > 0
+		)
 	);
 
 	const handlePageChange = (page: number) => {
@@ -29,7 +29,7 @@ export function UserMovieSection() {
 		if (filterStore.toDate)
 			currentFilters.to_date = filterStore.toDate.toISOString();
 		if (filterStore.genres.length > 0)
-			currentFilters.genres = filterStore.genres.join(",");
+			currentFilters.genres = filterStore.genres.join(',');
 
 		router.get(
 			`/user/${userData.username}/movies`,
@@ -39,13 +39,17 @@ export function UserMovieSection() {
 			},
 			{
 				preserveState: true,
-			},
+			}
 		);
 	};
 
 	return (
 		<>
-			<Flex gap={6} wrap="wrap" justify="flex-start">
+			<Flex
+				gap={6}
+				wrap='wrap'
+				justify='flex-start'
+			>
 				{movies.data.map((movie) => (
 					<MovieCard
 						key={movie.id}
@@ -58,9 +62,16 @@ export function UserMovieSection() {
 					/>
 				))}
 			</Flex>
-			<Group justify="space-between" align="center" w="100%">
-				<Text size="sm" c="dimmed">
-					{hasFilters ? "Filtered results: " : ""}
+			<Group
+				justify='space-between'
+				align='center'
+				w='100%'
+			>
+				<Text
+					size='sm'
+					c='dimmed'
+				>
+					{hasFilters ? 'Filtered results: ' : ''}
 					Showing {movies.from}-{movies.to} of {movies.total} results
 				</Text>
 				<Pagination

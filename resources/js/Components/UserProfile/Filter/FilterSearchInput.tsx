@@ -1,23 +1,23 @@
-import { useFilterStore } from "@/stores/filterStore";
-import { router } from "@inertiajs/react";
-import { TextInput } from "@mantine/core";
-import { useDebouncedValue } from "@mantine/hooks";
-import { useEffect, useRef } from "react";
-import { useUserData } from "@/propsHooks/useUserData";
+import { useFilterStore } from '@/stores/filterStore';
+import { router } from '@inertiajs/react';
+import { TextInput } from '@mantine/core';
+import { useDebouncedValue } from '@mantine/hooks';
+import { useEffect, useRef } from 'react';
+import { useUserData } from '@/propsHooks/useUserData';
 
 interface FilterSearchInputProps {
-	contentType: "movies" | "tv" | "anime";
+	contentType: 'movies' | 'tv' | 'anime';
 }
 
 export function FilterSearchInput({ contentType }: FilterSearchInputProps) {
 	const userData = useUserData();
 	const { title, setTitle } = useFilterStore();
-	const [debouncedSearch] = useDebouncedValue(title ?? "", 300);
+	const [debouncedSearch] = useDebouncedValue(title ?? '', 300);
 	const isFirstRender = useRef(true);
 
 	useEffect(() => {
 		const params = new URLSearchParams(window.location.search);
-		const titleParam = params.get("title");
+		const titleParam = params.get('title');
 		if (titleParam && !title) {
 			setTitle(titleParam);
 		}
@@ -30,7 +30,7 @@ export function FilterSearchInput({ contentType }: FilterSearchInputProps) {
 		}
 
 		const currentParams = new URLSearchParams(window.location.search);
-		if (debouncedSearch === currentParams.get("title")) return;
+		if (debouncedSearch === currentParams.get('title')) return;
 
 		router.get(
 			`/user/${userData.username}/${contentType}`,
@@ -39,20 +39,20 @@ export function FilterSearchInput({ contentType }: FilterSearchInputProps) {
 				preserveState: true,
 				preserveScroll: true,
 				replace: true,
-			},
+			}
 		);
 	}, [debouncedSearch, userData.username, contentType]);
 
 	const getPlaceholder = () => {
 		switch (contentType) {
-			case "movies":
-				return "Shawshank";
-			case "tv":
-				return "The 100";
-			case "anime":
-				return "Death Note";
+			case 'movies':
+				return 'Shawshank';
+			case 'tv':
+				return 'The 100';
+			case 'anime':
+				return 'Death Note';
 			default:
-				return "";
+				return '';
 		}
 	};
 
@@ -60,9 +60,9 @@ export function FilterSearchInput({ contentType }: FilterSearchInputProps) {
 		<TextInput
 			label={`Search your ${contentType}`}
 			placeholder={`Search your ${contentType}: ${getPlaceholder()}`}
-			value={title ?? ""}
+			value={title ?? ''}
 			onChange={(event) => setTitle(event.currentTarget.value || null)}
-			w="100%"
+			w='100%'
 		/>
 	);
 }

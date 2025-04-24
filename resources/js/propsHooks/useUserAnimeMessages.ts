@@ -1,4 +1,4 @@
-import { useTypedPageProps } from "@/propsHooks/useTypedPageProps";
+import { useTypedPageProps } from '@/propsHooks/useTypedPageProps';
 
 export function useUserAnimeMessages() {
 	const props = useTypedPageProps();

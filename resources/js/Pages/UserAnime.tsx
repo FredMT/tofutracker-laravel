@@ -1,15 +1,15 @@
-import FilterButtonGroup from "@/Components/UserProfile/Filter/FilterButtonGroup";
-import AnimeCard from "@/Components/Shared/UserAnime/AnimeCard";
-import { useFilterStore } from "@/hooks/useFilterStore";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
-import UserProfileLayout from "@/Layouts/UserProfileLayout";
-import { Head } from "@inertiajs/react";
-import { Alert, Flex, Group, Space, Stack, Title } from "@mantine/core";
-import { useEffect } from "react";
-import { useUserData } from "@/propsHooks/useUserData";
-import { useUserAnimeCollections } from "@/propsHooks/useUserAnimeCollections";
-import { useUserAnimeMessages } from "@/propsHooks/useUserAnimeMessages";
-import { useUserAnimeFilters } from "@/propsHooks/useUserAnimeFilters";
+import FilterButtonGroup from '@/Components/UserProfile/Filter/FilterButtonGroup';
+import AnimeCard from '@/Components/Shared/UserAnime/AnimeCard';
+import { useFilterStore } from '@/hooks/useFilterStore';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout/AuthenticatedLayout';
+import UserProfileLayout from '@/Layouts/UserProfileLayout';
+import { Head } from '@inertiajs/react';
+import { Alert, Flex, Group, Space, Stack, Title } from '@mantine/core';
+import { useEffect } from 'react';
+import { useUserData } from '@/propsHooks/useUserData';
+import { useUserAnimeCollections } from '@/propsHooks/useUserAnimeCollections';
+import { useUserAnimeMessages } from '@/propsHooks/useUserAnimeMessages';
+import { useUserAnimeFilters } from '@/propsHooks/useUserAnimeFilters';
 
 function UserAnime() {
 	const userData = useUserData();
@@ -28,17 +28,24 @@ function UserAnime() {
 		<>
 			<Head title={`${userData.username}'s Anime`} />
 			<Group>
-				<FilterButtonGroup contentType="anime" />
+				<FilterButtonGroup contentType='anime' />
 			</Group>
 			<Space h={12} />
 			<Stack gap={12}>
 				<Title order={2}>Anime</Title>
 				{messages.length > 0 && (
-					<Alert variant="light" color="blue">
+					<Alert
+						variant='light'
+						color='blue'
+					>
 						{messages[0]}
 					</Alert>
 				)}
-				<Flex gap={6} wrap="wrap" justify="flex-start">
+				<Flex
+					gap={6}
+					wrap='wrap'
+					justify='flex-start'
+				>
 					{collections.map((collection) => (
 						<AnimeCard
 							key={collection.id}
@@ -53,7 +60,10 @@ function UserAnime() {
 
 UserAnime.layout = (page: any) => (
 	<AuthenticatedLayout>
-		<UserProfileLayout children={page} userData={page.props.userData} />
+		<UserProfileLayout
+			children={page}
+			userData={page.props.userData}
+		/>
 	</AuthenticatedLayout>
 );
 

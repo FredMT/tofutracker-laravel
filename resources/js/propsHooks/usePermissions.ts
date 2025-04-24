@@ -1,8 +1,8 @@
-import { useTypedPageProps } from "@/propsHooks/useTypedPageProps";
+import { useTypedPageProps } from '@/propsHooks/useTypedPageProps';
 
 type PermissionsType = {
 	is_superuser: boolean;
-}
+};
 
 export function usePermissions() {
 	const props = useTypedPageProps();

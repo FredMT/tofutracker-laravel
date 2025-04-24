@@ -1,6 +1,13 @@
-import { Button, Group, Stack, Switch, Textarea, TextInput } from "@mantine/core";
-import { useForm } from "@inertiajs/react";
-import { useAuth } from "@/propsHooks/useAuth";
+import {
+	Button,
+	Group,
+	Stack,
+	Switch,
+	Textarea,
+	TextInput,
+} from '@mantine/core';
+import { useForm } from '@inertiajs/react';
+import { useAuth } from '@/propsHooks/useAuth';
 
 type Props = {
 	closeCreate: () => void;
@@ -10,14 +17,14 @@ export function CreateListForm({ closeCreate }: Props) {
 	const auth = useAuth();
 
 	const form = useForm({
-		title: "",
-		description: "",
+		title: '',
+		description: '',
 		is_public: true,
 	});
 
 	function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
-		form.post(route("user.lists.store", { username: auth.user?.username }), {
+		form.post(route('user.lists.store', { username: auth.user?.username }), {
 			onSuccess: () => {
 				form.reset();
 				closeCreate();
@@ -27,41 +34,41 @@ export function CreateListForm({ closeCreate }: Props) {
 
 	return (
 		<form onSubmit={handleSubmit}>
-			<Stack gap="md">
+			<Stack gap='md'>
 				<TextInput
-					label="List Title"
+					label='List Title'
 					required
 					value={form.data.title}
-					onChange={(e) =>
-						form.setData("title", e.currentTarget.value)
-					}
+					onChange={(e) => form.setData('title', e.currentTarget.value)}
 					error={form.errors.title}
 				/>
 				<Textarea
-					label="Description"
+					label='Description'
 					value={form.data.description}
-					onChange={(e) =>
-						form.setData("description", e.currentTarget.value)
-					}
+					onChange={(e) => form.setData('description', e.currentTarget.value)}
 					error={form.errors.description}
 				/>
 				<Switch
-					label="Make this list public"
-					description="Public lists can be viewed by anyone"
+					label='Make this list public'
+					description='Public lists can be viewed by anyone'
 					checked={form.data.is_public}
-					onChange={(e) =>
-						form.setData("is_public", e.currentTarget.checked)
-					}
+					onChange={(e) => form.setData('is_public', e.currentTarget.checked)}
 				/>
-				<Group justify="flex-end" mt="md">
+				<Group
+					justify='flex-end'
+					mt='md'
+				>
 					<Button
-						variant="default"
+						variant='default'
 						onClick={closeCreate}
 						disabled={form.processing}
 					>
 						Cancel
 					</Button>
-					<Button type="submit" loading={form.processing}>
+					<Button
+						type='submit'
+						loading={form.processing}
+					>
 						Create List
 					</Button>
 				</Group>

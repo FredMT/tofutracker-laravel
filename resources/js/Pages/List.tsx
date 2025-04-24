@@ -1,19 +1,19 @@
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout/AuthenticatedLayout";
-import { Head, Link } from "@inertiajs/react";
-import { ListBanner } from "@/Components/List/ListBanner";
-import { Alert, Anchor, Group, Stack, Title } from "@mantine/core";
-import BoundedContainer from "@/Components/BoundedContainer";
-import { ListItemGrid } from "@/Components/List/ListItemGrid";
-import { useListStore } from "@/stores/listStore";
-import { useEffect } from "react";
-import { ListActions } from "@/Components/List/ListActions";
-import { ListRemoveActions } from "@/Components/List/ListRemoveActions";
-import { ListEditModal } from "@/Components/List/ListEditModal";
-import { useDisclosure } from "@mantine/hooks";
-import { ListStats } from "@/Components/List/ListStats";
-import ListSortAndFiltersSection from "@/Components/List/SortAndFilters/ListSortAndFiltersSection";
-import { useListPageData } from "@/propsHooks/useListPageData";
-import { useAuth } from "@/propsHooks/useAuth";
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout/AuthenticatedLayout';
+import { Head, Link } from '@inertiajs/react';
+import { ListBanner } from '@/Components/List/ListBanner';
+import { Alert, Anchor, Group, Stack, Title } from '@mantine/core';
+import BoundedContainer from '@/Components/BoundedContainer';
+import { ListItemGrid } from '@/Components/List/ListItemGrid';
+import { useListStore } from '@/stores/listStore';
+import { useEffect } from 'react';
+import { ListActions } from '@/Components/List/ListActions';
+import { ListRemoveActions } from '@/Components/List/ListRemoveActions';
+import { ListEditModal } from '@/Components/List/ListEditModal';
+import { useDisclosure } from '@mantine/hooks';
+import { ListStats } from '@/Components/List/ListStats';
+import ListSortAndFiltersSection from '@/Components/List/SortAndFilters/ListSortAndFiltersSection';
+import { useListPageData } from '@/propsHooks/useListPageData';
+import { useAuth } from '@/propsHooks/useAuth';
 
 export default function List() {
 	const list = useListPageData();
@@ -47,23 +47,26 @@ export default function List() {
 				isEmpty={list.is_empty}
 			/>
 			<BoundedContainer>
-				<Stack gap="lg">
+				<Stack gap='lg'>
 					<Stack gap={8}>
-						<Group align="end">
+						<Group align='end'>
 							<Title order={1}>{list.title}</Title>
 							<Anchor
 								component={Link}
-								href={route("user.profile", list.user.username)}
-								c="dimmed"
+								href={route('user.profile', list.user.username)}
+								c='dimmed'
 							>{`Created by ${list.user.username}`}</Anchor>
 						</Group>
 						{list.description && (
-							<Title order={4} fw={300}>
+							<Title
+								order={4}
+								fw={300}
+							>
 								{list.description}
 							</Title>
 						)}
 						<ListStats list={list} />
-						<Group justify="flex-end">
+						<Group justify='flex-end'>
 							{isRemoving && (
 								<ListRemoveActions
 									listId={list.id}
@@ -79,9 +82,7 @@ export default function List() {
 						</Group>
 					</Stack>
 					{!list.is_empty && (
-						<ListSortAndFiltersSection
-							listGenres={list.list_genres}
-						/>
+						<ListSortAndFiltersSection listGenres={list.list_genres} />
 					)}
 					{!list.is_empty ? (
 						<ListItemGrid
@@ -97,7 +98,11 @@ export default function List() {
 					)}
 				</Stack>
 			</BoundedContainer>
-			<ListEditModal list={list} opened={opened} onClose={close} />
+			<ListEditModal
+				list={list}
+				opened={opened}
+				onClose={close}
+			/>
 		</>
 	);
 }

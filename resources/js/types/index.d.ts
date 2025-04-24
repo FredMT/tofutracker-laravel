@@ -73,10 +73,10 @@ type UserLibrary = BaseUserLibrary | AnimeUserLibrary;
 type ContentTypeToLibrary<T> = T extends { type: 'movie' | 'tv' | 'tvseason' }
 	? BaseUserLibrary
 	: T extends { type: 'animeseason' }
-	? AnimeSeasonUserLibrary
-	: T extends { type: 'animemovie' | 'animetv' }
-	? AnimeUserLibrary
-	: never;
+		? AnimeSeasonUserLibrary
+		: T extends { type: 'animemovie' | 'animetv' }
+			? AnimeUserLibrary
+			: never;
 
 export interface Links {
 	show: {
@@ -92,7 +92,7 @@ export interface Links {
 }
 
 export type PageProps<
-	T extends Record<string, unknown> = Record<string, unknown>
+	T extends Record<string, unknown> = Record<string, unknown>,
 > = T & {
 	auth: Auth;
 	type: AllContentTypes;

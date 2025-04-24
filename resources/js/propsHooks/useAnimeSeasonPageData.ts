@@ -1,5 +1,5 @@
-import { useTypedPageProps } from "@/propsHooks/useTypedPageProps";
-import { AnimeSeason } from "@/types/animeseason";
+import { useTypedPageProps } from '@/propsHooks/useTypedPageProps';
+import { AnimeSeason } from '@/types/animeseason';
 
 export function useAnimeSeasonPageData() {
 	const props = useTypedPageProps();

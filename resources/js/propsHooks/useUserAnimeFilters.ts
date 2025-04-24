@@ -1,5 +1,5 @@
-import { useTypedPageProps } from "@/propsHooks/useTypedPageProps";
-import { Filters } from "@/types/userAnime";
+import { useTypedPageProps } from '@/propsHooks/useTypedPageProps';
+import { Filters } from '@/types/userAnime';
 
 export function useUserAnimeFilters() {
 	const props = useTypedPageProps();

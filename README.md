@@ -17,31 +17,38 @@ TofuTracker is the ultimate platform for tracking and discovering **movies**, **
 ## Features
 
 ### 1. Comprehensive Search
+
 - **Movies**: Quickly search and retrieve detailed movie information.
 - **TV Shows**: Search for TV shows with access to season and episode details.
 - **Anime**: Find anime titles, with results separated into distinct collections that reflect the true season chains (including prequels, sequels, and spin-offs).
 
 ### 2. Detailed Information Display
+
 - **Movies, TV Shows, & Anime**: View complete details pulled from unified APIs.
 - **TV & Anime**: Easily navigate through seasons and episodes.
 
 ### 3. Custom Anime Collections
+
 - Anime is presented as a collection to handle unique season chains.
 - Uses custom backend logic to correctly link prequels, sequels, and spin-offs.
 
 ### 4. User Profiles & Activity Tracking
+
 - **Personalized Profiles**: View your activity, which is separated into different lists for movies, TV, and anime.
 - **Custom Filtering**: Each list has advanced filtering logic, perfectly tailored to its content type.
 
 ### 5. Interactive Community Features
+
 - **Reddit-Style Comments**: Comment on movies, TV shows, TV seasons, anime movies, anime collections, and anime seasons.
 - **Voting System**: Vote on comments to promote community engagement.
 
 ### 6. Dynamic Homepage
+
 - **Genre Browsing**: Discover content by genre.
 - **Trending Content**: See the most trending movies, TV shows, and anime based on streaming providers like Netflix, Disney, HBO Max, Crunchyroll, Paramount, and more.
 
 ### 7. Viewing Status Management
+
 - **Status Options**:
   - **COMPLETED**
   - **PLANNING**
@@ -52,12 +59,11 @@ TofuTracker is the ultimate platform for tracking and discovering **movies**, **
 - Easily manage and display your viewing progress.
 
 ### 8. Custom Lists
+
 - **Unlimited Items**: Create lists without limits.
 - **Beautiful Format**: Each list features its own banner and layout.
 - **Detailed Stats**: Displays total items (with breakdowns for movies, TV, and anime), average rating, and total runtime.
 - **Advanced Filtering & Sorting**: Filter and sort by genres, release date, rating, and more.
-
-
 
 ## Unique Selling Point
 
@@ -68,7 +74,7 @@ TofuTracker is the first website to programmatically separate anime seasons into
 ## Future Enhancements
 
 - **Friends and notifications**: Integrate more social features.
-- **Calendar and schedule**: Integrate calendar options. 
+- **Calendar and schedule**: Integrate calendar options.
 - **Improved Analytics**: Deeper insights into user activity and content trends.
 
 ---

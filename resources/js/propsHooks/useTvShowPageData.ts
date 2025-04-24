@@ -1,5 +1,5 @@
-import { useTypedPageProps } from "@/propsHooks/useTypedPageProps";
-import { TvShow } from "@/types";
+import { useTypedPageProps } from '@/propsHooks/useTypedPageProps';
+import { TvShow } from '@/types';
 
 export function useTvShowPageData() {
 	const props = useTypedPageProps();

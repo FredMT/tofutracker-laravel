@@ -1,67 +1,67 @@
 .container {
-    position: relative;
-    width: 100vw;
-    height: 400px;
-    margin-bottom: 2rem;
-    left: 50%;
-    right: 50%;
-    margin-left: -50vw;
-    margin-right: -50vw;
+	position: relative;
+	width: 100vw;
+	height: 400px;
+	margin-bottom: 2rem;
+	left: 50%;
+	right: 50%;
+	margin-left: -50vw;
+	margin-right: -50vw;
 }
 
 .imageContainer {
-    position: relative;
-    width: 100%;
-    height: 100%;
+	position: relative;
+	width: 100%;
+	height: 100%;
 }
 
 .banner {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
 }
 
 .bannerPlaceholder {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-        45deg,
-        var(--mantine-color-dark-4) 0%,
-        var(--mantine-color-dark-6) 100%
-    );
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(
+		45deg,
+		var(--mantine-color-dark-4) 0%,
+		var(--mantine-color-dark-6) 100%
+	);
 }
 
 .imageContainer::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 70%;
-    background: linear-gradient(
-        to bottom,
-        transparent,
-        rgba(0, 0, 0, 0.8) 70%,
-        var(--mantine-color-body) 100%
-    );
-    pointer-events: none;
+	content: '';
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 70%;
+	background: linear-gradient(
+		to bottom,
+		transparent,
+		rgba(0, 0, 0, 0.8) 70%,
+		var(--mantine-color-body) 100%
+	);
+	pointer-events: none;
 }
 
 .editMenuContainer {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 10;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 10;
 }
 
 .editMenuInner {
-    position: relative;
-    height: 100%;
+	position: relative;
+	height: 100%;
 }
 
 .editMenuPosition {
-    position: absolute;
-    bottom: 1rem;
-    right: 0;
+	position: absolute;
+	bottom: 1rem;
+	right: 0;
 }

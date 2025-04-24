@@ -1,5 +1,5 @@
-import { useTypedPageProps } from "@/propsHooks/useTypedPageProps";
-import { TrendingContent } from "@/types/trending";
+import { useTypedPageProps } from '@/propsHooks/useTypedPageProps';
+import { TrendingContent } from '@/types/trending';
 
 export function useTrendingContentData() {
 	const props = useTypedPageProps();

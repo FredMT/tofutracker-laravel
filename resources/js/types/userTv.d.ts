@@ -1,5 +1,5 @@
-import { WatchStatus } from "./enums";
-import { PageProps as InertiaPageProps } from "@inertiajs/core";
+import { WatchStatus } from './enums';
+import { PageProps as InertiaPageProps } from '@inertiajs/core';
 
 export interface User {
 	id: number;
@@ -67,7 +67,6 @@ export interface UserData {
 	created_at: string;
 	avatar_url: string | null;
 }
-
 
 export interface PageProps extends InertiaPageProps {
 	auth: Auth;

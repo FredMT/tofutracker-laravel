@@ -16,7 +16,7 @@ export default function UpdateBannerForm() {
 
 	const currentBanner = user.banner
 		? // ? `${import.meta.env.VITE_DO_URL}/${user.banner}`
-		  `storage/${user.banner}`
+			`storage/${user.banner}`
 		: null;
 
 	function submit(e: React.FormEvent) {

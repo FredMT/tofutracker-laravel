@@ -1,10 +1,10 @@
-import { AnimeCollection } from "../types/animeCollections";
+import { AnimeCollection } from '../types/animeCollections';
 
 export const formatPosterUrl = (
 	posterPath: string | null,
-	isTmdb: boolean,
+	isTmdb: boolean
 ): string => {
-	if (!posterPath) return "/img/placeholder-poster.jpg";
+	if (!posterPath) return '/img/placeholder-poster.jpg';
 	return isTmdb
 		? `https://image.tmdb.org/t/p/w92${posterPath}`
 		: `https://anidb.net/images/main/${posterPath}`;
@@ -16,7 +16,7 @@ export const formatPosterUrl = (
 export const getTotalEntriesCount = (collection: AnimeCollection): number => {
 	const chainEntries = collection.chains.reduce(
 		(sum, chain) => sum + chain.entries.length,
-		0,
+		0
 	);
 	return chainEntries + collection.related_entries.length;
 };

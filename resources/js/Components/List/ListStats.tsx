@@ -18,8 +18,8 @@ export function ListStats({ list }: ListStatsProps) {
 								banner_type === 'tmdb'
 									? 'https://image.tmdb.org/t/p/w780'
 									: //   : "https://images.tofutracker.com/"
-									  '/'
-						  }${banner_image}`
+										'/'
+							}${banner_image}`
 						: ''
 				}
 				style={{ position: 'absolute', inset: 0 }}

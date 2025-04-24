@@ -15,24 +15,27 @@ export const useCommentStore = create<CommentStore>((set) => ({
 	setInitialComments: (comments: Comment[]) =>
 		set((state) => {
 			// Initialize votes based on comment directions
-			const initialVotes = comments.reduce((acc, comment) => {
-				if (comment.direction === 1) {
-					acc[comment.id] = 'up';
-				} else if (comment.direction === -1) {
-					acc[comment.id] = 'down';
-				}
-				// Recursively process children
-				if (comment.children) {
-					comment.children.forEach((child) => {
-						if (child.direction === 1) {
-							acc[child.id] = 'up';
-						} else if (child.direction === -1) {
-							acc[child.id] = 'down';
-						}
-					});
-				}
-				return acc;
-			}, {} as Record<string, 'up' | 'down' | null>);
+			const initialVotes = comments.reduce(
+				(acc, comment) => {
+					if (comment.direction === 1) {
+						acc[comment.id] = 'up';
+					} else if (comment.direction === -1) {
+						acc[comment.id] = 'down';
+					}
+					// Recursively process children
+					if (comment.children) {
+						comment.children.forEach((child) => {
+							if (child.direction === 1) {
+								acc[child.id] = 'up';
+							} else if (child.direction === -1) {
+								acc[child.id] = 'down';
+							}
+						});
+					}
+					return acc;
+				},
+				{} as Record<string, 'up' | 'down' | null>
+			);
 
 			return {
 				comments,
@@ -412,7 +415,7 @@ export const useCommentStore = create<CommentStore>((set) => ({
 							? {
 									...comment,
 									children: findComment(comment.children),
-							  }
+								}
 							: comment;
 					});
 				};

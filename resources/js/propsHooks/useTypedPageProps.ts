@@ -1,5 +1,5 @@
-import { PageProps } from "@inertiajs/core";
-import { usePage } from "@inertiajs/react";
+import { PageProps } from '@inertiajs/core';
+import { usePage } from '@inertiajs/react';
 
 export interface TypedPageProps extends PageProps {
 	data: unknown;

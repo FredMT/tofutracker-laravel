@@ -1,6 +1,6 @@
-import { Table } from "@mantine/core";
-import { AnimeCollectionEntry } from "../types/animeCollections";
-import { EntryRow } from "./EntryRow";
+import { Table } from '@mantine/core';
+import { AnimeCollectionEntry } from '../types/animeCollections';
+import { EntryRow } from './EntryRow';
 
 interface TableColumn {
 	accessor: string;
@@ -17,7 +17,12 @@ export function EntryTable({ entries }: EntryTableProps) {
 	const { columns } = EntryRow();
 
 	return (
-		<Table withColumnBorders withTableBorder highlightOnHover tabularNums>
+		<Table
+			withColumnBorders
+			withTableBorder
+			highlightOnHover
+			tabularNums
+		>
 			<Table.Thead>
 				<Table.Tr>
 					{columns.map((column) => (
@@ -26,7 +31,7 @@ export function EntryTable({ entries }: EntryTableProps) {
 							style={{
 								width: (column as TableColumn).width
 									? `${(column as TableColumn).width}px`
-									: "auto",
+									: 'auto',
 							}}
 						>
 							{column.title}
@@ -38,9 +43,7 @@ export function EntryTable({ entries }: EntryTableProps) {
 				{entries.map((entry) => (
 					<Table.Tr key={entry.entry_id}>
 						{columns.map((column) => (
-							<Table.Td
-								key={`${entry.entry_id}-${column.accessor}`}
-							>
+							<Table.Td key={`${entry.entry_id}-${column.accessor}`}>
 								{column.render ? column.render(entry) : null}
 							</Table.Td>
 						))}

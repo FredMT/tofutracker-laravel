@@ -1,8 +1,16 @@
-import { Button, Grid, Space, Spoiler, Stack, Tabs, Title } from "@mantine/core";
-import { useState } from "react";
-import { EpisodeCard } from "../../Episodes/EpisodeCard";
-import { useSpoilerConfiguration } from "@/stores/useSpoilerConfiguration";
-import { useAnimeSeasonPageData } from "@/propsHooks/useAnimeSeasonPageData";
+import {
+	Button,
+	Grid,
+	Space,
+	Spoiler,
+	Stack,
+	Tabs,
+	Title,
+} from '@mantine/core';
+import { useState } from 'react';
+import { EpisodeCard } from '../../Episodes/EpisodeCard';
+import { useSpoilerConfiguration } from '@/stores/useSpoilerConfiguration';
+import { useAnimeSeasonPageData } from '@/propsHooks/useAnimeSeasonPageData';
 
 function AnimeContentEpisodes() {
 	const data = useAnimeSeasonPageData();
@@ -13,15 +21,13 @@ function AnimeContentEpisodes() {
 	const { mainEpisodes, specialEpisodes } = data.mapped_episodes;
 
 	const filteredMainEpisodes = Object.fromEntries(
-		Object.entries(mainEpisodes).filter(
-			([_, episode]) => episode.name !== null,
-		),
+		Object.entries(mainEpisodes).filter(([_, episode]) => episode.name !== null)
 	);
 
 	const filteredSpecialEpisodes = Object.fromEntries(
 		Object.entries(specialEpisodes).filter(
-			([_, episode]) => episode.name !== null,
-		),
+			([_, episode]) => episode.name !== null
+		)
 	);
 
 	const hasMainEpisodes = Object.keys(filteredMainEpisodes).length > 0;
@@ -31,11 +37,11 @@ function AnimeContentEpisodes() {
 	const [specialVisibleCount, setSpecialVisibleCount] = useState(25);
 
 	const paginatedMainEpisodes = Object.fromEntries(
-		Object.entries(filteredMainEpisodes).slice(0, mainVisibleCount),
+		Object.entries(filteredMainEpisodes).slice(0, mainVisibleCount)
 	);
 
 	const paginatedSpecialEpisodes = Object.fromEntries(
-		Object.entries(filteredSpecialEpisodes).slice(0, specialVisibleCount),
+		Object.entries(filteredSpecialEpisodes).slice(0, specialVisibleCount)
 	);
 
 	const hasMoreMainEpisodes =
@@ -48,39 +54,37 @@ function AnimeContentEpisodes() {
 	return (
 		<Stack my={16}>
 			<Title order={3}>Episodes</Title>
-			<Tabs defaultValue="main">
+			<Tabs defaultValue='main'>
 				<Tabs.List>
-					{hasMainEpisodes && (
-						<Tabs.Tab value="main">Main Episodes</Tabs.Tab>
-					)}
+					{hasMainEpisodes && <Tabs.Tab value='main'>Main Episodes</Tabs.Tab>}
 					{hasSpecialEpisodes && (
-						<Tabs.Tab value="special">Special Episodes</Tabs.Tab>
+						<Tabs.Tab value='special'>Special Episodes</Tabs.Tab>
 					)}
 				</Tabs.List>
 
 				<Spoiler
 					maxHeight={1000}
-					showLabel="Show more"
-					hideLabel="Show less"
+					showLabel='Show more'
+					hideLabel='Show less'
 					styles={{
 						control: {
-							display: "flex",
-							justifyContent: "flex-end",
-							marginTop: "8px",
+							display: 'flex',
+							justifyContent: 'flex-end',
+							marginTop: '8px',
 						},
 					}}
 				>
 					{hasMainEpisodes && (
-						<Tabs.Panel value="main">
-							<Stack mt="md">
+						<Tabs.Panel value='main'>
+							<Stack mt='md'>
 								<Grid
-									type="container"
+									type='container'
 									breakpoints={{
-										xs: "500px",
-										sm: "500px",
-										md: "700px",
-										lg: "900px",
-										xl: "1024px",
+										xs: '500px',
+										sm: '500px',
+										md: '700px',
+										lg: '900px',
+										xl: '1024px',
 									}}
 									gutter={{ base: 12 }}
 								>
@@ -89,23 +93,17 @@ function AnimeContentEpisodes() {
 											<EpisodeCard
 												key={`main-${number}`}
 												episode={episode}
-												imageSource="tvdb"
-												type="anime"
-												hideDescription={
-													configuration.hide_episode_description
-												}
+												imageSource='tvdb'
+												type='anime'
+												hideDescription={configuration.hide_episode_description}
 											/>
-										),
+										)
 									)}
 								</Grid>
 								{hasMoreMainEpisodes && (
 									<Button
-										onClick={() =>
-											setMainVisibleCount(
-												(prev) => prev + 25,
-											)
-										}
-										className="text-blue-500 hover:underline"
+										onClick={() => setMainVisibleCount((prev) => prev + 25)}
+										className='text-blue-500 hover:underline'
 									>
 										Show more episodes
 									</Button>
@@ -117,41 +115,39 @@ function AnimeContentEpisodes() {
 
 					{hasSpecialEpisodes && (
 						<>
-							<Tabs.Panel value="special">
-								<Stack mt="md">
+							<Tabs.Panel value='special'>
+								<Stack mt='md'>
 									<Grid
-										type="container"
+										type='container'
 										breakpoints={{
-											xs: "500px",
-											sm: "500px",
-											md: "700px",
-											lg: "900px",
-											xl: "1024px",
+											xs: '500px',
+											sm: '500px',
+											md: '700px',
+											lg: '900px',
+											xl: '1024px',
 										}}
 										gutter={{ base: 12 }}
 									>
-										{Object.entries(
-											paginatedSpecialEpisodes,
-										).map(([number, episode]) => (
-											<EpisodeCard
-												key={`special-${number}`}
-												episode={episode}
-												imageSource="tvdb"
-												type="anime"
-												hideDescription={
-													configuration.hide_episode_description
-												}
-											/>
-										))}
+										{Object.entries(paginatedSpecialEpisodes).map(
+											([number, episode]) => (
+												<EpisodeCard
+													key={`special-${number}`}
+													episode={episode}
+													imageSource='tvdb'
+													type='anime'
+													hideDescription={
+														configuration.hide_episode_description
+													}
+												/>
+											)
+										)}
 									</Grid>
 									{hasMoreSpecialEpisodes && (
 										<Button
 											onClick={() =>
-												setSpecialVisibleCount(
-													(prev) => prev + 25,
-												)
+												setSpecialVisibleCount((prev) => prev + 25)
 											}
-											className="text-blue-500 hover:underline"
+											className='text-blue-500 hover:underline'
 										>
 											Show more episodes
 										</Button>

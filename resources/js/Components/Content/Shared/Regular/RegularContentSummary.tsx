@@ -12,15 +12,15 @@ export function RegularContentSummary() {
 		type === 'movie'
 			? (data as Movie).release_date
 			: type === 'tv'
-			? (data as TvShow).first_air_date
-			: (data as TvSeason).air_date;
+				? (data as TvShow).first_air_date
+				: (data as TvSeason).air_date;
 
 	const countdown =
 		type === 'movie'
 			? null
 			: type === 'tv'
-			? (data as unknown as TvShow).countdown
-			: (data as unknown as TvSeason).countdown;
+				? (data as unknown as TvShow).countdown
+				: (data as unknown as TvSeason).countdown;
 
 	return (
 		<Paper

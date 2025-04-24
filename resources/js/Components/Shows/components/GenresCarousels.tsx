@@ -93,12 +93,12 @@ export function GenresCarousels({ genresProp }: GenresCarouselsProps) {
 											backgroundColor: genre.background,
 											color: genre.color,
 											borderColor: 'transparent',
-									  }
+										}
 									: {
 											backgroundColor: 'rgba(0, 0, 0, 0.3)',
 											color: 'var(--mantine-color-gray-4)',
 											borderColor: 'var(--mantine-color-dark-4)',
-									  };
+										};
 
 								return (
 									<motion.button

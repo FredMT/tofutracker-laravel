@@ -4,7 +4,7 @@ export type UserConfiguration = {
 	hide_anime_character_picture: boolean;
 };
 
-import { useTypedPageProps } from "@/propsHooks/useTypedPageProps";
+import { useTypedPageProps } from '@/propsHooks/useTypedPageProps';
 
 export function useUserConfiguration() {
 	const props = useTypedPageProps();

@@ -1,7 +1,7 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
-import { Comment } from "@/Components/Comments/types";
-import { AllContentTypes } from "@/types";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
+import { Comment } from '@/Components/Comments/types';
+import { AllContentTypes } from '@/types';
 
 interface CommentsResponse {
 	comments: Comment[];
@@ -12,23 +12,23 @@ export function useCommentsQuery(
 	type: AllContentTypes,
 	contentId: string,
 	parentId?: string | null,
-	showCommentId?: string | null,
+	showCommentId?: string | null
 ) {
 	const queryClient = useQueryClient();
 
 	// Define query key based on parameters
-	const queryKey = ["comments", type, contentId, parentId, showCommentId];
+	const queryKey = ['comments', type, contentId, parentId, showCommentId];
 
 	// Fetch comments query
 	const commentsQuery = useQuery({
 		queryKey,
 		queryFn: async () => {
 			const params = new URLSearchParams();
-			if (parentId) params.append("parentId", parentId);
-			if (showCommentId) params.append("showCommentId", showCommentId);
+			if (parentId) params.append('parentId', parentId);
+			if (showCommentId) params.append('showCommentId', showCommentId);
 
 			const response = await axios.get<CommentsResponse>(
-				`/${type}/${contentId}/comments?${params.toString()}`,
+				`/${type}/${contentId}/comments?${params.toString()}`
 			);
 			return response.data;
 		},
@@ -37,25 +37,22 @@ export function useCommentsQuery(
 	// Add comment mutation
 	const addCommentMutation = useMutation({
 		mutationFn: async ({
-												 content,
-												 parentId = null,
-											 }: {
+			content,
+			parentId = null,
+		}: {
 			content: string;
 			parentId?: string | null;
 		}) => {
-			const response = await axios.post(
-				`/${type}/${contentId}/comments`,
-				{
-					body: content,
-					parent_id: parentId,
-				},
-			);
+			const response = await axios.post(`/${type}/${contentId}/comments`, {
+				body: content,
+				parent_id: parentId,
+			});
 			return response.data;
 		},
 		onSuccess: () => {
 			// Invalidate the comments query to refetch
 			queryClient.invalidateQueries({
-				queryKey: ["comments", type, contentId],
+				queryKey: ['comments', type, contentId],
 			});
 		},
 	});
@@ -63,9 +60,9 @@ export function useCommentsQuery(
 	// Edit comment mutation
 	const editCommentMutation = useMutation({
 		mutationFn: async ({
-												 commentId,
-												 content,
-											 }: {
+			commentId,
+			content,
+		}: {
 			commentId: string;
 			content: string;
 		}) => {
@@ -77,7 +74,7 @@ export function useCommentsQuery(
 		onSuccess: () => {
 			// Invalidate the comments query to refetch
 			queryClient.invalidateQueries({
-				queryKey: ["comments", type, contentId],
+				queryKey: ['comments', type, contentId],
 			});
 		},
 	});
@@ -91,7 +88,7 @@ export function useCommentsQuery(
 		onSuccess: () => {
 			// Invalidate the comments query to refetch
 			queryClient.invalidateQueries({
-				queryKey: ["comments", type, contentId],
+				queryKey: ['comments', type, contentId],
 			});
 		},
 	});
@@ -99,10 +96,10 @@ export function useCommentsQuery(
 	// Function to fetch all comments (removing parentId filter)
 	const fetchAllComments = () => {
 		return queryClient.fetchQuery({
-			queryKey: ["comments", type, contentId, null, null],
+			queryKey: ['comments', type, contentId, null, null],
 			queryFn: async () => {
 				const response = await axios.get<CommentsResponse>(
-					`/${type}/${contentId}/comments`,
+					`/${type}/${contentId}/comments`
 				);
 				return response.data;
 			},

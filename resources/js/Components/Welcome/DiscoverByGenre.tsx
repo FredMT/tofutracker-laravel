@@ -74,10 +74,13 @@ export function DiscoverByGenre({
 	const [showImages, setShowImages] = useState(false);
 
 	useEffect(() => {
-		const initialOpacities = Object.keys(genres).reduce((acc, genreId) => {
-			acc[genreId] = 0;
-			return acc;
-		}, {} as Record<string, number>);
+		const initialOpacities = Object.keys(genres).reduce(
+			(acc, genreId) => {
+				acc[genreId] = 0;
+				return acc;
+			},
+			{} as Record<string, number>
+		);
 		setImageOpacities(initialOpacities);
 	}, [genres]);
 

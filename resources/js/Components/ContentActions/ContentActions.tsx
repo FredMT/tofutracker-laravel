@@ -1,27 +1,27 @@
-import { AllContentTypes } from "@/types";
-import { usePage } from "@inertiajs/react";
-import MovieActions from "./components/MovieActions";
-import TvShowActions from "./components/TvShowActions";
-import TvSeasonActions from "./components/TvSeasonActions";
-import AnimeMovieActions from "./components/AnimeMovieActions";
-import AnimeTvActions from "@/Components/ContentActions/components/AnimeTvActions";
-import AnimeSeasonActions from "@/Components/ContentActions/components/AnimeSeasonActions";
+import { AllContentTypes } from '@/types';
+import { usePage } from '@inertiajs/react';
+import MovieActions from './components/MovieActions';
+import TvShowActions from './components/TvShowActions';
+import TvSeasonActions from './components/TvSeasonActions';
+import AnimeMovieActions from './components/AnimeMovieActions';
+import AnimeTvActions from '@/Components/ContentActions/components/AnimeTvActions';
+import AnimeSeasonActions from '@/Components/ContentActions/components/AnimeSeasonActions';
 
 function ContentActions() {
 	const { type } = usePage<{ type: AllContentTypes }>().props;
 
 	switch (type) {
-		case "movie":
+		case 'movie':
 			return <MovieActions />;
-		case "tv":
+		case 'tv':
 			return <TvShowActions />;
-		case "tvseason":
+		case 'tvseason':
 			return <TvSeasonActions />;
-		case "animemovie":
+		case 'animemovie':
 			return <AnimeMovieActions />;
-		case "animetv":
+		case 'animetv':
 			return <AnimeTvActions />;
-		case "animeseason":
+		case 'animeseason':
 			return <AnimeSeasonActions />;
 		default:
 			return null;

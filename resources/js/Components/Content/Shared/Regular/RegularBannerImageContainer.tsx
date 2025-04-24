@@ -1,5 +1,5 @@
-import { BannerImage } from "@/Components/Content/Shared/Regular/BannerImage";
-import { useRegularContentData } from "@/propsHooks/useRegularContentData";
+import { BannerImage } from '@/Components/Content/Shared/Regular/BannerImage';
+import { useRegularContentData } from '@/propsHooks/useRegularContentData';
 
 export function RegularBannerImageContainer() {
 	const data = useRegularContentData();

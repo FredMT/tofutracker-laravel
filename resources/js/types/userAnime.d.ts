@@ -1,4 +1,4 @@
-import { WatchStatus } from "./enums";
+import { WatchStatus } from './enums';
 
 interface Genre {
 	id: number;
@@ -23,7 +23,7 @@ interface AnimeChain {
 	name: string;
 	importance_order: number;
 	entries: AnimeEntry[];
-	type: "chain" | "related";
+	type: 'chain' | 'related';
 }
 
 interface AnimeCollection {
@@ -38,13 +38,12 @@ interface AnimeCollection {
 	watched_episodes: number;
 	total_seasons: number;
 	user_total_seasons: number;
-	tmdb_type: "movie" | "tv";
+	tmdb_type: 'movie' | 'tv';
 	collection_name: string | null;
 	genres: Genre[];
 	seasons: AnimeChain[];
 	movies: AnimeEntry[];
 }
-
 
 interface Filters {
 	status?: string;

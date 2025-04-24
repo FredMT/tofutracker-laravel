@@ -18,7 +18,7 @@ export default function UpdateAvatarForm() {
 
 	const currentAvatar = auth.user.avatar
 		? // ? `${import.meta.env.VITE_DO_URL}/${auth.user.avatar}`
-		  `/storage/${auth.user.avatar}`
+			`/storage/${auth.user.avatar}`
 		: null;
 
 	function submit(e: React.FormEvent) {

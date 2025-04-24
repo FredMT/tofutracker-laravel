@@ -1,7 +1,7 @@
-import { Grid, Group, Switch, Text, Title } from "@mantine/core";
-import { useSpoilerConfiguration } from "@/stores/useSpoilerConfiguration";
-import { useRegularTypes } from "@/propsHooks/useRegularTypes";
-import { useOnlyMovieAndTvShowData } from "@/propsHooks/useOnlyMovieAndTvShowData";
+import { Grid, Group, Switch, Text, Title } from '@mantine/core';
+import { useSpoilerConfiguration } from '@/stores/useSpoilerConfiguration';
+import { useRegularTypes } from '@/propsHooks/useRegularTypes';
+import { useOnlyMovieAndTvShowData } from '@/propsHooks/useOnlyMovieAndTvShowData';
 
 type DetailsField = {
 	key: string;
@@ -12,32 +12,31 @@ export function ContentDetails() {
 	const data = useOnlyMovieAndTvShowData();
 	const type = useRegularTypes();
 
-	const { mustShowSpoilerSwitch, setShowSpoilers } =
-		useSpoilerConfiguration();
+	const { mustShowSpoilerSwitch, setShowSpoilers } = useSpoilerConfiguration();
 
 	const getDetailsFields = (): DetailsField[] => {
 		switch (type) {
-			case "movie":
+			case 'movie':
 				return [
-					{ key: "directors", label: "Director" },
-					{ key: "writers", label: "Writer" },
-					{ key: "screenplays", label: "Screenplay" },
-					{ key: "novels", label: "Novel" },
-					{ key: "original_stories", label: "Original Story" },
-					{ key: "producers", label: "Producer" },
-					{ key: "budget", label: "Budget" },
-					{ key: "revenue", label: "Revenue" },
+					{ key: 'directors', label: 'Director' },
+					{ key: 'writers', label: 'Writer' },
+					{ key: 'screenplays', label: 'Screenplay' },
+					{ key: 'novels', label: 'Novel' },
+					{ key: 'original_stories', label: 'Original Story' },
+					{ key: 'producers', label: 'Producer' },
+					{ key: 'budget', label: 'Budget' },
+					{ key: 'revenue', label: 'Revenue' },
 				];
-			case "tv":
+			case 'tv':
 				return [
-					{ key: "creators", label: "Creators" },
-					{ key: "episodes", label: "Episodes" },
-					{ key: "seasons", label: "Seasons" },
-					{ key: "status", label: "Status" },
-					{ key: "networks", label: "Networks" },
+					{ key: 'creators', label: 'Creators' },
+					{ key: 'episodes', label: 'Episodes' },
+					{ key: 'seasons', label: 'Seasons' },
+					{ key: 'status', label: 'Status' },
+					{ key: 'networks', label: 'Networks' },
 					{
-						key: "production_companies",
-						label: "Production Companies",
+						key: 'production_companies',
+						label: 'Production Companies',
 					},
 				];
 			default:
@@ -46,7 +45,7 @@ export function ContentDetails() {
 	};
 
 	const formatValue = (key: string, value: any): string => {
-		if (key === "budget" || key === "revenue") {
+		if (key === 'budget' || key === 'revenue') {
 			return `$${value.toLocaleString()}`;
 		}
 		return value.toString();
@@ -54,16 +53,18 @@ export function ContentDetails() {
 
 	return (
 		<>
-			<Group justify="space-between">
-				<Title order={3} my={16} style={{ letterSpacing: "0.5px" }}>
+			<Group justify='space-between'>
+				<Title
+					order={3}
+					my={16}
+					style={{ letterSpacing: '0.5px' }}
+				>
 					Details
 				</Title>
 				{mustShowSpoilerSwitch && (
 					<Switch
-						label="Show spoilers"
-						onChange={(event) =>
-							setShowSpoilers(event.currentTarget.checked)
-						}
+						label='Show spoilers'
+						onChange={(event) => setShowSpoilers(event.currentTarget.checked)}
 					/>
 				)}
 			</Group>
@@ -72,7 +73,10 @@ export function ContentDetails() {
 				{getDetailsFields().map(
 					({ key, label }) =>
 						data.details[key as keyof typeof data.details] && (
-							<Grid.Col key={key} span={6}>
+							<Grid.Col
+								key={key}
+								span={6}
+							>
 								<Grid columns={6}>
 									<Grid.Col span={2}>
 										<Text fw={500}>{label}</Text>
@@ -81,15 +85,13 @@ export function ContentDetails() {
 										<Text>
 											{formatValue(
 												key,
-												data.details[
-													key as keyof typeof data.details
-													],
+												data.details[key as keyof typeof data.details]
 											)}
 										</Text>
 									</Grid.Col>
 								</Grid>
 							</Grid.Col>
-						),
+						)
 				)}
 			</Grid>
 		</>

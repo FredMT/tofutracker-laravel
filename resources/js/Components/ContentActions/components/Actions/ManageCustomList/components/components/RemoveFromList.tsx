@@ -1,9 +1,14 @@
-import { AllContentTypes, AnimeContentDataType, FlashMessage, RegularContentDataType } from "@/types";
-import { useForm, usePage } from "@inertiajs/react";
-import { ActionIcon } from "@mantine/core";
-import { Minus } from "lucide-react";
-import { UserList } from "../../types";
-import { notifications } from "@mantine/notifications";
+import {
+	AllContentTypes,
+	AnimeContentDataType,
+	FlashMessage,
+	RegularContentDataType,
+} from '@/types';
+import { useForm, usePage } from '@inertiajs/react';
+import { ActionIcon } from '@mantine/core';
+import { Minus } from 'lucide-react';
+import { UserList } from '../../types';
+import { notifications } from '@mantine/notifications';
 
 type RemoveFromListProps = {
 	list: UserList;
@@ -16,7 +21,7 @@ function RemoveFromList({ list }: RemoveFromListProps) {
 		flash: FlashMessage;
 	}>().props;
 
-	const itemId = ["animemovie", "animetv"].includes(type)
+	const itemId = ['animemovie', 'animetv'].includes(type)
 		? data.map_id
 		: data.id;
 
@@ -25,7 +30,7 @@ function RemoveFromList({ list }: RemoveFromListProps) {
 	const submit = (e: React.FormEvent) => {
 		e.preventDefault();
 		destroy(
-			route("user.lists.items.destroy", {
+			route('user.lists.items.destroy', {
 				list_id: list.id,
 				item_id: itemId,
 				item_type: type,
@@ -37,33 +42,32 @@ function RemoveFromList({ list }: RemoveFromListProps) {
 						if (res.props.flash.success) {
 							notifications.show({
 								message: res.props.flash.message,
-								color: "green",
+								color: 'green',
 							});
 						} else {
 							notifications.show({
 								message: res.props.flash.message,
-								color: "red",
+								color: 'red',
 							});
 						}
 					}
 				},
 				onError: () => {
 					notifications.show({
-						message:
-							"An error occurred while removing item from list",
-						color: "red",
+						message: 'An error occurred while removing item from list',
+						color: 'red',
 					});
 				},
-			},
+			}
 		);
 	};
 
 	return (
 		<form onSubmit={submit}>
 			<ActionIcon
-				variant="subtle"
-				color="red"
-				type="submit"
+				variant='subtle'
+				color='red'
+				type='submit'
 				disabled={processing}
 			>
 				<Minus size={16} />

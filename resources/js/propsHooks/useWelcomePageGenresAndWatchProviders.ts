@@ -1,5 +1,5 @@
-import { useTypedPageProps } from "@/propsHooks/useTypedPageProps";
-import { GenresAndWatchProvidersHomepage } from "@/types/genresandwatchprovidershomepage";
+import { useTypedPageProps } from '@/propsHooks/useTypedPageProps';
+import { GenresAndWatchProvidersHomepage } from '@/types/genresandwatchprovidershomepage';
 
 export function useWelcomePageGenresAndWatchProviders() {
 	const props = useTypedPageProps();

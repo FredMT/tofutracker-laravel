@@ -1,5 +1,5 @@
-import { useTypedPageProps } from "@/propsHooks/useTypedPageProps";
-import { AllContentTypes } from "@/types";
+import { useTypedPageProps } from '@/propsHooks/useTypedPageProps';
+import { AllContentTypes } from '@/types';
 
 export function useAllContentTypes() {
 	const props = useTypedPageProps();

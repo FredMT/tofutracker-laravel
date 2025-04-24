@@ -1,5 +1,5 @@
-import { useTypedPageProps } from "@/propsHooks/useTypedPageProps";
-import { AnimeCollectionsResponse } from "@/Components/AnimeCollection/types/animeCollections";
+import { useTypedPageProps } from '@/propsHooks/useTypedPageProps';
+import { AnimeCollectionsResponse } from '@/Components/AnimeCollection/types/animeCollections';
 
 export function useAnimeCollectionsPageData() {
 	const props = useTypedPageProps();

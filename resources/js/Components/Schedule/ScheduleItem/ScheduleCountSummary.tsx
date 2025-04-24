@@ -1,14 +1,14 @@
-import { formatScheduleCountSummary } from "../utils/formatScheduleCountSummary";
+import { formatScheduleCountSummary } from '../utils/formatScheduleCountSummary';
 
 export interface TypeCounts {
-    tv: number;
-    anime: number;
-    formatted_start_date?: string;
-    formatted_end_date?: string;
+	tv: number;
+	anime: number;
+	formatted_start_date?: string;
+	formatted_end_date?: string;
 }
 
 function ScheduleCountSummary({ counts }: { counts: TypeCounts }) {
-    return formatScheduleCountSummary(counts);
+	return formatScheduleCountSummary(counts);
 }
 
 export default ScheduleCountSummary;

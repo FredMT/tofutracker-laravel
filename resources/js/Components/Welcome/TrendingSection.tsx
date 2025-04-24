@@ -1,21 +1,21 @@
-import ResponsiveContainer from "@/Components/ResponsiveContainer";
-import { Carousel } from "@mantine/carousel";
-import WelcomeCarouselCard from "./WelcomeCarouselCard";
-import WelcomeCustomCarousel from "./WelcomeCustomCarousel";
-import WelcomeCustomCarouselContent from "./WelcomeCustomCarouselContent";
-import { Space } from "@mantine/core";
-import { useTrendingContentData } from "@/propsHooks/useTrendingContentData";
+import ResponsiveContainer from '@/Components/ResponsiveContainer';
+import { Carousel } from '@mantine/carousel';
+import WelcomeCarouselCard from './WelcomeCarouselCard';
+import WelcomeCustomCarousel from './WelcomeCustomCarousel';
+import WelcomeCustomCarouselContent from './WelcomeCustomCarouselContent';
+import { Space } from '@mantine/core';
+import { useTrendingContentData } from '@/propsHooks/useTrendingContentData';
 
 function getContentType(type: string) {
 	switch (type) {
-		case "movie":
-			return "movie";
-		case "tv":
-			return "tv";
-		case "anime":
-			return "anime";
+		case 'movie':
+			return 'movie';
+		case 'tv':
+			return 'tv';
+		case 'anime':
+			return 'anime';
 		default:
-			return "Unknown";
+			return 'Unknown';
 	}
 }
 
@@ -27,7 +27,7 @@ function TrendingSection() {
 
 	return (
 		<ResponsiveContainer>
-			<WelcomeCustomCarousel slideSize="200px">
+			<WelcomeCustomCarousel slideSize='200px'>
 				{allContent.map((content) => (
 					<Carousel.Slide key={`${content.type}-${content.link}`}>
 						<WelcomeCarouselCard
@@ -41,11 +41,11 @@ function TrendingSection() {
 				))}
 			</WelcomeCustomCarousel>
 
-			<Space h="60px" />
+			<Space h='60px' />
 
 			<WelcomeCustomCarouselContent
-				title="Top 10"
-				slideSize="200px"
+				title='Top 10'
+				slideSize='200px'
 				movies={data.movies}
 				tvShows={data.tv_shows}
 				anime={data.anime}

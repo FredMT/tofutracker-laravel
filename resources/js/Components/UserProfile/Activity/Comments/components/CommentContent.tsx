@@ -140,8 +140,8 @@ export function CommentContent({
 					isDeleted
 						? undefined
 						: avatar
-						? `/storage/${avatar}`
-						: `https://api.dicebear.com/9.x/open-peeps/svg?seed=tofutracker-${author}`
+							? `/storage/${avatar}`
+							: `https://api.dicebear.com/9.x/open-peeps/svg?seed=tofutracker-${author}`
 				}
 				alt={isDeleted ? 'Deleted user' : `${author ?? 'Anonymous'}'s avatar`}
 				radius='xl'
@@ -174,7 +174,7 @@ export function CommentContent({
 								fs={isDeleted ? 'italic' : 'normal'}
 								c={isDeleted ? 'dimmed' : 'inherit'}
 							>
-								{isDeleted ? '[removed]' : author ?? '[removed]'}
+								{isDeleted ? '[removed]' : (author ?? '[removed]')}
 							</Text>
 							<Text
 								span

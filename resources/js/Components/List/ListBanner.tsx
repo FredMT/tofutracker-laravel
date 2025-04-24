@@ -50,7 +50,7 @@ export function ListBanner({
 		(bannerImage
 			? bannerType === 'custom'
 				? // ? `https://images.tofutracker.com/${bannerImage}`
-				  `/${bannerImage}`
+					`/${bannerImage}`
 				: `https://image.tmdb.org/t/p/w780${bannerImage}`
 			: null);
 

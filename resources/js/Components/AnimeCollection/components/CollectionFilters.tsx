@@ -1,9 +1,12 @@
-import { Box, Button, Flex, rem, Select } from "@mantine/core";
-import { PER_PAGE_OPTIONS, useAnimeCollectionStore } from "@/Components/AnimeCollection/store/animeCollectionStore";
-import { useEffect, useState } from "react";
-import { SearchComponent } from "@/Components/AnimeCollection/components/SearchComponent";
-import { SortingControls } from "@/Components/AnimeCollection/components/SortingControls";
-import { ToggleSortDirection } from "@/Components/AnimeCollection/components/ToggleSortDirection";
+import { Box, Button, Flex, rem, Select } from '@mantine/core';
+import {
+	PER_PAGE_OPTIONS,
+	useAnimeCollectionStore,
+} from '@/Components/AnimeCollection/store/animeCollectionStore';
+import { useEffect, useState } from 'react';
+import { SearchComponent } from '@/Components/AnimeCollection/components/SearchComponent';
+import { SortingControls } from '@/Components/AnimeCollection/components/SortingControls';
+import { ToggleSortDirection } from '@/Components/AnimeCollection/components/ToggleSortDirection';
 
 export function CollectionFilters() {
 	const {
@@ -33,7 +36,7 @@ export function CollectionFilters() {
 	};
 
 	const toggleSortDirection = () => {
-		setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+		setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
 		applyFilters();
 	};
 
@@ -54,29 +57,38 @@ export function CollectionFilters() {
 	const handleReset = () => {
 		if (hasActiveFilters()) {
 			resetFilters();
-			setLocalSearch("");
+			setLocalSearch('');
 		}
 	};
 
 	const filtersActive = hasActiveFilters();
 
 	return (
-		<Box mb="md">
+		<Box mb='md'>
 			<Flex
-				gap="md"
-				direction={{ base: "column", sm: "row" }}
-				align={{ sm: "flex-end" }}
+				gap='md'
+				direction={{ base: 'column', sm: 'row' }}
+				align={{ sm: 'flex-end' }}
 			>
-				<SearchComponent onSubmit={handleSearchSubmit} value={localSearch} onChange={(e) =>
-					setLocalSearch(e.currentTarget.value)} />
+				<SearchComponent
+					onSubmit={handleSearchSubmit}
+					value={localSearch}
+					onChange={(e) => setLocalSearch(e.currentTarget.value)}
+				/>
 
-				<SortingControls value={sortField} onChange={handleSortFieldChange} />
+				<SortingControls
+					value={sortField}
+					onChange={handleSortFieldChange}
+				/>
 
-				<ToggleSortDirection onClick={toggleSortDirection} sortDirection={sortDirection} />
+				<ToggleSortDirection
+					onClick={toggleSortDirection}
+					sortDirection={sortDirection}
+				/>
 
 				<Box style={{ minWidth: rem(100) }}>
 					<Select
-						label="Items per page"
+						label='Items per page'
 						value={String(perPage)}
 						onChange={handlePerPageChange}
 						data={PER_PAGE_OPTIONS.map((option) => ({
@@ -87,8 +99,8 @@ export function CollectionFilters() {
 				</Box>
 
 				<Button
-					variant="subtle"
-					color="gray"
+					variant='subtle'
+					color='gray'
 					onClick={handleReset}
 					disabled={!filtersActive}
 				>

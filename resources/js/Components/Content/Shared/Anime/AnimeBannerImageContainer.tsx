@@ -1,9 +1,9 @@
-import { BannerImage } from "@/Components/Content/Shared/Regular/BannerImage";
-import { usePage } from "@inertiajs/react";
-import { AnimeSeason } from "@/types/animeseason";
-import { Anime } from "@/types/anime";
-import { AnimeType } from "@/types";
-import { useAnimeContentData } from "@/propsHooks/useAnimeContentData";
+import { BannerImage } from '@/Components/Content/Shared/Regular/BannerImage';
+import { usePage } from '@inertiajs/react';
+import { AnimeSeason } from '@/types/animeseason';
+import { Anime } from '@/types/anime';
+import { AnimeType } from '@/types';
+import { useAnimeContentData } from '@/propsHooks/useAnimeContentData';
 
 export function AnimeBannerImageContainer() {
 	const { type } = usePage<{
@@ -12,7 +12,7 @@ export function AnimeBannerImageContainer() {
 
 	let data = useAnimeContentData();
 
-	if (type === "animeseason") {
+	if (type === 'animeseason') {
 		data = data as AnimeSeason;
 		return (
 			<BannerImage
@@ -25,7 +25,7 @@ export function AnimeBannerImageContainer() {
 		);
 	}
 
-	if (type === "animetv" || type === "animemovie") {
+	if (type === 'animetv' || type === 'animemovie') {
 		data = data as Anime;
 		return (
 			<BannerImage

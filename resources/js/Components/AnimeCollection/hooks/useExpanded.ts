@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState } from 'react';
 
 export function useExpanded() {
-	const [expandedCollectionIds, setExpandedCollectionIds] = useState<
-		number[]
-	>([]);
+	const [expandedCollectionIds, setExpandedCollectionIds] = useState<number[]>(
+		[]
+	);
 	const [expandedChainIds, setExpandedChainIds] = useState<number[]>([]);
 
 	return {
@@ -11,8 +11,7 @@ export function useExpanded() {
 		setExpandedCollectionIds,
 		expandedChainIds,
 		setExpandedChainIds,
-		isCollectionExpanded: (id: number) =>
-			expandedCollectionIds.includes(id),
+		isCollectionExpanded: (id: number) => expandedCollectionIds.includes(id),
 		isChainExpanded: (id: number) => expandedChainIds.includes(id),
 	};
 }

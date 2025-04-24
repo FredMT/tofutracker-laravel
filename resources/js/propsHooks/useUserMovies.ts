@@ -1,5 +1,5 @@
-import { useTypedPageProps } from "@/propsHooks/useTypedPageProps";
-import { Movies } from "@/types/userMovies";
+import { useTypedPageProps } from '@/propsHooks/useTypedPageProps';
+import { Movies } from '@/types/userMovies';
 
 export function useUserMovies() {
 	const props = useTypedPageProps();

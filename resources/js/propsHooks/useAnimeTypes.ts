@@ -1,5 +1,5 @@
-import { useTypedPageProps } from "@/propsHooks/useTypedPageProps";
-import { AnimeType } from "@/types";
+import { useTypedPageProps } from '@/propsHooks/useTypedPageProps';
+import { AnimeType } from '@/types';
 
 export function useAnimeTypes() {
 	const props = useTypedPageProps();

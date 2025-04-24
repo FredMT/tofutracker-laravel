@@ -1,20 +1,23 @@
-import { Box, Text } from "@mantine/core";
-import { AnimeRelatedEntry } from "../types/animeCollections";
-import { formatPosterUrl } from "../utils/animeUtils";
-import classes from "../AnimeCollectionTable.module.css";
-import { ActionButtons } from "./ActionButtons";
+import { Box, Text } from '@mantine/core';
+import { AnimeRelatedEntry } from '../types/animeCollections';
+import { formatPosterUrl } from '../utils/animeUtils';
+import classes from '../AnimeCollectionTable.module.css';
+import { ActionButtons } from './ActionButtons';
 
 export function RelatedEntryRow() {
 	const columns = [
 		{
-			accessor: "title",
-			title: "Anime",
+			accessor: 'title',
+			title: 'Anime',
 			render: ({
-								 title,
-								 anidb_poster,
-								 related_entry_id,
-							 }: AnimeRelatedEntry) => (
-				<Box ml={20} className={classes.titleCell}>
+				title,
+				anidb_poster,
+				related_entry_id,
+			}: AnimeRelatedEntry) => (
+				<Box
+					ml={20}
+					className={classes.titleCell}
+				>
 					<img
 						src={formatPosterUrl(anidb_poster, false)}
 						alt={title}
@@ -22,7 +25,10 @@ export function RelatedEntryRow() {
 					/>
 					<Text>
 						{title}
-						<Text span c="dimmed">
+						<Text
+							span
+							c='dimmed'
+						>
 							{` id: ${related_entry_id}`}
 						</Text>
 					</Text>
@@ -30,14 +36,14 @@ export function RelatedEntryRow() {
 			),
 		},
 		{
-			accessor: "actions",
-			title: "Actions",
+			accessor: 'actions',
+			title: 'Actions',
 			width: 150,
 			render: ({ anime_id, map_id }: AnimeRelatedEntry) => (
 				<ActionButtons
 					visitUrl={`/anime/${map_id}/season/${anime_id}`}
 					itemId={anime_id}
-					itemType="related"
+					itemType='related'
 				/>
 			),
 		},

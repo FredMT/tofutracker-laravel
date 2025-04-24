@@ -58,8 +58,8 @@ export function CommentItem({
 		setReplyTarget({
 			commentId: comment.id,
 			username: replyComment
-				? replyComment.author ?? '[removed]'
-				: comment.author ?? '[removed]',
+				? (replyComment.author ?? '[removed]')
+				: (comment.author ?? '[removed]'),
 		});
 	};
 

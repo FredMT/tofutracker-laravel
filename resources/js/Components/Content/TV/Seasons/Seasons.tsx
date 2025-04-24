@@ -1,7 +1,7 @@
-import { usePage } from "@inertiajs/react";
-import AnimeSeasons from "./AnimeSeasons";
-import RegularSeasons from "./RegularSeasons";
-import { AllContentTypes } from "@/types";
+import { usePage } from '@inertiajs/react';
+import AnimeSeasons from './AnimeSeasons';
+import RegularSeasons from './RegularSeasons';
+import { AllContentTypes } from '@/types';
 
 interface SeasonsProps {
 	containerWidth: number;
@@ -9,13 +9,12 @@ interface SeasonsProps {
 }
 
 export default function Seasons({
-																	containerWidth,
-																	slideSize = "0%",
-																}: SeasonsProps) {
-
+	containerWidth,
+	slideSize = '0%',
+}: SeasonsProps) {
 	const { type } = usePage<{ type: AllContentTypes }>().props;
 
-	if (type === "tv") {
+	if (type === 'tv') {
 		return (
 			<RegularSeasons
 				containerWidth={containerWidth}
@@ -24,7 +23,7 @@ export default function Seasons({
 		);
 	}
 
-	if (type === "animetv") {
+	if (type === 'animetv') {
 		return (
 			<AnimeSeasons
 				containerWidth={containerWidth}

@@ -1,5 +1,5 @@
-import { useTypedPageProps } from "@/propsHooks/useTypedPageProps";
-import { UserData } from "@/types/userData";
+import { useTypedPageProps } from '@/propsHooks/useTypedPageProps';
+import { UserData } from '@/types/userData';
 
 export function useUserData() {
 	const props = useTypedPageProps();

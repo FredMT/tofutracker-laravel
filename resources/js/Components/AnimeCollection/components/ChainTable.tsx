@@ -1,8 +1,8 @@
-import React, { Dispatch, SetStateAction } from "react";
-import { Table } from "@mantine/core";
-import { AnimeCollectionChain } from "../types/animeCollections";
-import { ChainRow } from "./ChainRow";
-import { EntryTable } from "./EntryTable";
+import React, { Dispatch, SetStateAction } from 'react';
+import { Table } from '@mantine/core';
+import { AnimeCollectionChain } from '../types/animeCollections';
+import { ChainRow } from './ChainRow';
+import { EntryTable } from './EntryTable';
 
 interface TableColumn {
 	accessor: string;
@@ -18,10 +18,10 @@ interface ChainTableProps {
 }
 
 export function ChainTable({
-														 chains,
-														 expandedChainIds,
-														 setExpandedChainIds,
-													 }: ChainTableProps) {
+	chains,
+	expandedChainIds,
+	setExpandedChainIds,
+}: ChainTableProps) {
 	if (chains.length === 0) return null;
 
 	const { columns } = ChainRow({ expandedChainIds });
@@ -30,12 +30,16 @@ export function ChainTable({
 		setExpandedChainIds((current) =>
 			current.includes(id)
 				? current.filter((chainId) => chainId !== id)
-				: [...current, id],
+				: [...current, id]
 		);
 	};
 
 	return (
-		<Table withColumnBorders withTableBorder tabularNums>
+		<Table
+			withColumnBorders
+			withTableBorder
+			tabularNums
+		>
 			<Table.Thead>
 				<Table.Tr>
 					{columns.map((column) => (
@@ -44,7 +48,7 @@ export function ChainTable({
 							style={{
 								width: (column as TableColumn).width
 									? `${(column as TableColumn).width}px`
-									: "auto",
+									: 'auto',
 							}}
 						>
 							{column.title}
@@ -58,21 +62,20 @@ export function ChainTable({
 						<Table.Tr
 							key={chain.id}
 							onClick={() => toggleRowExpansion(chain.id)}
-							style={{ cursor: "pointer" }}
+							style={{ cursor: 'pointer' }}
 						>
 							{columns.map((column) => (
-								<Table.Td
-									key={`${chain.id}-${column.accessor}`}
-								>
-									{column.render
-										? column.render(chain)
-										: null}
+								<Table.Td key={`${chain.id}-${column.accessor}`}>
+									{column.render ? column.render(chain) : null}
 								</Table.Td>
 							))}
 						</Table.Tr>
 						{expandedChainIds.includes(chain.id) && (
 							<Table.Tr key={`expanded-${chain.id}`}>
-								<Table.Td colSpan={columns.length} p={0}>
+								<Table.Td
+									colSpan={columns.length}
+									p={0}
+								>
 									<EntryTable entries={chain.entries} />
 								</Table.Td>
 							</Table.Tr>

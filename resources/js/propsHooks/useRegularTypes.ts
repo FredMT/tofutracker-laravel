@@ -1,5 +1,5 @@
-import { useTypedPageProps } from "@/propsHooks/useTypedPageProps";
-import { RegularType } from "@/types";
+import { useTypedPageProps } from '@/propsHooks/useTypedPageProps';
+import { RegularType } from '@/types';
 
 export function useRegularTypes() {
 	const props = useTypedPageProps();
