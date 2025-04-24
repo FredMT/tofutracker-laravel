@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Kiritokatklian\LaravelColorPalette\Facades\ColorPalette;
 
 class AnimeMap extends Model
 {
@@ -143,28 +142,5 @@ class AnimeMap extends Model
         return Attribute::get(function () {
             return $this->getTmdbModel()?->trailer;
         });
-    }
-
-    public function getColorPalette()
-    {
-        $cacheKey = 'anime_map.'.$this->id.'.color_palette';
-        $cacheTTL = seconds_until('first sunday next month at 8 am');
-
-        if (cache()->has($cacheKey)) {
-            return cache()->get($cacheKey);
-        }
-
-        $backdrop = $this->backdrop;
-
-        if (empty($backdrop)) {
-            return null;
-        } else {
-            $backdrop = 'https://image.tmdb.org/t/p/original'.$backdrop;
-        }
-
-        $colorPalette = ColorPalette::getPalette($backdrop);
-        cache()->put($cacheKey, $colorPalette, $cacheTTL);
-
-        return $colorPalette;
     }
 }

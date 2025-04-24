@@ -1,8 +1,7 @@
-import { Deferred } from '@inertiajs/react';
 import { useAnimesPageTrailers } from '@/propsHooks/useAnimesPageTrailers';
-import { TrailerSkeleton } from './TrailerSkeleton';
-import { Title } from '@mantine/core';
+import { Deferred } from '@inertiajs/react';
 import TrailerList from './TrailerList';
+import { TrailerSkeleton } from './TrailerSkeleton';
 
 const TrailerSection = () => {
 	const trailers = useAnimesPageTrailers();

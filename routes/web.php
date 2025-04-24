@@ -20,6 +20,7 @@ use App\Http\Controllers\List\ListUpdateOrderController;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\MoviesController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PeopleController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\Search\QuickSearchController;
@@ -262,6 +263,10 @@ Route::prefix('anime')->name('anime.')->controller(AnimesController::class)->gro
 
 Route::prefix('movies')->name('movies.')->controller(MoviesController::class)->group(function () {
     Route::get('/', 'index')->name('index');
+});
+
+Route::prefix('people')->name('people.')->controller(PeopleController::class)->group(function () {
+    Route::get('/{id}', 'show')->name('show');
 });
 
 require __DIR__.'/auth.php';

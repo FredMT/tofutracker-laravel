@@ -62,10 +62,8 @@ class AnimeSeasonController extends Controller
             ];
 
             $processedData['countdown'] = $this->getCountdown($seasonId);
-            $navbar_color = $anime->getColorPalette();
 
             return Inertia::render('AnimeSeasonContent', [
-                'navbar_color' => $navbar_color,
                 'data' => $processedData,
                 'user_library' => $userContent['library'],
                 'user_lists' => $userContent['lists'],

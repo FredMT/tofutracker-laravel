@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Actions\Controller\Anime\AnimeControllerAction;
 use App\Models\Anidb\AnidbAnime;
-use App\Models\Anime\AnimeMap;
 use App\Models\AnimeSchedule;
 use App\Models\AnimeScheduleMap;
 use App\Repositories\Anime\AnimeControllerRepository;
@@ -77,13 +76,10 @@ class AnimeController extends Controller
             // Get countdown value
             $countdown = $this->getCountdown($accessId);
 
-            $color = AnimeMap::find($accessId)->getColorPalette();
-
             // Prepare and return response
             return Inertia::render(
                 'AnimeContent',
                 [
-                    'navbar_color' => $color,
                     'type' => $animeData['type'],
                     'data' => [
                         'tmdbData' => json_decode($animeData['tmdbData']->getContent(), true),

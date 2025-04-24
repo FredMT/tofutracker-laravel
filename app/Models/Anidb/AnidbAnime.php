@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Kiritokatklian\LaravelColorPalette\Facades\ColorPalette;
 use Znck\Eloquent\Relations\BelongsToThrough;
 
 class AnidbAnime extends Model
@@ -267,29 +266,6 @@ class AnidbAnime extends Model
 
             return [];
         }
-    }
-
-    public function getColorPalette()
-    {
-        $cacheKey = "anime_map.{$this->map}.color_palette";
-        $cacheTTL = seconds_until('first sunday next month at 8 am');
-
-        if (cache()->has($cacheKey)) {
-            return cache()->get($cacheKey);
-        }
-
-        $backdrop = AnimeMap::find($this->map_id)->backdrop;
-
-        if (empty($backdrop)) {
-            return null;
-        } else {
-            $backdrop = 'https://image.tmdb.org/t/p/original'.$backdrop;
-        }
-
-        $colorPalette = ColorPalette::getPalette($backdrop);
-        cache()->put($cacheKey, $colorPalette, $cacheTTL);
-
-        return $colorPalette;
     }
 
     public function logo(): Attribute

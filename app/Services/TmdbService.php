@@ -670,4 +670,25 @@ class TmdbService
             }
         });
     }
+
+    public function getPersonDetails(int $personId): array
+    {
+        try {
+            $response = $this->client->get("/person/{$personId}", [
+                'append_to_response' => 'external_ids,movie_credits,tv_credits',
+                'language' => 'en-US',
+            ]);
+
+            if (! $response->successful()) {
+                throw new \Exception("TMDB person details request failed for ID: {$personId}");
+            }
+
+            return $response->json();
+        } catch (\Exception $e) {
+            logger()->error('TMDB Person Details API error: '.$e->getMessage(), [
+                'person_id' => $personId,
+            ]);
+            throw $e;
+        }
+    }
 }

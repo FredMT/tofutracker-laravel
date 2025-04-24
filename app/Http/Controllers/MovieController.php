@@ -11,7 +11,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 use Inertia\Response;
-use Kiritokatklian\LaravelColorPalette\Facades\ColorPalette;
 
 class MovieController extends Controller
 {
@@ -26,7 +25,6 @@ class MovieController extends Controller
         $userLibraryData = null;
         $userLists = null;
         $existingMovie = Movie::find($id);
-        $color = $this->getColorPalette($id);
         $comments = $this->commentController->index($request, 'movie', $id);
 
         $user = null;
@@ -62,7 +60,6 @@ class MovieController extends Controller
         if (Cache::has($cacheKey)) {
             return Inertia::render('Movie', [
                 'data' => Cache::get($cacheKey),
-                'navbar_color' => $color,
                 'type' => 'movie',
                 'user_library' => $userLibraryData,
                 'user_lists' => $userLists,
@@ -77,7 +74,6 @@ class MovieController extends Controller
             }
 
             return Inertia::render('Movie', [
-                'navbar_color' => $color,
                 'data' => $existingMovie->filteredData,
                 'type' => 'movie',
                 'user_library' => $userLibraryData,
@@ -92,10 +88,7 @@ class MovieController extends Controller
         $movie = Movie::find($id);
         Cache::put($cacheKey, $movie->filteredData, now()->addHours(6));
 
-        $color = $movie->getColorPalette();
-
         return Inertia::render('Movie', [
-            'navbar_color' => $color,
             'data' => Cache::get($cacheKey),
             'type' => 'movie',
             'user_library' => $userLibraryData,
@@ -127,27 +120,5 @@ class MovieController extends Controller
             'data' => $movieData,
             'etag' => $etag,
         ]);
-    }
-
-    private function getColorPalette(string $id)
-    {
-        $cacheKey = "movie.{$id}.color_palette";
-        if (cache()->has($cacheKey)) {
-            return cache()->get($cacheKey);
-        }
-
-        $backdropPath = Movie::selectRaw('data->\'backdrop_path\' as backdrop_path')->where('id', $id)->value('backdrop_path');
-
-        if (! $backdropPath) {
-            return null;
-        }
-
-        $cacheTTL = seconds_until('first sunday next month at 8 am');
-
-        $imageUrl = 'https://image.tmdb.org/t/p/original'.ltrim($backdropPath, '"');
-        $colorPalette = ColorPalette::getPalette($imageUrl);
-        cache()->put($cacheKey, $colorPalette, $cacheTTL);
-
-        return $colorPalette;
     }
 }

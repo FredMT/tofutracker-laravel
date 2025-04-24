@@ -9,7 +9,6 @@ use App\Services\TmdbService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use Kiritokatklian\LaravelColorPalette\Facades\ColorPalette;
 
 class TvController extends Controller
 {
@@ -78,10 +77,7 @@ class TvController extends Controller
             }
         }
 
-        $navbar_color = $this->getColorPalette($id);
-
         return Inertia::render('TV', [
-            'navbar_color' => $navbar_color,
             'data' => $tvShowData,
             'comments' => $comments,
             'type' => 'tv',
@@ -89,27 +85,5 @@ class TvController extends Controller
             'user_lists' => $userData['user_lists'],
             'configuration' => $userData['configuration'],
         ]);
-    }
-
-    private function getColorPalette(string $id)
-    {
-        $cacheKey = "tv.{$id}.color_palette";
-        if (cache()->has($cacheKey)) {
-            return cache()->get($cacheKey);
-        }
-
-        $backdropPath = TvShow::selectRaw('data->\'backdrop_path\' as backdrop_path')->where('id', $id)->value('backdrop_path');
-
-        if (! $backdropPath) {
-            return null;
-        }
-
-        $cacheTTL = seconds_until('first sunday next month at 8 am');
-
-        $imageUrl = 'https://image.tmdb.org/t/p/original'.ltrim($backdropPath, '"');
-        $colorPalette = ColorPalette::getPalette($imageUrl);
-        cache()->put($cacheKey, $colorPalette, $cacheTTL);
-
-        return $colorPalette;
     }
 }
