@@ -1,5 +1,7 @@
 import { AnimePerson, TmdbPerson } from '@/types';
+import { Link } from '@inertiajs/react';
 import { Card, Image, Skeleton, Stack, Text, Tooltip } from '@mantine/core';
+import styles from './PersonCard.module.css';
 
 interface PersonCardProps {
 	person: TmdbPerson | AnimePerson;
@@ -65,18 +67,25 @@ function PersonCard({
 					gap={8}
 					mt={12}
 				>
-					<Tooltip
-						label={person.name}
-						openDelay={150}
+					<Link
+						href={`/people/${person.id}`}
+						prefetch
+						className={styles.linkWrapper}
 					>
-						<Text
-							fw={600}
-							size='sm'
-							lineClamp={1}
+						<Tooltip
+							label={person.name}
+							openDelay={150}
 						>
-							{person.name}
-						</Text>
-					</Tooltip>
+							<Text
+								fw={600}
+								size='sm'
+								lineClamp={1}
+								className={styles.personName}
+							>
+								{person.name}
+							</Text>
+						</Tooltip>
+					</Link>
 					{hideCharacterName && type === 'cast' ? (
 						<Skeleton h={8} />
 					) : (

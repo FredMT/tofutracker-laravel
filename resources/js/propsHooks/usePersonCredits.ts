@@ -1,6 +1,6 @@
 import { useTypedPageProps } from '@/propsHooks/useTypedPageProps';
 
-interface PersonMovieCast {
+export type PersonMovieCast = {
 	backdrop_path: string | null;
 	character: string;
 	id: number;
@@ -11,9 +11,9 @@ interface PersonMovieCast {
 	rating: number;
 	vote_count: number;
 	priority: number;
-}
+};
 
-type PersonTvCrew = {
+export type PersonTvCrew = {
 	backdrop_path: string | null;
 	department: string;
 	job: string;
@@ -27,7 +27,7 @@ type PersonTvCrew = {
 	priority: number;
 };
 
-type PersonTvCast = {
+export type PersonTvCast = {
 	backdrop_path: string | null;
 	character: string;
 	id: number;
@@ -40,7 +40,7 @@ type PersonTvCast = {
 	priority: number;
 };
 
-type PersonMovieCrew = {
+export type PersonMovieCrew = {
 	backdrop_path: string | null;
 	department: string;
 	job: string;

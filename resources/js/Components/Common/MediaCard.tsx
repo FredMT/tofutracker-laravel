@@ -1,4 +1,4 @@
-import { AspectRatio } from '@mantine/core';
+import { AspectRatio, Image } from '@mantine/core';
 import { Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link } from '@inertiajs/react';
@@ -36,10 +36,12 @@ const MediaCard = ({ media }: { media: MediaItemProps }) => {
 					className='h-full'
 				>
 					<div className='group relative h-full overflow-hidden rounded-lg'>
-						<img
+						<Image
+							unstyled
 							src={`https://image.tmdb.org/t/p/w300${media.poster}`}
 							alt={media.title}
 							className='h-full w-full object-cover transition-transform duration-700 group-hover:scale-110'
+							fallbackSrc={`https://placehold.co/300x450?text=${media.title}`}
 						/>
 
 						<div className='absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300' />

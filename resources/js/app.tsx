@@ -14,6 +14,7 @@ import { MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import theme from '@/styles/theme';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import ThemeSync from './Components/ThemeSync';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 // Create a client
@@ -41,6 +42,7 @@ createInertiaApp({
 					theme={theme}
 					defaultColorScheme='dark'
 				>
+					<ThemeSync />
 					<QueryClientProvider client={queryClient}>
 						<Notifications />
 						<App {...props} />
@@ -56,6 +58,7 @@ createInertiaApp({
 				theme={theme}
 				defaultColorScheme='dark'
 			>
+				<ThemeSync />
 				<QueryClientProvider client={queryClient}>
 					<Notifications autoClose={7000} />
 					<App {...props} />

@@ -8,7 +8,7 @@ import {
 	useCombobox,
 } from '@mantine/core';
 import { ArrowRight, Rocket, Search, SearchCheck } from 'lucide-react';
-import { Link, usePage } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import { useDebouncedValue } from '@mantine/hooks';
 import styles from './SearchBar.module.css';
 import SearchResultItem from './SearchResultItem';
@@ -69,10 +69,38 @@ export default function SearchBar() {
 		fetchResults(debouncedValue);
 	}, [debouncedValue]);
 
+	const navigateToResult = (optionValue: string) => {
+		if (optionValue === 'view_all') {
+			router.visit(route('search', value ? { q: value } : {}));
+			return;
+		}
+
+		const selectedResult = results.find(
+			(result) => result.title === optionValue
+		);
+		if (selectedResult) {
+			router.visit(
+				route(`${selectedResult.media_type}.show`, { id: selectedResult.id })
+			);
+		}
+	};
+
+	const handleKeyDown = (event: React.KeyboardEvent) => {
+		if (event.key === 'Enter' && combobox.dropdownOpened) {
+			event.preventDefault();
+			if (combobox.selectedOptionIndex >= 0) {
+				combobox.clickSelectedOption();
+			}
+		}
+	};
+
 	const options = results.map((result) => (
 		<Combobox.Option
 			value={result.title}
 			key={result.id}
+			onClick={() => {
+				navigateToResult(result.title);
+			}}
 		>
 			<Link
 				href={route(`${result.media_type}.show`, { id: result.id })}
@@ -117,6 +145,7 @@ export default function SearchBar() {
 							fetchResults(value);
 						}
 					}}
+					onKeyDown={handleKeyDown}
 					size='sm'
 					w={300}
 					classNames={{
@@ -125,7 +154,7 @@ export default function SearchBar() {
 				/>
 			</Combobox.Target>
 
-			<Combobox.Dropdown>
+			<Combobox.Dropdown miw={350}>
 				<Combobox.Options>
 					{options}
 					{!loading && results.length === 0 && !value && (
@@ -173,7 +202,12 @@ export default function SearchBar() {
 						<Combobox.Empty>No results found</Combobox.Empty>
 					)}
 					{value && (
-						<Combobox.Option value='view_all'>
+						<Combobox.Option
+							value='view_all'
+							onClick={() => {
+								router.visit(route('search', { q: value }));
+							}}
+						>
 							<Link
 								href={route('search', { q: value })}
 								style={{
