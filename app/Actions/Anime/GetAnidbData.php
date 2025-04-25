@@ -96,7 +96,8 @@ class GetAnidbData
                             'anidb_seiyuus.id',
                             'anidb_seiyuus.seiyuu_id',
                             'anidb_seiyuus.name',
-                            'anidb_seiyuus.picture'
+                            'anidb_seiyuus.picture',
+                            'anidb_seiyuus.tmdb_id'
                         );
                 }])
                 ->get();
@@ -113,7 +114,8 @@ class GetAnidbData
                             'anidb_seiyuus.id',
                             'anidb_seiyuus.seiyuu_id',
                             'anidb_seiyuus.name',
-                            'anidb_seiyuus.picture'
+                            'anidb_seiyuus.picture',
+                            'anidb_seiyuus.tmdb_id'
                         );
                 }])
                 ->get();
@@ -158,7 +160,7 @@ class GetAnidbData
                         ->join(', ');
 
                     return [
-                        'id' => $seiyuu->tmdb_id ?? null,
+                        'id' => $seiyuu->tmdb_id,
                         'name' => $seiyuu->name,
                         'picture' => "https://anidb.net/images/main/{$seiyuu->picture}",
                         'characters' => $characterNames,

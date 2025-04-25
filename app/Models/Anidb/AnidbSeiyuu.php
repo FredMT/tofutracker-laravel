@@ -18,6 +18,7 @@ class AnidbSeiyuu extends Model
         'seiyuu_id',
         'name',
         'picture',
+        'tmdb_id',
     ];
 
     public function characters(): BelongsToMany
