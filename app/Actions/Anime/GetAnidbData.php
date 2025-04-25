@@ -158,7 +158,7 @@ class GetAnidbData
                         ->join(', ');
 
                     return [
-                        'id' => $seiyuu->seiyuu_id,
+                        'id' => $seiyuu->tmdb_id ?? null,
                         'name' => $seiyuu->name,
                         'picture' => "https://anidb.net/images/main/{$seiyuu->picture}",
                         'characters' => $characterNames,

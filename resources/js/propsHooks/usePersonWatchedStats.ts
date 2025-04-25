@@ -9,6 +9,11 @@ export type PersonWatchedStats = {
 		total: number;
 		watched_ids: number[] | null;
 	};
+	anime: {
+		watched: number;
+		total: number;
+		watched_ids: number[] | null;
+	};
 };
 
 import { useTypedPageProps } from './useTypedPageProps';
@@ -19,7 +24,7 @@ export function usePersonWatchedStats() {
 }
 
 export function isMediaWatched(
-	mediaType: 'movie' | 'tv',
+	mediaType: 'movie' | 'tv' | 'anime',
 	mediaId: number,
 	watchedStats: PersonWatchedStats
 ) {
@@ -29,6 +34,8 @@ export function isMediaWatched(
 		return watchedStats.movies.watched_ids?.includes(mediaId) || false;
 	} else if (mediaType === 'tv') {
 		return watchedStats.shows.watched_ids?.includes(mediaId) || false;
+	} else if (mediaType === 'anime') {
+		return watchedStats.anime.watched_ids?.includes(mediaId) || false;
 	}
 
 	return false;

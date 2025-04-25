@@ -15,9 +15,10 @@ export default function PersonSidebar({ onTabChange }: PersonSidebarProps) {
 		activeTab: state.activeTab,
 		movieCreditsCount: state.uniqueMovieCreditsCount,
 		tvCreditsCount: state.uniqueTvCreditsCount,
+		animeCreditsCount: state.uniqueAnimeCreditsCount,
 	}));
 
-	const { hasMovieCredits, hasTvCredits } = useHasCredits();
+	const { hasMovieCredits, hasTvCredits, hasAnimeCredits } = useHasCredits();
 
 	return (
 		<Box className='hidden md:block w-64 mr-8 flex-shrink-0'>
@@ -65,6 +66,17 @@ export default function PersonSidebar({ onTabChange }: PersonSidebarProps) {
 								onClick={() => onTabChange('tv')}
 							>
 								TV Shows ({personData.tvCreditsCount})
+							</Button>
+						)}
+
+						{hasAnimeCredits && (
+							<Button
+								variant={personData.activeTab === 'anime' ? 'light' : 'subtle'}
+								color={personData.activeTab === 'anime' ? 'grape' : 'gray'}
+								fullWidth
+								onClick={() => onTabChange('anime')}
+							>
+								Anime ({personData.animeCreditsCount})
 							</Button>
 						)}
 					</Stack>

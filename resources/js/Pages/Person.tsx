@@ -7,7 +7,8 @@ import { PersonContent } from '@/Components/Person/PersonContent';
 
 function Person() {
 	const personDetails = usePersonDetails();
-	const { movie_cast, movie_crew, tv_cast, tv_crew } = usePersonCredits();
+	const { movie_cast, movie_crew, tv_cast, tv_crew, anime_cast, anime_crew } =
+		usePersonCredits();
 	const external_ids = usePersonExternalIds();
 
 	const initialStoreProps = {
@@ -16,6 +17,8 @@ function Person() {
 		movie_crew,
 		tv_cast,
 		tv_crew,
+		anime_cast,
+		anime_crew,
 		external_ids,
 	};
 

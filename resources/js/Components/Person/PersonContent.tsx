@@ -7,7 +7,11 @@ import PersonProfile from '@/Components/Person/PersonProfile';
 import PersonStats from '@/Components/Person/PersonStats';
 import PersonActions from '@/Components/Person/PersonActions';
 import PersonMediaTabs from '@/Components/Person/PersonMediaTabs';
-import { getMediaItem, getTvMediaItem } from '@/Components/Person/PersonUtils';
+import {
+	getMediaItem,
+	getTvMediaItem,
+	getAnimeMediaItem,
+} from '@/Components/Person/PersonUtils';
 
 export function PersonContent() {
 	const tabsRef = useRef<HTMLDivElement>(null);
@@ -52,6 +56,7 @@ export function PersonContent() {
 								tabsRef={tabsRef}
 								getMediaItem={getMediaItem}
 								getTvMediaItem={getTvMediaItem}
+								getAnimeMediaItem={getAnimeMediaItem}
 							/>
 						</Box>
 					</Box>

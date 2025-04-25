@@ -10,7 +10,7 @@ interface MediaCreditsListProps {
 	credits: any[];
 	getMediaItemFunction: (credit: any) => any;
 	roleKey: string;
-	mediaType: 'movie' | 'tv';
+	mediaType: 'movie' | 'tv' | 'anime';
 }
 
 export default function MediaCreditsList({
@@ -43,12 +43,17 @@ export default function MediaCreditsList({
 			<Divider mb='lg' />
 
 			<Box className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-10'>
-				{credits.map((credit) => {
+				{credits.map((credit, index) => {
 					const isWatched = isMediaWatched(mediaType, credit.id, watchedStats);
+
+					const uniqueKey =
+						mediaType === 'anime' && credit.original_id
+							? `${mediaType}-${credit.id}-${credit.original_id}`
+							: `${mediaType}-${credit.id}-${index}`;
 
 					return (
 						<MediaCredit
-							key={`credit-${credit.id}`}
+							key={uniqueKey}
 							id={credit.id}
 							media={credit}
 							role={credit[roleKey]}

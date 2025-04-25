@@ -9,8 +9,10 @@ import {
 	Tooltip,
 } from '@mantine/core';
 import { Carousel } from '@mantine/carousel';
+import { Link } from '@inertiajs/react';
 import classes from './AnimeCreditsCard.module.css';
 import { Cast } from '@/types/animeseason';
+import React from 'react';
 
 interface AnimeCreditsCardProps {
 	character: CastMember | Cast;
@@ -56,7 +58,9 @@ function AnimeCreditsCard({
 						alt={hideCharacterName ? 'Character' : character.name}
 						fit='cover'
 						style={{ objectPosition: 'top' }}
-						fallbackSrc={`https://placehold.co/124x186?text=${hideCharacterName ? 'Character' : character.name}`}
+						fallbackSrc={`https://placehold.co/124x186?text=${
+							hideCharacterName ? 'Character' : character.name
+						}`}
 					/>
 					{hideCharacterName ? (
 						<>
@@ -158,8 +162,24 @@ function AnimeCreditsCard({
 							truncate
 						>
 							{seiyuus.length
-								? seiyuus.map((s) => s.name).join(', ')
-								: `${hideCharacterName ? 'Character' : character.name}'s seiyuu`}
+								? seiyuus.map((s, index) => (
+										<React.Fragment key={s.id || index}>
+											{index > 0 && ', '}
+											{s.id !== undefined && s.id !== null ? (
+												<Link
+													href={`/people/${s.id}`}
+													style={{ color: 'inherit', textDecoration: 'none' }}
+												>
+													{s.name}
+												</Link>
+											) : (
+												s.name
+											)}
+										</React.Fragment>
+									))
+								: `${
+										hideCharacterName ? 'Character' : character.name
+									}'s seiyuu`}
 						</Text>
 					</Tooltip>
 				</Stack>

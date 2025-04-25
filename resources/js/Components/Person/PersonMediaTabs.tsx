@@ -8,12 +8,14 @@ interface PersonMediaTabsProps {
 	tabsRef: React.RefObject<HTMLDivElement>;
 	getMediaItem: (credit: any) => any;
 	getTvMediaItem: (credit: any) => any;
+	getAnimeMediaItem: (credit: any) => any;
 }
 
 export default function PersonMediaTabs({
 	tabsRef,
 	getMediaItem,
 	getTvMediaItem,
+	getAnimeMediaItem,
 }: PersonMediaTabsProps) {
 	const tabsData = usePersonContext((state) => ({
 		activeTab: state.activeTab,
@@ -22,8 +24,11 @@ export default function PersonMediaTabs({
 		movie_crew: state.movie_crew,
 		tv_cast: state.tv_cast,
 		tv_crew: state.tv_crew,
+		anime_cast: state.anime_cast,
+		anime_crew: state.anime_crew,
 		uniqueMovieCreditsCount: state.uniqueMovieCreditsCount,
 		uniqueTvCreditsCount: state.uniqueTvCreditsCount,
+		uniqueAnimeCreditsCount: state.uniqueAnimeCreditsCount,
 	}));
 
 	return (
@@ -54,6 +59,12 @@ export default function PersonMediaTabs({
 					>
 						TV Shows ({tabsData.uniqueTvCreditsCount})
 					</Tabs.Tab>
+					<Tabs.Tab
+						value='anime'
+						className='text-xs md:text-sm'
+					>
+						Anime ({tabsData.uniqueAnimeCreditsCount})
+					</Tabs.Tab>
 				</Tabs.List>
 
 				<Tabs.Panel value='overview'>
@@ -62,6 +73,7 @@ export default function PersonMediaTabs({
 						<PersonKnownFor
 							getMediaItem={getMediaItem}
 							getTvMediaItem={getTvMediaItem}
+							getAnimeMediaItem={getAnimeMediaItem}
 						/>
 					</Box>
 				</Tabs.Panel>
@@ -113,6 +125,31 @@ export default function PersonMediaTabs({
 							<Text c='dimmed'>No TV credits available</Text>
 						</Box>
 					)}
+				</Tabs.Panel>
+
+				<Tabs.Panel value='anime'>
+					<MediaCreditsList
+						title='Anime (Cast)'
+						credits={tabsData.anime_cast}
+						getMediaItemFunction={getAnimeMediaItem}
+						roleKey='character'
+						mediaType='anime'
+					/>
+
+					<MediaCreditsList
+						title='Anime (Crew)'
+						credits={tabsData.anime_crew}
+						getMediaItemFunction={getAnimeMediaItem}
+						roleKey='department'
+						mediaType='anime'
+					/>
+
+					{tabsData.anime_cast.length === 0 &&
+						tabsData.anime_crew.length === 0 && (
+							<Box className='flex justify-center items-center h-40'>
+								<Text c='dimmed'>No anime credits available</Text>
+							</Box>
+						)}
 				</Tabs.Panel>
 			</Tabs>
 		</Box>

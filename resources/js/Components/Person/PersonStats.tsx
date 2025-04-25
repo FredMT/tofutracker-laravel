@@ -19,6 +19,7 @@ export default function PersonStats() {
 		totalCreditsCount: state.totalCreditsCount,
 		movieCreditsCount: state.uniqueMovieCreditsCount,
 		tvCreditsCount: state.uniqueTvCreditsCount,
+		animeCreditsCount: state.uniqueAnimeCreditsCount,
 	}));
 
 	const age = usePersonAge();
@@ -48,6 +49,7 @@ export default function PersonStats() {
 		{ label: 'Credits', value: personData.totalCreditsCount, icon: VideoIcon },
 		{ label: 'Movies', value: personData.movieCreditsCount, icon: FilmIcon },
 		{ label: 'TV Shows', value: personData.tvCreditsCount, icon: TvIcon },
+		{ label: 'Anime', value: personData.animeCreditsCount, icon: VideoIcon },
 	];
 
 	return (
@@ -74,7 +76,7 @@ export default function PersonStats() {
 
 			<Space />
 
-			<div className='flex gap-3 justify-center md:justify-start'>
+			<div className='flex gap-3 justify-center md:justify-start flex-wrap'>
 				{statsData.map((stat, index) => (
 					<div
 						key={index}

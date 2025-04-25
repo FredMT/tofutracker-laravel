@@ -10,6 +10,8 @@ import {
 	PersonMovieCrew,
 	PersonTvCast,
 	PersonTvCrew,
+	PersonAnimeCast,
+	PersonAnimeCrew,
 } from '@/propsHooks/usePersonCredits';
 import { createContext, useContext, useRef } from 'react';
 import { createStore } from 'zustand';
@@ -31,6 +33,8 @@ interface PersonProps {
 	movie_crew: PersonMovieCrew[];
 	tv_cast: PersonTvCast[];
 	tv_crew: PersonTvCrew[];
+	anime_cast: PersonAnimeCast[];
+	anime_crew: PersonAnimeCrew[];
 	external_ids: ExternalIds;
 }
 
@@ -45,12 +49,13 @@ interface PersonState extends PersonProps {
 		backdrop_path: string;
 		title: string;
 		character: string;
-		mediaType: 'movie' | 'tv';
+		mediaType: 'movie' | 'tv' | 'anime';
 	} | null;
 
 	// Counts
 	uniqueMovieCreditsCount: number;
 	uniqueTvCreditsCount: number;
+	uniqueAnimeCreditsCount: number;
 	totalCreditsCount: number;
 
 	// Actions
@@ -78,6 +83,8 @@ const createPersonStore = (initProps?: Partial<PersonProps>) => {
 		movie_crew: [],
 		tv_cast: [],
 		tv_crew: [],
+		anime_cast: [],
+		anime_crew: [],
 		external_ids: {
 			imdb_id: null,
 			instagram_id: null,
@@ -98,6 +105,7 @@ const createPersonStore = (initProps?: Partial<PersonProps>) => {
 		randomMediaDetails: null,
 		uniqueMovieCreditsCount: 0,
 		uniqueTvCreditsCount: 0,
+		uniqueAnimeCreditsCount: 0,
 		totalCreditsCount: 0,
 
 		// Actions
@@ -106,12 +114,23 @@ const createPersonStore = (initProps?: Partial<PersonProps>) => {
 		// Function to recalculate all computed values
 		updateComputedValues: () => {
 			const state = get();
-			const { movie_cast, movie_crew, tv_cast, tv_crew } = state;
+			const {
+				movie_cast,
+				movie_crew,
+				tv_cast,
+				tv_crew,
+				anime_cast,
+				anime_crew,
+			} = state;
 
 			// Calculate counts
 			const uniqueMovieCreditsCount = movie_cast.length + movie_crew.length;
 			const uniqueTvCreditsCount = tv_cast.length + tv_crew.length;
-			const totalCreditsCount = uniqueMovieCreditsCount + uniqueTvCreditsCount;
+			const uniqueAnimeCreditsCount = anime_cast.length + anime_crew.length;
+			const totalCreditsCount =
+				uniqueMovieCreditsCount +
+				uniqueTvCreditsCount +
+				uniqueAnimeCreditsCount;
 
 			// Calculate known for credits
 			const topMovies = movie_cast
@@ -138,7 +157,19 @@ const createPersonStore = (initProps?: Partial<PersonProps>) => {
 				.sort((a, b) => b.bayesianRating - a.bayesianRating)
 				.slice(0, 5);
 
-			const knownFor = [...topMovies, ...topTvShows]
+			const topAnime = anime_cast
+				.map((credit) => ({
+					...credit,
+					mediaType: 'anime' as const,
+					bayesianRating: calculateBayesianRating(
+						credit.rating,
+						credit.vote_count
+					),
+				}))
+				.sort((a, b) => b.bayesianRating - a.bayesianRating)
+				.slice(0, 5);
+
+			const knownFor = [...topMovies, ...topTvShows, ...topAnime]
 				.sort((a, b) => b.bayesianRating - a.bayesianRating)
 				.slice(0, 10);
 
@@ -161,7 +192,20 @@ const createPersonStore = (initProps?: Partial<PersonProps>) => {
 					mediaType: 'tv' as const,
 				}));
 
-			const allBackdrops = [...movieBackdrops, ...tvBackdrops];
+			const animeBackdrops = anime_cast
+				.filter((anime) => anime.backdrop_path)
+				.map((anime) => ({
+					backdrop_path: anime.backdrop_path as string,
+					title: anime.title,
+					character: anime.character,
+					mediaType: 'anime' as const,
+				}));
+
+			const allBackdrops = [
+				...movieBackdrops,
+				...tvBackdrops,
+				...animeBackdrops,
+			];
 			const randomMediaDetails =
 				allBackdrops.length === 0
 					? null
@@ -171,6 +215,7 @@ const createPersonStore = (initProps?: Partial<PersonProps>) => {
 			set({
 				uniqueMovieCreditsCount,
 				uniqueTvCreditsCount,
+				uniqueAnimeCreditsCount,
 				totalCreditsCount,
 				knownFor,
 				randomMediaDetails,
@@ -231,6 +276,8 @@ export const useHasCredits = () => {
 			hasMovieCredits:
 				state.movie_cast.length > 0 || state.movie_crew.length > 0,
 			hasTvCredits: state.tv_cast.length > 0 || state.tv_crew.length > 0,
+			hasAnimeCredits:
+				state.anime_cast.length > 0 || state.anime_crew.length > 0,
 		};
 	});
 };

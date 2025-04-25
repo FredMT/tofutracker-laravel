@@ -35,23 +35,29 @@ const WatchedStatsRingSkeleton = () => {
 };
 
 const WatchedStatsContent = ({ stats }: { stats: PersonWatchedStats }) => {
-	const totalItems = stats.movies.total + stats.shows.total;
-	const totalWatched = stats.movies.watched + stats.shows.watched;
+	const totalItems = stats.movies.total + stats.shows.total + stats.anime.total;
+	const totalWatched =
+		stats.movies.watched + stats.shows.watched + stats.anime.watched;
 
 	const overallPercentage =
 		totalItems > 0 ? Math.round((totalWatched / totalItems) * 100) : 0;
 
 	let moviePercentage = 0;
 	let showPercentage = 0;
+	let animePercentage = 0;
 
 	if (totalItems > 0) {
 		moviePercentage = Math.round(
-			(stats.movies.watched / stats.movies.total) * 50
+			(stats.movies.watched / stats.movies.total) * 33
 		);
-		showPercentage = Math.round((stats.shows.watched / stats.shows.total) * 50);
+		showPercentage = Math.round((stats.shows.watched / stats.shows.total) * 33);
+		animePercentage = Math.round(
+			(stats.anime.watched / stats.anime.total) * 33
+		);
 
 		if (stats.movies.watched > 0 && moviePercentage === 0) moviePercentage = 1;
 		if (stats.shows.watched > 0 && showPercentage === 0) showPercentage = 1;
+		if (stats.anime.watched > 0 && animePercentage === 0) animePercentage = 1;
 	}
 
 	return (
@@ -70,6 +76,11 @@ const WatchedStatsContent = ({ stats }: { stats: PersonWatchedStats }) => {
 						value: showPercentage,
 						color: 'red',
 						tooltip: `TV Shows: ${stats.shows.watched}/${stats.shows.total}`,
+					},
+					{
+						value: animePercentage,
+						color: 'grape',
+						tooltip: `Anime: ${stats.anime.watched}/${stats.anime.total}`,
 					},
 				]}
 				label={

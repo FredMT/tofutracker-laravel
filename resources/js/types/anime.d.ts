@@ -11,7 +11,7 @@ export interface Anime {
 }
 
 export interface BaseCharacter {
-	id: number;
+	id: number | null;
 	name: string;
 	picture: string;
 }

@@ -9,11 +9,12 @@ export interface Credit {
 	year?: string;
 	character?: string;
 	department?: string;
-	mediaType: 'movie' | 'tv';
+	mediaType: 'movie' | 'tv' | 'anime';
 	bayesianRating?: number;
 	backdrop_path?: string | null;
 	popularity?: number;
 	priority?: number;
+	original_id?: number;
 }
 
 export interface ExternalIds {
@@ -65,4 +66,9 @@ export const getMediaItem = (credit: Credit): MediaItemProps => ({
 export const getTvMediaItem = (credit: Credit): MediaItemProps => ({
 	...getMediaItem(credit),
 	mediaType: 'tv',
+});
+
+export const getAnimeMediaItem = (credit: Credit): MediaItemProps => ({
+	...getMediaItem(credit),
+	mediaType: 'anime',
 });

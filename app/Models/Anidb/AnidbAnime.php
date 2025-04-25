@@ -276,4 +276,13 @@ class AnidbAnime extends Model
             return $map->getTmdbModel()->highestVotedLogoPath ?? null;
         });
     }
+
+    public function getTmdbModel(): ?Model
+    {
+        if (! $this->map_id) {
+            return null;
+        }
+
+        return AnimeMap::find($this->map_id)?->getTmdbModel();
+    }
 }
