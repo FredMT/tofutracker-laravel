@@ -3,14 +3,14 @@ import {
 	usePersonAge,
 	usePersonContext,
 } from '@/Components/Person/store/personStore';
-import { Box, Group, Space, Text } from '@mantine/core';
+import { Space } from '@mantine/core';
 import {
-	MapPinIcon,
-	FilmIcon,
-	TvIcon,
-	VideoIcon,
-	UserIcon,
 	CalendarIcon,
+	FilmIcon,
+	MapPinIcon,
+	TvIcon,
+	UserIcon,
+	VideoIcon,
 } from 'lucide-react';
 
 export default function PersonStats() {

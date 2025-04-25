@@ -72,6 +72,7 @@ export default function PersonMediaTabs({
 						credits={tabsData.movie_cast}
 						getMediaItemFunction={getMediaItem}
 						roleKey='character'
+						mediaType='movie'
 					/>
 
 					<MediaCreditsList
@@ -79,6 +80,7 @@ export default function PersonMediaTabs({
 						credits={tabsData.movie_crew}
 						getMediaItemFunction={getMediaItem}
 						roleKey='department'
+						mediaType='movie'
 					/>
 
 					{tabsData.movie_cast.length === 0 &&
@@ -95,6 +97,7 @@ export default function PersonMediaTabs({
 						credits={tabsData.tv_cast}
 						getMediaItemFunction={getTvMediaItem}
 						roleKey='character'
+						mediaType='tv'
 					/>
 
 					<MediaCreditsList
@@ -102,6 +105,7 @@ export default function PersonMediaTabs({
 						credits={tabsData.tv_crew}
 						getMediaItemFunction={getTvMediaItem}
 						roleKey='department'
+						mediaType='tv'
 					/>
 
 					{tabsData.tv_cast.length === 0 && tabsData.tv_crew.length === 0 && (

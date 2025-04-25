@@ -2,8 +2,17 @@ import {
 	usePersonAge,
 	usePersonContext,
 } from '@/Components/Person/store/personStore';
-import { ActionIcon, Badge, Button, Group, Stack, Title } from '@mantine/core';
+import {
+	ActionIcon,
+	Badge,
+	Button,
+	Group,
+	Stack,
+	Title,
+	Box,
+} from '@mantine/core';
 import { Instagram, Twitter } from 'lucide-react';
+import WatchedStatsRing from './WatchedStatsRing';
 
 export default function PersonProfile() {
 	const profileData = usePersonContext((state) => ({
@@ -17,8 +26,20 @@ export default function PersonProfile() {
 		<Stack
 			gap='xs'
 			mt='xl'
+			style={{ position: 'relative' }}
 		>
 			<Title className='text-3xl md:text-4xl'>{profileData.person.name}</Title>
+
+			<Box
+				style={{
+					position: 'absolute',
+					top: '0',
+					right: '0',
+					zIndex: 1,
+				}}
+			>
+				<WatchedStatsRing />
+			</Box>
 
 			<Group
 				gap='xs'

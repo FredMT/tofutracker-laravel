@@ -6,6 +6,7 @@ interface MediaCreditProps {
 	media: any;
 	role: string;
 	getMediaItemFunction: (credit: any) => any;
+	isWatched?: boolean;
 }
 
 export default function MediaCredit({
@@ -13,13 +14,17 @@ export default function MediaCredit({
 	media,
 	role,
 	getMediaItemFunction,
+	isWatched = false,
 }: MediaCreditProps) {
 	return (
 		<Box
 			key={id}
 			className='flex flex-col'
 		>
-			<MediaCard media={getMediaItemFunction(media)} />
+			<MediaCard
+				media={getMediaItemFunction(media)}
+				isWatched={isWatched}
+			/>
 			<Tooltip label={role}>
 				<Text
 					size='xs'

@@ -13,7 +13,12 @@ export interface MediaItemProps {
 	mediaType: 'anime' | 'tv' | 'movie';
 }
 
-const MediaCard = ({ media }: { media: MediaItemProps }) => {
+interface MediaCardProps {
+	media: MediaItemProps;
+	isWatched?: boolean;
+}
+
+const MediaCard = ({ media, isWatched = false }: MediaCardProps) => {
 	const getMediaUrl = useCallback((media: MediaItemProps) => {
 		switch (media.mediaType) {
 			case 'anime':
@@ -35,7 +40,13 @@ const MediaCard = ({ media }: { media: MediaItemProps }) => {
 					ratio={2 / 3}
 					className='h-full'
 				>
-					<div className='group relative h-full overflow-hidden rounded-lg'>
+					<div
+						className={`group relative h-full overflow-hidden rounded-lg transition-shadow duration-2000 ${
+							isWatched
+								? 'shadow-[0px_0px_15px_5px_rgba(128,0,255,0.8)] dark:shadow-[0px_0px_15px_5px_rgba(128,0,255,0.8)]'
+								: 'shadow-none'
+						}`}
+					>
 						<Image
 							unstyled
 							src={`https://image.tmdb.org/t/p/w300${media.poster}`}

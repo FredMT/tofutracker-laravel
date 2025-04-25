@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\TmdbService;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 
@@ -31,6 +32,8 @@ class PeopleController extends Controller
         $movieCredits = $personData['movie_credits'] ?? [];
         $tvCredits = $personData['tv_credits'] ?? [];
 
+        $userWatchedStats = $this->getUserWatchedStats($movieCredits['cast'] ?? [], $tvCredits['cast'] ?? []);
+
         return Inertia::render('Person', [
             'person' => $personData->only([
                 'id', 'name', 'profile_path', 'biography', 'birthday',
@@ -43,6 +46,9 @@ class PeopleController extends Controller
                 'tv_cast' => array_values($this->processTvCast($tvCredits['cast'] ?? [])),
                 'tv_crew' => array_values($this->processTvCrew($tvCredits['crew'] ?? [])),
             ],
+            'watchedStats' => Inertia::defer(function () use ($userWatchedStats) {
+                return $userWatchedStats;
+            }),
         ]);
     }
 
@@ -78,7 +84,6 @@ class PeopleController extends Controller
             })
             ->values()
             ->sortByDesc(function ($item) {
-                // Sort first by priority, then by popularity
                 return ($item['priority'] * 1000) + min(999, $item['popularity']);
             })
             ->map(function ($item) {
@@ -125,11 +130,9 @@ class PeopleController extends Controller
             })
             ->values()
             ->sortByDesc(function ($item) {
-                // Sort first by priority, then by popularity
                 return ($item['priority'] * 1000) + min(999, $item['popularity']);
             })
             ->map(function ($item) {
-                // Keep priority and release_date for debugging
                 unset($item['release_date']);
 
                 return $item;
@@ -169,11 +172,9 @@ class PeopleController extends Controller
             })
             ->values()
             ->sortByDesc(function ($item) {
-                // Sort first by priority, then by popularity
                 return ($item['priority'] * 1000) + min(999, $item['popularity']);
             })
             ->map(function ($item) {
-                // Keep priority and release_date for debugging
                 unset($item['release_date']);
 
                 return $item;
@@ -217,7 +218,6 @@ class PeopleController extends Controller
             })
             ->values()
             ->sortByDesc(function ($item) {
-                // Sort first by priority, then by popularity
                 return ($item['priority'] * 1000) + min(999, $item['popularity']);
             })
             ->map(function ($item) {
@@ -231,24 +231,64 @@ class PeopleController extends Controller
     private function calculatePriority(?string $releaseDate, string $today, string $nextYear): int
     {
         if (! $releaseDate) {
-            return 0; // Lowest priority for items without a date
+            return 0;
         }
 
-        // Future releases coming soon (within the next year)
         if ($releaseDate >= $today && $releaseDate <= $nextYear) {
-            return 3; // Highest priority
+            return 3;
         }
 
-        // Future releases beyond next year
         if ($releaseDate > $nextYear) {
-            return 2; // Medium-high priority
+            return 2;
         }
 
-        // Recent releases (last 3 months)
         if ($releaseDate >= now()->subMonths(3)->format('Y-m-d') && $releaseDate < $today) {
-            return 1; // Medium priority
+            return 1;
         }
 
-        return 0; // Low priority for older releases
+        return 0;
+    }
+
+    private function getUserWatchedStats(array $movieCast, array $tvCast): array
+    {
+        if (! Auth::check()) {
+            return [
+                'movies' => [
+                    'watched' => 0,
+                    'total' => count(array_unique(array_column($movieCast, 'id'))),
+                ],
+                'shows' => [
+                    'watched' => 0,
+                    'total' => count(array_unique(array_column($tvCast, 'id'))),
+                ],
+            ];
+        }
+
+        $user = Auth::user();
+
+        $uniqueMovieIds = array_unique(array_column($movieCast, 'id'));
+
+        $uniqueTvIds = array_unique(array_column($tvCast, 'id'));
+
+        $watchedMovies = $user->movies()
+            ->whereIn('movie_id', $uniqueMovieIds)
+            ->get();
+
+        $watchedShows = $user->shows()
+            ->whereIn('show_id', $uniqueTvIds)
+            ->get();
+
+        return [
+            'movies' => [
+                'watched' => $watchedMovies->count(),
+                'total' => count($uniqueMovieIds),
+                'watched_ids' => $watchedMovies->pluck('movie_id')->toArray() ?? null,
+            ],
+            'shows' => [
+                'watched' => $watchedShows->count(),
+                'total' => count($uniqueTvIds),
+                'watched_ids' => $watchedShows->pluck('show_id')->toArray() ?? null,
+            ],
+        ];
     }
 }
