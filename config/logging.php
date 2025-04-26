@@ -49,9 +49,6 @@ return [
 
     'channels' => [
 
-        'larabug' => [
-            'driver' => 'larabug',
-        ],
         'anidbupdate' => [
             'driver' => 'single',
             'path' => storage_path('logs/anidbupdate.log'),
