@@ -309,8 +309,11 @@ class AnidbService
                 foreach ($seiyuus as $seiyuuData) {
                     logger()->info('Processing seiyuu', ['seiyuu_id' => $seiyuuData['seiyuu_id']]);
                     $seiyuu = AnidbSeiyuu::updateOrCreate(
-                        ['seiyuu_id' => $seiyuuData['seiyuu_id']],
-                        $seiyuuData
+                        ['id' => $seiyuuData['seiyuu_id']],
+                        [
+                            'name' => $seiyuuData['name'],
+                            'picture' => $seiyuuData['picture'] ?? null,
+                        ]
                     );
                     $seiyuuIds[] = $seiyuu->id;
                 }

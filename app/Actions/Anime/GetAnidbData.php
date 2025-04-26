@@ -94,7 +94,6 @@ class GetAnidbData
                     $query->whereNotNull('anidb_seiyuus.picture')
                         ->select(
                             'anidb_seiyuus.id',
-                            'anidb_seiyuus.seiyuu_id',
                             'anidb_seiyuus.name',
                             'anidb_seiyuus.picture',
                             'anidb_seiyuus.tmdb_id'
@@ -112,7 +111,6 @@ class GetAnidbData
                     $query->whereNotNull('anidb_seiyuus.picture')
                         ->select(
                             'anidb_seiyuus.id',
-                            'anidb_seiyuus.seiyuu_id',
                             'anidb_seiyuus.name',
                             'anidb_seiyuus.picture',
                             'anidb_seiyuus.tmdb_id'
@@ -129,7 +127,7 @@ class GetAnidbData
                 $primaryCharacter = $characterGroup->sortByDesc('rating_votes')->first();
                 $seiyuuNames = $characterGroup->pluck('seiyuus')
                     ->flatten(1)
-                    ->unique('seiyuu_id')
+                    ->unique('id')
                     ->pluck('name')
                     ->join(', ');
 
@@ -145,13 +143,13 @@ class GetAnidbData
             $seiyuus = $mainCharacters->concat($otherCharacters)
                 ->pluck('seiyuus')
                 ->flatten(1)
-                ->unique('seiyuu_id')
+                ->unique('id')
                 ->map(function ($seiyuu) use ($charactersByName) {
                     // Find all characters voiced by this seiyuu
                     $characterNames = $charactersByName
                         ->filter(function ($characterGroup) use ($seiyuu) {
                             return $characterGroup->contains(function ($character) use ($seiyuu) {
-                                return $character->seiyuus->contains('seiyuu_id', $seiyuu->seiyuu_id);
+                                return $character->seiyuus->contains('id', $seiyuu->id);
                             });
                         })
                         ->map(function ($characterGroup) {

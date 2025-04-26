@@ -4,6 +4,7 @@ import { usePersonDetails } from '@/propsHooks/usePersonDetails';
 import { usePersonExternalIds } from '@/propsHooks/usePersonExternalIds';
 import { PersonProvider } from '@/Components/Person/store/personStore';
 import { PersonContent } from '@/Components/Person/PersonContent';
+import { Head } from '@inertiajs/react';
 
 function Person() {
 	const personDetails = usePersonDetails();
@@ -24,6 +25,7 @@ function Person() {
 
 	return (
 		<PersonProvider {...initialStoreProps}>
+			<Head title={`${personDetails.name}`} />
 			<PersonContent />
 		</PersonProvider>
 	);

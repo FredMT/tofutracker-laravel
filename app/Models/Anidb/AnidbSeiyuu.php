@@ -15,11 +15,17 @@ class AnidbSeiyuu extends Model
     protected $hidden = ['created_at', 'updated_at'];
 
     protected $fillable = [
-        'seiyuu_id',
         'name',
         'picture',
         'tmdb_id',
     ];
+
+    /**
+     * Indicates if the model's ID is auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
 
     public function characters(): BelongsToMany
     {
